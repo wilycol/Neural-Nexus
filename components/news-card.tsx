@@ -1,0 +1,214 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Heart, MessageCircle, Share2, Bookmark, ExternalLink } from "lucide-react";
+import { NewsItem } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { formatRelativeTime, extractDomain } from "@/lib/utils";
+import { toast } from "sonner";
+import { Comments } from "@/components/comments";
+
+interface NewsCardProps {
+  news: NewsItem;
+  isLiked?: boolean;
+  isFavorited?: boolean;
+  likeCount?: number;
+  commentCount?: number;
+  onLike?: (newsId: string) => void;
+  onFavorite?: (newsId: string) => void;
+  onShare?: (newsId: string, platform: string) => void;
+}
+
+export function NewsCard({
+  news,
+  isLiked = false,
+  isFavorited = false,
+  likeCount = 0,
+  commentCount = 0,
+  onLike,
+  onFavorite,
+  onShare,
+}: NewsCardProps) {
+  const [showComments, setShowComments] = useState(false);
+
+  const handleShare = async (platform: string) => {
+    const url = `${window.location.origin}/noticia/${news.slug}`;
+    const text = `🔥 ${news.title}\n\nVía Neural Nexus - Portal de noticias IA`;
+
+    switch (platform) {
+      case 'copy':
+        await navigator.clipboard.writeText(url);
+        toast.success("Link copiado al portapapeles");
+        break;
+      case 'x':
+        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`, '_blank');
+        break;
+      case 'telegram':
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+    }
+
+    onShare?.(news.id, platform);
+  };
+
+  const categoryColors: Record<string, string> = {
+    modelos: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    herramientas: "bg-green-500/10 text-green-500 border-green-500/20",
+    memes: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+    papers: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+    drama: "bg-red-500/10 text-red-500 border-red-500/20",
+    general: "bg-gray-500/10 text-gray-500 border-gray-500/20",
+  };
+
+  return (
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      {/* Image */}
+      {news.image_url && (
+        <div className="relative aspect-video overflow-hidden">
+          <Image
+            src={news.image_url}
+            alt={news.title}
+            fill
+            className="object-cover transition-transform hover:scale-105"
+          />
+          <div className="absolute top-2 left-2">
+            <Badge
+              variant="outline"
+              className={`${categoryColors[news.category] || categoryColors.general} text-xs`}
+            >
+              {news.category}
+            </Badge>
+          </div>
+        </div>
+      )}
+
+      <CardHeader className="pb-3">
+        <Link
+          href={`/noticia/${news.slug}`}
+          className="group"
+        >
+          <h3 className="text-lg font-semibold leading-tight group-hover:text-neon-blue transition-colors line-clamp-2">
+            {news.title}
+          </h3>
+        </Link>
+      </CardHeader>
+
+      <CardContent className="pb-3">
+        <p className="text-sm text-muted-foreground line-clamp-3">
+          {news.summary}
+        </p>
+
+        {/* Source & Date */}
+        <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <ExternalLink className="h-3 w-3" />
+            {extractDomain(news.source_url)}
+          </span>
+          <span>•</span>
+          <span>{formatRelativeTime(news.published_at)}</span>
+        </div>
+
+        {/* Tags */}
+        {news.tags && news.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-3">
+            {news.tags.slice(0, 3).map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                #{tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </CardContent>
+
+      <CardFooter className="pt-0 flex items-center justify-between">
+        {/* Social actions */}
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`gap-1.5 ${isLiked ? 'text-red-500' : ''}`}
+            onClick={() => onLike?.(news.id)}
+          >
+            <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+            <span className="text-xs">{likeCount}</span>
+          </Button>
+
+          <Dialog open={showComments} onOpenChange={setShowComments}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-1.5">
+                <MessageCircle className="h-4 w-4" />
+                <span className="text-xs">{commentCount}</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Comentarios</DialogTitle>
+              </DialogHeader>
+              <div className="py-2">
+                <Comments kind="news" entityId={news.id} />
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-1.5">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleShare('copy')}>
+                Copiar link
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleShare('x')}>
+                Compartir en X
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
+                WhatsApp
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleShare('telegram')}>
+                Telegram
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleShare('facebook')}>
+                Facebook
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Favorite */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className={isFavorited ? 'text-yellow-500' : ''}
+          onClick={() => onFavorite?.(news.id)}
+        >
+          <Bookmark className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
