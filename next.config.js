@@ -29,3 +29,4 @@ module.exports = (phase) => {
   const distDir = phase === PHASE_DEVELOPMENT_SERVER ? ".next-dev" : ".next-build";
   return { ...baseConfig, distDir };
 };
+// Force deploy trigger - 03/28/2026 15:47:18
