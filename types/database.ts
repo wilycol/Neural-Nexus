@@ -19,6 +19,7 @@ export interface Database {
           updated_at: string;
           is_premium: boolean;
           share_count: number;
+          credits: number;
           role: 'user' | 'admin' | 'moderator';
         };
         Insert: {
@@ -57,7 +58,7 @@ export interface Database {
           source_icon: string | null;
           published_at: string;
           created_at: string;
-          category: 'modelos' | 'herramientas' | 'memes' | 'papers' | 'drama' | 'general';
+          category: 'Inteligencia Artificial' | 'Software' | 'Hardware' | 'Robótica' | 'Historia Tech' | 'Futuro y Tendencias' | 'Startups Tech' | 'IA en la Vida Real' | 'Seguridad y Ética' | 'Gadgets' | 'Datos Curiosos Tech' | 'Rankings';
           tags: string[];
           relevance_score: number;
           mention_count: number;
@@ -77,7 +78,7 @@ export interface Database {
           source_icon?: string | null;
           published_at: string;
           created_at?: string;
-          category?: 'modelos' | 'herramientas' | 'memes' | 'papers' | 'drama' | 'general';
+          category?: 'Inteligencia Artificial' | 'Software' | 'Hardware' | 'Robótica' | 'Historia Tech' | 'Futuro y Tendencias' | 'Startups Tech' | 'IA en la Vida Real' | 'Seguridad y Ética' | 'Gadgets' | 'Datos Curiosos Tech' | 'Rankings';
           tags?: string[];
           relevance_score?: number;
           mention_count?: number;

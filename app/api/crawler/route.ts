@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Parser from 'rss-parser';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 import { generateSlug } from '@/lib/utils';
 import type { Database } from '@/types/database';
 
@@ -30,47 +30,47 @@ const DEFAULT_SOURCES = [
   {
     name: 'TechCrunch AI',
     rss_url: 'https://techcrunch.com/category/artificial-intelligence/feed/',
-    category: 'general',
+    category: 'Inteligencia Artificial',
   },
   {
     name: 'Wired AI',
     rss_url: 'https://www.wired.com/tag/artificial-intelligence/rss',
-    category: 'general',
+    category: 'Inteligencia Artificial',
   },
   {
     name: 'Hugging Face Blog',
     rss_url: 'https://huggingface.co/blog/feed.xml',
-    category: 'modelos',
+    category: 'Software',
   },
   {
     name: 'OpenAI Blog',
     rss_url: 'https://openai.com/blog/rss.xml',
-    category: 'modelos',
+    category: 'Software',
   },
   {
     name: 'Google AI Blog',
     rss_url: 'https://ai.googleblog.com/feeds/posts/default',
-    category: 'modelos',
+    category: 'Software',
   },
   {
     name: 'Anthropic',
     rss_url: 'https://www.anthropic.com/blog/rss.xml',
-    category: 'modelos',
+    category: 'Software',
   },
   {
     name: 'MIT Technology Review',
     rss_url: 'https://www.technologyreview.com/topic/artificial-intelligence/feed',
-    category: 'papers',
+    category: 'Futuro y Tendencias',
   },
   {
     name: 'VentureBeat AI',
     rss_url: 'https://venturebeat.com/category/ai/feed/',
-    category: 'general',
+    category: 'Inteligencia Artificial',
   },
   {
     name: 'AI Trends',
     rss_url: 'https://www.aitrends.com/feed/',
-    category: 'general',
+    category: 'Inteligencia Artificial',
   },
   {
     name: 'DeepMind Blog',
@@ -236,7 +236,7 @@ export async function POST(request: NextRequest) {
             source_name,
             source_url: item.link,
             published_at: item.pubDate,
-            category: 'general',
+            category: 'Inteligencia Artificial',
             tags: item.categories || [],
             relevance_score: 0.5,
             mention_count: 1,

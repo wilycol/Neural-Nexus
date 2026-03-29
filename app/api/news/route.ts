@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 import { getPagination } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 
 const NEWS_CATEGORIES: Array<Database["public"]["Tables"]["news"]["Row"]["category"]> = [
-  "modelos",
-  "herramientas",
-  "memes",
-  "papers",
-  "drama",
-  "general",
+  "Inteligencia Artificial",
+  "Software",
+  "Hardware",
+  "Robótica",
+  "Historia Tech",
+  "Futuro y Tendencias",
+  "Startups Tech",
+  "IA en la Vida Real",
+  "Seguridad y Ética",
+  "Gadgets",
+  "Datos Curiosos Tech",
+  "Rankings",
 ];
 const NEWS_CATEGORY_SET = new Set(NEWS_CATEGORIES);
 

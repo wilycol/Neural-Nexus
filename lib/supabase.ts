@@ -1,55 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
-import { 
-  createBrowserClient as createSupabaseBrowserClient,
-  createRouteHandlerClient
-} from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import type { Database } from '@/types/database';
-
-// Cliente para Server Components (solo lectura)
-export const createServerClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Faltan variables de entorno de Supabase');
-  }
-
-  return createClient<Database>(supabaseUrl, supabaseKey);
-};
-
-// Cliente para Route Handlers (con cookies)
-export const createRouteHandlerSupabaseClient = () => {
-  return createRouteHandlerClient<Database>({ cookies });
-};
-
-// Cliente para Client Components
-export const createBrowserClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Faltan variables de entorno de Supabase');
-  }
-
-  return createSupabaseBrowserClient<Database>(supabaseUrl, supabaseAnonKey, { isSingleton: true });
-};
-
-// Singleton para el cliente del navegador
-let browserClient: ReturnType<typeof createBrowserClient> | null = null;
-
-export const getSupabaseBrowserClient = () => {
-  if (typeof window === 'undefined') {
-    throw new Error('getSupabaseBrowserClient solo debe usarse en el cliente');
-  }
-
-  if (!browserClient) {
-    browserClient = createBrowserClient();
-  }
-
-  return browserClient;
-};
-
 // Helper para manejar errores de Supabase
 export const handleSupabaseError = (error: unknown): string => {
   if (!error) return '';
@@ -78,3 +26,7 @@ export const getPagination = (page: number, limit: number) => {
   const to = from + limit - 1;
   return { from, to };
 };
+
+// Re-exportar para compatibilidad básica si es necesario, 
+// pero se recomienda usar -client o -server directamente.
+export * from './supabase-client';

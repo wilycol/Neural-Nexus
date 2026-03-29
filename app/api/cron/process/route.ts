@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Parser from 'rss-parser';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 import { processNewsWithAI, generateBlogPost } from '@/lib/groq';
 import { generateSlug } from '@/lib/utils';
 import type { Database } from '@/types/database';
@@ -18,42 +18,42 @@ const RSS_SOURCES = [
   {
     name: 'TechCrunch AI',
     rss_url: 'https://techcrunch.com/category/artificial-intelligence/feed/',
-    category: 'general' as const,
+    category: 'Inteligencia Artificial' as const,
   },
   {
     name: 'OpenAI Blog',
     rss_url: 'https://openai.com/blog/rss.xml',
-    category: 'modelos' as const,
+    category: 'Software' as const,
   },
   {
     name: 'Anthropic',
     rss_url: 'https://www.anthropic.com/blog/rss.xml',
-    category: 'modelos' as const,
+    category: 'Software' as const,
   },
   {
     name: 'Google DeepMind',
     rss_url: 'https://deepmind.google/blog/rss.xml',
-    category: 'modelos' as const,
+    category: 'Software' as const,
   },
   {
     name: 'Hugging Face',
     rss_url: 'https://huggingface.co/blog/feed.xml',
-    category: 'herramientas' as const,
+    category: 'IA en la Vida Real' as const,
   },
   {
     name: 'MIT Technology Review',
     rss_url: 'https://www.technologyreview.com/topic/artificial-intelligence/feed',
-    category: 'papers' as const,
+    category: 'Futuro y Tendencias' as const,
   },
   {
     name: 'VentureBeat AI',
     rss_url: 'https://venturebeat.com/category/ai/feed/',
-    category: 'general' as const,
+    category: 'Inteligencia Artificial' as const,
   },
   {
     name: 'Wired AI',
     rss_url: 'https://www.wired.com/tag/artificial-intelligence/rss',
-    category: 'general' as const,
+    category: 'Inteligencia Artificial' as const,
   },
 ];
 

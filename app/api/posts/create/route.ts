@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase-server";
 import { calculateReadTime, generateSlug } from "@/lib/utils";
 import { processNewsWithAI } from "@/lib/groq";
 

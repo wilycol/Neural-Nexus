@@ -1,11 +1,11 @@
-import { createServerClient } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     const supabase = createServerClient();
     
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .rpc('get_site_wide_stats')
       .single();
 

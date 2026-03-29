@@ -1,32 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/auth-helpers-nextjs";
-import type { Database } from "@/types/database";
-import { createServerClient as createServiceClient } from "@/lib/supabase";
+import { createRouteHandlerSupabaseClient } from "@/lib/supabase-server";
 import { moderateComment } from "@/lib/groq";
 
 export const dynamic = "force-dynamic";
 
-const createSupabaseRouteClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error("Supabase no está configurado");
-  }
-  const cookieStore = cookies();
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return cookieStore.getAll().map(({ name, value }) => ({ name, value }));
-      },
-    },
-  });
-};
-
 const tryIncrementBlogPostCommentCount = async (blogPostId: string) => {
   const supabase = (() => {
     try {
-      return createServiceClient();
+      return createRouteHandlerSupabaseClient();
     } catch {
       return null;
     }
@@ -56,7 +37,7 @@ const tryIncrementBlogPostCommentCount = async (blogPostId: string) => {
 const tryIncrementNewsCommentCount = async (newsId: string) => {
   const supabase = (() => {
     try {
-      return createServiceClient();
+      return createRouteHandlerSupabaseClient();
     } catch {
       return null;
     }
@@ -90,7 +71,7 @@ export async function GET(request: NextRequest) {
     if (!blogPostId && !newsId) {
       return NextResponse.json({ error: "Falta identificador" }, { status: 400 });
     }
-    const supabase = createSupabaseRouteClient();
+    const supabase = createRouteHandlerSupabaseClient();
     let q = supabase
       .from("comments")
       .select(`
@@ -122,7 +103,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createSupabaseRouteClient();
+    const supabase = createRouteHandlerSupabaseClient();
     const { data: auth } = await supabase.auth.getUser();
     const user = auth.user;
     if (!user) {
@@ -194,7 +175,7 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = createSupabaseRouteClient();
+    const supabase = createRouteHandlerSupabaseClient();
     const { data: auth } = await supabase.auth.getUser();
     const user = auth.user;
     if (!user) {
@@ -227,7 +208,7 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createSupabaseRouteClient();
+    const supabase = createRouteHandlerSupabaseClient();
     const { data: auth } = await supabase.auth.getUser();
     const user = auth.user;
     if (!user) {
