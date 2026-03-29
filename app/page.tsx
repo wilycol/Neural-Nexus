@@ -208,54 +208,84 @@ function HeroTop5Background() {
 
 function GrowthStats() {
   const [stats, setStats] = useState<{ total_views: number; total_users: number; total_news: number } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch("/api/stats/site")
       .then((res) => res.json())
-      .then((json) => setStats(json.data))
-      .catch(() => setStats(null));
+      .then((json) => {
+        if (json.data) setStats(json.data);
+      })
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 bg-muted/20 border border-muted-foreground/10 rounded-xl"></div>
+        ))}
+      </div>
+    );
+  }
 
   if (!stats) return null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="bg-card border rounded-xl p-6 flex items-center gap-4 hover:border-neon-blue/40 transition-colors group">
-        <div className="p-3 rounded-lg bg-neon-blue/10 text-neon-blue">
+      <div className="bg-card/30 backdrop-blur-sm border border-neon-blue/20 rounded-xl p-6 flex items-center gap-4 hover:border-neon-blue/60 transition-all group relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-2 opacity-10">
+          <BarChart className="h-16 w-16" />
+        </div>
+        <div className="p-3 rounded-lg bg-neon-blue/10 text-neon-blue shadow-[0_0_15px_rgba(0,163,255,0.3)]">
           <BarChart className="h-6 w-6" />
         </div>
-        <div>
-          <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Vistas Totales</p>
+        <div className="relative z-10">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Vistas Totales</p>
           <div className="flex items-baseline gap-2">
-            <h3 className="text-2xl font-bold font-orbitron text-neon-blue">
+            <h3 className="text-2xl font-bold font-orbitron text-neon-blue drop-shadow-[0_0_8px_rgba(0,163,255,0.5)]">
               {stats.total_views.toLocaleString()}
             </h3>
-            <span className="text-[10px] text-green-500 animate-pulse font-mono tracking-tighter">UP!</span>
+            <span className="text-[10px] text-green-500 animate-[pulse_1s_infinite] font-mono tracking-tighter shadow-green-500/50">LIVE</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-card border rounded-xl p-6 flex items-center gap-4 hover:border-green-500/40 transition-colors group">
-        <div className="p-3 rounded-lg bg-green-500/10 text-green-500">
+      <div className="bg-card/30 backdrop-blur-sm border border-green-500/20 rounded-xl p-6 flex items-center gap-4 hover:border-green-500/60 transition-all group relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-2 opacity-10">
+          <Users className="h-16 w-16" />
+        </div>
+        <div className="p-3 rounded-lg bg-green-500/10 text-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
           <Users className="h-6 w-6" />
         </div>
-        <div>
-          <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Comunidad Neural</p>
-          <h3 className="text-2xl font-bold font-orbitron text-green-500">
-            {stats.total_users.toLocaleString()}
-          </h3>
+        <div className="relative z-10">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Comunidad Neural</p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-2xl font-bold font-orbitron text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
+              {stats.total_users.toLocaleString()}
+            </h3>
+            <span className="text-[10px] text-neon-blue animate-pulse font-mono tracking-tighter">Nexus+</span>
+          </div>
         </div>
       </div>
 
-      <div className="bg-card border rounded-xl p-6 flex items-center gap-4 hover:border-neon-purple/40 transition-colors group">
-        <div className="p-3 rounded-lg bg-neon-purple/10 text-neon-purple">
+      <div className="bg-card/30 backdrop-blur-sm border border-neon-purple/20 rounded-xl p-6 flex items-center gap-4 hover:border-neon-purple/60 transition-all group relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-2 opacity-10">
+          <Zap className="h-16 w-16" />
+        </div>
+        <div className="p-3 rounded-lg bg-neon-purple/10 text-neon-purple shadow-[0_0_15px_rgba(168,85,247,0.3)]">
           <Zap className="h-6 w-6" />
         </div>
-        <div>
-          <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Nexus News</p>
-          <h3 className="text-2xl font-bold font-orbitron text-neon-purple">
-            {stats.total_news.toLocaleString()}
-          </h3>
+        <div className="relative z-10">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Nexus News</p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-2xl font-bold font-orbitron text-neon-purple drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+              {stats.total_news.toLocaleString()}
+            </h3>
+            <span className="text-[10px] text-neon-purple animate-pulse font-mono">IA</span>
+          </div>
         </div>
       </div>
     </div>
