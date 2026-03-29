@@ -13,7 +13,19 @@ const groq = new Groq({
 export interface ProcessedNewsResult {
   title: string;
   summary: string;
-  category: 'modelos' | 'herramientas' | 'memes' | 'papers' | 'drama' | 'general';
+  category: 
+    | 'Inteligencia Artificial' 
+    | 'Software' 
+    | 'Hardware' 
+    | 'Robótica' 
+    | 'Historia Tech' 
+    | 'Futuro y Tendencias' 
+    | 'Startups Tech' 
+    | 'IA en la Vida Real' 
+    | 'Seguridad y Ética' 
+    | 'Gadgets' 
+    | 'Datos Curiosos Tech' 
+    | 'Rankings';
   tags: string[];
   relevance_score: number;
   should_publish: boolean;
@@ -40,28 +52,38 @@ export async function processNewsWithAI(
       return {
         title,
         summary: content.substring(0, 200) + '...',
-        category: 'general',
+        category: 'Inteligencia Artificial',
         tags: [],
         relevance_score: 0.5,
         should_publish: true,
       };
     }
 
-    const prompt = `Analiza esta noticia sobre Inteligencia Artificial y genera un resumen optimizado.
+    const categories = [
+      'Inteligencia Artificial', 'Software', 'Hardware', 'Robótica', 
+      'Historia Tech', 'Futuro y Tendencias', 'Startups Tech', 
+      'IA en la Vida Real', 'Seguridad y Ética', 'Gadgets', 
+      'Datos Curiosos Tech', 'Rankings'
+    ];
+
+    const prompt = `Analiza esta noticia tecnológica y clasifícala obligatoriamente en una de nuestras 12 Categorías Maestras.
 
 TÍTULO ORIGINAL: ${title}
 CONTENIDO: ${content.substring(0, 2000)}
 FUENTE: ${sourceName}
 
+CATEGORÍAS DISPONIBLES:
+${categories.join(', ')}
+
 Responde SOLO con un objeto JSON válido con esta estructura:
 {
-  "title": "título mejorado y clickbait honesto (máx 100 chars)",
-  "summary": "resumen de 2-3 líneas, máximo 200 caracteres",
-  "category": "una de: modelos, herramientas, memes, papers, drama, general",
-  "tags": ["array", "de", "3-5", "tags", "relevantes"],
+  "title": "título mejorado, profesional y atractivo (máx 100 chars)",
+  "summary": "resumen ejecutivo de 2-3 líneas, máximo 200 caracteres",
+  "category": "UNA de las categorías mencionadas arriba",
+  "tags": ["array", "de", "3-5", "tags", "técnicos relevantas"],
   "relevance_score": número entre 0 y 1,
-  "should_publish": true/false (solo true si score >= 0.6 o es noticia importante),
-  "reason": "breve explicación de por qué se publica o no"
+  "should_publish": true/false (true si es noticia veraz e innovadora),
+  "reason": "breve explicación técnica de la clasificación"
 }`;
 
     const completion = await groq.chat.completions.create({

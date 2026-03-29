@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getBadgeInfo } from "@/lib/utils";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -27,6 +28,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userNickname, setUserNickname] = useState<string | null>(null);
+  const [userCredits, setUserCredits] = useState<number>(0);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,10 +51,17 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
         }
         const { data: profile } = await supabase
           .from("users")
-          .select("nickname, avatar_url")
+          .select("nickname, avatar_url, credits")
           .eq("id", authUser.id)
-          .maybeSingle();
-        setUserNickname(profile?.nickname || authUser.user_metadata?.nickname || authUser.email?.split("@")[0] || "usuario");
+          .maybeSingle() as any;
+
+        if (profile) {
+          setUserNickname(profile.nickname);
+          setUserCredits(profile.credits || 0);
+        } else {
+          setUserNickname(authUser.user_metadata?.nickname || authUser.email?.split("@")[0] || "usuario");
+          setUserCredits(0);
+        }
       } catch {
         setUserNickname(null);
       }
@@ -60,8 +69,10 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
     run();
   }, []);
 
+  const badge = getBadgeInfo(userCredits);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 font-orbitron">
       <div className="flex h-16 items-center gap-4 px-4 md:px-6">
         {/* Sidebar toggle (mobile) */}
         {showSidebarToggle && (
@@ -97,7 +108,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
         {/* Search bar (desktop) */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex flex-1 max-w-md mx-auto"
+          className="hidden md:flex flex-1 max-w-md mx-auto font-sans"
         >
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -134,11 +145,16 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
           {userNickname ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs">
+                <Button variant="ghost" size="sm" className="gap-2 px-3 py-1.5 h-auto">
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs border border-white/20 shadow-sm">
                     {userNickname.slice(0, 2).toUpperCase()}
                   </div>
-                  <span className="hidden sm:inline">@{userNickname}</span>
+                  <div className="flex flex-col items-start leading-none">
+                    <span className="text-sm font-bold truncate max-w-[100px]">@{userNickname}</span>
+                    <span className={`text-[9px] uppercase tracking-tighter font-black ${badge.color}`}>
+                      {badge.name}
+                    </span>
+                  </div>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

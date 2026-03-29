@@ -1,8 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
-import { createBrowserClient as createSupabaseBrowserClient } from '@supabase/auth-helpers-nextjs';
+import { 
+  createBrowserClient as createSupabaseBrowserClient,
+  createRouteHandlerClient
+} from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import type { Database } from '@/types/database';
 
-// Cliente para Server Components y API Routes
+// Cliente para Server Components (solo lectura)
 export const createServerClient = () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -12,6 +16,11 @@ export const createServerClient = () => {
   }
 
   return createClient<Database>(supabaseUrl, supabaseKey);
+};
+
+// Cliente para Route Handlers (con cookies)
+export const createRouteHandlerSupabaseClient = () => {
+  return createRouteHandlerClient<Database>({ cookies });
 };
 
 // Cliente para Client Components

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { getBadgeInfo } from "@/lib/utils";
 
 type Comment = {
   id: string;
@@ -17,6 +18,7 @@ type Comment = {
   created_at: string;
   updated_at?: string;
   parent_id?: string | null;
+  users?: { credits: number };
 };
 
 type CommentsProps = {
@@ -206,20 +208,27 @@ export function Comments({ kind, entityId }: CommentsProps) {
   const renderComment = (c: Comment) => {
     const replies = tree[c.id] || [];
     const isOwner = userId === c.user_id;
+    const badge = getBadgeInfo(c.users?.credits || 0);
+
     return (
-      <div key={c.id} className="rounded-md border p-3">
+      <div key={c.id} className="rounded-md border p-3 bg-card/50 backdrop-blur-sm">
         <div className="flex items-center gap-2 mb-2">
-          <div className="h-6 w-6 rounded-full bg-muted overflow-hidden">
+          <div className="h-7 w-7 rounded-full bg-muted overflow-hidden border border-border">
             {c.user_avatar ? (
-              <Image src={c.user_avatar} alt={c.user_nickname} width={24} height={24} className="h-full w-full object-cover" />
+              <Image src={c.user_avatar} alt={c.user_nickname} width={28} height={28} className="h-full w-full object-cover" />
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-xs">
+              <div className="h-full w-full flex items-center justify-center text-[10px] font-bold">
                 {c.user_nickname.slice(0, 2).toUpperCase()}
               </div>
             )}
           </div>
-          <span className="text-sm font-medium">@{c.user_nickname}</span>
-          <span className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString()}</span>
+          <div className="flex flex-col -space-y-0.5">
+            <span className="text-sm font-bold">@{c.user_nickname}</span>
+            <span className={`text-[9px] uppercase tracking-tighter font-black ${badge.color}`}>
+              {badge.name}
+            </span>
+          </div>
+          <span className="text-[10px] text-muted-foreground ml-auto">{new Date(c.created_at).toLocaleDateString()}</span>
         </div>
         {editingId === c.id ? (
           <div className="space-y-2">

@@ -225,3 +225,42 @@ export function isValidUrl(url: string): boolean {
     return false;
   }
 }
+
+// Obtener información de insignia por créditos
+export function getBadgeInfo(credits: number = 0): { 
+  name: string; 
+  color: string; 
+  bgColor: string;
+  borderColor: string;
+} {
+  if (credits >= 5000) return { 
+    name: 'Nexus Supremo', 
+    color: 'text-pink-500', 
+    bgColor: 'bg-pink-500/10',
+    borderColor: 'border-pink-500/30'
+  };
+  if (credits >= 2000) return { 
+    name: 'Maestro del Prompt', 
+    color: 'text-amber-500', 
+    bgColor: 'bg-amber-500/10',
+    borderColor: 'border-amber-500/30'
+  };
+  if (credits >= 500) return { 
+    name: 'Arquitecto de Datos', 
+    color: 'text-purple-500', 
+    bgColor: 'bg-purple-500/10',
+    borderColor: 'border-purple-500/30'
+  };
+  if (credits >= 100) return { 
+    name: 'Explorador Neural', 
+    color: 'text-green-500', 
+    bgColor: 'bg-green-500/10',
+    borderColor: 'border-green-500/30'
+  };
+  return { 
+    name: 'Novato IA', 
+    color: 'text-blue-500', 
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/30'
+  };
+}

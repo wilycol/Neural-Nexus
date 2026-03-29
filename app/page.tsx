@@ -7,7 +7,7 @@ import { NewsFeed } from "@/components/news-feed";
 import { Top5Section } from "@/components/top5-section";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Flame, Newspaper } from "lucide-react";
+import { Sparkles, Flame, Newspaper, Users, BarChart, Zap } from "lucide-react";
 import Link from "next/link";
 import {
   Dialog,
@@ -54,6 +54,10 @@ export default function HomePage() {
 
           <section className="mb-8">
             <Top5Section />
+          </section>
+
+          <section className="mb-12">
+            <GrowthStats />
           </section>
 
           <section>
@@ -198,6 +202,62 @@ function HeroTop5Background() {
           Top 5: {current.title}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function GrowthStats() {
+  const [stats, setStats] = useState<{ total_views: number; total_users: number; total_news: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/stats/site")
+      .then((res) => res.json())
+      .then((json) => setStats(json.data))
+      .catch(() => setStats(null));
+  }, []);
+
+  if (!stats) return null;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="bg-card border rounded-xl p-6 flex items-center gap-4 hover:border-neon-blue/40 transition-colors group">
+        <div className="p-3 rounded-lg bg-neon-blue/10 text-neon-blue">
+          <BarChart className="h-6 w-6" />
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Vistas Totales</p>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-2xl font-bold font-orbitron text-neon-blue">
+              {stats.total_views.toLocaleString()}
+            </h3>
+            <span className="text-[10px] text-green-500 animate-pulse font-mono tracking-tighter">UP!</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-card border rounded-xl p-6 flex items-center gap-4 hover:border-green-500/40 transition-colors group">
+        <div className="p-3 rounded-lg bg-green-500/10 text-green-500">
+          <Users className="h-6 w-6" />
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Comunidad Neural</p>
+          <h3 className="text-2xl font-bold font-orbitron text-green-500">
+            {stats.total_users.toLocaleString()}
+          </h3>
+        </div>
+      </div>
+
+      <div className="bg-card border rounded-xl p-6 flex items-center gap-4 hover:border-neon-purple/40 transition-colors group">
+        <div className="p-3 rounded-lg bg-neon-purple/10 text-neon-purple">
+          <Zap className="h-6 w-6" />
+        </div>
+        <div>
+          <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Nexus News</p>
+          <h3 className="text-2xl font-bold font-orbitron text-neon-purple">
+            {stats.total_news.toLocaleString()}
+          </h3>
+        </div>
+      </div>
     </div>
   );
 }

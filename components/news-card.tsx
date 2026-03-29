@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, MessageCircle, Share2, Bookmark, ExternalLink } from "lucide-react";
+import { Heart, MessageCircle, Share2, Star, ExternalLink } from "lucide-react";
 import { NewsItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -49,7 +49,7 @@ export function NewsCard({
   const [showComments, setShowComments] = useState(false);
 
   const handleShare = async (platform: string) => {
-    const url = `${window.location.origin}/noticia/${news.slug}`;
+    const url = `${window.location.origin}/news/${news.slug}`;
     const text = `🔥 ${news.title}\n\nVía Neural Nexus - Portal de noticias IA`;
 
     switch (platform) {
@@ -75,16 +75,23 @@ export function NewsCard({
   };
 
   const categoryColors: Record<string, string> = {
-    modelos: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-    herramientas: "bg-green-500/10 text-green-500 border-green-500/20",
-    memes: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-    papers: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-    drama: "bg-red-500/10 text-red-500 border-red-500/20",
-    general: "bg-gray-500/10 text-gray-500 border-gray-500/20",
+    'Inteligencia Artificial': "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    'Software': "bg-green-500/10 text-green-500 border-green-500/20",
+    'Hardware': "bg-orange-500/10 text-orange-500 border-orange-500/20",
+    'Robótica': "bg-purple-500/10 text-purple-500 border-purple-500/20",
+    'Historia Tech': "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    'Futuro y Tendencias': "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
+    'Startups Tech': "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+    'IA en la Vida Real': "bg-indigo-500/10 text-indigo-500 border-indigo-500/20",
+    'Seguridad y Ética': "bg-red-500/10 text-red-500 border-red-500/20",
+    'Gadgets': "bg-pink-500/10 text-pink-500 border-pink-500/20",
+    'Datos Curiosos Tech': "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+    'Rankings': "bg-violet-500/10 text-violet-500 border-violet-500/20",
+    'general': "bg-gray-500/10 text-gray-500 border-gray-500/20",
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className={`overflow-hidden hover:shadow-lg transition-all duration-300 ${isFavorited ? 'border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.1)]' : ''}`}>
       {/* Image */}
       {news.image_url && (
         <div className="relative aspect-video overflow-hidden">
@@ -97,7 +104,7 @@ export function NewsCard({
           <div className="absolute top-2 left-2">
             <Badge
               variant="outline"
-              className={`${categoryColors[news.category] || categoryColors.general} text-xs`}
+              className={`${categoryColors[news.category] || categoryColors.general} text-[10px] font-bold uppercase tracking-wider bg-background/80 backdrop-blur-sm`}
             >
               {news.category}
             </Badge>
@@ -107,7 +114,7 @@ export function NewsCard({
 
       <CardHeader className="pb-3">
         <Link
-          href={`/noticia/${news.slug}`}
+          href={`/news/${news.slug}`}
           className="group"
         >
           <h3 className="text-lg font-semibold leading-tight group-hover:text-neon-blue transition-colors line-clamp-2">
@@ -135,7 +142,7 @@ export function NewsCard({
         {news.tags && news.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-3">
             {news.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
+              <Badge key={tag} variant="secondary" className="text-[10px] uppercase">
                 #{tag}
               </Badge>
             ))}
@@ -203,12 +210,12 @@ export function NewsCard({
         <Button
           variant="ghost"
           size="sm"
-          className={isFavorited ? 'text-yellow-500' : ''}
+          className={`${isFavorited ? 'text-yellow-500 scale-110 active:scale-125' : 'hover:text-yellow-500/70'} transition-all`}
           onClick={() => onFavorite?.(news.id)}
         >
-          <Bookmark className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+          <Star className={`h-4 w-4 ${isFavorited ? 'fill-current drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]' : ''}`} />
         </Button>
       </CardFooter>
     </Card>
-  );
+);
 }

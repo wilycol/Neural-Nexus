@@ -93,7 +93,17 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseRouteClient();
     let q = supabase
       .from("comments")
-      .select("id,user_id,user_nickname,user_avatar,content,created_at,updated_at,parent_id")
+      .select(`
+        id,
+        user_id,
+        user_nickname,
+        user_avatar,
+        content,
+        created_at,
+        updated_at,
+        parent_id,
+        users:user_id (credits)
+      `)
       .order("created_at", { ascending: true })
       .range(from, to);
     if (blogPostId) q = q.eq("blog_post_id", blogPostId);
