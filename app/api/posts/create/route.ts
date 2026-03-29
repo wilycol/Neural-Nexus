@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase-server";
-import { calculateReadTime, generateSlug } from "@/lib/utils";
+import { generateSlug } from "@/lib/utils";
 import { processNewsWithAI } from "@/lib/groq";
 
 function stripHtml(html: string): string {
@@ -106,14 +106,14 @@ export async function POST(request: NextRequest) {
         source_url: finalUrl,
         published_at: now,
         created_at: customCreatedAt || now,
-        category: category as any,
+        category: category as string,
         tags,
         is_top_story: Boolean(trendScore !== null && trendScore >= 150),
         ai_generated: true,
         relevance_score: aiProcessed?.relevance_score || trendScore || 0,
         mention_count: 1,
         status: status,
-      } as any)
+      } as Record<string, unknown>)
       .select("*")
       .single();
 

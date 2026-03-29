@@ -53,7 +53,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
           .from("users")
           .select("nickname, avatar_url, credits")
           .eq("id", authUser.id)
-          .maybeSingle() as any;
+          .maybeSingle();
 
         if (profile) {
           setUserNickname(profile.nickname);

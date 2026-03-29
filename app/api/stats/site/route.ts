@@ -5,17 +5,17 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     
-    const { data, error } = await (supabase as any)
+    const { data: rpcData, error: rpcError } = await (supabase as unknown as { rpc: (n: string) => { single: () => Promise<{ data: any, error: any }> } })
       .rpc('get_site_wide_stats')
       .single();
 
-    if (error) {
-      console.error('Error fetching site stats:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (rpcError) {
+      console.error('Error fetching site stats:', rpcError);
+      return NextResponse.json({ error: (rpcError as any).message }, { status: 500 });
     }
 
-    return NextResponse.json({ data });
-  } catch (error) {
+    return NextResponse.json({ data: rpcData });
+  } catch {
     return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 }

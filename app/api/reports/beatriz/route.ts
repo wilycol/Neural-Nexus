@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     if (catError) throw catError;
 
-    const report = categoryStats.reduce((acc: any, curr: any) => {
+    const report = (categoryStats || []).reduce((acc: Record<string, { total_views: number, total_likes: number, total_comments: number, post_count: number }>, curr: any) => {
       const cat = curr.category || 'Sin Categoría';
       if (!acc[cat]) {
         acc[cat] = {
@@ -49,10 +49,10 @@ export async function GET(request: NextRequest) {
 
     // 3. Recomendaciones lógicas para Beatriz
     const recommendations = Object.entries(report)
-      .map(([name, stats]: [string, any]) => ({
+      .map(([name, stats]) => ({
         category: name,
-        vpp: stats.total_views / stats.post_count, // Views Per Post
-        engagement: (stats.total_likes + stats.total_comments) / stats.post_count
+        vpp: stats.post_count > 0 ? stats.total_views / stats.post_count : 0, // Views Per Post
+        engagement: stats.post_count > 0 ? (stats.total_likes + stats.total_comments) / stats.post_count : 0
       }))
       .sort((a, b) => b.vpp - a.vpp);
 
@@ -68,8 +68,9 @@ export async function GET(request: NextRequest) {
       }
     });
 
-  } catch (error: any) {
-    console.error('Report Error:', error);
-    return NextResponse.json({ error: 'Error al generar reporte para Beatriz', details: error.message }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Report Error:', err);
+    return NextResponse.json({ error: 'Error al generar reporte para Beatriz', details: errorMsg }, { status: 500 });
   }
 }
