@@ -1,10 +1,10 @@
-import { createServerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient as _createServerClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
 
-// Cliente para Server Components (solo lectura si no se pasan opciones, 
-// pero aquí lo configuramos para leer las cookies actuales)
-export const createRouteHandlerSupabaseClient = () => {
+// Exportamos createServerClient para compatibilidad con todas las rutas de API
+export const createServerClient = () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -14,7 +14,7 @@ export const createRouteHandlerSupabaseClient = () => {
 
   const cookieStore = cookies();
 
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+  return _createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value;
@@ -23,22 +23,24 @@ export const createRouteHandlerSupabaseClient = () => {
       set(name: string, value: string, options: any) {
         try {
           cookieStore.set({ name, value, ...options });
-        } catch (error) {
-          // Capturar errores si se intenta setear cookies en un Server Component 
-          // (los Route Handlers sí permiten setearlas)
+        } catch {
+          // Silenciar errores en Server Components si se intenta setear cookies
         }
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       remove(name: string, options: any) {
         try {
           cookieStore.set({ name, value: "", ...options });
-        } catch (error) {
-          // Capturar errores
+        } catch {
+          // Silenciar errores
         }
       },
     },
   });
 };
+
+// Alias para el callback de autenticación
+export const createRouteHandlerSupabaseClient = createServerClient;
 
 // Cliente para uso directo como Service Role (Server Only)
 export const createSupabaseAdmin = () => {
@@ -49,7 +51,5 @@ export const createSupabaseAdmin = () => {
     throw new Error("Faltan variables de entorno de Supabase (Admin)");
   }
 
-  // Importamos createClient aquí para evitar conflictos con auth-helpers en el mismo archivo
-  const { createClient } = require("@supabase/supabase-js");
-  return createClient(supabaseUrl, serviceRoleKey);
+  return createClient<Database>(supabaseUrl, serviceRoleKey);
 };
