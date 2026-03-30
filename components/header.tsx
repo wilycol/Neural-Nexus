@@ -18,6 +18,8 @@ import {
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { getBadgeInfo } from "@/lib/utils";
 
+import { useAuth } from "@/hooks/use-auth";
+
 interface HeaderProps {
   onMenuClick?: () => void;
   showSidebarToggle?: boolean;
@@ -27,10 +29,13 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [userNickname, setUserNickname] = useState<string | null>(null);
-  const [userAvatar, setUserAvatar] = useState<string | null>(null);
-  const [userCredits, setUserCredits] = useState<number>(0);
-
+  
+  const { user: authUser, profile, isLoggedIn, credits, isLoading } = useAuth();
+  
+  const userNickname = profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0] || null;
+  const userAvatar = profile?.avatar_url || authUser?.user_metadata?.avatar_url || null;
+  const userCredits = credits || 0;
+  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -39,41 +44,6 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
       setIsSearchOpen(false);
     }
   };
-
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const supabase = getSupabaseBrowserClient();
-        const { data } = await supabase.auth.getUser();
-        const authUser = data.user;
-        if (!authUser) {
-          setUserNickname(null);
-          setUserAvatar(null);
-          return;
-        }
-        const { data: profile } = await supabase
-          .from("users")
-          .select("nickname, avatar_url, credits")
-          .eq("id", authUser.id)
-          .maybeSingle();
-
-        if (profile) {
-          setUserNickname(profile.nickname);
-          setUserAvatar(profile.avatar_url || authUser.user_metadata?.avatar_url || null);
-          setUserCredits(profile.credits || 0);
-        } else {
-          setUserNickname(authUser.user_metadata?.nickname || authUser.email?.split("@")[0] || "usuario");
-          setUserAvatar(authUser.user_metadata?.avatar_url || null);
-          setUserCredits(0);
-        }
-      } catch {
-        setUserNickname(null);
-      }
-    };
-    run();
-  }, []);
-
-  const badge = getBadgeInfo(userCredits);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 font-orbitron">

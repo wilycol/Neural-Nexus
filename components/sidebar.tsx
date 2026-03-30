@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 
 interface SidebarProps {
@@ -44,49 +45,15 @@ const menuItems = [
 
 export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogout: manualOnLogout }: SidebarProps) {
   const pathname = usePathname();
-  const [internalIsLoggedIn, setInternalIsLoggedIn] = React.useState(false);
-  const [userAvatar, setUserAvatar] = React.useState<string | null>(null);
-  const [userNickname, setUserNickname] = React.useState<string | null>(null);
-  const [isPremium, setIsPremium] = React.useState(false);
+  const { user: authUser, profile, isLoggedIn: authIsLoggedIn, isPremium: authIsPremium, isLoading } = useAuth();
 
-  React.useEffect(() => {
-    const run = async () => {
-      try {
-        const supabase = getSupabaseBrowserClient();
-        const { data } = await supabase.auth.getUser();
-        const authUser = data.user;
-        
-        if (!authUser) {
-          setInternalIsLoggedIn(false);
-          return;
-        }
-
-        setInternalIsLoggedIn(true);
-
-        const { data: profile } = await supabase
-          .from("users")
-          .select("nickname, avatar_url, is_premium")
-          .eq("id", authUser.id)
-          .maybeSingle();
-
-        if (profile) {
-          setUserNickname(profile.nickname);
-          setUserAvatar(profile.avatar_url || authUser.user_metadata?.avatar_url || null);
-          setIsPremium(profile.is_premium || false);
-        } else {
-          setUserNickname(authUser.user_metadata?.nickname || authUser.email?.split("@")[0] || "usuario");
-          setUserAvatar(authUser.user_metadata?.avatar_url || null);
-          setIsPremium(false);
-        }
-      } catch {
-        setInternalIsLoggedIn(false);
-      }
-    };
-    run();
-  }, []);
-
-  const isLoggedIn = manualIsLoggedIn !== undefined ? manualIsLoggedIn : internalIsLoggedIn;
-  const user = manualUser || (isLoggedIn ? { nickname: userNickname || "...", avatar_url: userAvatar || undefined, is_premium: isPremium } : null);
+  const isLoggedIn = manualIsLoggedIn !== undefined ? manualIsLoggedIn : authIsLoggedIn;
+  
+  const user = manualUser || (isLoggedIn ? { 
+    nickname: profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0] || "usuario", 
+    avatar_url: profile?.avatar_url || authUser?.user_metadata?.avatar_url || undefined, 
+    is_premium: authIsPremium 
+  } : null);
   
   const handleLogout = async () => {
     if (manualOnLogout) {

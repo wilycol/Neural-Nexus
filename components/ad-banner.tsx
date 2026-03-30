@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 interface AdBannerProps {
   className?: string;
@@ -16,14 +17,19 @@ export function AdBanner({
   format = "auto",
   showPlaceholder = process.env.NODE_ENV === "development" 
 }: AdBannerProps) {
+  const { isPremium, isLoading } = useAuth();
+
   useEffect(() => {
+    if (isPremium || isLoading) return;
     try {
       // @ts-expect-error: Loading Google Ads snippet
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (err) {
       console.error("AdSense error:", err);
     }
-  }, []);
+  }, [isPremium, isLoading]);
+
+  if (isPremium || isLoading) return null;
 
   return (
     <div className={cn("w-full overflow-hidden my-4 bg-accent/50 rounded-xl min-h-[100px] flex items-center justify-center border border-dashed border-muted-foreground/20", className)}>
