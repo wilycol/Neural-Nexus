@@ -111,7 +111,7 @@ Responde SOLO con un objeto JSON válido con esta estructura:
       return {
         title: result.title || title,
         summary: result.summary || content.substring(0, 200),
-        category: result.category || 'general',
+        category: result.category || 'Inteligencia Artificial',
         tags: result.tags || [],
         relevance_score: result.relevance_score || 0.5,
         should_publish: result.should_publish ?? true,
@@ -126,7 +126,7 @@ Responde SOLO con un objeto JSON válido con esta estructura:
     return {
       title,
       summary: content.substring(0, 200) + '...',
-      category: 'general',
+      category: 'Inteligencia Artificial',
       tags: [],
       relevance_score: 0.5,
       should_publish: true,
