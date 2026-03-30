@@ -28,6 +28,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userNickname, setUserNickname] = useState<string | null>(null);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [userCredits, setUserCredits] = useState<number>(0);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -47,6 +48,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
         const authUser = data.user;
         if (!authUser) {
           setUserNickname(null);
+          setUserAvatar(null);
           return;
         }
         const { data: profile } = await supabase
@@ -57,9 +59,11 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
 
         if (profile) {
           setUserNickname(profile.nickname);
+          setUserAvatar(profile.avatar_url || authUser.user_metadata?.avatar_url || null);
           setUserCredits(profile.credits || 0);
         } else {
           setUserNickname(authUser.user_metadata?.nickname || authUser.email?.split("@")[0] || "usuario");
+          setUserAvatar(authUser.user_metadata?.avatar_url || null);
           setUserCredits(0);
         }
       } catch {
@@ -146,8 +150,12 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2 px-3 py-1.5 h-auto">
-                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs border border-white/20 shadow-sm">
-                    {userNickname.slice(0, 2).toUpperCase()}
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs border border-white/20 shadow-sm overflow-hidden">
+                    {userAvatar ? (
+                      <img src={userAvatar} alt={userNickname} className="h-full w-full object-cover" />
+                    ) : (
+                      userNickname.slice(0, 2).toUpperCase()
+                    )}
                   </div>
                   <div className="flex flex-col items-start leading-none">
                     <span className="text-sm font-bold truncate max-w-[100px]">@{userNickname}</span>

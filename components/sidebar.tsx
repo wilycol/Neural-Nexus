@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 
 interface SidebarProps {
   isLoggedIn?: boolean;
@@ -39,8 +40,61 @@ const menuItems = [
   { href: "/categoria/drama", label: "Drama", icon: Drama },
 ];
 
-export function Sidebar({ isLoggedIn = false, user, onLogout }: SidebarProps) {
+export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogout: manualOnLogout }: SidebarProps) {
   const pathname = usePathname();
+  const [internalIsLoggedIn, setInternalIsLoggedIn] = React.useState(false);
+  const [userAvatar, setUserAvatar] = React.useState<string | null>(null);
+  const [userNickname, setUserNickname] = React.useState<string | null>(null);
+  const [isPremium, setIsPremium] = React.useState(false);
+
+  React.useEffect(() => {
+    const run = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data } = await supabase.auth.getUser();
+        const authUser = data.user;
+        
+        if (!authUser) {
+          setInternalIsLoggedIn(false);
+          return;
+        }
+
+        setInternalIsLoggedIn(true);
+
+        const { data: profile } = await supabase
+          .from("users")
+          .select("nickname, avatar_url, is_premium")
+          .eq("id", authUser.id)
+          .maybeSingle();
+
+        if (profile) {
+          setUserNickname(profile.nickname);
+          setUserAvatar(profile.avatar_url || authUser.user_metadata?.avatar_url || null);
+          setIsPremium(profile.is_premium || false);
+        } else {
+          setUserNickname(authUser.user_metadata?.nickname || authUser.email?.split("@")[0] || "usuario");
+          setUserAvatar(authUser.user_metadata?.avatar_url || null);
+          setIsPremium(false);
+        }
+      } catch {
+        setInternalIsLoggedIn(false);
+      }
+    };
+    run();
+  }, []);
+
+  const isLoggedIn = manualIsLoggedIn !== undefined ? manualIsLoggedIn : internalIsLoggedIn;
+  const user = manualUser || (isLoggedIn ? { nickname: userNickname || "...", avatar_url: userAvatar || undefined, is_premium: isPremium } : null);
+  
+  const handleLogout = async () => {
+    if (manualOnLogout) {
+      manualOnLogout();
+    } else {
+      const supabase = getSupabaseBrowserClient();
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    }
+  };
 
   return (
     <aside className="fixed left-0 top-16 z-40 hidden h-[calc(100vh-4rem)] w-64 flex-col border-r bg-background md:flex">
@@ -145,8 +199,12 @@ export function Sidebar({ isLoggedIn = false, user, onLogout }: SidebarProps) {
         {/* User section */}
         {isLoggedIn && user ? (
           <div className="flex items-center gap-3 rounded-lg border p-3">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs font-bold">
-              {user.nickname.slice(0, 2).toUpperCase()}
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs font-bold overflow-hidden">
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt={user.nickname} className="h-full w-full object-cover" />
+              ) : (
+                user.nickname.slice(0, 2).toUpperCase()
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{user.nickname}</p>
@@ -161,7 +219,7 @@ export function Sidebar({ isLoggedIn = false, user, onLogout }: SidebarProps) {
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={onLogout}
+              onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" />
             </Button>
