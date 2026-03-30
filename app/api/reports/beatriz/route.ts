@@ -13,6 +13,13 @@ export async function GET(request: NextRequest) {
 
     const supabase = createServerClient();
 
+    interface NewsMetric {
+      category: string | null;
+      view_count: number | null;
+      like_count: number | null;
+      comment_count: number | null;
+    }
+
     // 1. Vistas por categoría (últimos 30 días)
     const { data: categoryStats, error: catError } = await supabase
       .from('news')
@@ -21,7 +28,9 @@ export async function GET(request: NextRequest) {
 
     if (catError) throw catError;
 
-    const report = (categoryStats || []).reduce((acc: Record<string, { total_views: number, total_likes: number, total_comments: number, post_count: number }>, curr: any) => {
+    const statsArray = (categoryStats as unknown) as NewsMetric[] || [];
+
+    const report = statsArray.reduce((acc: Record<string, { total_views: number, total_likes: number, total_comments: number, post_count: number }>, curr) => {
       const cat = curr.category || 'Sin Categoría';
       if (!acc[cat]) {
         acc[cat] = {
@@ -47,8 +56,14 @@ export async function GET(request: NextRequest) {
 
     if (topError) throw topError;
 
+    interface CategoryInsight {
+      category: string;
+      vpp: number;
+      engagement: number;
+    }
+
     // 3. Recomendaciones lógicas para Beatriz
-    const recommendations = Object.entries(report)
+    const recommendations: CategoryInsight[] = Object.entries(report)
       .map(([name, stats]) => ({
         category: name,
         vpp: stats.post_count > 0 ? stats.total_views / stats.post_count : 0, // Views Per Post
