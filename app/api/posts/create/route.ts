@@ -113,7 +113,8 @@ export async function POST(request: NextRequest) {
         relevance_score: aiProcessed?.relevance_score || trendScore || 0,
         mention_count: 1,
         status: status,
-      } as Record<string, unknown>)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
       .select("*")
       .single();
 
