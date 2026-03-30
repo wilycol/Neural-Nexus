@@ -38,3 +38,30 @@ begin
   join news n on n.id = nid;
 end;
 $$ language plpgsql security definer;
+-- 4. Habilitar y configurar RLS para noticias (Acceso Público)
+ALTER TABLE news ENABLE ROW LEVEL SECURITY;
+
+-- Limpiar políticas previas para evitar duplicados si se re-ejecuta
+DROP POLICY IF EXISTS "Allow Public Select" ON news;
+
+-- Crear política de lectura pública (Fundamental para mostrar noticias inyectadas)
+CREATE POLICY "Allow Public Select" ON news 
+FOR SELECT USING (true);
+
+-- 5. Sincronización de Datos (Normalización de noticias legadas)
+UPDATE news 
+SET 
+  status = coalesce(status, 'published'),
+  category = CASE 
+    WHEN category IS NULL THEN 'Inteligencia Artificial'
+    WHEN category IN ('modelos', 'herramientas', 'papers') THEN 'Inteligencia Artificial'
+    WHEN category = 'memes' THEN 'Datos Curiosos Tech'
+    WHEN category = 'drama' THEN 'Startups Tech'
+    ELSE category 
+  END
+WHERE status IS NULL OR category NOT IN (
+  'Inteligencia Artificial', 'Software', 'Hardware', 'Robótica', 
+  'Historia Tech', 'Futuro y Tendencias', 'Startups Tech', 
+  'IA en la Vida Real', 'Seguridad y Ética', 'Gadgets', 
+  'Datos Curiosos Tech', 'Rankings'
+);
