@@ -90,6 +90,26 @@ export function NewsCard({
     'general': "bg-gray-500/10 text-gray-500 border-gray-500/20",
   };
 
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  React.useEffect(() => {
+    if (!videoRef.current || !news.video_url) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting && videoRef.current) {
+            videoRef.current.pause();
+          }
+        });
+      },
+      { threshold: 0.2 } // Pausa cuando menos del 20% es visible
+    );
+
+    observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, [news.video_url]);
+
   return (
     <Card className={`overflow-hidden hover:shadow-lg transition-all duration-300 ${isFavorited ? 'border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.1)]' : ''}`}>
       {/* Media (Video or Image) */}
@@ -97,11 +117,13 @@ export function NewsCard({
         {news.video_url ? (
           <div className="relative h-full w-full bg-black flex items-center justify-center">
             <video 
+              ref={videoRef}
               src={news.video_url} 
               className="h-full w-full object-contain"
               playsInline
               controls
               poster={news.image_url}
+              crossOrigin="anonymous"
             />
             {!news.image_url && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover/media:bg-black/20 transition-all pointer-events-none">

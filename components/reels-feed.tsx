@@ -43,6 +43,7 @@ function ReelItem({ news, isActive }: ReelItemProps) {
         loop
         playsInline
         muted={!isActive}
+        crossOrigin="anonymous"
         preload="auto"
       />
       
