@@ -45,7 +45,7 @@ const menuItems = [
 
 export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogout: manualOnLogout }: SidebarProps) {
   const pathname = usePathname();
-  const { user: authUser, profile, isLoggedIn: authIsLoggedIn, isPremium: authIsPremium, isLoading } = useAuth();
+  const { user: authUser, profile, isLoggedIn: authIsLoggedIn, isPremium: authIsPremium } = useAuth();
 
   const isLoggedIn = manualIsLoggedIn !== undefined ? manualIsLoggedIn : authIsLoggedIn;
   

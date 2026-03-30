@@ -18,7 +18,13 @@ function ReelItem({ news, isActive }: ReelItemProps) {
 
   useEffect(() => {
     if (isActive && videoRef.current) {
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => {
+        // Fallback para navegadores que bloquean autoplay con sonido
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          videoRef.current.play().catch(() => {});
+        }
+      });
     } else if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
@@ -26,14 +32,18 @@ function ReelItem({ news, isActive }: ReelItemProps) {
   }, [isActive]);
 
   return (
-    <div className="relative h-[calc(100vh-4rem)] w-full bg-black flex items-center justify-center snap-start overflow-hidden border-b border-white/5">
+    <div 
+      className="relative h-[calc(100vh-4rem)] w-full bg-black flex items-center justify-center snap-start overflow-hidden border-b border-white/5 reel-container"
+      data-news-id={news.id}
+    >
       <video
         ref={videoRef}
         src={news.video_url}
         className="h-full w-full object-contain"
         loop
         playsInline
-        muted={false}
+        muted={!isActive}
+        preload="auto"
       />
       
       {/* Overlay Info */}
@@ -100,8 +110,8 @@ function ReelItem({ news, isActive }: ReelItemProps) {
 
 export function ReelsFeed() {
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchReels = async () => {
@@ -112,24 +122,42 @@ export function ReelsFeed() {
         .not("video_url", "is", null)
         .order("published_at", { ascending: false });
       
-      if (data) setNews(data as NewsItem[]);
+      if (data) {
+        setNews(data as NewsItem[]);
+        if (data.length > 0) setActiveId(data[0].id);
+      }
     };
     fetchReels();
   }, []);
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const scrollPos = e.currentTarget.scrollTop;
-    const itemHeight = e.currentTarget.offsetHeight;
-    const index = Math.round(scrollPos / itemHeight);
-    if (index !== activeIndex) {
-      setActiveIndex(index);
-    }
-  };
+  useEffect(() => {
+    const options = {
+      root: containerRef.current,
+      rootMargin: "-45% 0px -45% 0px", // Zona "láser" en el centro exacto de la pantalla
+      threshold: 0, // Se dispara en cuanto cruza la línea central
+    };
+
+    const callback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute("data-news-id");
+          if (id) setActiveId(id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(callback, options);
+    
+    // Observar todos los contenedores de reel
+    const elements = document.querySelectorAll(".reel-container");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [news]);
 
   return (
     <div 
-      ref={scrollRef}
-      onScroll={handleScroll}
+      ref={containerRef}
       className="h-[calc(100vh-4rem)] w-full overflow-y-scroll snap-y snap-mandatory scrollbar-none bg-black"
     >
       {news.length === 0 ? (
@@ -140,7 +168,10 @@ export function ReelsFeed() {
       ) : (
         news.map((item, index) => (
           <React.Fragment key={item.id}>
-            <ReelItem news={item} isActive={index === activeIndex} />
+            <ReelItem 
+              news={item} 
+              isActive={item.id === activeId} 
+            />
             {/* Insertar anuncio cada 3 reels */}
             {(index + 1) % 3 === 0 && (
               <div className="h-[calc(100vh-4rem)] w-full bg-black flex items-center justify-center snap-start p-4">

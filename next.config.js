@@ -3,7 +3,7 @@ const { PHASE_DEVELOPMENT_SERVER } = require("next/constants");
 /** @type {import('next').NextConfig} */
 const baseConfig = {
   images: {
-    domains: ["localhost", "images.unsplash.com", "picsum.photos", "wsyotripkntaetxxzlkc.supabase.co"],
+    domains: ["localhost", "images.unsplash.com", "picsum.photos", "wsyotripkntaebxzzlkc.supabase.co"],
     unoptimized: true,
   },
   async headers() {

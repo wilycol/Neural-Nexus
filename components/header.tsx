@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Menu, X, User, Heart, LogOut } from "lucide-react";
@@ -30,11 +30,11 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   
-  const { user: authUser, profile, isLoggedIn, credits, isLoading } = useAuth();
+  const { user: authUser, profile } = useAuth();
   
   const userNickname = profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0] || null;
   const userAvatar = profile?.avatar_url || authUser?.user_metadata?.avatar_url || null;
-  const userCredits = credits || 0;
+  const badge = getBadgeInfo(profile);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
