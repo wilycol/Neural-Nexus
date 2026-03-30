@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Home,
@@ -168,9 +169,15 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
         {/* User section */}
         {isLoggedIn && user ? (
           <div className="flex items-center gap-3 rounded-lg border p-3">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs font-bold overflow-hidden">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs font-bold overflow-hidden shrink-0">
               {user.avatar_url ? (
-                <img src={user.avatar_url} alt={user.nickname} className="h-full w-full object-cover" />
+                <Image 
+                  src={user.avatar_url} 
+                  alt={user.nickname} 
+                  width={32} 
+                  height={32} 
+                  className="h-full w-full object-cover" 
+                />
               ) : (
                 user.nickname.slice(0, 2).toUpperCase()
               )}

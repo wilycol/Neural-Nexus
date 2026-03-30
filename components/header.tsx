@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, Menu, X, User, Heart, LogOut } from "lucide-react";
 import { Logo } from "@/components/logo";
@@ -34,7 +35,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   
   const userNickname = profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0] || null;
   const userAvatar = profile?.avatar_url || authUser?.user_metadata?.avatar_url || null;
-  const badge = getBadgeInfo(profile);
+  const badge = getBadgeInfo(profile?.credits || 0);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,7 +123,13 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                 <Button variant="ghost" size="sm" className="gap-2 px-3 py-1.5 h-auto">
                   <div className="h-7 w-7 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs border border-white/20 shadow-sm overflow-hidden">
                     {userAvatar ? (
-                      <img src={userAvatar} alt={userNickname} className="h-full w-full object-cover" />
+                      <Image 
+                        src={userAvatar} 
+                        alt={userNickname} 
+                        width={28} 
+                        height={28} 
+                        className="h-full w-full object-cover" 
+                      />
                     ) : (
                       userNickname.slice(0, 2).toUpperCase()
                     )}
