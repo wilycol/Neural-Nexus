@@ -15,6 +15,7 @@ import {
   User,
   LogOut,
   Sparkles,
+  Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -33,6 +34,7 @@ interface SidebarProps {
 
 const menuItems = [
   { href: "/", label: "Inicio", icon: Home },
+  { href: "/reels", label: "Reels", icon: Video },
   { href: "/categoria/modelos", label: "Modelos", icon: Brain },
   { href: "/categoria/herramientas", label: "Herramientas", icon: Wrench },
   { href: "/categoria/memes", label: "Memes", icon: Laugh },
