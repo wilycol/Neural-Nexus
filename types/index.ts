@@ -45,12 +45,18 @@ export interface NewsItem {
 }
 
 export type NewsCategory = 
-  | 'modelos'
-  | 'herramientas'
-  | 'memes'
-  | 'papers'
-  | 'drama'
-  | 'general';
+  | 'Inteligencia Artificial' 
+  | 'Software' 
+  | 'Hardware' 
+  | 'Robótica' 
+  | 'Historia Tech' 
+  | 'Futuro y Tendencias' 
+  | 'Startups Tech' 
+  | 'IA en la Vida Real' 
+  | 'Seguridad y Ética' 
+  | 'Gadgets' 
+  | 'Datos Curiosos Tech' 
+  | 'Rankings';
 
 // Tipos de blog posts (Top 5)
 export interface BlogPost {

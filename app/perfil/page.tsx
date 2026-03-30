@@ -335,7 +335,7 @@ function FavoritesTab() {
         }
         const { data: news } = await supabase.from("news").select("*").in("id", ids);
         const byId = new Map((news || []).map((n) => [n.id, n]));
-        const ordered = ids.map((id: string) => byId.get(id)).filter(Boolean) as NewsItem[];
+        const ordered = ids.map((id: string) => byId.get(id)).filter(Boolean) as unknown as NewsItem[];
         setItems(ordered);
       } catch {
         setItems([]);
