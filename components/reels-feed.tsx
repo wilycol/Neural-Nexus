@@ -111,21 +111,26 @@ function ReelItem({ news, isActive }: ReelItemProps) {
 
 export function ReelsFeed() {
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchReels = async () => {
-      const supabase = getSupabaseBrowserClient();
-      const { data } = await supabase
-        .from("news")
-        .select("*")
-        .not("video_url", "is", null)
-        .order("published_at", { ascending: false });
-      
-      if (data) {
-        setNews(data as NewsItem[]);
-        if (data.length > 0) setActiveId(data[0].id);
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data } = await supabase
+          .from("news")
+          .select("*")
+          .not("video_url", "is", null)
+          .order("published_at", { ascending: false });
+        
+        if (data) {
+          setNews(data as NewsItem[]);
+          if (data.length > 0) setActiveId(data[0].id);
+        }
+      } finally {
+        setLoading(false);
       }
     };
     fetchReels();
@@ -161,10 +166,15 @@ export function ReelsFeed() {
       ref={containerRef}
       className="h-[calc(100vh-4rem)] w-full overflow-y-scroll snap-y snap-mandatory scrollbar-none bg-black"
     >
-      {news.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center h-full text-white/40 p-8 text-center space-y-4">
+           <div className="h-8 w-8 border-2 border-neon-blue/30 border-t-neon-blue rounded-full animate-spin" />
+           <p className="max-w-[200px]">Cargando los últimos Neural Reels...</p>
+        </div>
+      ) : news.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-white/40 p-8 text-center space-y-4">
            <Video className="h-12 w-12 opacity-20" />
-           <p className="max-w-[200px]">Cargando los últimos Neural Reels...</p>
+           <p className="max-w-[200px]">No hay reels disponibles en este momento.</p>
         </div>
       ) : (
         news.map((item, index) => (

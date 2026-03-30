@@ -25,18 +25,29 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // 3. Buscar noticia por título (Búsqueda flexible ILIKE)
+    // 3. Buscar noticia por título (Estrategia: Exacto -> Parcial)
     console.log(`[Bridge] Buscando noticia: "${title}"`);
     
-    // Intentamos coincidencia exacta primero
-    let { data: newsItem, error: searchError } = await supabase
+    // Intento 1: Coincidencia Exacta
+    let { data: newsItem, error: exactError } = await supabase
       .from("news")
       .select("id, title")
-      .ilike("title", `%${title}%`)
-      .limit(1)
-      .single();
+      .eq("title", title)
+      .maybeSingle();
 
-    if (searchError || !newsItem) {
+    // Intento 2: Coincidencia Parcial (ILIKE) si falló la exacta
+    if (!newsItem) {
+      console.log(`[Bridge] No hubo coincidencia exacta. Intentando parcial...`);
+      let { data: fuzzyItem } = await supabase
+        .from("news")
+        .select("id, title")
+        .ilike("title", `%${title}%`)
+        .limit(1)
+        .maybeSingle();
+      newsItem = fuzzyItem;
+    }
+
+    if (!newsItem) {
       return NextResponse.json({ 
         error: "Noticia no encontrada", 
         detail: `No se encontró ninguna noticia que coincida con: ${title}` 
