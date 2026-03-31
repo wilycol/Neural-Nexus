@@ -66,6 +66,14 @@ export interface Database {
           ai_generated: boolean;
           slug: string;
           video_url: string | null;
+          content_type: 'image' | 'video' | 'carousel' | 'analysis';
+          cover_url: string | null;
+          audio_url: string | null;
+          subtitles_url: string | null;
+          has_audio: boolean;
+          has_subtitles: boolean;
+          is_short: boolean;
+          is_reusable: boolean;
         };
         Insert: {
           id?: string;
@@ -86,6 +94,14 @@ export interface Database {
           ai_generated?: boolean;
           slug: string;
           video_url?: string | null;
+          content_type?: 'image' | 'video' | 'carousel' | 'analysis';
+          cover_url?: string | null;
+          audio_url?: string | null;
+          subtitles_url?: string | null;
+          has_audio?: boolean;
+          has_subtitles?: boolean;
+          is_short?: boolean;
+          is_reusable?: boolean;
         };
         Update: {
           id?: string;
@@ -106,6 +122,14 @@ export interface Database {
           ai_generated?: boolean;
           slug?: string;
           video_url?: string | null;
+          content_type?: 'image' | 'video' | 'carousel' | 'analysis';
+          cover_url?: string | null;
+          audio_url?: string | null;
+          subtitles_url?: string | null;
+          has_audio?: boolean;
+          has_subtitles?: boolean;
+          is_short?: boolean;
+          is_reusable?: boolean;
         };
         Relationships: [];
       };

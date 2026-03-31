@@ -114,7 +114,7 @@ export function NewsCard({
     <Card className={`overflow-hidden hover:shadow-lg transition-all duration-300 ${isFavorited ? 'border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.1)]' : ''}`}>
       {/* Media (Video or Image) */}
       <div className="relative aspect-video overflow-hidden group/media">
-        {news.video_url ? (
+        {news.content_type === 'video' && news.video_url ? (
           <div className="relative h-full w-full bg-black flex items-center justify-center">
             <video 
               ref={videoRef}
@@ -122,10 +122,10 @@ export function NewsCard({
               className="h-full w-full object-contain"
               playsInline
               controls
-              poster={news.image_url}
+              poster={news.cover_url || news.image_url}
               crossOrigin="anonymous"
             />
-            {!news.image_url && (
+            {!(news.cover_url || news.image_url) && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover/media:bg-black/20 transition-all pointer-events-none">
                 <div className="h-12 w-12 rounded-full bg-neon-blue/80 flex items-center justify-center text-white shadow-lg shadow-neon-blue/20">
                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 ml-1">
@@ -135,9 +135,9 @@ export function NewsCard({
               </div>
             )}
           </div>
-        ) : news.image_url && (
+        ) : (news.cover_url || news.image_url) && (
           <Image
-            src={news.image_url}
+            src={news.cover_url || news.image_url || ''}
             alt={news.title}
             fill
             className="object-cover transition-transform hover:scale-105"
@@ -148,7 +148,7 @@ export function NewsCard({
             variant="outline"
             className={`${categoryColors[news.category] || categoryColors.general} text-[10px] font-bold uppercase tracking-wider bg-background/80 backdrop-blur-sm shadow-sm`}
           >
-            {news.video_url && <span className="mr-1.5 inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />}
+            {news.content_type === 'video' && <span className="mr-1.5 inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />}
             {news.category}
           </Badge>
         </div>

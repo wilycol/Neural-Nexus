@@ -45,6 +45,7 @@ function ReelItem({ news, isActive }: ReelItemProps) {
         muted={!isActive}
         crossOrigin="anonymous"
         preload="auto"
+        poster={news.cover_url || news.image_url}
       />
       
       {/* Overlay Info */}
@@ -122,7 +123,8 @@ export function ReelsFeed() {
         const { data } = await supabase
           .from("news")
           .select("*")
-          .not("video_url", "is", null)
+          .eq("content_type", "video")
+          .eq("is_short", true)
           .order("published_at", { ascending: false });
         
         if (data) {

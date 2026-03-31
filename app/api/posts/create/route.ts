@@ -33,8 +33,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => null);
     const title = typeof body?.title === "string" ? body.title.trim() : "";
     const content = typeof body?.content === "string" ? body.content : "";
-    const media = typeof body?.media === "string" ? body.media.trim() : "";
-    const video_url = typeof body?.video_url === "string" ? body.video_url.trim() : "";
+    
+    // Content-Aware: New Structured Payload
+    const content_type = typeof body?.content_type === "string" ? body.content_type : "image";
+    
+    // Media Object (New) or Fallback (Old)
+    const mediaObj = body?.media || {};
+    const cover_url = typeof mediaObj.cover_url === "string" ? mediaObj.cover_url : (typeof body?.media === "string" ? body.media : "");
+    const video_url = typeof mediaObj.video_url === "string" ? mediaObj.video_url : (typeof body?.video_url === "string" ? body.video_url : "");
+    const audio_url = typeof mediaObj.audio_url === "string" ? mediaObj.audio_url : "";
+    const subtitles_url = typeof mediaObj.subtitles_url === "string" ? mediaObj.subtitles_url : "";
+
+    // Flags Object (New) or Defaults (Old)
+    const flagsObj = body?.flags || {};
+    const has_audio = typeof flagsObj.has_audio === "boolean" ? flagsObj.has_audio : false;
+    const has_subtitles = typeof flagsObj.has_subtitles === "boolean" ? flagsObj.has_subtitles : false;
+    const is_short = typeof flagsObj.is_short === "boolean" ? flagsObj.is_short : true;
+    const is_reusable = typeof flagsObj.is_reusable === "boolean" ? flagsObj.is_reusable : true;
+
+    // Standard Fields
     let category = typeof body?.category === "string" ? body.category.trim() : "";
     const trendScore = typeof body?.trend_score === "number" ? body.trend_score : null;
     const status = typeof body?.status === "string" ? body.status : "published";
@@ -74,15 +91,16 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServerClient();
 
-    // Buscar si ya existe por título
+    // Blindaje contra Duplicados (Mejorado)
     const { data: existing } = await supabase
       .from("news")
       .select("id")
-      .eq("title", title)
+      .or(`title.ilike.%${title.slice(0, 30)}%,slug.eq.${generateSlug(title)}`)
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
       .limit(1);
 
     if (existing && existing.length > 0) {
-      return NextResponse.json({ error: "Noticia ya existe", id: existing[0].id }, { status: 409 });
+      return NextResponse.json({ error: "Contenido duplicado detectado (Protección 24h)", id: existing[0].id }, { status: 409 });
     }
 
     const slugBase = generateSlug(aiProcessed?.title || title);
@@ -100,7 +118,7 @@ export async function POST(request: NextRequest) {
         slug,
         summary,
         content,
-        image_url: media || null,
+        image_url: cover_url || null,
         video_url: video_url || null,
         source_name: "Beatriz AutoPublisher",
         source_url: finalUrl,
@@ -113,6 +131,16 @@ export async function POST(request: NextRequest) {
         relevance_score: aiProcessed?.relevance_score || trendScore || 0,
         mention_count: 1,
         status: status,
+
+        // Content-Aware Fields (Phase 2)
+        content_type,
+        cover_url: cover_url || null,
+        audio_url: audio_url || null,
+        subtitles_url: subtitles_url || null,
+        has_audio,
+        has_subtitles,
+        is_short,
+        is_reusable,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
       .select("*")

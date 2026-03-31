@@ -42,6 +42,16 @@ export interface NewsItem {
   is_top_story: boolean;
   ai_generated: boolean;
   slug: string;
+  
+  // Content-Aware Structural Fields
+  content_type: 'image' | 'video' | 'carousel' | 'analysis';
+  cover_url?: string;
+  audio_url?: string;
+  subtitles_url?: string;
+  has_audio: boolean;
+  has_subtitles: boolean;
+  is_short: boolean;
+  is_reusable: boolean;
 }
 
 export type NewsCategory = 
