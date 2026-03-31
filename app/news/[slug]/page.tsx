@@ -122,11 +122,27 @@ export default function NewsDetailPage() {
             </Card>
           ) : (
             <article className="space-y-6">
-              {news.image_url && (
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                  <Image src={news.image_url} alt={news.title} fill className="object-cover" />
-                </div>
-              )}
+              {/* Media Section (Video or Image) */}
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black shadow-2xl">
+                {news.video_url ? (
+                  <video 
+                    src={news.video_url} 
+                    className="h-full w-full object-contain"
+                    playsInline
+                    controls
+                    poster={news.image_url}
+                    crossOrigin="anonymous"
+                  />
+                ) : news.image_url && (
+                  <Image 
+                    src={news.image_url} 
+                    alt={news.title} 
+                    fill 
+                    className="object-cover" 
+                    priority
+                  />
+                )}
+              </div>
 
               <div className="flex items-center gap-2">
                 <Badge variant="outline">{news.category}</Badge>
