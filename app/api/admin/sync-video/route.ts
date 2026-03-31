@@ -29,16 +29,18 @@ export async function POST(req: Request) {
     console.log(`[Bridge] Buscando noticia: "${title}"`);
     
     // Intento 1: Coincidencia Exacta
-    let { data: newsItem, error: exactError } = await supabase
+    const { data: exactItem } = await supabase
       .from("news")
       .select("id, title")
       .eq("title", title)
       .maybeSingle();
 
+    let newsItem = exactItem;
+
     // Intento 2: Coincidencia Parcial (ILIKE) si falló la exacta
     if (!newsItem) {
       console.log(`[Bridge] No hubo coincidencia exacta. Intentando parcial...`);
-      let { data: fuzzyItem } = await supabase
+      const { data: fuzzyItem } = await supabase
         .from("news")
         .select("id, title")
         .ilike("title", `%${title}%`)
