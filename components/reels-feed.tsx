@@ -15,11 +15,12 @@ interface ReelItemProps {
 
 function ReelItem({ news, isActive }: ReelItemProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (isActive && videoRef.current) {
+      setIsPaused(false);
       videoRef.current.play().catch(() => {
-        // Fallback para navegadores que bloquean autoplay con sonido
         if (videoRef.current) {
           videoRef.current.muted = true;
           videoRef.current.play().catch(() => {});
@@ -31,10 +32,23 @@ function ReelItem({ news, isActive }: ReelItemProps) {
     }
   }, [isActive]);
 
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPaused(false);
+    } else {
+      videoRef.current.pause();
+      setIsPaused(true);
+    }
+  };
+
   return (
     <div 
-      className="relative h-[calc(100vh-4rem)] w-full bg-black flex items-center justify-center snap-start overflow-hidden border-b border-white/5 reel-container"
+      className="relative h-[calc(100vh-4rem)] w-full bg-black flex items-center justify-center snap-start overflow-hidden border-b border-white/5 reel-container cursor-pointer"
       data-news-id={news.id}
+      onClick={togglePlay}
     >
       <video
         ref={videoRef}
@@ -47,6 +61,15 @@ function ReelItem({ news, isActive }: ReelItemProps) {
         preload="auto"
         poster={news.cover_url || news.image_url}
       />
+      
+      {/* Play Icon Overlay (Solo visible cuando está pausado) */}
+      {isPaused && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20 pointer-events-none animate-in fade-in zoom-in duration-200">
+           <div className="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30">
+              <Video className="h-12 w-12 text-white fill-white" />
+           </div>
+        </div>
+      )}
       
       {/* Overlay Info */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
@@ -118,52 +141,30 @@ export function ReelsFeed() {
 
   useEffect(() => {
     const fetchReels = async () => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-        console.error("[Reels] Timeout: La consulta a Supabase tardó más de 10s");
-        setLoading(false);
-      }, 10000);
-
       try {
         setLoading(true);
-        console.log("[Reels] [CP-1] Obteniendo cliente Supabase...");
         const supabase = getSupabaseBrowserClient();
         
-        console.log("[Reels] [CP-2] Iniciando consulta simplificada a tabla 'news'...");
-        
-        // Probamos una consulta ultra-básica para descartar problemas de RLS o Filtros
         const { data, error } = await supabase
           .from("news")
-          .select("id, title, video_url, content_type, is_short")
-          .limit(5)
-          .abortSignal(controller.signal);
-        
-        clearTimeout(timeoutId);
-        console.log("[Reels] [CP-3] Respuesta recibida de Supabase.");
+          .select("*")
+          .eq("content_type", "video")
+          .eq("is_short", true)
+          .order("published_at", { ascending: false });
         
         if (error) {
-          console.error("[Reels] [ERROR] Supabase devolvió:", error);
+          console.error("[Reels] Error en la consulta Supabase:", error);
           throw error;
         }
 
         if (data) {
-          console.log(`[Reels] [SUCCESS] ${data.length} vídeos encontrados`);
           setNews(data as NewsItem[]);
           if (data.length > 0) setActiveId(data[0].id);
-        } else {
-          console.log("[Reels] [EMPTY] No se devolvieron datos.");
         }
       } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          console.warn("[Reels] Consulta abortada por timeout.");
-        } else {
-          console.error("[Reels] [CRASH] Fallo crítico:", err);
-        }
+        console.error("[Reels] Fallo crítico al cargar Reels:", err);
       } finally {
-        clearTimeout(timeoutId);
         setLoading(false);
-        console.log("[Reels] [FINALLY] Estado de carga desactivado.");
       }
     };
     fetchReels();
