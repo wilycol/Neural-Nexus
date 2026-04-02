@@ -138,17 +138,15 @@ export function ReelsFeed() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const { isLoading: authIsLoading } = useAuth();
+  const hasStartedInitialFetch = useRef(false);
 
   useEffect(() => {
-    // Si la autenticación aún está cargando, esperamos.
-    if (authIsLoading) {
-      console.log("[Reels] Esperando a que el sistema de autenticación se sincronice...");
-      return;
-    }
+    // Si ya empezamos la carga inicial, evitamos duplicados por cambios de estado de auth
+    if (hasStartedInitialFetch.current) return;
 
     const fetchReels = async () => {
+      hasStartedInitialFetch.current = true;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
@@ -158,10 +156,10 @@ export function ReelsFeed() {
 
       try {
         setLoading(true);
-        console.log("[Reels] [CP-1] Sistema de Auth listo. Obteniendo cliente Supabase...");
+        console.log("[Reels] [CP-1] Iniciando carga de datos (Estado Auth: " + (authIsLoading ? "Cargando" : "Listo") + ")...");
         const supabase = getSupabaseBrowserClient();
         
-        console.log("[Reels] [CP-2] Iniciando consulta industrial a tabla 'news'...");
+        console.log("[Reels] [CP-2] Ejecutando consulta industrial a 'news'...");
         
         const { data, error } = await supabase
           .from("news")
@@ -188,7 +186,7 @@ export function ReelsFeed() {
         }
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
-          console.warn("[Reels] Consulta abortada por timeout (posible bloqueo de extensión).");
+          console.warn("[Reels] Consulta abortada por timeout (posible bloqueo de red o RLS).");
         } else {
           console.error("[Reels] [CRASH] Fallo crítico al cargar Reels:", err);
         }
@@ -200,7 +198,7 @@ export function ReelsFeed() {
     };
 
     fetchReels();
-  }, [authIsLoading]);
+  }, []); // Solo cargamos una vez al montar, sin depender de authIsLoading
 
   useEffect(() => {
     const options = {
