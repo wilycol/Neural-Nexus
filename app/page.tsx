@@ -22,95 +22,89 @@ import { toast } from "sonner";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <Sidebar />
-      <main className="md:ml-64 pt-16">
-        <div className="container mx-auto px-4 py-6 max-w-6xl">
-          <section className="mb-8">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neon-blue/10 via-neon-purple/10 to-neon-blue/10 border border-neon-blue/20 p-6 md:p-8">
-              <HeroTop5Background />
-              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold font-orbitron mb-2">
-                    <span className="gradient-text">Neural Nexus</span>
-                  </h1>
-                  <p className="text-muted-foreground max-w-lg">
-                    Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente.
-                  </p>
-                </div>
-                <Button
-                  className="bg-gradient-to-r from-neon-blue to-neon-purple text-white hover:opacity-90"
-                  asChild
-                >
-                  <Link href="/top5">
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Ver Top 5
-                  </Link>
-                </Button>
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <section className="mb-8">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neon-blue/10 via-neon-purple/10 to-neon-blue/10 border border-neon-blue/20 p-6 md:p-8">
+          <HeroTop5Background />
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold font-orbitron mb-2">
+                <span className="gradient-text">Neural Nexus</span>
+              </h1>
+              <p className="text-muted-foreground max-w-lg">
+                Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente.
+              </p>
+            </div>
+            <Button
+              className="bg-gradient-to-r from-neon-blue to-neon-purple text-white hover:opacity-90"
+              asChild
+            >
+              <Link href="/top5">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Ver Top 5
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <Top5Section />
+      </section>
+
+      <section className="mb-12">
+        <GrowthStats />
+      </section>
+
+      <section>
+        <Tabs defaultValue="todas" className="w-full">
+          <div className="flex items-center justify-between mb-4">
+            <TabsList>
+              <TabsTrigger value="todas" className="gap-1.5">
+                <Newspaper className="h-4 w-4" />
+                Todas
+              </TabsTrigger>
+              <TabsTrigger value="virales" className="gap-1.5">
+                <Flame className="h-4 w-4" />
+                Virales
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="todas" className="mt-0">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Newspaper className="h-5 w-5 text-neon-blue" />
+                  Últimas Noticias
+                </h2>
+                <NewsFeed />
+              </div>
+
+              <div className="hidden lg:block space-y-6">
+                <TrendingTags />
+                <NewsletterCard />
+                <AboutCard />
               </div>
             </div>
-          </section>
+          </TabsContent>
 
-          <section className="mb-8">
-            <Top5Section />
-          </section>
-
-          <section className="mb-12">
-            <GrowthStats />
-          </section>
-
-          <section>
-            <Tabs defaultValue="todas" className="w-full">
-              <div className="flex items-center justify-between mb-4">
-                <TabsList>
-                  <TabsTrigger value="todas" className="gap-1.5">
-                    <Newspaper className="h-4 w-4" />
-                    Todas
-                  </TabsTrigger>
-                  <TabsTrigger value="virales" className="gap-1.5">
-                    <Flame className="h-4 w-4" />
-                    Virales
-                  </TabsTrigger>
-                </TabsList>
+          <TabsContent value="virales" className="mt-0">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Flame className="h-5 w-5 text-orange-500" />
+                  Noticias Virales
+                </h2>
+                <NewsFeed />
               </div>
-
-              <TabsContent value="todas" className="mt-0">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Newspaper className="h-5 w-5 text-neon-blue" />
-                      Últimas Noticias
-                    </h2>
-                    <NewsFeed />
-                  </div>
-
-                  <div className="hidden lg:block space-y-6">
-                    <TrendingTags />
-                    <NewsletterCard />
-                    <AboutCard />
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="virales" className="mt-0">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Flame className="h-5 w-5 text-orange-500" />
-                      Noticias Virales
-                    </h2>
-                    <NewsFeed />
-                  </div>
-                  <div className="hidden lg:block">
-                    <TrendingTags />
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </section>
-        </div>
-      </main>
+              <div className="hidden lg:block">
+                <TrendingTags />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
     </div>
   );
 }

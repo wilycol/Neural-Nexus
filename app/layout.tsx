@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@vercel/analytics/react";
+import { Sidebar } from "@/components/sidebar";
+import { Header } from "@/components/header";
 import { MascotOverlay } from "@/components/mascot-overlay";
 import "./globals.css";
 
@@ -41,7 +40,19 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <div className="flex min-h-screen bg-background text-foreground">
+            {/* Sidebar persistente */}
+            <Sidebar />
+            
+            {/* Contenedor principal con Header y Contenido */}
+            <div className="flex-1 flex flex-col md:ml-64 relative min-w-0">
+              <Header />
+              <main className="flex-1 w-full overflow-x-hidden">
+                {children}
+              </main>
+            </div>
+          </div>
+          
           <MascotOverlay />
           <Toaster position="bottom-right" richColors />
           <Analytics />

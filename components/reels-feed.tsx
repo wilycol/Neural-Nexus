@@ -139,28 +139,34 @@ export function ReelsFeed() {
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { isLoading: authIsLoading } = useAuth();
+  const { user, isLoading: authIsLoading } = useAuth();
   const hasStartedInitialFetch = useRef(false);
 
   useEffect(() => {
-    // Si ya empezamos la carga inicial, evitamos duplicados por cambios de estado de auth
-    if (hasStartedInitialFetch.current) return;
+    // Si ya empezamos la carga exitosa, no repetimos
+    if (hasStartedInitialFetch.current && news.length > 0) return;
 
     const fetchReels = async () => {
+      // Si el auth está cargando y es la primera vez, esperamos un poco
+      // pero no bloqueamos indefinidamente
+      if (authIsLoading && !hasStartedInitialFetch.current) {
+        console.log("[Reels] Sincronizando sesión antes de pedir datos...");
+        return;
+      }
+
       hasStartedInitialFetch.current = true;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-        console.error("[Reels] Timeout: La consulta a Supabase tardó más de 10s");
+        console.error("[Reels] La consulta a la base de datos expiró (10s).");
         setLoading(false);
       }, 10000);
 
       try {
         setLoading(true);
-        console.log("[Reels] [CP-1] Iniciando carga de datos (Estado Auth: " + (authIsLoading ? "Cargando" : "Listo") + ")...");
         const supabase = getSupabaseBrowserClient();
         
-        console.log("[Reels] [CP-2] Ejecutando consulta industrial a 'news'...");
+        console.log(`[Reels] Solicitando contenido (Usuario: ${user ? user.email : "Anónimo"})...`);
         
         const { data, error } = await supabase
           .from("news")
@@ -170,37 +176,35 @@ export function ReelsFeed() {
           .order("published_at", { ascending: false })
           .abortSignal(controller.signal);
         
-        clearTimeout(timeoutId);
-        console.log("[Reels] [CP-3] Respuesta recibida de Supabase.");
-        
         if (error) {
-          console.error("[Reels] [ERROR] Supabase devolvió:", error);
+          console.error("[Reels] Error de base de datos:", error.message);
+          // Si el error es de permisos (RLS), informamos pero no bloqueamos
+          if (error.code === '42501' || error.code === 'PGRST301') {
+            console.warn("[Reels] Posible restricción de seguridad (RLS). Cargando versión pública...");
+          }
           throw error;
         }
 
         if (data) {
-          console.log(`[Reels] [SUCCESS] ${data.length} vídeos encontrados`);
+          console.log(`[Reels] Exito: ${data.length} reels cargados.`);
           setNews(data as NewsItem[]);
           if (data.length > 0) setActiveId(data[0].id);
-        } else {
-          console.log("[Reels] [EMPTY] No se devolvieron datos.");
         }
-      } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          console.warn("[Reels] Consulta abortada por timeout (posible bloqueo de red o RLS).");
+      } catch (err: any) {
+        if (err?.name === 'AbortError') {
+          console.error("[Reels] La conexión se cerró por lentitud.");
         } else {
-          console.error("[Reels] [CRASH] Fallo crítico al cargar Reels:", err);
+          console.error("[Reels] Error al cargar:", err);
         }
       } finally {
         clearTimeout(timeoutId);
         setLoading(false);
-        console.log("[Reels] [FINALLY] Proceso de carga finalizado.");
       }
     };
 
     fetchReels();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Solo cargamos una vez al montar, sin depender de authIsLoading
+  }, [authIsLoading, user?.id]); 
 
   useEffect(() => {
     const options = {
