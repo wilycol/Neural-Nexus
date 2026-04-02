@@ -141,23 +141,30 @@ export function ReelsFeed() {
   const lastUserId = useRef<string | null | undefined>(undefined);
 
   useEffect(() => {
-    // 1. Barrera Atómica: No hagamos nada hasta que Auth se estabilice
-    if (authIsLoading) return;
+    // 1. Barrera Atómica: Esperamos a que Auth se estabilice para tener el rol correcto (RLS)
+    if (authIsLoading) {
+      console.log("[Reels] ⏳ Esperando estabilidad de Auth...");
+      return;
+    }
     
     // 2. Si el usuario no ha cambiado y ya tenemos datos, no recargamos
-    if (lastUserId.current === user?.id && news.length > 0) return;
+    // Esto evita que cambios en activeId (scroll) disparen re-fetches
+    if (lastUserId.current === user?.id && news.length > 0) {
+      console.log("[Reels] ✅ Datos estables, omitiendo re-sync.");
+      return;
+    }
 
     const fetchReels = async () => {
       const timestamp = new Date().toLocaleTimeString();
       const currentUser = user?.email || "Anónimo";
       
-      console.log(`[Reels] [${timestamp}]🚀 Iniciando carga molecular para: ${currentUser}`);
+      console.log(`[Reels] [${timestamp}]🚀 Sincronización Molecular Iniciada: ${currentUser}`);
       lastUserId.current = user?.id;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-        console.error(`[Reels] [${timestamp}]❌ ERROR: Tiempo de espera (10s) agotado.`);
+        console.error(`[Reels] [${timestamp}]❌ ERROR: Timeout de Red (10s)`);
         setLoading(false);
       }, 10000);
 
@@ -165,7 +172,7 @@ export function ReelsFeed() {
         setLoading(true);
         const supabase = getSupabaseBrowserClient();
 
-        // Consulta industrial directa con RLS consciente
+        console.log(`[Reels] [${timestamp}]📡 Consultando DB industrial...`);
         const { data, error } = await supabase
           .from("news")
           .select("*")
@@ -180,27 +187,32 @@ export function ReelsFeed() {
           throw error;
         }
 
-        if (data) {
+        if (data && data.length > 0) {
           console.log(`[Reels] [${timestamp}]✨ Recibidos ${data.length} reels.`);
           setNews(data as NewsItem[]);
-          if (data.length > 0 && !activeId) {
-            setActiveId(data[0].id);
-          }
+          // Inicializamos el primer Reel si no hay ninguno activo
+          setActiveId(data[0].id);
+        } else {
+          console.log(`[Reels] [${timestamp}]ℹ️ No se encontraron reels.`);
+          setNews([]);
         }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
-          console.error(`[Reels] [${timestamp}]🛑 Petición cancelada por timeout.`);
+          console.error(`[Reels] [${timestamp}]🛑 Petición cancelada.`);
         } else {
-          console.error(`[Reels] [${timestamp}]💥 Error crítico:`, err);
+          console.error(`[Reels] [${timestamp}]💥 Error crítico de sincronización:`, err);
         }
       } finally {
         clearTimeout(timeoutId);
         setLoading(false);
+        console.log(`[Reels] [${timestamp}]🏁 Sincronización Finalizada.`);
       }
     };
 
     fetchReels();
-  }, [authIsLoading, user?.id, news.length, activeId]);
+    // NOTA: Eliminamos news.length y activeId de las dependencias para evitar bucles.
+    // Solo dependemos del estado de Auth y el ID del usuario.
+  }, [authIsLoading, user?.id]);
 
   useEffect(() => {
     if (news.length === 0) return;
