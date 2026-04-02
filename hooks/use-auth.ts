@@ -30,6 +30,15 @@ export function useAuth() {
 
     // 1. Obtener sesión inicial
     const initAuth = async () => {
+      // Válvula de seguridad: Si en 5 segundos getSession no responde, forzamos el fin de carga
+      // para que el resto de la app (como los Reels) no se quede colgada.
+      const safetyValve = setTimeout(() => {
+        if (isLoading) {
+          console.warn("[Auth] Válvula de seguridad activada: La sesión está tardando demasiado. Forzando inicio del portal...");
+          setIsLoading(false);
+        }
+      }, 5000);
+
       try {
         console.log("[Auth] Iniciando sincronización de sesión...");
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -48,6 +57,7 @@ export function useAuth() {
       } catch (err) {
         console.error("[Auth] Fallo crítico en initAuth:", err);
       } finally {
+        clearTimeout(safetyValve);
         setIsLoading(false);
         console.log("[Auth] Estado de carga de sesión finalizado.");
       }
