@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
-import { createServerClient } from "@/lib/supabase-server";
+import { createSupabaseAdmin } from "@/lib/supabase-server";
 import { generateSlug } from "@/lib/utils";
 import { processNewsWithAI } from "@/lib/groq";
 
@@ -97,9 +97,10 @@ export async function POST(request: NextRequest) {
       return Array.from(uniq.values());
     })();
 
-    const supabase = createServerClient();
+    const supabase = createSupabaseAdmin();
 
-    // Blindaje contra Duplicados (Mejorado)
+    // 1. Atribución a Beatriz (ID de Autor si fuera necesario, o simplemente el nombre de fuente que ya tenemos)
+    const author_id = body?.author_id || null; // Beatriz V5 puede enviar su propio ID de sistema
     const { data: existing } = await supabase
       .from("news")
       .select("id")
@@ -134,6 +135,7 @@ export async function POST(request: NextRequest) {
         created_at: customCreatedAt || now,
         category: category as string,
         tags,
+        author_id, // Nuevo campo de alineación industrial
         is_top_story: Boolean(trendScore !== null && trendScore >= 150),
         ai_generated: true,
         relevance_score: aiProcessed?.relevance_score || trendScore || 0,

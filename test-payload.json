@@ -1,0 +1,18 @@
+{
+  "title": "Test Post V5",
+  "content": "Testing reception of Beatriz V5 posts.",
+  "content_type": "image",
+  "media": {
+    "cover_url": "https://picsum.photos/800/600",
+    "audio_url": null,
+    "subtitles_url": null
+  },
+  "flags": {
+    "has_audio": false,
+    "has_subtitles": false,
+    "is_short": true,
+    "is_reusable": true
+  },
+  "category": "Inteligencia Artificial",
+  "status": "published"
+}

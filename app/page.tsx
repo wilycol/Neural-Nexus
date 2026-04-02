@@ -293,30 +293,60 @@ function GrowthStats() {
 }
 
 function TrendingTags() {
-  const tags = [
-    { name: "ChatGPT", count: 42 },
-    { name: "OpenAI", count: 38 },
-    { name: "Claude", count: 25 },
-    { name: "Midjourney", count: 20 },
-    { name: "StableDiffusion", count: 18 },
-    { name: "LLM", count: 15 },
-  ];
+  const [tags, setTags] = useState<{ name: string; count: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/stats/trending-tags");
+        const json = await res.json();
+        if (json.data) setTags(json.data);
+      } catch (err) {
+        console.error("Error fetching trending:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTags();
+  }, []);
 
   return (
-    <div className="rounded-lg border p-4">
-      <h3 className="font-semibold mb-3">Tendencias</h3>
-      <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <Link
-            key={tag.name}
-            href={`/buscar?q=${tag.name}`}
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-xs hover:bg-accent transition-colors"
-          >
-            #{tag.name}
-            <span className="text-muted-foreground">{tag.count}</span>
-          </Link>
-        ))}
+    <div className="rounded-lg border border-neon-blue/10 bg-card/20 backdrop-blur-sm p-4 overflow-hidden relative">
+      <div className="absolute top-0 right-0 p-3 opacity-10">
+        <Sparkles className="h-10 w-10 text-neon-blue" />
       </div>
+      <h3 className="text-sm font-semibold mb-4 flex items-center gap-2 uppercase tracking-widest font-orbitron">
+        <Flame className="h-4 w-4 text-orange-500" />
+        Tendencias
+      </h3>
+      
+      {loading ? (
+        <div className="flex flex-wrap gap-2">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-7 w-20 bg-muted/20 animate-pulse rounded-md" />
+          ))}
+        </div>
+      ) : tags.length === 0 ? (
+        <p className="text-xs text-muted-foreground italic">Monitoreando ecosistema IA...</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <Link
+              key={tag.name}
+              href={`/buscar?q=${tag.name}`}
+              className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-muted/30 border border-border/50 text-xs hover:bg-neon-blue/10 hover:border-neon-blue/30 transition-all"
+            >
+              <span className="text-neon-blue font-bold opacity-70">#</span>
+              <span className="font-medium group-hover:text-neon-blue">{tag.name}</span>
+              <span className="text-[10px] bg-background/50 px-1 rounded font-mono text-muted-foreground group-hover:text-neon-blue/60 group-hover:bg-neon-blue/5">
+                {tag.count}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
