@@ -1,15 +1,28 @@
 "use client";
 
-import React from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { Github, Loader2 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase-client";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
+  const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      setRedirecting(true);
+      router.push("/");
+    }
+  }, [user, authLoading, router]);
+
   const handleGoogleRegister = async () => {
     try {
       const supabase = getSupabaseBrowserClient();
@@ -46,6 +59,18 @@ export default function RegisterPage() {
     }
   };
 
+  if (authLoading || redirecting) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <Logo size={80} className="animate-pulse mb-8" />
+        <div className="flex items-center gap-3 text-neon-purple">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="font-orbitron tracking-widest text-sm uppercase">Verificando miembro...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md">
@@ -56,7 +81,7 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <Card>
+        <Card className="border-neon-purple/20 shadow-2xl shadow-neon-purple/5">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-orbitron">Crear cuenta</CardTitle>
             <CardDescription>
@@ -103,7 +128,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="pt-4 text-center">
-              <p className="text-[10px] text-muted-foreground bg-muted/20 py-3 px-4 rounded-lg border border-border/50 uppercase tracking-widest">
+              <p className="text-[10px] text-muted-foreground bg-muted/20 py-3 px-4 rounded-lg border border-border/50 uppercase tracking-widest font-orbitron">
                 Registro Automático vía OAuth 2.0
               </p>
             </div>

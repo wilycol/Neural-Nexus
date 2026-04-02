@@ -1,15 +1,28 @@
 "use client";
 
-import React from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { Github, Loader2 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase-client";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
+  const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      setRedirecting(true);
+      router.push("/");
+    }
+  }, [user, authLoading, router]);
+
   const handleGoogleLogin = async () => {
     try {
       const supabase = getSupabaseBrowserClient();
@@ -46,6 +59,19 @@ export default function LoginPage() {
     }
   };
 
+  // Pantalla de carga inteligente si ya hay sesión
+  if (authLoading || redirecting) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <Logo size={80} className="animate-pulse mb-8" />
+        <div className="flex items-center gap-3 text-neon-blue">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="font-orbitron tracking-widest text-sm uppercase">Reconociendo identidad...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md">
@@ -56,7 +82,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Card>
+        <Card className="border-neon-blue/20 shadow-2xl shadow-neon-blue/5">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-orbitron">Bienvenido de vuelta</CardTitle>
             <CardDescription>
@@ -86,7 +112,7 @@ export default function LoginPage() {
                     fill="#FBBC05"
                   />
                   <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     fill="#EA4335"
                   />
                 </svg>
@@ -103,7 +129,7 @@ export default function LoginPage() {
             </div>
 
             <div className="pt-4 text-center">
-              <p className="text-[10px] text-muted-foreground bg-muted/20 py-3 px-4 rounded-lg border border-border/50 uppercase tracking-widest">
+              <p className="text-[10px] text-muted-foreground bg-muted/20 py-3 px-4 rounded-lg border border-border/50 uppercase tracking-widest font-orbitron">
                 Autenticación Segura vía OAuth 2.0
               </p>
             </div>

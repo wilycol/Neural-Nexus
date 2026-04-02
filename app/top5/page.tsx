@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Sparkles, Clock, ArrowLeft, TrendingUp, Calendar } from "lucide-react";
-import { Header } from "@/components/header";
-import { Sidebar } from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,79 +33,72 @@ export default function Top5Page() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <Sidebar />
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      {/* Back button */}
+      <Button variant="ghost" size="sm" asChild className="mb-4">
+        <Link href="/" className="gap-1">
+          <ArrowLeft className="h-4 w-4" />
+          Volver al inicio
+        </Link>
+      </Button>
 
-      <main className="md:ml-64 pt-16">
-        <div className="container mx-auto px-4 py-6 max-w-5xl">
-          {/* Back button */}
-          <Button variant="ghost" size="sm" asChild className="mb-4">
-            <Link href="/" className="gap-1">
-              <ArrowLeft className="h-4 w-4" />
-              Volver al inicio
-            </Link>
-          </Button>
-
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold font-orbitron">Top 5 del Día</h1>
-                <p className="text-muted-foreground">
-                  Las noticias más virales analizadas por IA
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <Badge variant="secondary" className="gap-1">
-                <TrendingUp className="h-3 w-3" />
-                Actualizado diariamente
-              </Badge>
-              <span className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                {formatDate(new Date())}
-              </span>
-            </div>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
+            <Sparkles className="h-6 w-6 text-white" />
           </div>
+          <div>
+            <h1 className="text-3xl font-bold font-orbitron">Top 5 del Día</h1>
+            <p className="text-muted-foreground">
+              Las noticias más virales analizadas por IA
+            </p>
+          </div>
+        </div>
 
-          {/* Posts list */}
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardContent className="p-6">
-                    <div className="h-6 bg-muted rounded w-3/4 mb-2" />
-                    <div className="h-4 bg-muted rounded w-1/2" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : posts.length === 0 ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <Sparkles className="h-12 w-12 text-neon-blue mx-auto mb-4" />
-                <h2 className="text-xl font-semibold mb-2">
-                  Los Top 5 están en preparación
-                </h2>
-                <p className="text-muted-foreground">
-                  Vuelve más tarde para ver los posts destacados del día
-                </p>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <Badge variant="secondary" className="gap-1">
+            <TrendingUp className="h-3 w-3" />
+            Actualizado diariamente
+          </Badge>
+          <span className="flex items-center gap-1">
+            <Calendar className="h-4 w-4" />
+            {formatDate(new Date())}
+          </span>
+        </div>
+      </div>
+
+      {/* Posts list */}
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="p-6">
+                <div className="h-6 bg-muted rounded w-3/4 mb-2" />
+                <div className="h-4 bg-muted rounded w-1/2" />
               </CardContent>
             </Card>
-          ) : (
-            <div className="space-y-6">
-              {posts.map((post, index) => (
-                <Top5PostCard key={post.id} post={post} rank={index + 1} />
-              ))}
-            </div>
-          )}
+          ))}
         </div>
-      </main>
+      ) : posts.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <Sparkles className="h-12 w-12 text-neon-blue mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">
+              Los Top 5 están en preparación
+            </h2>
+            <p className="text-muted-foreground">
+              Vuelve más tarde para ver los posts destacados del día
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-6">
+          {posts.map((post, index) => (
+            <Top5PostCard key={post.id} post={post} rank={index + 1} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

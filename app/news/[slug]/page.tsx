@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Header } from "@/components/header";
-import { Sidebar } from "@/components/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -95,111 +93,143 @@ export default function NewsDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <Sidebar />
-      <main className="md:ml-64 pt-16">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          <Button variant="ghost" size="sm" asChild className="mb-4">
-            <Link href="/" className="gap-1">
-              <ArrowLeft className="h-4 w-4" />
-              Volver al inicio
-            </Link>
-          </Button>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <Button variant="ghost" size="sm" asChild className="mb-4">
+        <Link href="/" className="gap-1 text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="h-4 w-4" />
+          Volver al inicio
+        </Link>
+      </Button>
 
-          {loading ? (
-            <Card className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-6 bg-muted rounded w-3/4 mb-2" />
-                <div className="h-4 bg-muted rounded w-1/2" />
-              </CardContent>
-            </Card>
-          ) : error || !news ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground">No se pudo cargar la noticia</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <article className="space-y-6">
-              {/* Media Section (Video or Image) */}
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black shadow-2xl">
-                {news.video_url ? (
-                  <video 
-                    src={news.video_url} 
-                    className="h-full w-full object-contain"
-                    playsInline
-                    controls
-                    poster={news.image_url}
-                    crossOrigin="anonymous"
-                  />
-                ) : news.image_url && (
-                  <Image 
-                    src={news.image_url} 
-                    alt={news.title} 
-                    fill 
-                    className="object-cover" 
-                    priority
-                  />
-                )}
-              </div>
+      {loading ? (
+        <Card className="animate-pulse">
+          <CardContent className="p-6">
+            <div className="h-6 bg-muted rounded w-3/4 mb-4" />
+            <div className="h-4 bg-muted rounded w-1/2 mb-8" />
+            <div className="aspect-video bg-muted rounded-lg w-full mb-6" />
+          </CardContent>
+        </Card>
+      ) : error || !news ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <p className="text-muted-foreground">No se pudo cargar la noticia o no existe.</p>
+            <Button asChild className="mt-4" variant="outline">
+              <Link href="/">Volver al Inicio</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <article className="space-y-8">
+          {/* Media Section (Video or Image) */}
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl ring-1 ring-white/10">
+            {news.video_url ? (
+              <video 
+                src={news.video_url} 
+                className="h-full w-full object-contain"
+                playsInline
+                controls
+                poster={news.image_url}
+              />
+            ) : news.image_url && (
+              <Image 
+                src={news.image_url} 
+                alt={news.title} 
+                fill 
+                className="object-cover" 
+                priority
+              />
+            )}
+          </div>
 
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{news.category}</Badge>
-                {news.tags?.slice(0, 3).map((t) => (
-                  <Badge key={t} variant="secondary" className="text-xs">
-                    <Tag className="h-3 w-3 mr-1" />
-                    {t}
-                  </Badge>
-                ))}
-              </div>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge className="bg-neon-blue/10 text-neon-blue border-neon-blue/20 hover:bg-neon-blue/20 transition-colors">
+                {news.category}
+              </Badge>
+              {news.tags?.slice(0, 3).map((t) => (
+                <Badge key={t} variant="secondary" className="text-xs bg-muted/50 border-muted-foreground/10">
+                  <Tag className="h-3 w-3 mr-1" />
+                  {t}
+                </Badge>
+              ))}
+            </div>
 
-              <h1 className="text-3xl font-bold">{news.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold font-orbitron tracking-tight text-foreground/90">
+              {news.title}
+            </h1>
 
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <ExternalLink className="h-4 w-4" />
-                  {extractDomain(news.source_url)}
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <CalendarDays className="h-4 w-4" />
-                  {formatDate(news.published_at)}
-                </span>
-                <span>•</span>
-                <Link href={news.source_url} target="_blank" className="text-neon-blue hover:underline">
-                  Ver fuente
-                </Link>
-              </div>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pb-6 border-b">
+              <span className="flex items-center gap-1.5">
+                <ExternalLink className="h-4 w-4 text-neon-blue/70" />
+                {extractDomain(news.source_url)}
+              </span>
+              <span className="text-muted-foreground/30">•</span>
+              <span className="flex items-center gap-1.5">
+                <CalendarDays className="h-4 w-4" />
+                {formatDate(news.published_at)}
+              </span>
+              <span className="text-muted-foreground/30">•</span>
+              <Link 
+                href={news.source_url} 
+                target="_blank" 
+                className="text-neon-blue font-medium hover:text-neon-purple transition-all underline-offset-4 hover:underline"
+              >
+                Ver fuente original
+              </Link>
+            </div>
+          </div>
 
-              <p className="text-lg text-muted-foreground">{news.summary}</p>
+          <p className="text-lg leading-relaxed text-muted-foreground font-medium border-l-4 border-neon-blue pl-6 bg-muted/20 py-4 rounded-r-lg">
+            {news.summary}
+          </p>
 
-              {news.content && (
-                <div className="prose prose-invert max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: news.content }} />
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleLike} className={isLiked ? "text-red-500" : ""}>
-                  <Heart className="h-4 w-4 mr-1" />
-                  Me gusta
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleFavorite} className={isFavorited ? "text-yellow-500" : ""}>
-                  <Bookmark className="h-4 w-4 mr-1" />
-                  Favorito
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => handleShare("x")}>
-                  <Share2 className="h-4 w-4 mr-1" />
-                  Compartir en X
-                </Button>
-              </div>
-
-              {news?.id ? <Comments kind="news" entityId={news.id} /> : null}
-            </article>
+          {news.content && (
+            <div className="prose prose-invert prose-neon max-w-none prose-headings:font-orbitron prose-a:text-neon-blue">
+              <div dangerouslySetInnerHTML={{ __html: news.content }} />
+            </div>
           )}
-        </div>
-      </main>
+
+          <div className="flex flex-wrap items-center gap-3 pt-8 pb-12 border-t">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={handleLike} 
+              className={`gap-2 rounded-full border-muted-foreground/20 transition-all ${isLiked ? "bg-red-500/10 border-red-500/50 text-red-500" : "hover:border-neon-blue"}`}
+            >
+              <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
+              Me gusta
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={handleFavorite} 
+              className={`gap-2 rounded-full border-muted-foreground/20 transition-all ${isFavorited ? "bg-yellow-500/10 border-yellow-500/50 text-yellow-500" : "hover:border-neon-purple"}`}
+            >
+              <Bookmark className={`h-5 w-5 ${isFavorited ? "fill-current" : ""}`} />
+              Favorito
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={() => handleShare("x")}
+              className="gap-2 rounded-full border-muted-foreground/20 hover:border-neon-blue transition-all"
+            >
+              <Share2 className="h-5 w-5" />
+              Compartir
+            </Button>
+          </div>
+
+          {news?.id ? (
+            <div className="pt-12 border-t">
+              <h2 className="text-2xl font-bold font-orbitron mb-8 flex items-center gap-2">
+                Diálogo Neural
+                <span className="h-1.5 w-1.5 rounded-full bg-neon-blue animate-pulse" />
+              </h2>
+              <Comments kind="news" entityId={news.id} />
+            </div>
+          ) : null}
+        </article>
+      )}
     </div>
   );
 }
