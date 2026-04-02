@@ -28,17 +28,8 @@ export function useAuth() {
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
 
-    // 1. Obtener sesión inicial
+    // 1. Obtener sesión inicial de forma robusta
     const initAuth = async () => {
-      // Válvula de seguridad: Si en 5 segundos getSession no responde, forzamos el fin de carga
-      // para que el resto de la app (como los Reels) no se quede colgada.
-      const safetyTimeout = setTimeout(() => {
-        if (isLoading) {
-          console.warn("[Auth] ⚠️ Válvula de seguridad activada: La sesión está tardando demasiado.");
-          setIsLoading(false);
-        }
-      }, 5000);
-
       try {
         console.log("[Auth] 🛡️ Obteniendo sesión inicial...");
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -48,28 +39,31 @@ export function useAuth() {
           throw error;
         }
 
-        if (session) {
+        if (session?.user) {
           console.log("[Auth] ✅ Sesión encontrada para:", session.user.email);
           setUser(session.user);
           await fetchProfile(session.user.id);
         } else {
-          console.log("[Auth] ℹ️ No hay sesión activa.");
+          console.log("[Auth] ℹ️ No hay sesión inicial activa.");
+          setUser(null);
+          setProfile(null);
         }
       } catch (error) {
-        console.error("[Auth] 💥 Error crítico en inicialización:", error);
+        console.error("[Auth] 💥 Fallo en inicialización:", error);
       } finally {
-        console.log(`[Auth] 🏁 Estado finalizado: Usuario=${user?.email || "null"}, Loading=${isLoading}`);
+        // Marcamos el fin de la carga inicial DESPUÉS de intentar obtener el perfil
         setIsLoading(false);
-        clearTimeout(safetyTimeout);
+        console.log("[Auth] 🏁 Inicialización completada.");
       }
     };
 
     initAuth();
 
-    // 2. Escuchar cambios de estado
+    // 2. Escuchar cambios de estado industriales
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log(`[Auth] Evento de cambio de estado: ${event}`);
+        
         if (session?.user) {
           setUser(session.user);
           await fetchProfile(session.user.id);
@@ -77,7 +71,11 @@ export function useAuth() {
           setUser(null);
           setProfile(null);
         }
-        setIsLoading(false);
+
+        // Si el evento es SIGNED_IN o INITIAL_SESSION, nos aseguramos de que termine el loading
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+          setIsLoading(false);
+        }
       }
     );
 

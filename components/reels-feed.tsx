@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NewsItem } from "@/types";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
-import { Heart, MessageCircle, Share2, Music2, Disc, Video } from "lucide-react";
+import { Heart, MessageCircle, Share2, Music2, Disc, Video, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AdBanner } from "@/components/ad-banner";
@@ -63,7 +63,6 @@ function ReelItem({ news, isActive }: ReelItemProps) {
         poster={news.cover_url || news.image_url}
       />
       
-      {/* Play Icon Overlay (Solo visible cuando está pausado) */}
       {isPaused && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20 pointer-events-none animate-in fade-in zoom-in duration-200">
            <div className="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30">
@@ -72,10 +71,8 @@ function ReelItem({ news, isActive }: ReelItemProps) {
         </div>
       )}
       
-      {/* Overlay Info */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
       
-      {/* Right Side Actions */}
       <div className="absolute right-4 bottom-24 flex flex-col items-center gap-6 z-10 pointer-events-auto">
         <div className="flex flex-col items-center gap-1">
           <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg">
@@ -105,7 +102,6 @@ function ReelItem({ news, isActive }: ReelItemProps) {
         </div>
       </div>
 
-      {/* Bottom Info */}
       <div className="absolute bottom-6 left-4 right-16 z-10 pointer-events-auto">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10 border border-white/20">
@@ -140,96 +136,79 @@ export function ReelsFeed() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { user, isLoading: authIsLoading } = useAuth();
-  const hasStartedInitialFetch = useRef(false);
+  
+  // Trackeamos el ID del usuario para saber si ha cambiado de Anónimo a Logueado
+  const lastUserId = useRef<string | null | undefined>(undefined);
 
   useEffect(() => {
-    // Solo cargamos si el auth ya terminó de inicializarse
+    // 1. Barrera Atómica: No hagamos nada hasta que Auth se estabilice
     if (authIsLoading) return;
     
-    // Si ya hay datos, evitamos recargas innecesarias
-    if (hasStartedInitialFetch.current && news.length > 0) return;
+    // 2. Si el usuario no ha cambiado y ya tenemos datos, no recargamos
+    if (lastUserId.current === user?.id && news.length > 0) return;
 
     const fetchReels = async () => {
       const timestamp = new Date().toLocaleTimeString();
+      const currentUser = user?.email || "Anónimo";
       
-      // Espera inteligente pero no infinita para el Auth
-      if (authIsLoading && !hasStartedInitialFetch.current) {
-        console.log(`[Reels] [${timestamp}]⏳ Sincronizando sesión antes de pedir datos...`);
-        return;
-      }
+      console.log(`[Reels] [${timestamp}]🚀 Iniciando carga molecular para: ${currentUser}`);
+      lastUserId.current = user?.id;
 
-      hasStartedInitialFetch.current = true;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-        console.error(`[Reels] [${timestamp}]❌ ERROR: La consulta de 10s expiró.`);
+        console.error(`[Reels] [${timestamp}]❌ ERROR: Tiempo de espera (10s) agotado.`);
         setLoading(false);
       }, 10000);
 
       try {
         setLoading(true);
         const supabase = getSupabaseBrowserClient();
-        const currentUser = user?.email || "Anónimo";
-        
-        console.log(`[Reels] [${timestamp}]🚀 Iniciando proceso para usuario: ${currentUser}`);
 
-        // PRUEBA DE FUEGO: Ping rápido a la DB para ver si responde
-        console.log(`[Reels] [${timestamp}]🔎 Test de conexión (ping)...`);
-        const { error: pingError } = await supabase.from("news").select("id").limit(1);
-        if (pingError) {
-          console.error(`[Reels] [${timestamp}]⚠️ PING FALLIDO:`, pingError.code, pingError.message);
-        } else {
-          console.log(`[Reels] [${timestamp}]✅ PING EXITOSO.`);
-        }
-
-        // CONSULTA PRINCIPAL
-        console.log(`[Reels] [${timestamp}]📊 Ejecutando query industrial a 'news'...`);
+        // Consulta industrial directa con RLS consciente
         const { data, error } = await supabase
           .from("news")
           .select("*")
           .eq("content_type", "video")
           .eq("is_short", true)
           .order("published_at", { ascending: false })
+          .limit(20)
           .abortSignal(controller.signal);
         
         if (error) {
-          console.error(`[Reels] [${timestamp}]😭 ERROR DE BASE DE DATOS:`, {
-            code: error.code,
-            message: error.message,
-            hint: error.hint
-          });
+          console.error(`[Reels] [${timestamp}]😭 DB ERROR:`, error.message);
           throw error;
         }
 
         if (data) {
-          console.log(`[Reels] [${timestamp}]✨ ÉXITO: ${data.length} reels recibidos.`);
+          console.log(`[Reels] [${timestamp}]✨ Recibidos ${data.length} reels.`);
           setNews(data as NewsItem[]);
-          if (data.length > 0) setActiveId(data[0].id);
-        } else {
-          console.warn(`[Reels] [${timestamp}]⚪ ADVERTENCIA: La consulta no devolvió datos.`);
+          if (data.length > 0 && !activeId) {
+            setActiveId(data[0].id);
+          }
         }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
-          console.error(`[Reels] [${timestamp}]🛑 ABORTO: La red o RLS bloqueó la petición.`);
+          console.error(`[Reels] [${timestamp}]🛑 Petición cancelada por timeout.`);
         } else {
-          console.error(`[Reels] [${timestamp}]💥 FALLO CRÍTICO:`, err);
+          console.error(`[Reels] [${timestamp}]💥 Error crítico:`, err);
         }
       } finally {
         clearTimeout(timeoutId);
         setLoading(false);
-        console.log(`[Reels] [${timestamp}]🏁 Fin del ciclo de carga.`);
       }
     };
 
     fetchReels();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authIsLoading, user?.id]);
+  }, [authIsLoading, user?.id, news.length, activeId]);
 
   useEffect(() => {
+    if (news.length === 0) return;
+
     const options = {
       root: containerRef.current,
-      rootMargin: "-45% 0px -45% 0px", // Zona "láser" en el centro exacto de la pantalla
-      threshold: 0, // Se dispara en cuanto cruza la línea central
+      rootMargin: "-45% 0px -45% 0px",
+      threshold: 0,
     };
 
     const callback: IntersectionObserverCallback = (entries) => {
@@ -242,8 +221,6 @@ export function ReelsFeed() {
     };
 
     const observer = new IntersectionObserver(callback, options);
-    
-    // Observar todos los contenedores de reel
     const elements = document.querySelectorAll(".reel-container");
     elements.forEach((el) => observer.observe(el));
 
@@ -256,9 +233,12 @@ export function ReelsFeed() {
       className="h-[calc(100vh-4rem)] w-full overflow-y-scroll snap-y snap-mandatory scrollbar-none bg-black"
     >
       {loading ? (
-        <div className="flex flex-col items-center justify-center h-full text-white/40 p-8 text-center space-y-4">
-           <div className="h-8 w-8 border-2 border-neon-blue/30 border-t-neon-blue rounded-full animate-spin" />
-           <p className="max-w-[200px]">Cargando los últimos Neural Reels...</p>
+        <div className="flex flex-col items-center justify-center h-full text-white/60 p-8 text-center space-y-4">
+           <div className="flex items-center gap-2">
+             <Loader2 className="h-6 w-6 text-neon-blue animate-spin" />
+             <span className="font-orbitron tracking-widest text-sm uppercase">Sincronizando...</span>
+           </div>
+           <p className="text-xs text-white/40">Conectando con la red Neural Nexus</p>
         </div>
       ) : news.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-white/40 p-8 text-center space-y-4">
@@ -272,10 +252,9 @@ export function ReelsFeed() {
               news={item} 
               isActive={item.id === activeId} 
             />
-            {/* Insertar anuncio cada 3 reels */}
             {(index + 1) % 3 === 0 && (
-              <div className="h-[calc(100vh-4rem)] w-full bg-black flex items-center justify-center snap-start p-4">
-                <AdBanner slot={`reel-ad-${index}`} format="vertical" className="h-full border-none bg-zinc-900/50" />
+              <div className="h-[calc(100vh-4rem)] w-full bg-zinc-950 flex items-center justify-center snap-start p-4">
+                <AdBanner slot={`reel-ad-${index}`} format="vertical" className="h-full border-none bg-zinc-900/10" />
               </div>
             )}
           </React.Fragment>
