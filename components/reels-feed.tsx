@@ -138,6 +138,7 @@ export function ReelsFeed() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { isLoading: authIsLoading } = useAuth();
   const hasStartedInitialFetch = useRef(false);
 
@@ -198,6 +199,7 @@ export function ReelsFeed() {
     };
 
     fetchReels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Solo cargamos una vez al montar, sin depender de authIsLoading
 
   useEffect(() => {
