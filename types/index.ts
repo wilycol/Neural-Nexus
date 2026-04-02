@@ -46,8 +46,8 @@ export interface NewsItem {
   // Content-Aware Structural Fields
   content_type: 'image' | 'video' | 'carousel' | 'analysis';
   cover_url?: string;
-  audio_url?: string;
-  subtitles_url?: string;
+  audio_url?: string | null;
+  subtitles_url?: string | null;
   has_audio: boolean;
   has_subtitles: boolean;
   is_short: boolean;

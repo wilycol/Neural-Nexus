@@ -31,6 +31,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => null);
+    
+    // Industrial Logger: Beatriz V5 Reception
+    console.log(`[Beatriz V5] Ingesting content: ${body?.title || 'Untitled'}`);
+    console.log(`[Beatriz V5] Content Type: ${body?.content_type || 'image'}`);
+    
     const title = typeof body?.title === "string" ? body.title.trim() : "";
     const content = typeof body?.content === "string" ? body.content : "";
     
@@ -41,8 +46,10 @@ export async function POST(request: NextRequest) {
     const mediaObj = body?.media || {};
     const cover_url = typeof mediaObj.cover_url === "string" ? mediaObj.cover_url : (typeof body?.media === "string" ? body.media : "");
     const video_url = typeof mediaObj.video_url === "string" ? mediaObj.video_url : (typeof body?.video_url === "string" ? body.video_url : "");
-    const audio_url = typeof mediaObj.audio_url === "string" ? mediaObj.audio_url : "";
-    const subtitles_url = typeof mediaObj.subtitles_url === "string" ? mediaObj.subtitles_url : "";
+    
+    // Industrial Alignment: Explicit null safety for local-only assets
+    const audio_url = (typeof mediaObj.audio_url === "string" && mediaObj.audio_url) ? mediaObj.audio_url : null;
+    const subtitles_url = (typeof mediaObj.subtitles_url === "string" && mediaObj.subtitles_url) ? mediaObj.subtitles_url : null;
 
     // Flags Object (New) or Defaults (Old)
     const flagsObj = body?.flags || {};
@@ -135,8 +142,8 @@ export async function POST(request: NextRequest) {
         // Content-Aware Fields (Phase 2)
         content_type,
         cover_url: cover_url || null,
-        audio_url: audio_url || null,
-        subtitles_url: subtitles_url || null,
+        audio_url,
+        subtitles_url,
         has_audio,
         has_subtitles,
         is_short,

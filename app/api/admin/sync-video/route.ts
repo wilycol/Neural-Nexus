@@ -9,11 +9,14 @@ export async function POST(req: Request) {
   try {
     const { title, video_url, secret } = await req.json();
 
-    // 1. Validar Token de Seguridad
+    // 1. Validar Token de Seguridad (Industrial Bridge)
     const adminKey = process.env.ADMIN_SYNC_KEY || "nexus_super_secret_bridge_2026";
     if (secret !== adminKey) {
+      console.warn(`[Bridge] Intento de acceso no autorizado con secret incorrecto`);
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
+
+    console.log(`[Bridge] Petición de sincronización para: "${title}"`);
 
     if (!title || !video_url) {
       return NextResponse.json({ error: "Faltan datos (title o video_url)" }, { status: 400 });
