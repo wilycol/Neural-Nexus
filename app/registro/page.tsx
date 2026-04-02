@@ -1,75 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Github, Mail, User, AlertCircle } from "lucide-react";
+import { Github } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { validateNickname } from "@/lib/utils";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [nicknameError, setNicknameError] = useState("");
-
-  const handleNicknameChange = (value: string) => {
-    setNickname(value);
-    const validation = validateNickname(value);
-    if (!validation.valid) {
-      setNicknameError(validation.error || "");
-    } else {
-      setNicknameError("");
-    }
-  };
-
-  const handleEmailRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const validation = validateNickname(nickname);
-    if (!validation.valid) {
-      setNicknameError(validation.error || "");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            nickname,
-          },
-        },
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      toast.success("Cuenta creada. Revisa tu correo para confirmar si aplica.");
-      router.push("/login");
-    } catch {
-      toast.error("Error al crear cuenta");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGoogleRegister = async () => {
     try {
       const supabase = getSupabaseBrowserClient();
