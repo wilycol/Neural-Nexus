@@ -124,15 +124,15 @@ export default function RegisterPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             {/* Social register */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <Button
                 variant="outline"
                 onClick={handleGoogleRegister}
-                className="w-full"
+                className="w-full h-12 text-base font-orbitron hover:border-neon-blue/40 hover:bg-neon-blue/5 transition-all group"
               >
-                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                     fill="#4285F4"
@@ -150,97 +150,23 @@ export default function RegisterPage() {
                     fill="#EA4335"
                   />
                 </svg>
-                Google
+                Registrarse con Google
               </Button>
               <Button
                 variant="outline"
                 onClick={handleGithubRegister}
-                className="w-full"
+                className="w-full h-12 text-base font-orbitron hover:border-neon-purple/40 hover:bg-neon-purple/5 transition-all group"
               >
-                <Github className="h-4 w-4 mr-2" />
-                GitHub
+                <Github className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
+                Registrarse con GitHub
               </Button>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  O con email
-                </span>
-              </div>
+            <div className="pt-4 text-center">
+              <p className="text-[10px] text-muted-foreground bg-muted/20 py-3 px-4 rounded-lg border border-border/50 uppercase tracking-widest">
+                Registro Automático vía OAuth 2.0
+              </p>
             </div>
-
-            {/* Email register form */}
-            <form onSubmit={handleEmailRegister} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="nickname">Nickname</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="nickname"
-                    placeholder="tu_nickname"
-                    value={nickname}
-                    onChange={(e) => handleNicknameChange(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-                {nicknameError && (
-                  <Alert variant="destructive" className="py-2">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription className="text-xs">
-                      {nicknameError}
-                    </AlertDescription>
-                  </Alert>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  3-20 caracteres. Solo letras, números y guiones bajos.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="tu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Mínimo 8 caracteres
-                </p>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-neon-blue to-neon-purple text-white"
-                disabled={loading || !!nicknameError}
-              >
-                {loading ? "Creando cuenta..." : "Crear cuenta"}
-              </Button>
-            </form>
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
@@ -248,14 +174,14 @@ export default function RegisterPage() {
               ¿Ya tienes cuenta?{" "}
               <Link
                 href="/login"
-                className="text-neon-blue hover:underline"
+                className="text-neon-blue hover:underline font-bold"
               >
                 Inicia sesión
               </Link>
             </div>
             <Link
               href="/"
-              className="text-sm text-center text-muted-foreground hover:text-foreground"
+              className="text-sm text-center text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Volver al inicio
             </Link>

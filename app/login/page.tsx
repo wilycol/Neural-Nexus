@@ -107,15 +107,15 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             {/* Social login */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <Button
                 variant="outline"
                 onClick={handleGoogleLogin}
-                className="w-full"
+                className="w-full h-12 text-base font-orbitron hover:border-neon-blue/40 hover:bg-neon-blue/5 transition-all group"
               >
-                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                     fill="#4285F4"
@@ -133,63 +133,23 @@ export default function LoginPage() {
                     fill="#EA4335"
                   />
                 </svg>
-                Google
+                Continuar con Google
               </Button>
               <Button
                 variant="outline"
                 onClick={handleGithubLogin}
-                className="w-full"
+                className="w-full h-12 text-base font-orbitron hover:border-neon-purple/40 hover:bg-neon-purple/5 transition-all group"
               >
-                <Github className="h-4 w-4 mr-2" />
-                GitHub
+                <Github className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
+                Continuar con GitHub
               </Button>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  O con email
-                </span>
-              </div>
+            <div className="pt-4 text-center">
+              <p className="text-[10px] text-muted-foreground bg-muted/20 py-3 px-4 rounded-lg border border-border/50 uppercase tracking-widest">
+                Autenticación Segura vía OAuth 2.0
+              </p>
             </div>
-
-            {/* Email login form */}
-            <form onSubmit={handleEmailLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="tu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-neon-blue to-neon-purple text-white"
-                disabled={loading}
-              >
-                {loading ? "Entrando..." : "Iniciar sesión"}
-              </Button>
-            </form>
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
@@ -197,55 +157,14 @@ export default function LoginPage() {
               ¿No tienes cuenta?{" "}
               <Link
                 href="/registro"
-                className="text-neon-blue hover:underline"
+                className="text-neon-blue hover:underline font-bold"
               >
-                Regístrate
+                Únete a Neural Nexus
               </Link>
             </div>
-            <Dialog open={resetOpen} onOpenChange={setResetOpen}>
-              <DialogTrigger asChild>
-                <button className="text-sm text-center text-neon-blue hover:underline">
-                  ¿Olvidaste tu contraseña?
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Recuperar contraseña</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-3">
-                  <Input
-                    type="email"
-                    placeholder="tu@email.com"
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                  />
-                  <Button
-                    onClick={async () => {
-                      try {
-                        const supabase = getSupabaseBrowserClient();
-                        const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-                          redirectTo: `${window.location.origin}/auth/update-password`,
-                        });
-                        if (error) {
-                          toast.error(error.message);
-                          return;
-                        }
-                        toast.success("Te enviamos un correo para continuar");
-                        setResetOpen(false);
-                      } catch {
-                        toast.error("Error al enviar el correo");
-                      }
-                    }}
-                    className="w-full"
-                  >
-                    Enviar correo de recuperación
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
             <Link
               href="/"
-              className="text-sm text-center text-muted-foreground hover:text-foreground"
+              className="text-sm text-center text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Volver al inicio
             </Link>

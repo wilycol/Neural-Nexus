@@ -144,6 +144,36 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
             </Link>
           </div>
         )}
+
+        {/* Administración (Solo para Admins) */}
+        {profile?.role === "admin" && (
+          <div className="mt-6">
+            <p className="px-3 text-xs font-semibold text-neon-blue uppercase tracking-wider mb-2 flex items-center gap-2">
+              <Wrench className="h-3 w-3" />
+              Administración
+            </p>
+            <Link
+              href="/api/admin/debug-latest-post"
+              target="_blank"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <FileText className="h-4 w-4" />
+              Log de Recepción
+            </Link>
+            <Link
+              href="/api/admin/debug-latest-post?limit=10"
+              target="_blank"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <Video className="h-4 w-4" />
+              Depurar Reels
+            </Link>
+          </div>
+        )}
       </nav>
 
       <Separator />

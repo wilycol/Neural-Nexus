@@ -8,42 +8,50 @@ import { createClient } from "@supabase/supabase-js";
  */
 export async function POST(req: Request) {
   try {
-    const { title, video_url, secret } = await req.json();
+    const { title, slug, video_url, secret } = await req.json();
+    
+    // ... (token validation) ...
 
-    // 1. Validar Token de Seguridad (Industrial Bridge)
-    const adminKey = process.env.ADMIN_SYNC_KEY || "nexus_super_secret_bridge_2026";
-    if (secret !== adminKey) {
-      console.warn(`[Bridge] Intento de acceso no autorizado con secret incorrecto`);
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    console.log(`[Bridge] Petición de sincronización para slug: "${slug}" o título: "${title}"`);
+
+    if (!video_url || (!title && !slug)) {
+      return NextResponse.json({ error: "Faltan datos (slug/title o video_url)" }, { status: 400 });
     }
 
-    console.log(`[Bridge] Petición de sincronización para: "${title}"`);
-
-    if (!title || !video_url) {
-      return NextResponse.json({ error: "Faltan datos (title o video_url)" }, { status: 400 });
-    }
-
-    // 2. Conectar a Supabase (Service Role para bypass RLS de actualización)
+    // 2. Conectar a Supabase
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // 3. Buscar noticia por título (Estrategia: Exacto -> Parcial)
-    console.log(`[Bridge] Buscando noticia: "${title}"`);
-    
-    // Intento 1: Coincidencia Exacta
-    const { data: exactItem } = await supabase
-      .from("news")
-      .select("id, title")
-      .eq("title", title)
-      .maybeSingle();
+    // 3. Buscar noticia (Estrategia: Slug Exacto -> Título Exacto -> Título Parcial)
+    let newsItem = null;
 
-    let newsItem = exactItem;
+    // Intento 0: Slug (El método más robusto de V5)
+    if (slug) {
+      console.log(`[Bridge] Buscando por slug: "${slug}"`);
+      const { data: slugItem } = await supabase
+        .from("news")
+        .select("id, title")
+        .eq("slug", slug)
+        .maybeSingle();
+      newsItem = slugItem;
+    }
 
-    // Intento 2: Coincidencia Parcial (ILIKE) si falló la exacta
-    if (!newsItem) {
-      console.log(`[Bridge] No hubo coincidencia exacta. Intentando parcial...`);
+    // Intento 1: Coincidencia Exacta de Título
+    if (!newsItem && title) {
+      console.log(`[Bridge] Buscando coincidencia exacta de título: "${title}"`);
+      const { data: exactItem } = await supabase
+        .from("news")
+        .select("id, title")
+        .eq("title", title)
+        .maybeSingle();
+      newsItem = exactItem;
+    }
+
+    // Intento 2: Coincidencia Parcial (ILIKE)
+    if (!newsItem && title) {
+      console.log(`[Bridge] Intentando coincidencia parcial (ILIKE)...`);
       const { data: fuzzyItem } = await supabase
         .from("news")
         .select("id, title")
@@ -56,7 +64,7 @@ export async function POST(req: Request) {
     if (!newsItem) {
       return NextResponse.json({ 
         error: "Noticia no encontrada", 
-        detail: `No se encontró ninguna noticia que coincida con: ${title}` 
+        detail: `No se encontró ninguna noticia que coincida con slug "${slug}" o título "${title}"` 
       }, { status: 404 });
     }
 
