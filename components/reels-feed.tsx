@@ -143,14 +143,18 @@ export function ReelsFeed() {
   const hasStartedInitialFetch = useRef(false);
 
   useEffect(() => {
-    // Si ya empezamos la carga exitosa, no repetimos
+    // Solo cargamos si el auth ya terminó de inicializarse
+    if (authIsLoading) return;
+    
+    // Si ya hay datos, evitamos recargas innecesarias
     if (hasStartedInitialFetch.current && news.length > 0) return;
 
     const fetchReels = async () => {
-      // Si el auth está cargando y es la primera vez, esperamos un poco
-      // pero no bloqueamos indefinidamente
+      const timestamp = new Date().toLocaleTimeString();
+      
+      // Espera inteligente pero no infinita para el Auth
       if (authIsLoading && !hasStartedInitialFetch.current) {
-        console.log("[Reels] Sincronizando sesión antes de pedir datos...");
+        console.log(`[Reels] [${timestamp}]⏳ Sincronizando sesión antes de pedir datos...`);
         return;
       }
 
@@ -158,16 +162,28 @@ export function ReelsFeed() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-        console.error("[Reels] La consulta a la base de datos expiró (10s).");
+        console.error(`[Reels] [${timestamp}]❌ ERROR: La consulta de 10s expiró.`);
         setLoading(false);
       }, 10000);
 
       try {
         setLoading(true);
         const supabase = getSupabaseBrowserClient();
+        const currentUser = user?.email || "Anónimo";
         
-        console.log(`[Reels] Solicitando contenido (Usuario: ${user ? user.email : "Anónimo"})...`);
-        
+        console.log(`[Reels] [${timestamp}]🚀 Iniciando proceso para usuario: ${currentUser}`);
+
+        // PRUEBA DE FUEGO: Ping rápido a la DB para ver si responde
+        console.log(`[Reels] [${timestamp}]🔎 Test de conexión (ping)...`);
+        const { error: pingError } = await supabase.from("news").select("id").limit(1);
+        if (pingError) {
+          console.error(`[Reels] [${timestamp}]⚠️ PING FALLIDO:`, pingError.code, pingError.message);
+        } else {
+          console.log(`[Reels] [${timestamp}]✅ PING EXITOSO.`);
+        }
+
+        // CONSULTA PRINCIPAL
+        console.log(`[Reels] [${timestamp}]📊 Ejecutando query industrial a 'news'...`);
         const { data, error } = await supabase
           .from("news")
           .select("*")
@@ -177,34 +193,37 @@ export function ReelsFeed() {
           .abortSignal(controller.signal);
         
         if (error) {
-          console.error("[Reels] Error de base de datos:", error.message);
-          // Si el error es de permisos (RLS), informamos pero no bloqueamos
-          if (error.code === '42501' || error.code === 'PGRST301') {
-            console.warn("[Reels] Posible restricción de seguridad (RLS). Cargando versión pública...");
-          }
+          console.error(`[Reels] [${timestamp}]😭 ERROR DE BASE DE DATOS:`, {
+            code: error.code,
+            message: error.message,
+            hint: error.hint
+          });
           throw error;
         }
 
         if (data) {
-          console.log(`[Reels] Exito: ${data.length} reels cargados.`);
+          console.log(`[Reels] [${timestamp}]✨ ÉXITO: ${data.length} reels recibidos.`);
           setNews(data as NewsItem[]);
           if (data.length > 0) setActiveId(data[0].id);
+        } else {
+          console.warn(`[Reels] [${timestamp}]⚪ ADVERTENCIA: La consulta no devolvió datos.`);
         }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
-          console.error("[Reels] La conexión se cerró por lentitud.");
+          console.error(`[Reels] [${timestamp}]🛑 ABORTO: La red o RLS bloqueó la petición.`);
         } else {
-          console.error("[Reels] Error al cargar:", err);
+          console.error(`[Reels] [${timestamp}]💥 FALLO CRÍTICO:`, err);
         }
       } finally {
         clearTimeout(timeoutId);
         setLoading(false);
+        console.log(`[Reels] [${timestamp}]🏁 Fin del ciclo de carga.`);
       }
     };
 
     fetchReels();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authIsLoading, user?.id]); 
+  }, [authIsLoading, user?.id]);
 
   useEffect(() => {
     const options = {

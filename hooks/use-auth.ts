@@ -32,34 +32,35 @@ export function useAuth() {
     const initAuth = async () => {
       // Válvula de seguridad: Si en 5 segundos getSession no responde, forzamos el fin de carga
       // para que el resto de la app (como los Reels) no se quede colgada.
-      const safetyValve = setTimeout(() => {
+      const safetyTimeout = setTimeout(() => {
         if (isLoading) {
-          console.warn("[Auth] Válvula de seguridad activada: La sesión está tardando demasiado. Forzando inicio del portal...");
+          console.warn("[Auth] ⚠️ Válvula de seguridad activada: La sesión está tardando demasiado.");
           setIsLoading(false);
         }
       }, 5000);
 
       try {
-        console.log("[Auth] Iniciando sincronización de sesión...");
+        console.log("[Auth] 🛡️ Obteniendo sesión inicial...");
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error("[Auth] Error al obtener sesión inicial:", error);
+          console.error("[Auth] ❌ Error en getSession:", error.message);
+          throw error;
         }
 
-        if (session?.user) {
-          console.log("[Auth] Sesión activa encontrada:", session.user.email);
+        if (session) {
+          console.log("[Auth] ✅ Sesión encontrada para:", session.user.email);
           setUser(session.user);
           await fetchProfile(session.user.id);
         } else {
-          console.log("[Auth] No hay sesión activa inicial.");
+          console.log("[Auth] ℹ️ No hay sesión activa.");
         }
-      } catch (err) {
-        console.error("[Auth] Fallo crítico en initAuth:", err);
+      } catch (error) {
+        console.error("[Auth] 💥 Error crítico en inicialización:", error);
       } finally {
-        clearTimeout(safetyValve);
+        console.log(`[Auth] 🏁 Estado finalizado: Usuario=${user?.email || "null"}, Loading=${isLoading}`);
         setIsLoading(false);
-        console.log("[Auth] Estado de carga de sesión finalizado.");
+        clearTimeout(safetyTimeout);
       }
     };
 
