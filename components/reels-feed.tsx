@@ -130,14 +130,13 @@ export function ReelsFeed() {
         console.log("[Reels] [CP-1] Obteniendo cliente Supabase...");
         const supabase = getSupabaseBrowserClient();
         
-        console.log("[Reels] [CP-2] Iniciando consulta a tabla 'news'...");
+        console.log("[Reels] [CP-2] Iniciando consulta simplificada a tabla 'news'...");
         
+        // Probamos una consulta ultra-básica para descartar problemas de RLS o Filtros
         const { data, error } = await supabase
           .from("news")
-          .select("*")
-          .eq("content_type", "video")
-          .eq("is_short", true)
-          .order("published_at", { ascending: false })
+          .select("id, title, video_url, content_type, is_short")
+          .limit(5)
           .abortSignal(controller.signal);
         
         clearTimeout(timeoutId);
