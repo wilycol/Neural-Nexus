@@ -11,13 +11,7 @@ export const createBrowserClient = () => {
   }
 
   return createSupabaseBrowserClient<Database>(supabaseUrl, supabaseAnonKey, { 
-    isSingleton: true,
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      storageKey: 'neural-nexus-auth-token',
-    }
+    isSingleton: true
   });
 };
 
