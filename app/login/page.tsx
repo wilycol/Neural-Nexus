@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Github } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,6 @@ import { toast } from "sonner";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
   const handleGoogleLogin = async () => {
     try {
       const supabase = getSupabaseBrowserClient();
