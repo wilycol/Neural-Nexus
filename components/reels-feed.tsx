@@ -119,18 +119,30 @@ export function ReelsFeed() {
   useEffect(() => {
     const fetchReels = async () => {
       try {
+        setLoading(true);
         const supabase = getSupabaseBrowserClient();
-        const { data } = await supabase
+        
+        console.log("[Reels] Iniciando fetch...");
+        
+        const { data, error } = await supabase
           .from("news")
           .select("*")
           .eq("content_type", "video")
           .eq("is_short", true)
           .order("published_at", { ascending: false });
         
+        if (error) {
+          console.error("[Reels] Error en la consulta Supabase:", error);
+          throw error;
+        }
+
         if (data) {
+          console.log(`[Reels] ${data.length} vídeos encontrados`);
           setNews(data as NewsItem[]);
           if (data.length > 0) setActiveId(data[0].id);
         }
+      } catch (err) {
+        console.error("[Reels] Fallo crítico al cargar Reels:", err);
       } finally {
         setLoading(false);
       }
