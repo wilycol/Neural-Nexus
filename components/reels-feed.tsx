@@ -156,11 +156,10 @@ export function ReelsFeed() {
           console.log("[Reels] [EMPTY] No se devolvieron datos.");
         }
       } catch (err) {
-        const error = err as any; 
-        if (error.name === 'AbortError') {
+        if (err instanceof Error && err.name === 'AbortError') {
           console.warn("[Reels] Consulta abortada por timeout.");
         } else {
-          console.error("[Reels] [CRASH] Fallo crítico:", error);
+          console.error("[Reels] [CRASH] Fallo crítico:", err);
         }
       } finally {
         clearTimeout(timeoutId);
