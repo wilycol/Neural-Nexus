@@ -61,42 +61,51 @@ export function MascotOverlay({
         hasInitCanvasRef.current = true;
       }
 
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = frame.data;
+      try {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = frame.data;
 
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i] || 0;
-        const g = data[i + 1] || 0;
-        const b = data[i + 2] || 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i] || 0;
+          const g = data[i + 1] || 0;
+          const b = data[i + 2] || 0;
 
-        const max = r > g ? (r > b ? r : b) : g > b ? g : b;
-        const min = r < g ? (r < b ? r : b) : g < b ? g : b;
-        const delta = max - min;
+          const max = r > g ? (r > b ? r : b) : g > b ? g : b;
+          const min = r < g ? (r < b ? r : b) : g < b ? g : b;
+          const delta = max - min;
 
-        let hue = 0;
-        if (delta !== 0) {
-          if (max === r) {
-            hue = (60 * ((g - b) / delta) + 360) % 360;
-          } else if (max === g) {
-            hue = 60 * ((b - r) / delta + 2);
-          } else {
-            hue = 60 * ((r - g) / delta + 4);
+          let hue = 0;
+          if (delta !== 0) {
+            if (max === r) {
+              hue = (60 * ((g - b) / delta) + 360) % 360;
+            } else if (max === g) {
+              hue = 60 * ((b - r) / delta + 2);
+            } else {
+              hue = 60 * ((r - g) / delta + 4);
+            }
+          }
+
+          const sat = max === 0 ? 0 : delta / max;
+          const val = max / 255;
+
+          const isGreenHue = hue >= 70 && hue <= 170;
+          const isGreenDominant = g > 18 && g >= r * 1.08 && g >= b * 1.08;
+
+          if ((isGreenHue && sat >= 0.18 && val >= 0.10) || (isGreenDominant && val >= 0.08)) {
+            data[i + 3] = 0;
           }
         }
 
-        const sat = max === 0 ? 0 : delta / max;
-        const val = max / 255;
-
-        const isGreenHue = hue >= 70 && hue <= 170;
-        const isGreenDominant = g > 18 && g >= r * 1.08 && g >= b * 1.08;
-
-        if ((isGreenHue && sat >= 0.18 && val >= 0.10) || (isGreenDominant && val >= 0.08)) {
-          data[i + 3] = 0;
+        ctx.putImageData(frame, 0, 0);
+      } catch (err) {
+        console.error("[Mascot] Error de seguridad o renderizado en Canvas:", err);
+        // Si hay un error de seguridad (CORS), detenemos el bucle para no inundar la consola
+        if (err instanceof DOMException && err.name === 'SecurityError') {
+          disposed = true;
+          return;
         }
       }
-
-      ctx.putImageData(frame, 0, 0);
       rafRef.current = requestAnimationFrame(step);
     };
 
@@ -142,6 +151,7 @@ export function MascotOverlay({
         muted
         playsInline
         preload="auto"
+        crossOrigin="anonymous"
         className="absolute inset-0 w-px h-px opacity-0"
       />
       <canvas
