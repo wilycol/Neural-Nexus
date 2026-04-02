@@ -30,12 +30,27 @@ export function useAuth() {
 
     // 1. Obtener sesión inicial
     const initAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser(session.user);
-        await fetchProfile(session.user.id);
+      try {
+        console.log("[Auth] Iniciando sincronización de sesión...");
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("[Auth] Error al obtener sesión inicial:", error);
+        }
+
+        if (session?.user) {
+          console.log("[Auth] Sesión activa encontrada:", session.user.email);
+          setUser(session.user);
+          await fetchProfile(session.user.id);
+        } else {
+          console.log("[Auth] No hay sesión activa inicial.");
+        }
+      } catch (err) {
+        console.error("[Auth] Fallo crítico en initAuth:", err);
+      } finally {
+        setIsLoading(false);
+        console.log("[Auth] Estado de carga de sesión finalizado.");
       }
-      setIsLoading(false);
     };
 
     initAuth();
@@ -43,6 +58,7 @@ export function useAuth() {
     // 2. Escuchar cambios de estado
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log(`[Auth] Evento de cambio de estado: ${event}`);
         if (session?.user) {
           setUser(session.user);
           await fetchProfile(session.user.id);

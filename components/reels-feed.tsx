@@ -7,6 +7,7 @@ import { Heart, MessageCircle, Share2, Music2, Disc, Video } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AdBanner } from "@/components/ad-banner";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ReelItemProps {
   news: NewsItem;
@@ -138,37 +139,68 @@ export function ReelsFeed() {
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { isLoading: authIsLoading } = useAuth();
 
   useEffect(() => {
+    // Si la autenticación aún está cargando, esperamos.
+    if (authIsLoading) {
+      console.log("[Reels] Esperando a que el sistema de autenticación se sincronice...");
+      return;
+    }
+
     const fetchReels = async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.error("[Reels] Timeout: La consulta a Supabase tardó más de 10s");
+        setLoading(false);
+      }, 10000);
+
       try {
         setLoading(true);
+        console.log("[Reels] [CP-1] Sistema de Auth listo. Obteniendo cliente Supabase...");
         const supabase = getSupabaseBrowserClient();
+        
+        console.log("[Reels] [CP-2] Iniciando consulta industrial a tabla 'news'...");
         
         const { data, error } = await supabase
           .from("news")
           .select("*")
           .eq("content_type", "video")
           .eq("is_short", true)
-          .order("published_at", { ascending: false });
+          .order("published_at", { ascending: false })
+          .abortSignal(controller.signal);
+        
+        clearTimeout(timeoutId);
+        console.log("[Reels] [CP-3] Respuesta recibida de Supabase.");
         
         if (error) {
-          console.error("[Reels] Error en la consulta Supabase:", error);
+          console.error("[Reels] [ERROR] Supabase devolvió:", error);
           throw error;
         }
 
         if (data) {
+          console.log(`[Reels] [SUCCESS] ${data.length} vídeos encontrados`);
           setNews(data as NewsItem[]);
           if (data.length > 0) setActiveId(data[0].id);
+        } else {
+          console.log("[Reels] [EMPTY] No se devolvieron datos.");
         }
       } catch (err) {
-        console.error("[Reels] Fallo crítico al cargar Reels:", err);
+        if (err instanceof Error && err.name === 'AbortError') {
+          console.warn("[Reels] Consulta abortada por timeout (posible bloqueo de extensión).");
+        } else {
+          console.error("[Reels] [CRASH] Fallo crítico al cargar Reels:", err);
+        }
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
+        console.log("[Reels] [FINALLY] Proceso de carga finalizado.");
       }
     };
+
     fetchReels();
-  }, []);
+  }, [authIsLoading]);
 
   useEffect(() => {
     const options = {
