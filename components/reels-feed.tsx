@@ -118,33 +118,54 @@ export function ReelsFeed() {
 
   useEffect(() => {
     const fetchReels = async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.error("[Reels] Timeout: La consulta a Supabase tardó más de 10s");
+        setLoading(false);
+      }, 10000);
+
       try {
         setLoading(true);
+        console.log("[Reels] [CP-1] Obteniendo cliente Supabase...");
         const supabase = getSupabaseBrowserClient();
         
-        console.log("[Reels] Iniciando fetch...");
+        console.log("[Reels] [CP-2] Iniciando consulta a tabla 'news'...");
         
         const { data, error } = await supabase
           .from("news")
           .select("*")
           .eq("content_type", "video")
           .eq("is_short", true)
-          .order("published_at", { ascending: false });
+          .order("published_at", { ascending: false })
+          .abortSignal(controller.signal);
+        
+        clearTimeout(timeoutId);
+        console.log("[Reels] [CP-3] Respuesta recibida de Supabase.");
         
         if (error) {
-          console.error("[Reels] Error en la consulta Supabase:", error);
+          console.error("[Reels] [ERROR] Supabase devolvió:", error);
           throw error;
         }
 
         if (data) {
-          console.log(`[Reels] ${data.length} vídeos encontrados`);
+          console.log(`[Reels] [SUCCESS] ${data.length} vídeos encontrados`);
           setNews(data as NewsItem[]);
           if (data.length > 0) setActiveId(data[0].id);
+        } else {
+          console.log("[Reels] [EMPTY] No se devolvieron datos.");
         }
       } catch (err) {
-        console.error("[Reels] Fallo crítico al cargar Reels:", err);
+        const error = err as any; 
+        if (error.name === 'AbortError') {
+          console.warn("[Reels] Consulta abortada por timeout.");
+        } else {
+          console.error("[Reels] [CRASH] Fallo crítico:", error);
+        }
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
+        console.log("[Reels] [FINALLY] Estado de carga desactivado.");
       }
     };
     fetchReels();
