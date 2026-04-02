@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 import { MascotOverlay } from "@/components/mascot-overlay";
 import "./globals.css";
 

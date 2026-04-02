@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Header } from "@/components/header";
-import { Sidebar } from "@/components/sidebar";
 import { NewsFeed } from "@/components/news-feed";
 import { Top5Section } from "@/components/top5-section";
 import { Button } from "@/components/ui/button";

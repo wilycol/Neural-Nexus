@@ -190,8 +190,8 @@ export function ReelsFeed() {
           setNews(data as NewsItem[]);
           if (data.length > 0) setActiveId(data[0].id);
         }
-      } catch (err: any) {
-        if (err?.name === 'AbortError') {
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'AbortError') {
           console.error("[Reels] La conexión se cerró por lentitud.");
         } else {
           console.error("[Reels] Error al cargar:", err);
