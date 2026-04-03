@@ -12,6 +12,7 @@ import { NewsItem } from "@/types";
 import { formatDate, extractDomain } from "@/lib/utils";
 import { toast } from "sonner";
 import { Comments } from "@/components/comments";
+import { AdBanner } from "@/components/ad-banner";
 
 export default function NewsDetailPage() {
   const params = useParams();
@@ -188,6 +189,8 @@ export default function NewsDetailPage() {
             {news.summary}
           </p>
 
+          <AdBanner slot="article-top-content" />
+
           {news.content && (
             <div className="prose prose-invert prose-neon max-w-none prose-headings:font-orbitron prose-a:text-neon-blue">
               <div dangerouslySetInnerHTML={{ __html: news.content }} />
@@ -225,12 +228,16 @@ export default function NewsDetailPage() {
           </div>
 
           {news?.id ? (
-            <div className="pt-12 border-t">
-              <h2 className="text-2xl font-bold font-orbitron mb-8 flex items-center gap-2">
-                Diálogo Neural
-                <span className="h-1.5 w-1.5 rounded-full bg-neon-blue animate-pulse" />
-              </h2>
-              <Comments kind="news" entityId={news.id} />
+            <div className="pt-12 border-t space-y-12">
+              <AdBanner slot="article-before-comments" format="rectangle" />
+              
+              <div>
+                <h2 className="text-2xl font-bold font-orbitron mb-8 flex items-center gap-2">
+                  Diálogo Neural
+                  <span className="h-1.5 w-1.5 rounded-full bg-neon-blue animate-pulse" />
+                </h2>
+                <Comments kind="news" entityId={news.id} />
+              </div>
             </div>
           ) : null}
         </article>

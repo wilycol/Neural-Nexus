@@ -3,11 +3,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NewsItem } from "@/types";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
-import { Heart, MessageCircle, Share2, Music2, Disc, Video, Loader2 } from "lucide-react";
+import { 
+  Heart, 
+  MessageCircle, 
+  Share2, 
+  Music2, 
+  Disc, 
+  Video, 
+  Loader2 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AdBanner } from "@/components/ad-banner";
 import { useAuth } from "@/hooks/use-auth";
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetHeader, 
+  SheetTitle, 
+  SheetTrigger 
+} from "@/components/ui/sheet";
+import { Comments } from "@/components/comments";
+import { toast } from "sonner";
 
 interface ReelItemProps {
   news: NewsItem;
@@ -17,6 +34,10 @@ interface ReelItemProps {
 function ReelItem({ news, isActive }: ReelItemProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(news.mention_count || 0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (isActive && videoRef.current) {
@@ -33,7 +54,11 @@ function ReelItem({ news, isActive }: ReelItemProps) {
     }
   }, [isActive]);
 
-  const togglePlay = () => {
+  const togglePlay = (e: React.MouseEvent) => {
+    // Evitar que el click en los botones dispare el toggle de pausa
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('[role="dialog"]') || target.closest('[data-sheet-content]')) return;
+    
     if (!videoRef.current) return;
     
     if (videoRef.current.paused) {
@@ -42,6 +67,61 @@ function ReelItem({ news, isActive }: ReelItemProps) {
     } else {
       videoRef.current.pause();
       setIsPaused(true);
+    }
+  };
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toast.error("Inicia sesión para dar like");
+      return;
+    }
+
+    const previousLiked = isLiked;
+    const previousCount = likesCount;
+
+    // Optimistic UI
+    setIsLiked(!previousLiked);
+    setLikesCount(prev => previousLiked ? Math.max(0, prev - 1) : prev + 1);
+
+    try {
+      const method = previousLiked ? "DELETE" : "POST";
+      const res = await fetch(`/api/news/${news.id}/like`, { method });
+      if (!res.ok) throw new Error();
+    } catch (err) {
+      // Rollback
+      setIsLiked(previousLiked);
+      setLikesCount(previousCount);
+      toast.error("Error al procesar like");
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/news/${news.slug}`;
+    const text = `🔥 ${news.title}\n\nVía Neural Nexus - Portal de noticias IA`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: news.title,
+          text: text,
+          url: url,
+        });
+      } catch (err) {
+        // User cancelled or error
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link copiado al portapapeles");
+    }
+  };
+
+  const handleFollow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFollowing(!isFollowing);
+    if (!isFollowing) {
+      toast.success("¡Ahora sigues a @neuralnexus!");
     }
   };
 
@@ -75,21 +155,51 @@ function ReelItem({ news, isActive }: ReelItemProps) {
       
       <div className="absolute right-4 bottom-24 flex flex-col items-center gap-6 z-10 pointer-events-auto">
         <div className="flex flex-col items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg">
-            <Heart className="h-6 w-6" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={`h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg transition-all active:scale-125 ${isLiked ? 'text-red-500 fill-red-500' : ''}`}
+            onClick={handleLike}
+          >
+            <Heart className={`h-6 w-6 ${isLiked ? 'fill-current' : ''}`} />
           </Button>
-          <span className="text-xs font-bold text-white shadow-sm">{news.mention_count || 0}</span>
+          <span className="text-xs font-bold text-white shadow-sm">{likesCount}</span>
         </div>
         
-        <div className="flex flex-col items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg">
-            <MessageCircle className="h-6 w-6" />
-          </Button>
-          <span className="text-xs font-bold text-white shadow-sm">...</span>
-        </div>
+        <Sheet>
+          <SheetTrigger asChild>
+            <div className="flex flex-col items-center gap-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MessageCircle className="h-6 w-6" />
+              </Button>
+              <span className="text-xs font-bold text-white shadow-sm">Chat</span>
+            </div>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[70vh] rounded-t-[20px] bg-zinc-950/95 border-white/10 p-0 overflow-hidden outline-none" data-sheet-content>
+            <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto mt-3 mb-1" />
+            <SheetHeader className="p-4 border-b border-white/5">
+              <SheetTitle className="text-white text-center font-orbitron text-sm uppercase tracking-widest">
+                Comentarios
+              </SheetTitle>
+            </SheetHeader>
+            <div className="h-full overflow-y-auto p-4 custom-scrollbar pb-32">
+              <Comments kind="news" entityId={news.id} />
+            </div>
+          </SheetContent>
+        </Sheet>
 
         <div className="flex flex-col items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg"
+            onClick={handleShare}
+          >
             <Share2 className="h-6 w-6" />
           </Button>
           <span className="text-xs font-bold text-white shadow-sm">Share</span>
@@ -112,8 +222,13 @@ function ReelItem({ news, isActive }: ReelItemProps) {
             <span className="font-bold text-white text-sm shadow-sm">@neuralnexus</span>
             <span className="text-[10px] text-neon-blue font-bold tracking-widest uppercase">Portal IA Oficial</span>
           </div>
-          <Button variant="outline" size="sm" className="h-7 px-3 text-[10px] bg-neon-blue/20 border-neon-blue/40 text-white hover:bg-neon-blue/40">
-            Seguir
+          <Button 
+            variant={isFollowing ? "secondary" : "outline"} 
+            size="sm" 
+            className={`h-7 px-3 text-[10px] transition-all ${isFollowing ? 'bg-white/20 text-white border-white/40' : 'bg-neon-blue/20 border-neon-blue/40 text-white hover:bg-neon-blue/40'}`}
+            onClick={handleFollow}
+          >
+            {isFollowing ? "Siguiendo" : "Seguir"}
           </Button>
         </div>
         

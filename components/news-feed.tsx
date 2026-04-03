@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NewsCard } from "@/components/news-card";
 import { InfiniteScroll } from "@/components/infinite-scroll";
+import { AdBanner } from "@/components/ad-banner";
 import { useInfiniteNews } from "@/hooks/use-infinite-news";
 import { toast } from "sonner";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
@@ -254,18 +255,25 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
       loading={loading}
     >
       <div className="grid gap-4">
-        {news.map((item) => (
-          <NewsCard
-            key={item.id}
-            news={item}
-            isLiked={likedNews.has(item.id)}
-            isFavorited={favoritedNews.has(item.id)}
-            likeCount={likeCounts[item.id] || 0}
-            commentCount={commentCounts[item.id] || 0}
-            onLike={handleLike}
-            onFavorite={handleFavorite}
-            onShare={handleShare}
-          />
+        {news.map((item, index) => (
+          <React.Fragment key={item.id}>
+            <NewsCard
+              news={item}
+              isLiked={likedNews.has(item.id)}
+              isFavorited={favoritedNews.has(item.id)}
+              likeCount={likeCounts[item.id] || 0}
+              commentCount={commentCounts[item.id] || 0}
+              onLike={handleLike}
+              onFavorite={handleFavorite}
+              onShare={handleShare}
+            />
+            {(index + 1) % 4 === 0 && (
+              <AdBanner 
+                slot={`feed-slot-${Math.floor(index / 4)}`} 
+                className="my-2"
+              />
+            )}
+          </React.Fragment>
         ))}
       </div>
     </InfiniteScroll>

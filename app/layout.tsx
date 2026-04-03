@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { MascotOverlay } from "@/components/mascot-overlay";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -43,6 +44,12 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          <Script 
+            async 
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1327982622260280"
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
           <div className="flex min-h-screen bg-background text-foreground">
             {/* Sidebar persistente */}
             <Sidebar />

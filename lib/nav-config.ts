@@ -9,6 +9,7 @@ import {
   Video,
   Heart,
   User,
+  Info,
 } from "lucide-react";
 
 export const primaryMenuItems = [
@@ -19,6 +20,7 @@ export const primaryMenuItems = [
   { href: "/categoria/memes", label: "Memes", icon: Laugh },
   { href: "/categoria/papers", label: "Papers", icon: FileText },
   { href: "/categoria/drama", label: "Drama", icon: Drama },
+  { href: "/creditos", label: "Créditos", icon: Info },
 ];
 
 export const destacadosItems = [
