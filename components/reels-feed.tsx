@@ -104,6 +104,10 @@ function ReelItem({ news, isActive }: ReelItemProps) {
 
       <div className="absolute bottom-6 left-4 right-16 z-10 pointer-events-auto">
         <div className="flex items-center gap-3 mb-3">
+          <Avatar className="h-10 w-10 border border-white/20">
+            <AvatarImage src="/brand.png" />
+            <AvatarFallback>NN</AvatarFallback>
+          </Avatar>
           <div className="flex flex-col">
             <span className="font-bold text-white text-sm shadow-sm">@neuralnexus</span>
             <span className="text-[10px] text-neon-blue font-bold tracking-widest uppercase">Portal IA Oficial</span>
