@@ -37,6 +37,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1327982622260280"
+          crossOrigin="anonymous"
+        ></script>
+      </head>
       <body className="font-exo antialiased">
         <ThemeProvider
           attribute="class"
@@ -44,12 +51,6 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <Script 
-            async 
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1327982622260280"
-            crossOrigin="anonymous"
-            strategy="afterInteractive"
-          />
           <div className="flex min-h-screen bg-background text-foreground">
             {/* Sidebar persistente */}
             <Sidebar />
