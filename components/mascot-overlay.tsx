@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 type MascotOverlayProps = {
   src?: string;
@@ -13,6 +14,7 @@ export function MascotOverlay({
   sizePx = 160,
   className,
 }: MascotOverlayProps) {
+  const pathname = usePathname();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
@@ -133,6 +135,8 @@ export function MascotOverlay({
       rafRef.current = null;
     };
   }, []);
+
+  if (pathname === "/reels") return null;
 
   return (
     <div
