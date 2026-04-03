@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { 
-  Github, 
   Cpu, 
   Brain, 
   Code2, 
@@ -14,7 +13,16 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const CreditCard = ({ title, name, description, icon: Icon, color, svgLogo }: any) => (
+interface CreditCardProps {
+  title: string;
+  name: string;
+  description: string;
+  icon: any;
+  color: string;
+  svgLogo?: React.ReactNode;
+}
+
+const CreditCard = ({ title, name, description, icon: Icon, color, svgLogo }: CreditCardProps) => (
   <div className="relative group overflow-hidden rounded-2xl border bg-background/50 p-6 backdrop-blur-xl transition-all hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10">
     <div className={`absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-10 blur-2xl transition-all group-hover:opacity-20 ${color}`} />
     
@@ -256,7 +264,7 @@ export default function CreditsPage() {
                 El Futuro es Colaborativo
             </SectionTitle>
             <p className="mx-auto max-w-2xl text-xl italic text-muted-foreground">
-                "Este portal no solo publica noticias sobre Inteligencia Artificial; es una demostración viva de su poder cuando se une al liderazgo humano de WilyCol. Esto es Neural Nexus."
+                &quot;Este portal no solo publica noticias sobre Inteligencia Artificial; es una demostración viva de su poder cuando se une al liderazgo humano de WilyCol. Esto es Neural Nexus.&quot;
             </p>
             <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
                 <Button className="bg-neon-blue text-white" asChild>
