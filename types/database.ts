@@ -388,6 +388,88 @@ export interface Database {
         };
         Relationships: [];
       };
+      crawler_logs: {
+        Row: {
+          id: string;
+          started_at: string;
+          finished_at: string | null;
+          status: 'running' | 'success' | 'failed';
+          sources_processed: number;
+          items_found: number;
+          published_items: Json;
+          error_log: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          started_at?: string;
+          finished_at?: string | null;
+          status?: 'running' | 'success' | 'failed';
+          sources_processed?: number;
+          items_found?: number;
+          published_items?: Json;
+          error_log?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          started_at?: string;
+          finished_at?: string | null;
+          status?: 'running' | 'success' | 'failed';
+          sources_processed?: number;
+          items_found?: number;
+          published_items?: Json;
+          error_log?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      top_5_tasks: {
+        Row: {
+          id: string;
+          news_id: string;
+          video_prompt: string;
+          status: 'pending' | 'processing' | 'completed' | 'failed';
+          video_url: string | null;
+          priority: number;
+          created_at: string;
+          processed_at: string | null;
+          finished_at: string | null;
+          error_details: string | null;
+        };
+        Insert: {
+          id?: string;
+          news_id: string;
+          video_prompt: string;
+          status?: 'pending' | 'processing' | 'completed' | 'failed';
+          video_url?: string | null;
+          priority?: number;
+          created_at?: string;
+          processed_at?: string | null;
+          finished_at?: string | null;
+          error_details?: string | null;
+        };
+        Update: {
+          id?: string;
+          news_id?: string;
+          video_prompt?: string;
+          status?: 'pending' | 'processing' | 'completed' | 'failed';
+          video_url?: string | null;
+          priority?: number;
+          created_at?: string;
+          processed_at?: string | null;
+          finished_at?: string | null;
+          error_details?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "top_5_tasks_news_id_fkey";
+            columns: ["news_id"];
+            referencedRelation: "news";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
