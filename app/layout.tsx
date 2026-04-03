@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { MascotOverlay } from "@/components/mascot-overlay";
-import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
