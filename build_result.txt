@@ -1,0 +1,22 @@
+
+> neural-feed@1.1.3 build
+> next build
+
+  Ôû▓ Next.js 14.2.28
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Ô£ô Compiled successfully
+   Linting and checking validity of types ...
+(node:2532) [ESLINT_PERSONAL_CONFIG_SUPPRESS] DeprecationWarning: '~/.eslintrc.*' config files have been deprecated. Please remove it or add 'root:true' to the config files in your projects in order to avoid loading '~/.eslintrc.*' accidentally. (found in "..\..\..\..\.eslintrc.cjs")
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+Failed to compile.
+
+./app/api/news/[id]/track-view/route.ts
+13:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/stats/track-visit/route.ts
+9:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
