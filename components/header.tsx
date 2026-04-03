@@ -24,7 +24,6 @@ import { primaryMenuItems, destacadosItems, userMenuItems } from "@/lib/nav-conf
 import { PremiumCard } from "@/components/premium-card";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { Crown, Sparkles } from "lucide-react";
 
 interface HeaderProps {
   onMenuClick?: () => void;

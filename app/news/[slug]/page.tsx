@@ -29,6 +29,11 @@ export default function NewsDetailPage() {
         if (!res.ok) throw new Error("No encontrado");
         const data = await res.json();
         setNews(data.data);
+        
+        // Trackeamos la vista
+        if (data.data?.id) {
+          fetch(`/api/news/${data.data.id}/track-view`, { method: "POST" }).catch(() => {});
+        }
       } catch {
         setError("No se pudo cargar la noticia");
       } finally {

@@ -224,6 +224,7 @@ export function ReelsFeed() {
     fetchReels();
     // NOTA: Eliminamos news.length y activeId de las dependencias para evitar bucles.
     // Solo dependemos del estado de Auth, el ID del usuario y el timeout del puente.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authIsLoading, user?.id, authTimedOut]);
 
   useEffect(() => {

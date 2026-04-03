@@ -74,6 +74,7 @@ export interface Database {
           has_subtitles: boolean;
           is_short: boolean;
           is_reusable: boolean;
+          view_count: number;
         };
         Insert: {
           id?: string;
@@ -102,6 +103,7 @@ export interface Database {
           has_subtitles?: boolean;
           is_short?: boolean;
           is_reusable?: boolean;
+          view_count?: number;
         };
         Update: {
           id?: string;
@@ -130,6 +132,7 @@ export interface Database {
           has_subtitles?: boolean;
           is_short?: boolean;
           is_reusable?: boolean;
+          view_count?: number;
         };
         Relationships: [];
       };

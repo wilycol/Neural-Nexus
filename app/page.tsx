@@ -19,6 +19,10 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export default function HomePage() {
+  useEffect(() => {
+    fetch("/api/stats/track-visit", { method: "POST" }).catch(() => {});
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <section className="mb-8">
