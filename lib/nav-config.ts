@@ -10,6 +10,9 @@ import {
   Heart,
   User,
   Info,
+  Scale,
+  Shield,
+  Cookie,
 } from "lucide-react";
 
 export const primaryMenuItems = [
@@ -30,4 +33,10 @@ export const destacadosItems = [
 export const userMenuItems = [
   { href: "/favoritos", label: "Mis Favoritos", icon: Heart },
   { href: "/perfil", label: "Mi Perfil", icon: User },
+];
+
+export const legalMenuItems = [
+  { href: "/legal/terminos", label: "Términos", icon: Scale },
+  { href: "/legal/privacidad", label: "Privacidad", icon: Shield },
+  { href: "/legal/cookies", label: "Cookies", icon: Cookie },
 ];

@@ -10,13 +10,16 @@ import {
   Crown,
   LogOut,
   Video,
+  Scale,
+  Shield,
+  Cookie,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
-import { primaryMenuItems, destacadosItems, userMenuItems } from "@/lib/nav-config";
+import { primaryMenuItems, destacadosItems, userMenuItems, legalMenuItems } from "@/lib/nav-config";
 import { PremiumCard } from "@/components/premium-card";
 
 interface SidebarProps {
@@ -134,6 +137,33 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
             })}
           </div>
         )}
+
+        {/* Gobernanza */}
+        <div className="mt-6">
+          <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Gobernanza
+          </p>
+          {legalMenuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
 
         {/* Administración (Solo para Admins) */}
         {profile?.role === "admin" && (
