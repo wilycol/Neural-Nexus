@@ -140,12 +140,24 @@ export function ReelsFeed() {
   // Trackeamos el ID del usuario para saber si ha cambiado de Anónimo a Logueado
   const lastUserId = useRef<string | null | undefined>(undefined);
 
+  const [authTimedOut, setAuthTimedOut] = useState(false);
+
   useEffect(() => {
-    // 1. Barrera Atómica: Esperamos a que Auth se estabilice para tener el rol correcto (RLS)
-    if (authIsLoading) {
-      console.log("[Reels] ⏳ Esperando estabilidad de Auth...");
+    // 1. Puente de Resiliencia: Si Auth tarda más de 1.5s, forzamos la carga
+    const authBridgeTimeout = setTimeout(() => {
+      if (authIsLoading) {
+        console.warn("[Reels] ⚠️ Sincronización de Auth lenta. Saltando barrera.");
+        setAuthTimedOut(true);
+      }
+    }, 1500);
+
+    // 1. Barrera Atómica: Esperamos a Auth, a menos que haya expirado el puente
+    if (authIsLoading && !authTimedOut) {
+      console.log("[Reels] ⏳ Sincronizando con puente Neural Nexus...");
       return;
     }
+    
+    clearTimeout(authBridgeTimeout);
     
     // 2. Si el usuario no ha cambiado y ya tenemos datos, no recargamos
     // Esto evita que cambios en activeId (scroll) disparen re-fetches
@@ -211,8 +223,8 @@ export function ReelsFeed() {
 
     fetchReels();
     // NOTA: Eliminamos news.length y activeId de las dependencias para evitar bucles.
-    // Solo dependemos del estado de Auth y el ID del usuario.
-  }, [authIsLoading, user?.id]);
+    // Solo dependemos del estado de Auth, el ID del usuario y el timeout del puente.
+  }, [authIsLoading, user?.id, authTimedOut]);
 
   useEffect(() => {
     if (news.length === 0) return;
