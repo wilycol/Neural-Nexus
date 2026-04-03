@@ -43,17 +43,18 @@ export function AdBanner({
   return (
     <div 
       ref={adRef}
-      className={cn("w-full overflow-hidden my-4 bg-accent/10 rounded-xl min-h-[100px] flex items-center justify-center border border-dashed border-muted-foreground/10", className)}
+      className={cn("w-full overflow-hidden my-4 bg-accent/5 rounded-xl min-h-[100px] border border-dashed border-muted-foreground/10", className)}
+      style={{ display: 'block' }}
     >
       {showPlaceholder ? (
-        <div className="flex flex-col items-center gap-2 p-4 text-center">
+        <div className="flex flex-col items-center justify-center gap-2 p-4 text-center min-h-[100px]">
           <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Anuncio de Google Ads</div>
           <div className="text-[10px] text-muted-foreground/40 italic">Espacio reservado para monetización</div>
         </div>
       ) : (
         <ins
           className="adsbygoogle"
-          style={{ display: "block" }}
+          style={{ display: "block", width: "100%", height: "auto", minHeight: "100px" }}
           data-ad-client="ca-pub-1327982622260280"
           data-ad-slot={slot}
           data-ad-format={format}
