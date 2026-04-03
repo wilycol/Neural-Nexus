@@ -20,7 +20,19 @@ import { toast } from "sonner";
 
 export default function HomePage() {
   useEffect(() => {
-    fetch("/api/stats/track-visit", { method: "POST" }).catch(() => {});
+    // Solo registrar la visita una vez por sesión del navegador
+    const sessionKey = "neural_nexus_tracked";
+    const hasVisited = sessionStorage.getItem(sessionKey);
+    
+    if (!hasVisited) {
+      fetch("/api/stats/track-visit", { method: "POST" })
+        .then((res) => {
+          if (res.ok) {
+            sessionStorage.setItem(sessionKey, "true");
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   return (
@@ -239,7 +251,7 @@ function GrowthStats() {
           <BarChart className="h-6 w-6" />
         </div>
         <div className="relative z-10">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Vistas Totales</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Visitas Únicas</p>
           <div className="flex items-baseline gap-2">
             <h3 className="text-2xl font-bold font-orbitron text-neon-blue drop-shadow-[0_0_8px_rgba(0,163,255,0.5)]">
               {stats.total_views.toLocaleString()}
