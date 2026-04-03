@@ -20,6 +20,11 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { getBadgeInfo } from "@/lib/utils";
 
 import { useAuth } from "@/hooks/use-auth";
+import { primaryMenuItems, destacadosItems, userMenuItems } from "@/lib/nav-config";
+import { PremiumCard } from "@/components/premium-card";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
+import { Crown, Sparkles } from "lucide-react";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -62,14 +67,78 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                 <span className="sr-only">Abrir menú</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72">
-              <div className="flex flex-col gap-6 py-4">
-                <Link href="/" className="flex items-center gap-2">
-                  <Logo size={32} />
-                </Link>
-                <nav className="flex flex-col gap-2">
-                  <NavLinks />
+            <SheetContent side="left" className="w-72 flex flex-col">
+              <div className="flex items-center gap-2 py-4 border-b">
+                <Logo size={32} />
+                <span className="font-orbitron font-bold text-lg tracking-tighter bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
+                  NEURAL NEXUS
+                </span>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto py-6">
+                <nav className="flex flex-col gap-4">
+                  <div className="space-y-1">
+                    <p className="px-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 mb-2">
+                      Navegación
+                    </p>
+                    <NavLinks />
+                  </div>
+
+                  {!profile?.is_premium && (
+                    <div className="px-2 mt-4">
+                      <PremiumCard />
+                    </div>
+                  )}
+
+                  {userNickname && (
+                    <div className="mt-6 space-y-1">
+                      <p className="px-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 mb-2">
+                        Mi Cuenta
+                      </p>
+                      {userMenuItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+                          >
+                            <Icon className="h-4 w-4 text-muted-foreground" />
+                            {item.label}
+                          </Link>
+                        );
+                      })}
+                      <button
+                        onClick={async () => {
+                          const supabase = getSupabaseBrowserClient();
+                          await supabase.auth.signOut();
+                          window.location.href = "/";
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md text-red-500 hover:bg-red-500/10 transition-colors mt-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  )}
+
+                  {!userNickname && (
+                    <div className="mt-8 px-2 flex flex-col gap-2">
+                      <Button variant="outline" className="w-full" asChild>
+                        <Link href="/login">Iniciar Sesión</Link>
+                      </Button>
+                      <Button className="w-full bg-gradient-to-r from-neon-blue to-neon-purple text-white" asChild>
+                        <Link href="/registro">Crear Cuenta</Link>
+                      </Button>
+                    </div>
+                  )}
                 </nav>
+              </div>
+
+              <div className="mt-auto pt-4 border-t pb-4 text-center">
+                <p className="text-[10px] text-muted-foreground/40 uppercase tracking-[0.2em] font-orbitron">
+                  Neural Nexus v2.0
+                </p>
               </div>
             </SheetContent>
           </Sheet>
@@ -204,27 +273,39 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
 }
 
 function NavLinks() {
-  const links = [
-    { href: "/", label: "Inicio" },
-    { href: "/categoria/modelos", label: "Modelos" },
-    { href: "/categoria/herramientas", label: "Herramientas" },
-    { href: "/categoria/memes", label: "Memes" },
-    { href: "/categoria/papers", label: "Papers" },
-    { href: "/categoria/drama", label: "Drama" },
-    { href: "/top5", label: "Top 5" },
-  ];
-
   return (
     <>
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md hover:bg-accent transition-colors"
-        >
-          {link.label}
-        </Link>
-      ))}
+      {primaryMenuItems.map((link) => {
+        const Icon = link.icon;
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+          >
+            <Icon className="h-4 w-4 text-muted-foreground" />
+            {link.label}
+          </Link>
+        );
+      })}
+      
+      <div className="my-3 px-3">
+        <Separator className="opacity-20" />
+      </div>
+
+      {destacadosItems.map((link) => {
+        const Icon = link.icon;
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
+          >
+            <Icon className={cn("h-4 w-4", link.color)} />
+            {link.label}
+          </Link>
+        );
+      })}
     </>
   );
 }
