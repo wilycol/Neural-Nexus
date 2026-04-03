@@ -7,11 +7,12 @@ export async function POST() {
     let supabase;
     try {
       supabase = createSupabaseAdmin();
-    } catch (adminError: any) {
-      console.error('Error initializing Admin client:', adminError.message);
+    } catch (adminError: unknown) {
+      const message = adminError instanceof Error ? adminError.message : 'Unknown error';
+      console.error('Error initializing Admin client:', message);
       return NextResponse.json({ 
         error: 'Admin Client Error', 
-        details: adminError.message,
+        details: message,
         hint: 'Verifica que SUPABASE_SERVICE_ROLE_KEY esté configurada en Vercel' 
       }, { status: 500 });
     }
@@ -29,11 +30,12 @@ export async function POST() {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    console.error('Crash in track-visit:', err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Crash in track-visit:', message);
     return NextResponse.json({ 
       error: 'Internal Server Error', 
-      details: err?.message || 'Unknown error' 
+      details: message 
     }, { status: 500 });
   }
 }
