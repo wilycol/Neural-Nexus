@@ -88,7 +88,7 @@ function ReelItem({ news, isActive }: ReelItemProps) {
       const method = previousLiked ? "DELETE" : "POST";
       const res = await fetch(`/api/news/${news.id}/like`, { method });
       if (!res.ok) throw new Error();
-    } catch (_err) {
+    } catch {
       // Rollback
       setIsLiked(previousLiked);
       setLikesCount(previousCount);
@@ -108,7 +108,7 @@ function ReelItem({ news, isActive }: ReelItemProps) {
           text: text,
           url: url,
         });
-      } catch (_err) {
+      } catch {
         // User cancelled or error
       }
     } else {

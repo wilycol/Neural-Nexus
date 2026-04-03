@@ -17,7 +17,7 @@ interface CreditCardProps {
   title: string;
   name: string;
   description: string;
-  icon: any;
+  icon: React.ElementType;
   color: string;
   svgLogo?: React.ReactNode;
 }
