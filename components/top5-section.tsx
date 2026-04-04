@@ -10,8 +10,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
+import { DailyImpactWidget } from "./daily-impact-widget";
 
-export function Top5Section() {
+export function Top5Section({ todayViews = 0 }: { todayViews?: number }) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,21 +55,7 @@ export function Top5Section() {
   }
 
   if (posts.length === 0) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-neon-blue" />
-          <h2 className="text-xl font-bold">Top 5 del Día</h2>
-        </div>
-        <Card>
-          <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground">
-              Los posts destacados aparecerán aquí pronto
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <DailyImpactWidget todayViews={todayViews} />;
   }
 
   return (

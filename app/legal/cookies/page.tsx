@@ -8,7 +8,7 @@ export default function CookiesPage() {
           Política de Cookies
         </h2>
         <p className="mt-4 text-muted-foreground leading-relaxed">
-          En Neural Nexus utilizamos cookies y tecnologías de seguimiento para mejorar el rendimiento del portal y alimentar nuestro **Growth Engine**.
+          En Neural Nexus utilizamos cookies y tecnologías de seguimiento para mejorar el rendimiento del portal y alimentar nuestro <strong>Growth Engine</strong>.
         </p>
       </section>
 
@@ -39,7 +39,7 @@ export default function CookiesPage() {
       <section>
         <h3 className="text-xl font-bold text-foreground">Gestión de Cookies</h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          Puede gestionar sus preferencias a través del **CMP de Google** (el mensaje de consentimiento que aparece al entrar) o directamente en la configuración de su navegador.
+          Puede gestionar sus preferencias a través del <strong>CMP de Google</strong> (el mensaje de consentimiento que aparece al entrar) o directamente en la configuración de su navegador.
         </p>
       </section>
     </div>

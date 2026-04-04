@@ -16,13 +16,13 @@ export default function PrivacyPage() {
         <h3 className="text-xl font-bold text-foreground">Aviso de Disclaimer (Transparencia de IA)</h3>
         <div className="mt-4 space-y-4 text-sm text-muted-foreground">
           <p>
-            • **Transparencia de IA:** Neural Nexus es una plataforma impulsada en un **95% por sistemas de Inteligencia Artificial**. Los contenidos son recolectados, interpretados y publicados de manera autónoma por Beatriz AutoPublisher.
+            • <strong>Transparencia de IA:</strong> Neural Nexus es una plataforma impulsada en un <strong>95% por sistemas de Inteligencia Artificial</strong>. Los contenidos son recolectados, interpretados y publicados de manera autónoma por Beatriz AutoPublisher.
           </p>
           <p>
-            • **Limitación de Exactitud:** No garantizamos que toda la información esté libre de errores o &quot;alucinaciones&quot; de los modelos generativos. El contenido se proporciona con fines informativos.
+            • <strong>Limitación de Exactitud:</strong> No garantizamos que toda la información esté libre de errores o &quot;alucinaciones&quot; de los modelos generativos. El contenido se proporciona con fines informativos.
           </p>
           <p>
-            • **Modelo de Replicación:** Somos un agregador inteligente. Siempre acreditamos la fuente original con su nombre y URL.
+            • <strong>Modelo de Replicación:</strong> Somos un agregador inteligente. Siempre acreditamos la fuente original con su nombre y URL.
           </p>
         </div>
       </section>

@@ -19,6 +19,8 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export default function HomePage() {
+  const [todayViews, setTodayViews] = useState(0);
+
   useEffect(() => {
     // Solo registrar la visita una vez por sesión del navegador
     const sessionKey = "neural_nexus_tracked";
@@ -63,11 +65,11 @@ export default function HomePage() {
       </section>
 
       <section className="mb-8">
-        <Top5Section />
+        <Top5Section todayViews={todayViews} />
       </section>
 
       <section className="mb-12">
-        <GrowthStats />
+        <GrowthStats onDataLoad={setTodayViews} />
       </section>
 
       <section>
@@ -214,8 +216,8 @@ function HeroTop5Background() {
   );
 }
 
-function GrowthStats() {
-  const [stats, setStats] = useState<{ total_views: number; total_users: number; total_news: number } | null>(null);
+function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void }) {
+  const [stats, setStats] = useState<{ total_views: number; total_users: number; total_news: number; today_views?: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -223,7 +225,12 @@ function GrowthStats() {
     fetch("/api/stats/site")
       .then((res) => res.json())
       .then((json) => {
-        if (json.data) setStats(json.data);
+        if (json.data) {
+          setStats(json.data);
+          if (onDataLoad && json.data.today_views !== undefined) {
+            onDataLoad(json.data.today_views);
+          }
+        }
       })
       .catch(() => setStats(null))
       .finally(() => setLoading(false));
@@ -251,7 +258,7 @@ function GrowthStats() {
           <BarChart className="h-6 w-6" />
         </div>
         <div className="relative z-10">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Visitas Únicas</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Total Histórico</p>
           <div className="flex items-baseline gap-2">
             <h3 className="text-2xl font-bold font-orbitron text-neon-blue drop-shadow-[0_0_8px_rgba(0,163,255,0.5)]">
               {stats.total_views.toLocaleString()}

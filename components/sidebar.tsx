@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 import { primaryMenuItems, destacadosItems, userMenuItems, legalMenuItems } from "@/lib/nav-config";
 import { PremiumCard } from "@/components/premium-card";
+import { MissionWidget } from "@/components/mission-widget";
 
 interface SidebarProps {
   isLoggedIn?: boolean;
@@ -191,6 +192,8 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
             </Link>
           </div>
         )}
+
+        <MissionWidget />
       </nav>
 
       <Separator />

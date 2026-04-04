@@ -5,9 +5,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     
-    const { data: rpcData, error: rpcError } = await (supabase as unknown as { 
-      rpc: (n: string) => { single: () => Promise<{ data: { total_views: number, total_users: number, total_news: number } | null, error: { message: string } | null }> } 
-    })
+    const { data: rpcData, error: rpcError } = await (supabase as any)
       .rpc('get_site_wide_stats')
       .single();
 
