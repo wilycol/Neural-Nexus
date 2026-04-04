@@ -19,7 +19,6 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export default function HomePage() {
-  const [todayViews, setTodayViews] = useState(0);
 
   useEffect(() => {
     // Solo registrar la visita una vez por sesión del navegador
@@ -69,7 +68,7 @@ export default function HomePage() {
       </section>
 
       <section className="mb-12">
-        <GrowthStats onDataLoad={setTodayViews} />
+        <GrowthStats />
       </section>
 
       <section>
