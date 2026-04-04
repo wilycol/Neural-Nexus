@@ -8,7 +8,8 @@ export async function GET() {
     const supabase = createServerClient();
     
     // El RPC devuelve un objeto JSON directamente
-    const { data: rpcData, error: rpcError } = await supabase.rpc('get_site_wide_stats');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: rpcData, error: rpcError } = await (supabase as any).rpc('get_site_wide_stats');
 
     if (rpcError) {
       console.error('Error fetching site stats:', rpcError);
