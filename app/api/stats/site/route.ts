@@ -5,6 +5,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: rpcData, error: rpcError } = await (supabase as any)
       .rpc('get_site_wide_stats')
       .single();

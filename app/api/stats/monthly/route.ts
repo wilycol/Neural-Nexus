@@ -23,6 +23,7 @@ export async function GET() {
     }
 
     // 3. Obtener estadísticas mensuales
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
       .rpc('get_monthly_stats')
       .single();

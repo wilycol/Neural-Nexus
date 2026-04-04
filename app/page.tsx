@@ -234,7 +234,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
       })
       .catch(() => setStats(null))
       .finally(() => setLoading(false));
-  }, []);
+  }, [onDataLoad]);
 
   if (loading) {
     return (
