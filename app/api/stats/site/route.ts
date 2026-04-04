@@ -7,6 +7,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     
+    // El RPC devuelve un objeto JSON directamente
     const { data: rpcData, error: rpcError } = await supabase.rpc('get_site_wide_stats');
 
     if (rpcError) {
@@ -15,8 +16,11 @@ export async function GET() {
     }
 
     return NextResponse.json({ data: rpcData });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('CRITICAL ERROR in site stats API:', err);
-    return NextResponse.json({ error: 'Internal Error', message: err.message }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal Error', 
+      message: err instanceof Error ? err.message : 'Unknown error' 
+    }, { status: 500 });
   }
 }

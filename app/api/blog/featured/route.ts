@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
         return null;
       }
     })();
+    
     if (!supabase) {
       return NextResponse.json({
         data: [],
@@ -23,42 +24,43 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    let { data, error } = await supabase
+    // 1. Intentar obtener posts marcados como destacados en blog_posts
+    const { data: blogData, error: blogError } = await supabase
       .from('blog_posts')
       .select('*')
       .eq('featured', true)
       .order('published_at', { ascending: false })
       .limit(limit);
 
-    // Si no hay posts en blog_posts, intentamos con la tabla de news para el Top 5
-    if (!data || data.length === 0) {
+    if (blogError) {
+      console.error('Error fetching blog featured:', blogError);
+    }
+
+    let finalData = blogData || [];
+
+    // 2. Si no hay destacados, fallback a las noticias más vistas de la tabla 'news'
+    if (finalData.length === 0) {
       const { data: newsData, error: newsError } = await supabase
         .from('news')
         .select('*')
-        .order('view_count', { ascending: false }) // Priorizar los más vistos
+        .order('view_count', { ascending: false })
         .limit(limit);
       
-      if (!newsError) {
-        data = newsData;
+      if (!newsError && newsData) {
+        finalData = newsData;
+      } else if (newsError) {
+        console.error('Error fetching news fallback:', newsError);
       }
     }
 
-    if (error) {
-      console.error('Error fetching featured posts:', error);
-      return NextResponse.json(
-        { error: 'Error al obtener posts destacados' },
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json({
-      data: data || [],
-      count: data?.length || 0,
+      data: finalData,
+      count: finalData.length,
     });
-  } catch (error) {
-    console.error('Error in featured posts API:', error);
+  } catch (err: unknown) {
+    console.error('Error in featured posts API:', err);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: 'Error interno del servidor', message: err instanceof Error ? err.message : 'Unknown error' },
       { status: 500 }
     );
   }
