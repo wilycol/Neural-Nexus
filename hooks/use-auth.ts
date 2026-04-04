@@ -8,8 +8,10 @@ import { Database } from "@/types/database";
 type Profile = Database["public"]["Tables"]["users"]["Row"];
 
 // 🚀 CACHÉ MOLECULAR: Evita martillear la base de datos desde múltiples componentes
+// 🚀 CACHÉ MOLECULAR: Evita martillear la base de datos desde múltiples componentes
 let cachedProfile: Profile | null = null;
 let profileFetchPromise: Promise<Profile | null> | null = null;
+let globalAuthInitPromise: Promise<void> | null = null;
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -18,22 +20,13 @@ export function useAuth() {
 
   // Helper industrial para sincronización de perfil con timeout
   const fetchProfileAtomic = async (userId: string): Promise<Profile | null> => {
-    // Si ya tenemos el perfil en caché para este usuario, lo devolvemos
-    if (cachedProfile && cachedProfile.id === userId) {
-      return cachedProfile;
-    }
-
-    // Si ya hay una petición en curso para este usuario, nos unimos a ella
-    if (profileFetchPromise) {
-      return profileFetchPromise;
-    }
+    if (cachedProfile && cachedProfile.id === userId) return cachedProfile;
+    if (profileFetchPromise) return profileFetchPromise;
 
     const supabase = getSupabaseBrowserClient();
-    
-    // Creamos la promesa de carga con protección de timeout (5s)
     profileFetchPromise = new Promise(async (resolve) => {
       const timeoutId = setTimeout(() => {
-        console.warn("[Auth] ⚠️ Timeout en fetchProfile (5s). Continuando sin perfil extendido.");
+        console.warn("[Auth] ⚠️ Timeout en fetchProfile (5s).");
         resolve(null);
       }, 5000);
 
@@ -45,7 +38,6 @@ export function useAuth() {
           .maybeSingle();
 
         clearTimeout(timeoutId);
-        
         if (error) {
           console.error("[Auth] 😭 Error en DB users:", error.message);
           resolve(null);
@@ -68,39 +60,45 @@ export function useAuth() {
     const supabase = getSupabaseBrowserClient();
 
     const initAuth = async () => {
-      try {
-        console.log("[Auth] 🛡️ Sincronizando sesión industrial...");
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error("[Auth] ❌ Fallo en getSession:", error.message);
-          setIsLoading(false);
-          return;
-        }
-
+      // Bloqueo global: si ya hay una inicialización en curso, esperamos a esa.
+      if (globalAuthInitPromise) {
+        await globalAuthInitPromise;
+        // Al terminar la global, actualizamos este estado local
+        const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          console.log("[Auth] ✅ Usuario autenticado:", session.user.email);
           setUser(session.user);
-          
-          // DESBLOQUEO ASÍNCRONO: Consideramos cargado el sistema BASE
-          setIsLoading(false); 
-          
-          // Cargamos el perfil en paralelo sin bloquear el resto de la web
-          const p = await fetchProfileAtomic(session.user.id);
-          if (p) setProfile(p);
-        } else {
-          console.log("[Auth] ℹ️ Navegación anónima.");
-          setUser(null);
-          setProfile(null);
-          cachedProfile = null;
-          setIsLoading(false);
+          if (cachedProfile) setProfile(cachedProfile);
         }
-      } catch (error) {
-        console.error("[Auth] 💥 Fallo crítico en inicialización:", error);
         setIsLoading(false);
-      } finally {
-        console.log("[Auth] 🏁 Inicialización de puente completada.");
+        return;
       }
+
+      globalAuthInitPromise = new Promise(async (resolve) => {
+        try {
+          console.log("[Auth] 🛡️ Sincronizando sesión industrial única...");
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            console.error("[Auth] ❌ Fallo en getSession:", error.message);
+          } else if (session?.user) {
+            console.log("[Auth] ✅ Usuario autenticado:", session.user.email);
+            setUser(session.user);
+            const p = await fetchProfileAtomic(session.user.id);
+            if (p) setProfile(p);
+          } else {
+            console.log("[Auth] ℹ️ Navegación anónima.");
+            setUser(null);
+            setProfile(null);
+            cachedProfile = null;
+          }
+        } catch (error) {
+          console.error("[Auth] 💥 Fallo crítico en inicialización:", error);
+        } finally {
+          setIsLoading(false);
+          console.log("[Auth] 🏁 Inicialización de puente único completada.");
+          resolve();
+        }
+      });
     };
 
     initAuth();
@@ -109,15 +107,26 @@ export function useAuth() {
       async (event, session) => {
         console.log(`[Auth] Sincronización Evento: ${event}`);
         
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setProfile(null);
+          cachedProfile = null;
+          setIsLoading(false);
+          return;
+        }
+
         if (session?.user) {
           setUser(session.user);
           setIsLoading(false);
           const p = await fetchProfileAtomic(session.user.id);
-          if (p) setProfile(p);
-        } else {
-          setUser(null);
-          setProfile(null);
-          cachedProfile = null;
+          if (p) {
+            setProfile(p);
+            // Pequeña pausa para asegurar sincronización en el primer login
+            if (event === 'SIGNED_IN') {
+              console.log("[Auth] 🚀 Login exitoso, perfil sincronizado.");
+            }
+          }
+        } else if (event !== 'INITIAL_SESSION') {
           setIsLoading(false);
         }
       }
