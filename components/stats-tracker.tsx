@@ -11,10 +11,10 @@ export function StatsTracker() {
   const hasTracked = useRef(false);
 
   useEffect(() => {
-    // 1. Evitar tracking múltiple en la misma sesión/montaje (StrictMode)
+    // 1. Evitar tracking múltiple en el mismo montaje de componente
     if (hasTracked.current) return;
     
-    // 2. Persistencia en SessionStorage para evitar doble conteo por login/re-montaje
+    // 2. Escudo de SessionStorage (Primera capa de defensa cliente)
     const today = new Date().toISOString().split('T')[0];
     const sessionKey = `nn_tracked_${today}`;
     
@@ -24,22 +24,20 @@ export function StatsTracker() {
     }
     
     async function trackVisit() {
-      const supabase = getSupabaseBrowserClient();
-      
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabase as any).rpc('increment_daily_views');
+        // 3. Llamada al API que ahora tiene el Escudo de Cookies (Defensa definitiva)
+        const response = await fetch('/api/stats/track-visit', {
+          method: 'POST',
+        });
         
-        if (error) {
-          console.error("Growth Engine Error (tracking):", error.message);
-        } else {
-          // Guardar en sesión que ya contamos esta visita hoy
+        if (response.ok) {
+          // Guardar en sesión que ya enviamos la señal
           if (typeof window !== "undefined") {
             sessionStorage.setItem(sessionKey, "true");
           }
         }
-      } catch {
-        // Silencioso para el usuario
+      } catch (error) {
+        console.error("Error en el sistema de rastreo:", error);
       }
     }
 
