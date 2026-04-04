@@ -32,12 +32,23 @@ export async function GET(request: NextRequest) {
       .order('published_at', { ascending: false })
       .limit(limit);
 
-    if (blogError) {
-      console.error('Error fetching blog featured:', blogError);
+    // Definimos una interfaz básica para que el fallback sea compatible con el frontend
+    interface FeaturedItem {
+      id: string;
+      title: string;
+      image_url: string | null;
+      published_at: string;
+      excerpt?: string;
+      summary?: string;
     }
 
-    // Usamos any[] para permitir tanto datos de blog_posts como de news en el fallback
-    let finalData: any[] = blogData || [];
+    let finalData: FeaturedItem[] = (blogData || []).map(item => ({
+      id: item.id,
+      title: item.title,
+      image_url: item.image_url,
+      published_at: item.published_at,
+      excerpt: item.excerpt,
+    }));
 
     // 2. Si no hay destacados, fallback a las noticias más vistas de la tabla 'news'
     if (finalData.length === 0) {
@@ -48,7 +59,13 @@ export async function GET(request: NextRequest) {
         .limit(limit);
       
       if (!newsError && newsData) {
-        finalData = newsData;
+        finalData = newsData.map(item => ({
+          id: item.id,
+          title: item.title,
+          image_url: item.image_url,
+          published_at: item.published_at,
+          summary: item.summary,
+        }));
       } else if (newsError) {
         console.error('Error fetching news fallback:', newsError);
       }
