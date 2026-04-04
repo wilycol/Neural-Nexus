@@ -7,10 +7,7 @@ export async function GET() {
   try {
     const supabase = createServerClient();
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: rpcData, error: rpcError } = await (supabase as any)
-      .rpc('get_site_wide_stats')
-      .single();
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_site_wide_stats');
 
     if (rpcError) {
       console.error('Error fetching site stats:', rpcError);
@@ -18,7 +15,8 @@ export async function GET() {
     }
 
     return NextResponse.json({ data: rpcData });
-  } catch {
-    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+  } catch (err: any) {
+    console.error('CRITICAL ERROR in site stats API:', err);
+    return NextResponse.json({ error: 'Internal Error', message: err.message }, { status: 500 });
   }
 }

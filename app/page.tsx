@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { NewsFeed } from "@/components/news-feed";
-import { Top5Section } from "@/components/top5-section";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp } from "lucide-react";
@@ -39,32 +38,32 @@ export default function HomePage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <section className="mb-8">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neon-blue/10 via-neon-purple/10 to-neon-blue/10 border border-neon-blue/20 p-6 md:p-8">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neon-blue/20 via-neon-purple/20 to-neon-blue/20 border border-neon-blue/30 min-h-[450px] md:min-h-[550px] flex items-center shadow-[0_0_50px_rgba(0,163,255,0.15)]">
           <HeroTop5Background />
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold font-orbitron mb-2">
-                <span className="gradient-text">Neural Nexus</span>
+          <div className="relative z-10 w-full px-6 py-12 md:px-16 md:py-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 bg-gradient-to-t from-background/90 via-background/40 to-transparent">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon-blue/20 border border-neon-blue/30 text-neon-blue text-[10px] uppercase tracking-widest font-orbitron mb-4 animate-pulse">
+                <span className="h-1.5 w-1.5 rounded-full bg-neon-blue"></span>
+                Top Story Live
+              </div>
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold font-orbitron mb-4 leading-tight">
+                <span className="gradient-text drop-shadow-[0_0_15px_rgba(0,163,255,0.5)]">Neural Nexus</span>
               </h1>
-              <p className="text-muted-foreground max-w-lg">
+              <p className="text-sm md:text-lg text-white/80 max-w-lg leading-relaxed font-light backdrop-blur-sm p-2 rounded-lg bg-black/10">
                 Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente.
               </p>
             </div>
             <Button
-              className="bg-gradient-to-r from-neon-blue to-neon-purple text-white hover:opacity-90"
+              className="bg-gradient-to-r from-neon-blue to-neon-purple text-white hover:opacity-90 h-12 px-8 rounded-full shadow-[0_0_20px_rgba(0,163,255,0.4)] transition-all hover:scale-105 active:scale-95"
               asChild
             >
               <Link href="/top5">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Ver Top 5
+                <Sparkles className="h-5 w-5 mr-3" />
+                Explorar Top 5
               </Link>
             </Button>
           </div>
         </div>
-      </section>
-
-      <section className="mb-8">
-        <Top5Section />
       </section>
 
       <section className="mb-12">
@@ -206,7 +205,7 @@ function HeroTop5Background() {
           ))}
         </div>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/70 to-background/85" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background/90" />
       {current?.title ? (
         <div className="absolute bottom-3 right-4 max-w-[70%] text-right text-xs text-muted-foreground">
           Top 5: {current.title}
@@ -217,7 +216,7 @@ function HeroTop5Background() {
 }
 
 function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void }) {
-  const [stats, setStats] = useState<{ total_views: number; total_users: number; total_news: number; today_views?: number } | null>(null);
+  const [stats, setStats] = useState<{ total_views: number; total_users: number; total_posts: number; today_views?: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -246,7 +245,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
     );
   }
 
-  if (!stats) return null;
+  const displayStats = stats || { total_views: 0, total_users: 0, total_posts: 0, today_views: 0 };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -259,7 +258,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
           <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Total Histórico</p>
           <div className="flex items-baseline gap-1.5">
             <h3 className="text-xl font-bold font-orbitron text-neon-blue drop-shadow-[0_0_8px_rgba(0,163,255,0.5)]">
-              {stats.total_views.toLocaleString()}
+              {displayStats.total_views.toLocaleString()}
             </h3>
             <span className="text-[9px] text-neon-blue/60 font-mono">LIVE</span>
           </div>
@@ -275,7 +274,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
           <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Impacto Hoy</p>
           <div className="flex items-baseline gap-1.5">
             <h3 className="text-xl font-bold font-orbitron text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">
-              {(stats.today_views || 0).toLocaleString()}
+              {(displayStats.today_views || 0).toLocaleString()}
             </h3>
             <div className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
           </div>
@@ -291,7 +290,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
           <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Comunidad Neural</p>
           <div className="flex items-baseline gap-1.5">
             <h3 className="text-xl font-bold font-orbitron text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
-              {stats.total_users.toLocaleString()}
+              {displayStats.total_users.toLocaleString()}
             </h3>
             <span className="text-[9px] text-green-500/60 font-mono italic">Nexus+</span>
           </div>
@@ -307,7 +306,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
           <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Noticias Nexus</p>
           <div className="flex items-baseline gap-1.5">
             <h3 className="text-xl font-bold font-orbitron text-neon-purple drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
-              {stats.total_news.toLocaleString()}
+              {displayStats.total_posts.toLocaleString()}
             </h3>
             <span className="text-[9px] text-neon-purple/60 font-mono">IA</span>
           </div>
