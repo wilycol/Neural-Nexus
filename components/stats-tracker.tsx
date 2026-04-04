@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 
 /**
  * StatsTracker: Componente silencioso encargado de alimentar el Growth Engine.
