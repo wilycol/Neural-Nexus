@@ -216,7 +216,7 @@ function HeroTop5Background() {
 }
 
 function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void }) {
-  const [stats, setStats] = useState<{ total_views: number; total_users: number; total_posts: number; today_views?: number } | null>(null);
+  const [stats, setStats] = useState<{ total_views: number; total_users: number; total_news: number; today_views?: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -245,7 +245,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
     );
   }
 
-  const displayStats = stats || { total_views: 0, total_users: 0, total_posts: 0, today_views: 0 };
+  const displayStats = stats || { total_views: 0, total_users: 0, total_news: 0, today_views: 0 };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -306,7 +306,7 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
           <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Noticias Nexus</p>
           <div className="flex items-baseline gap-1.5">
             <h3 className="text-xl font-bold font-orbitron text-neon-purple drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
-              {displayStats.total_posts.toLocaleString()}
+              {displayStats.total_news.toLocaleString()}
             </h3>
             <span className="text-[9px] text-neon-purple/60 font-mono">IA</span>
           </div>
