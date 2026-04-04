@@ -27,7 +27,7 @@ export function StatsTracker() {
         } else {
           // console.log("Growth Engine: Vista registrada.");
         }
-      } catch (err) {
+      } catch {
         // Silencioso para el usuario
       }
     }

@@ -10,9 +10,6 @@ import {
   Crown,
   LogOut,
   Video,
-  Scale,
-  Shield,
-  Cookie,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";

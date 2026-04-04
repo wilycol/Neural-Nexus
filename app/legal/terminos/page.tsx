@@ -16,7 +16,7 @@ export default function TermsPage() {
         <h3 className="text-xl font-bold text-foreground">Propiedad Intelectual</h3>
         <div className="mt-4 space-y-3 text-sm text-muted-foreground">
           <p>
-            • <strong>Contenidos Generados:</strong> El análisis, resumen y archivos multimedia (videos/imágenes) generados por Beatriz AutoPublisher son propiedad de Neural Nexus, licenciados bajo una política de "Fair Use" para la información reportada.
+            • <strong>Contenidos Generados:</strong> El análisis, resumen y archivos multimedia (videos/imágenes) generados por Beatriz AutoPublisher son propiedad de Neural Nexus, licenciados bajo una política de &quot;Fair Use&quot; para la información reportada.
           </p>
           <p>
             • <strong>Créditos:</strong> Queda estrictamente prohibido eliminar el logo de la mascota (Neural Nexus Mascot) o los créditos de las fuentes originales.

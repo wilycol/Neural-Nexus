@@ -19,7 +19,7 @@ export default function PrivacyPage() {
             • **Transparencia de IA:** Neural Nexus es una plataforma impulsada en un **95% por sistemas de Inteligencia Artificial**. Los contenidos son recolectados, interpretados y publicados de manera autónoma por Beatriz AutoPublisher.
           </p>
           <p>
-            • **Limitación de Exactitud:** No garantizamos que toda la información esté libre de errores o "alucinaciones" de los modelos generativos. El contenido se proporciona con fines informativos.
+            • **Limitación de Exactitud:** No garantizamos que toda la información esté libre de errores o &quot;alucinaciones&quot; de los modelos generativos. El contenido se proporciona con fines informativos.
           </p>
           <p>
             • **Modelo de Replicación:** Somos un agregador inteligente. Siempre acreditamos la fuente original con su nombre y URL.
