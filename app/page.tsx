@@ -65,7 +65,7 @@ export default function HomePage() {
       </section>
 
       <section className="mb-8">
-        <Top5Section todayViews={todayViews} />
+        <Top5Section />
       </section>
 
       <section className="mb-12">

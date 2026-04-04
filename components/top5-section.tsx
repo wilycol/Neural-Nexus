@@ -10,9 +10,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
-import { DailyImpactWidget } from "./daily-impact-widget";
 
-export function Top5Section({ todayViews = 0 }: { todayViews?: number }) {
+export function Top5Section() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
