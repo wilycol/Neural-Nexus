@@ -9,16 +9,22 @@ export async function GET() {
     
     // El RPC devuelve un objeto JSON directamente
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: rpcData, error: rpcError } = await (supabase as any)
-      .rpc('get_site_wide_stats')
-      .single(); 
+    const { data: rpcData, error: rpcError } = await (supabase as any).rpc('get_site_wide_stats');
 
     if (rpcError) {
       console.error('Error fetching site stats:', rpcError);
-      return NextResponse.json({ error: 'Database error', details: rpcError.message }, { status: 500 });
+      return NextResponse.json({ 
+        error: 'Database error', 
+        details: rpcError.message,
+        hint: rpcError.hint,
+        code: rpcError.code 
+      }, { status: 500 });
     }
 
-    return NextResponse.json({ data: rpcData });
+    // Al ser un RETURNS TABLE, Supabase devuelve un array. Tomamos el primer elemento.
+    const stats = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+
+    return NextResponse.json({ data: stats });
   } catch (err: unknown) {
     console.error('CRITICAL ERROR in site stats API:', err);
     return NextResponse.json({ 
