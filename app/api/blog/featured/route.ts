@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 1. Intentar obtener posts marcados como destacados en blog_posts
-    const { data: blogData, error: blogError } = await supabase
+    const { data: blogData } = await supabase
       .from('blog_posts')
       .select('*')
       .eq('featured', true)
