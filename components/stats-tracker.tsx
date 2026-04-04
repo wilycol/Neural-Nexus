@@ -11,21 +11,31 @@ export function StatsTracker() {
   const hasTracked = useRef(false);
 
   useEffect(() => {
-    // Evitar tracking múltiple en la misma sesión/montaje (StrictMode de React)
+    // 1. Evitar tracking múltiple en la misma sesión/montaje (StrictMode)
     if (hasTracked.current) return;
+    
+    // 2. Persistencia en SessionStorage para evitar doble conteo por login/re-montaje
+    const today = new Date().toISOString().split('T')[0];
+    const sessionKey = `nn_tracked_${today}`;
+    
+    if (typeof window !== "undefined" && sessionStorage.getItem(sessionKey)) {
+      hasTracked.current = true;
+      return;
+    }
     
     async function trackVisit() {
       const supabase = getSupabaseBrowserClient();
       
       try {
-        // Llamada al RPC 'increment_daily_views'
-        // @ts-expect-error: RPC dynamic call before type generation
         const { error } = await supabase.rpc('increment_daily_views');
         
         if (error) {
           console.error("Growth Engine Error (tracking):", error.message);
         } else {
-          // console.log("Growth Engine: Vista registrada.");
+          // Guardar en sesión que ya contamos esta visita hoy
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(sessionKey, "true");
+          }
         }
       } catch {
         // Silencioso para el usuario
