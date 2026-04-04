@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
       console.error('Error fetching blog featured:', blogError);
     }
 
-    let finalData = blogData || [];
+    // Usamos any[] para permitir tanto datos de blog_posts como de news en el fallback
+    let finalData: any[] = blogData || [];
 
     // 2. Si no hay destacados, fallback a las noticias más vistas de la tabla 'news'
     if (finalData.length === 0) {
