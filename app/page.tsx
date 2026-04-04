@@ -19,21 +19,7 @@ import { toast } from "sonner";
 
 export default function HomePage() {
 
-  useEffect(() => {
-    // Solo registrar la visita una vez por sesión del navegador
-    const sessionKey = "neural_nexus_tracked_v1";
-    const hasVisited = sessionStorage.getItem(sessionKey);
-    
-    if (!hasVisited) {
-      fetch("/api/stats/track-visit", { method: "POST" })
-        .then((res) => {
-          if (res.ok) {
-            sessionStorage.setItem(sessionKey, "true");
-          }
-        })
-        .catch(() => {});
-    }
-  }, []);
+  // 📈 Operación Independencia: El tracking ahora es manejado ÚNICAMENTE por StatsTracker en el Layout global.
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
