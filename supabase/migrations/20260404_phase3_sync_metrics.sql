@@ -13,17 +13,14 @@ RETURNS TABLE (
 BEGIN
   RETURN QUERY
   SELECT 
-    -- Total histórico = (Vistas en noticias) + (Vistas en blogs) + (Vistas acumuladas en site_stats_daily)
-    -- Sumamos explícitamente site_stats_daily para capturar todo el tráfico desde el inicio de Operación Independencia
-    (SELECT COALESCE(SUM(view_count), 0) FROM public.news) + 
-    (SELECT COALESCE(SUM(view_count), 0) FROM public.blog_posts) + 
-    (SELECT COALESCE(SUM(views_count), 0) FROM public.site_stats_daily) AS total_views,
+    ((SELECT COALESCE(SUM(view_count), 0) FROM public.news) + 
+     (SELECT COALESCE(SUM(view_count), 0) FROM public.blog_posts) + 
+     (SELECT COALESCE(SUM(views_count), 0) FROM public.site_stats_daily))::BIGINT AS total_views,
     
-    (SELECT COUNT(*) FROM public.users) AS total_users,
-    (SELECT COUNT(*) FROM public.news) AS total_news,
+    (SELECT COUNT(*) FROM public.users)::BIGINT AS total_users,
+    (SELECT COUNT(*) FROM public.news)::BIGINT AS total_news,
     
-    -- Vistas del día actual
-    (SELECT COALESCE(views_count, 0) FROM public.site_stats_daily WHERE day = CURRENT_DATE) AS today_views;
+    (SELECT COALESCE(views_count, 0) FROM public.site_stats_daily WHERE day = CURRENT_DATE)::BIGINT AS today_views;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
