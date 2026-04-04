@@ -55,7 +55,11 @@ export function Top5Section({ todayViews = 0 }: { todayViews?: number }) {
   }
 
   if (posts.length === 0) {
-    return <DailyImpactWidget todayViews={todayViews} />;
+    return (
+      <div className="flex items-center justify-center h-24 rounded-lg bg-muted/10 border border-dashed border-muted-foreground/30">
+        <p className="text-sm text-muted-foreground italic">Explorando fronteras tecnológicas para el próximo Top 5...</p>
+      </div>
+    );
   }
 
   return (

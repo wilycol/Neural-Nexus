@@ -5,7 +5,7 @@ import { NewsFeed } from "@/components/news-feed";
 import { Top5Section } from "@/components/top5-section";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Flame, Newspaper, Users, BarChart, Zap } from "lucide-react";
+import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import {
   Dialog,
@@ -23,7 +23,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Solo registrar la visita una vez por sesión del navegador
-    const sessionKey = "neural_nexus_tracked";
+    const sessionKey = "neural_nexus_tracked_v1";
     const hasVisited = sessionStorage.getItem(sessionKey);
     
     if (!hasVisited) {
@@ -125,6 +125,7 @@ export default function HomePage() {
   );
 }
 
+// ... Tipos y HeroTop5Background (se mantienen intactos)
 type HeroNewsItem = {
   id: string;
   title: string;
@@ -238,9 +239,9 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 bg-muted/20 border border-muted-foreground/10 rounded-xl"></div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 animate-pulse">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-20 bg-muted/20 border border-muted-foreground/10 rounded-xl"></div>
         ))}
       </div>
     );
@@ -249,57 +250,67 @@ function GrowthStats({ onDataLoad }: { onDataLoad?: (todayViews: number) => void
   if (!stats) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="bg-card/30 backdrop-blur-sm border border-neon-blue/20 rounded-xl p-6 flex items-center gap-4 hover:border-neon-blue/60 transition-all group relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-2 opacity-10">
-          <BarChart className="h-16 w-16" />
-        </div>
-        <div className="p-3 rounded-lg bg-neon-blue/10 text-neon-blue shadow-[0_0_15px_rgba(0,163,255,0.3)]">
-          <BarChart className="h-6 w-6" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      {/* 1. Total Histórico */}
+      <div className="bg-card/30 backdrop-blur-sm border border-neon-blue/20 rounded-xl p-4 flex items-center gap-3 hover:border-neon-blue/60 transition-all group relative overflow-hidden">
+        <div className="p-2 rounded-lg bg-neon-blue/10 text-neon-blue shadow-[0_0_15px_rgba(0,163,255,0.3)]">
+          <BarChart className="h-5 w-5" />
         </div>
         <div className="relative z-10">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Total Histórico</p>
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-2xl font-bold font-orbitron text-neon-blue drop-shadow-[0_0_8px_rgba(0,163,255,0.5)]">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Total Histórico</p>
+          <div className="flex items-baseline gap-1.5">
+            <h3 className="text-xl font-bold font-orbitron text-neon-blue drop-shadow-[0_0_8px_rgba(0,163,255,0.5)]">
               {stats.total_views.toLocaleString()}
             </h3>
-            <span className="text-[10px] text-green-500 animate-[pulse_1s_infinite] font-mono tracking-tighter shadow-green-500/50">LIVE</span>
+            <span className="text-[9px] text-neon-blue/60 font-mono">LIVE</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-card/30 backdrop-blur-sm border border-green-500/20 rounded-xl p-6 flex items-center gap-4 hover:border-green-500/60 transition-all group relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-2 opacity-10">
-          <Users className="h-16 w-16" />
-        </div>
-        <div className="p-3 rounded-lg bg-green-500/10 text-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-          <Users className="h-6 w-6" />
+      {/* 2. Impacto de Hoy (Color Ámbar) */}
+      <div className="bg-card/30 backdrop-blur-sm border border-amber-500/20 rounded-xl p-4 flex items-center gap-3 hover:border-amber-500/60 transition-all group relative overflow-hidden">
+        <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+          <TrendingUp className="h-5 w-5" />
         </div>
         <div className="relative z-10">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Comunidad Neural</p>
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-2xl font-bold font-orbitron text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Impacto Hoy</p>
+          <div className="flex items-baseline gap-1.5">
+            <h3 className="text-xl font-bold font-orbitron text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">
+              {(stats.today_views || 0).toLocaleString()}
+            </h3>
+            <div className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Comunidad Neural */}
+      <div className="bg-card/30 backdrop-blur-sm border border-green-500/20 rounded-xl p-4 flex items-center gap-3 hover:border-green-500/60 transition-all group relative overflow-hidden">
+        <div className="p-2 rounded-lg bg-green-500/10 text-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+          <Users className="h-5 w-5" />
+        </div>
+        <div className="relative z-10">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Comunidad Neural</p>
+          <div className="flex items-baseline gap-1.5">
+            <h3 className="text-xl font-bold font-orbitron text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
               {stats.total_users.toLocaleString()}
             </h3>
-            <span className="text-[10px] text-neon-blue animate-pulse font-mono tracking-tighter">Nexus+</span>
+            <span className="text-[9px] text-green-500/60 font-mono italic">Nexus+</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-card/30 backdrop-blur-sm border border-neon-purple/20 rounded-xl p-6 flex items-center gap-4 hover:border-neon-purple/60 transition-all group relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-2 opacity-10">
-          <Zap className="h-16 w-16" />
-        </div>
-        <div className="p-3 rounded-lg bg-neon-purple/10 text-neon-purple shadow-[0_0_15px_rgba(168,85,247,0.3)]">
-          <Zap className="h-6 w-6" />
+      {/* 4. Nexus News */}
+      <div className="bg-card/30 backdrop-blur-sm border border-neon-purple/20 rounded-xl p-4 flex items-center gap-3 hover:border-neon-purple/60 transition-all group relative overflow-hidden">
+        <div className="p-2 rounded-lg bg-neon-purple/10 text-neon-purple shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+          <Zap className="h-5 w-5" />
         </div>
         <div className="relative z-10">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-1">Nexus News</p>
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-2xl font-bold font-orbitron text-neon-purple drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.2em] font-orbitron mb-0.5">Noticias Nexus</p>
+          <div className="flex items-baseline gap-1.5">
+            <h3 className="text-xl font-bold font-orbitron text-neon-purple drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
               {stats.total_news.toLocaleString()}
             </h3>
-            <span className="text-[10px] text-neon-purple animate-pulse font-mono">IA</span>
+            <span className="text-[9px] text-neon-purple/60 font-mono">IA</span>
           </div>
         </div>
       </div>
