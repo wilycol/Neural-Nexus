@@ -27,7 +27,8 @@ export function StatsTracker() {
       const supabase = getSupabaseBrowserClient();
       
       try {
-        const { error } = await supabase.rpc('increment_daily_views');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabase as any).rpc('increment_daily_views');
         
         if (error) {
           console.error("Growth Engine Error (tracking):", error.message);
