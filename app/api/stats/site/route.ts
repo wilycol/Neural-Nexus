@@ -16,6 +16,8 @@ export async function GET() {
       return NextResponse.json({ error: 'Database error', details: rpcError.message }, { status: 500 });
     }
 
+    console.log('DEBUG: Site Stats RPC Response:', rpcData);
+
     return NextResponse.json({ data: rpcData });
   } catch (err: unknown) {
     console.error('CRITICAL ERROR in site stats API:', err);

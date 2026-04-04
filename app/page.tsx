@@ -38,9 +38,9 @@ export default function HomePage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <section className="mb-8">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neon-blue/20 via-neon-purple/20 to-neon-blue/20 border border-neon-blue/30 min-h-[450px] md:min-h-[550px] flex items-center shadow-[0_0_50px_rgba(0,163,255,0.15)]">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neon-blue/20 via-neon-purple/20 to-neon-blue/20 border border-neon-blue/30 min-h-[350px] md:min-h-[400px] flex items-center shadow-[0_0_50px_rgba(0,163,255,0.15)]">
           <HeroTop5Background />
-          <div className="relative z-10 w-full px-6 py-12 md:px-16 md:py-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 bg-gradient-to-t from-background/90 via-background/40 to-transparent">
+          <div className="relative z-10 w-full px-6 py-8 md:px-12 md:py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 bg-gradient-to-t from-background/90 via-background/40 to-transparent">
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon-blue/20 border border-neon-blue/30 text-neon-blue text-[10px] uppercase tracking-widest font-orbitron mb-4 animate-pulse">
                 <span className="h-1.5 w-1.5 rounded-full bg-neon-blue"></span>
