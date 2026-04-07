@@ -123,19 +123,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Fallback: Generar slug si no viene en el body
+    const slug = body.slug || body.title.toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
     const { data, error } = await supabase
       .from('news')
       .insert({
         ...body,
+        slug,
         created_at: new Date().toISOString(),
       })
       .select()
       .single();
 
     if (error) {
-      console.error('Error creating news:', error);
+      console.error('❌ [Portal API] Error creating news:', error);
       return NextResponse.json(
-        { error: 'Error al crear noticia' },
+        { 
+          error: 'Error al crear noticia', 
+          details: error.message,
+          hint: error.hint,
+          code: error.code 
+        },
         { status: 500 }
       );
     }
