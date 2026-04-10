@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
@@ -33,7 +32,7 @@ export async function POST(request: Request) {
 
     // 2. Procesar si el pago fue exitoso
     if (bizStatus === "PAY_SUCCESS") {
-      const supabase = createRouteHandlerClient({ cookies });
+      const supabase = createServerClient();
       
       // Extraer userId de la referencia (Formato: NN-{timestamp}-{userIdPrefix})
       // NOTA: Para una integración industrial, se debería usar el ID completo o un metadata

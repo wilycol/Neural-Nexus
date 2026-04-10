@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
@@ -27,7 +26,7 @@ export async function POST(request: Request) {
     const { status, reference, amount_in_cents, currency, id: transaction_id } = transaction;
 
     if (status === "APPROVED") {
-      const supabase = createRouteHandlerClient({ cookies });
+      const supabase = createServerClient();
       
       // Parsear la referencia para obtener el userId
       // La referencia que creamos es: NN-{timestamp}-{userIdPrefix}
