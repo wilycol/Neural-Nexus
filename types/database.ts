@@ -473,6 +473,52 @@ export interface Database {
           }
         ];
       };
+      donations: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          amount: number;
+          currency: string;
+          donor_name: string;
+          comment: string | null;
+          is_public: boolean;
+          provider: string;
+          transaction_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          amount: number;
+          currency?: string;
+          donor_name?: string;
+          comment?: string | null;
+          is_public?: boolean;
+          provider: string;
+          transaction_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          amount?: number;
+          currency?: string;
+          donor_name?: string;
+          comment?: string | null;
+          is_public?: boolean;
+          provider?: string;
+          transaction_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "donations_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

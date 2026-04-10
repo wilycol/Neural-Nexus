@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         amount: parseFloat(orderAmount),
         currency: "USD",
         status: "completed",
-        payment_method: "binance",
+        provider: "binance",
         transaction_id: merchantTradeNo
       });
 

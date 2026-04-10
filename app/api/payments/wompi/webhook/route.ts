@@ -50,7 +50,7 @@ export async function POST(request: Request) {
           amount: amount_in_cents / 100, // asumiendo COP aquí, deberíamos convertir si es necesario
           currency: currency,
           status: "completed",
-          payment_method: "wompi",
+          provider: "wompi",
           transaction_id: transaction_id
         });
       }
