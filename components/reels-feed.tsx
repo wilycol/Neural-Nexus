@@ -10,7 +10,8 @@ import {
   Music2, 
   Disc, 
   Video, 
-  Loader2 
+  Loader2,
+  Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,15 +30,16 @@ import { toast } from "sonner";
 interface ReelItemProps {
   news: NewsItem;
   isActive: boolean;
+  onDelete?: (id: string) => void;
 }
 
-function ReelItem({ news, isActive }: ReelItemProps) {
+function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(news.mention_count || 0);
   const [isFollowing, setIsFollowing] = useState(false);
-  const { user } = useAuth();
+  const { user, role } = useAuth();
 
   useEffect(() => {
     if (isActive && videoRef.current) {
@@ -205,6 +207,25 @@ function ReelItem({ news, isActive }: ReelItemProps) {
           <span className="text-xs font-bold text-white shadow-sm">Share</span>
         </div>
 
+        {role === 'admin' && (
+          <div className="flex flex-col items-center gap-1">
+            <Button 
+              variant="destructive" 
+              size="icon" 
+              className="h-12 w-12 rounded-full bg-red-600/80 backdrop-blur-md hover:bg-red-600 text-white shadow-lg"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (window.confirm("¿Estás seguro de que deseas eliminar este Reel permanentemente?")) {
+                  onDelete?.(news.id);
+                }
+              }}
+            >
+              <Trash2 className="h-6 w-6" />
+            </Button>
+            <span className="text-xs font-bold text-white shadow-sm">Borrar</span>
+          </div>
+        )}
+
         <div className="mt-4 animate-spin-slow">
           <div className="h-10 w-10 rounded-full border-4 border-white/20 bg-black flex items-center justify-center overflow-hidden">
              <Disc className="h-6 w-6 text-neon-blue" />
@@ -367,6 +388,19 @@ export function ReelsFeed() {
     return () => observer.disconnect();
   }, [news]);
 
+  const handleDelete = async (newsId: string) => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase.from('news').delete().eq('id', newsId);
+      if (error) throw error;
+      setNews(prev => prev.filter(item => item.id !== newsId));
+      toast.success("Reel eliminado correctamente");
+    } catch (err) {
+      console.error("Error al borrar reel:", err);
+      toast.error("No se pudo eliminar el reel");
+    }
+  };
+
   return (
     <div 
       ref={containerRef}
@@ -391,6 +425,7 @@ export function ReelsFeed() {
             <ReelItem 
               news={item} 
               isActive={item.id === activeId} 
+              onDelete={handleDelete}
             />
             {(index + 1) % 3 === 0 && (
               <div className="h-[calc(100vh-4rem)] w-full bg-zinc-950 flex items-center justify-center snap-start p-4">

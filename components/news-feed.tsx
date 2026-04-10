@@ -14,7 +14,7 @@ interface NewsFeedProps {
 }
 
 export function NewsFeed({ category, search }: NewsFeedProps) {
-  const { news, loading, error, hasMore, loadMore } = useInfiniteNews({
+  const { news, loading, error, hasMore, loadMore, removeNewsItem } = useInfiniteNews({
     category,
     search,
     limit: 10,
@@ -240,6 +240,21 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
     }
   };
 
+  const handleDelete = async (newsId: string) => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase.from('news').delete().eq('id', newsId);
+
+      if (error) throw error;
+
+      removeNewsItem(newsId);
+      toast.success("Publicación eliminada correctamente");
+    } catch (err) {
+      console.error("Error al borrar noticia:", err);
+      toast.error("No se pudo eliminar la publicación");
+    }
+  };
+
   if (error) {
     return (
       <div className="text-center py-8">
@@ -266,6 +281,7 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
               onLike={handleLike}
               onFavorite={handleFavorite}
               onShare={handleShare}
+              onDelete={handleDelete}
             />
             {(index + 1) % 4 === 0 && (
               <AdBanner 

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, MessageCircle, Share2, Star, ExternalLink } from "lucide-react";
+import { Heart, MessageCircle, Share2, Star, ExternalLink, Trash2 } from "lucide-react";
 import { NewsItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -24,6 +24,7 @@ import {
 import { formatRelativeTime, extractDomain } from "@/lib/utils";
 import { toast } from "sonner";
 import { Comments } from "@/components/comments";
+import { useAuth } from "@/hooks/use-auth";
 
 interface NewsCardProps {
   news: NewsItem;
@@ -34,6 +35,7 @@ interface NewsCardProps {
   onLike?: (newsId: string) => void;
   onFavorite?: (newsId: string) => void;
   onShare?: (newsId: string, platform: string) => void;
+  onDelete?: (newsId: string) => void;
 }
 
 export function NewsCard({
@@ -45,7 +47,9 @@ export function NewsCard({
   onLike,
   onFavorite,
   onShare,
+  onDelete,
 }: NewsCardProps) {
+  const { role } = useAuth();
   const [showComments, setShowComments] = useState(false);
 
   const handleShare = async (platform: string) => {
@@ -152,6 +156,26 @@ export function NewsCard({
             {news.category}
           </Badge>
         </div>
+
+        {/* Admin Delete Action */}
+        {role === 'admin' && (
+          <div className="absolute top-2 right-2 z-10">
+            <Button
+              variant="destructive"
+              size="icon"
+              className="h-8 w-8 rounded-full bg-red-600/90 hover:bg-red-600 shadow-lg backdrop-blur-sm opacity-0 group-hover/media:opacity-100 transition-opacity"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.confirm("¿Estás seguro de que deseas eliminar esta publicación permanentemente?")) {
+                  onDelete?.(news.id);
+                }
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <CardHeader className="pb-3">

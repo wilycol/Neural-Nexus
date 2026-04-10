@@ -16,6 +16,7 @@ interface UseInfiniteNewsReturn {
   hasMore: boolean;
   loadMore: () => void;
   refresh: () => void;
+  removeNewsItem: (id: string) => void;
 }
 
 export function useInfiniteNews(options: UseInfiniteNewsOptions = {}): UseInfiniteNewsReturn {
@@ -76,10 +77,9 @@ export function useInfiniteNews(options: UseInfiniteNewsOptions = {}): UseInfini
     }
   }, [loading, hasMore, page, fetchNews]);
 
-  const refresh = useCallback(() => {
-    setPage(1);
-    fetchNews(1, false);
-  }, [fetchNews]);
+  const removeNewsItem = useCallback((id: string) => {
+    setNews((prev) => prev.filter((item) => item.id !== id));
+  }, []);
 
   return {
     news,
@@ -88,5 +88,6 @@ export function useInfiniteNews(options: UseInfiniteNewsOptions = {}): UseInfini
     hasMore,
     loadMore,
     refresh,
+    removeNewsItem,
   };
 }
