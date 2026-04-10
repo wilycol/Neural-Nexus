@@ -124,7 +124,7 @@ export function NewsCard({
         {news.content_type === 'video' && news.video_url ? (
           <div 
             className="relative h-full w-full bg-black flex items-center justify-center cursor-pointer group/video"
-            onClick={(e) => {
+            onClick={() => {
               if (news.is_short) {
                 router.push(`/reels?id=${news.id}`);
               } else if (!isPlaying) {
