@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { NewsItem } from "@/types";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 import { 
@@ -272,6 +273,8 @@ export function ReelsFeed() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { user, isLoading: authIsLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const deepLinkId = searchParams.get("id");
   
   // Trackeamos el ID del usuario para saber si ha cambiado de Anónimo a Logueado
   const lastUserId = useRef<string | null | undefined>(undefined);
@@ -362,6 +365,24 @@ export function ReelsFeed() {
     // Solo dependemos del estado de Auth, el ID del usuario y el timeout del puente.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authIsLoading, user?.id, authTimedOut]);
+
+  // Manejo de Deep Linking: Scroll al video si viene de una redirección
+  useEffect(() => {
+    if (deepLinkId && news.length > 0) {
+      const targetReel = news.find(item => item.id === deepLinkId);
+      if (targetReel) {
+        setActiveId(deepLinkId);
+        // Pequeño delay para asegurar que el DOM está listo
+        const timer = setTimeout(() => {
+          const element = document.querySelector(`[data-news-id="${deepLinkId}"]`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [deepLinkId, news]);
 
   useEffect(() => {
     if (news.length === 0) return;

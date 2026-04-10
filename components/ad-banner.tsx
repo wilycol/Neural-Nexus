@@ -13,7 +13,7 @@ interface AdBannerProps {
 
 // TOGGLE DE MONETIZACIÓN LIVE
 // Cambiar a true cuando Google haya aprobado el sitio y hayas creado los bloques de anuncios en el panel
-const ADS_LIVE = true; 
+const ADS_LIVE = false; 
 
 export function AdBanner({ 
   className, 

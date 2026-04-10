@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, MessageCircle, Share2, Star, ExternalLink, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, Star, ExternalLink, Trash2, Play } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { NewsItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -50,7 +51,9 @@ export function NewsCard({
   onDelete,
 }: NewsCardProps) {
   const { role } = useAuth();
+  const router = useRouter();
   const [showComments, setShowComments] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const handleShare = async (platform: string) => {
     const url = `${window.location.origin}/news/${news.slug}`;
@@ -119,23 +122,39 @@ export function NewsCard({
       {/* Media (Video or Image) */}
       <div className="relative aspect-video overflow-hidden group/media">
         {news.content_type === 'video' && news.video_url ? (
-          <div className="relative h-full w-full bg-black flex items-center justify-center">
+          <div 
+            className="relative h-full w-full bg-black flex items-center justify-center cursor-pointer group/video"
+            onClick={(e) => {
+              if (news.is_short) {
+                router.push(`/reels?id=${news.id}`);
+              } else if (!isPlaying) {
+                setIsPlaying(true);
+                videoRef.current?.play();
+              }
+            }}
+          >
             <video 
               ref={videoRef}
               src={news.video_url} 
               className="h-full w-full object-contain"
               playsInline
-              controls
+              controls={isPlaying && !news.is_short}
               poster={news.cover_url || news.image_url}
               crossOrigin="anonymous"
+              onPause={() => !news.is_short && setIsPlaying(false)}
+              onPlay={() => !news.is_short && setIsPlaying(true)}
             />
-            {!(news.cover_url || news.image_url) && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover/media:bg-black/20 transition-all pointer-events-none">
-                <div className="h-12 w-12 rounded-full bg-neon-blue/80 flex items-center justify-center text-white shadow-lg shadow-neon-blue/20">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 ml-1">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+            {(!isPlaying || news.is_short) && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover/video:bg-black/20 transition-all z-20">
+                <div className="h-16 w-16 rounded-full bg-neon-blue/90 flex items-center justify-center text-white shadow-[0_0_20px_rgba(0,243,255,0.4)] transform transition-transform group-hover/video:scale-110">
+                  <Play className="w-8 h-8 fill-current ml-1" />
                 </div>
+                {news.is_short && (
+                  <div className="absolute bottom-4 right-4 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 animate-pulse">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                    REEL
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -10,7 +10,7 @@ const collaborators = [
   { name: 'Supabase', icon: Box, color: 'text-emerald-500' },
   { name: 'Alibaba Cloud', icon: Cpu, color: 'text-blue-500' },
   { name: 'Vercel', icon: Shield, color: 'text-white' },
-  { name: 'Google Cloud', icon: Workflow, color: 'text-red-500' },
+  { name: 'Google Antigravity', icon: Workflow, color: 'text-red-500' },
 ];
 
 export function AICollaborators() {
