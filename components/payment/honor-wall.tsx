@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Trophy, Star, Heart, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { getSupabaseBrowserClient } from '@/lib/supabase-client';
 import { cn } from '@/lib/utils';
 
 interface Donation {
@@ -18,7 +18,7 @@ interface Donation {
 export function HonorWall() {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
+  const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
     async function fetchDonations() {
