@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, ChevronLeft, Share2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function PaymentSuccessPage() {
+import { Suspense } from 'react';
+
+function SuccessContent() {
   const searchParams = useSearchParams();
   const [reference, setReference] = useState<string | null>(null);
 
@@ -40,7 +42,7 @@ export default function PaymentSuccessPage() {
 
           <div className="grid grid-cols-2 gap-4 w-full">
             <Button asChild variant="outline" className="font-bold">
-              <Link href="/portal">
+              <Link href="/">
                 <ChevronLeft className="mr-2 h-4 w-4" />
                 Ir al Portal
               </Link>
@@ -53,5 +55,17 @@ export default function PaymentSuccessPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 }

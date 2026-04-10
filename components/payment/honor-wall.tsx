@@ -19,9 +19,14 @@ interface Donation {
 export function HonorWall() {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = getSupabaseBrowserClient();
+  const [supabase, setSupabase] = useState<any>(null);
 
   useEffect(() => {
+    setSupabase(getSupabaseBrowserClient());
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
     async function fetchDonations() {
       const { data, error } = await supabase
         .from('donations')
