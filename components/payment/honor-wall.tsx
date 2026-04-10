@@ -29,8 +29,12 @@ export function HonorWall() {
 
   useEffect(() => {
     if (!supabase) return;
+    
+    // Capturar en variable local para evitar errores de nulidad en cierres asíncronos
+    const client = supabase;
+
     async function fetchDonations() {
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from('donations')
         .select('*')
         .eq('is_public', true)
@@ -46,7 +50,7 @@ export function HonorWall() {
     fetchDonations();
 
     // Suscripción en tiempo real opcional para que el muro se actualice solo
-    const channel = supabase
+    const channel = client
       .channel('public_donations')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'donations' }, (payload) => {
         if (payload.new.is_public) {
@@ -56,7 +60,7 @@ export function HonorWall() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      client.removeChannel(channel);
     };
   }, [supabase]);
 
