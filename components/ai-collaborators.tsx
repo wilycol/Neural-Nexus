@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Cpu, Zap, Box, Shield, Workflow, Sparkles } from 'lucide-react';
+import { Cpu, Zap, Box, Shield, Workflow, Sparkles, Building2 } from 'lucide-react';
+import { PartnershipModal } from './partnership-modal';
 
 const collaborators = [
   { name: 'Google Antigravity', icon: Workflow, color: 'text-red-500', url: 'https://github.com/google-deepmind' },
@@ -13,9 +14,12 @@ const collaborators = [
   { name: 'Supabase', icon: Box, color: 'text-emerald-500', url: 'https://supabase.com' },
   { name: 'Alibaba Cloud', icon: Cpu, color: 'text-blue-500', url: 'https://www.alibabacloud.com' },
   { name: 'FLUX.ai', icon: Sparkles, color: 'text-white', url: 'https://blackforestlabs.ai' },
+  { name: 'Únete al Ecosistema', icon: Building2, color: 'text-neon-blue', isCallToAction: true },
 ];
 
 export function AICollaborators() {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   return (
     <section className="py-12 border-y border-primary/10 bg-black/40 overflow-hidden relative">
       <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
@@ -31,22 +35,42 @@ export function AICollaborators() {
 
       <div className="flex relative overflow-x-hidden z-10">
         <div className="flex animate-marquee whitespace-nowrap py-4">
-          {[...collaborators, ...collaborators].map((collab, index) => (
-            <a
-              key={index}
-              href={collab.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-4 mx-12 px-6 py-3 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm transition-all hover:bg-white/[0.05] hover:border-primary/30 group cursor-pointer"
-            >
-              <collab.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", collab.color)} />
-              <span className="text-sm font-orbitron font-bold tracking-widest text-foreground/80 group-hover:text-foreground">
-                {collab.name}
-              </span>
-            </a>
-          ))}
+          {[...collaborators, ...collaborators].map((collab, index) => {
+            const isCTA = 'isCallToAction' in collab && collab.isCallToAction;
+            
+            return (
+              <a
+                key={index}
+                href={isCTA ? undefined : collab.url}
+                target={isCTA ? undefined : "_blank"}
+                rel={isCTA ? undefined : "noopener noreferrer"}
+                onClick={(e) => {
+                  if (isCTA) {
+                    e.preventDefault();
+                    setIsModalOpen(true);
+                  }
+                }}
+                className={cn(
+                  "flex items-center gap-4 mx-12 px-6 py-3 rounded-xl border transition-all backdrop-blur-sm group cursor-pointer",
+                  isCTA 
+                    ? "border-neon-blue/30 bg-neon-blue/5 hover:bg-neon-blue/10 hover:border-neon-blue shadow-[0_0_15px_rgba(0,243,255,0.05)]" 
+                    : "border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-primary/30"
+                )}
+              >
+                <collab.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", collab.color)} />
+                <span className={cn(
+                  "text-sm font-orbitron font-bold tracking-widest transition-colors",
+                  isCTA ? "text-neon-blue" : "text-foreground/80 group-hover:text-foreground"
+                )}>
+                  {collab.name}
+                </span>
+              </a>
+            );
+          })}
         </div>
       </div>
+
+      <PartnershipModal isOpen={isModalOpen} onOpenChange={setIsModalOpen} />
 
       <style jsx global>{`
         @keyframes marquee {
