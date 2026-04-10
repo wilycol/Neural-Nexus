@@ -6,6 +6,8 @@ import { getUSDToCOP } from "@/lib/payments/rate";
 // 🔐 Configuración de Wompi (Variables de entorno)
 const WOMPI_PUBLIC_KEY = process.env.WOMPI_PUBLIC_KEY;
 const WOMPI_INTEGRITY_SECRET = process.env.WOMPI_INTEGRITY_SECRET;
+export async function POST(request: Request) {
+  try {
     const { amount } = await request.json(); // amount en USD
     const supabase = createServerClient();
     
