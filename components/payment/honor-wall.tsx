@@ -130,7 +130,7 @@ function DonationItem({ donation, index }: { donation: Donation, index: number }
       <CardContent className="p-4 pt-3">
         {donation.comment && (
           <p className="text-sm italic text-foreground/70 line-clamp-2 mb-2">
-            "{donation.comment}"
+            &quot;{donation.comment}&quot;
           </p>
         )}
         <div className="flex items-center justify-between mt-auto">

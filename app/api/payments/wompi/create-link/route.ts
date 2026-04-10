@@ -6,11 +6,7 @@ import { getUSDToCOP } from "@/lib/payments/rate";
 // 🔐 Configuración de Wompi (Variables de entorno)
 const WOMPI_PUBLIC_KEY = process.env.WOMPI_PUBLIC_KEY;
 const WOMPI_INTEGRITY_SECRET = process.env.WOMPI_INTEGRITY_SECRET;
-const WOMPI_API_ENDPOINT = "https://production.wompi.co/v1/transactions";
-
-export async function POST(request: Request) {
-  try {
-    const { amount, type } = await request.json(); // amount en USD
+    const { amount } = await request.json(); // amount en USD
     const supabase = createServerClient();
     
     const { data: { session } } = await supabase.auth.getSession();

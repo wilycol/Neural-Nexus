@@ -8,20 +8,9 @@ import {
   DialogTitle, 
   DialogDescription,
   DialogFooter
-} from '@/components/ui/card'; // Asumiendo que Dialog está en components/ui
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Loader2, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-// Nota: He usado components/ui/card como placeholder porque list_dir mostró dialog.tsx
-// pero usualmente shadcn usa un conjunto de componentes. 
-import {
-  Dialog as ShadcnDialog,
-  DialogContent as ShadcnContent,
-  DialogHeader as ShadcnHeader,
-  DialogTitle as ShadcnTitle,
-  DialogDescription as ShadcnDescription,
-} from "@/components/ui/dialog";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -57,26 +46,27 @@ export function PaymentModal({ isOpen, onClose, method, amount }: PaymentModalPr
       } else {
         setStatus('success');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setErrorMessage(err.message);
+      const msg = err instanceof Error ? err.message : 'Error al procesar el pago';
+      setErrorMessage(msg);
       setStatus('error');
     }
   };
 
   return (
-    <ShadcnDialog open={isOpen} onOpenChange={onClose}>
-      <ShadcnContent className="sm:max-w-[425px] bg-card border-primary/20 backdrop-blur-2xl">
-        <ShadcnHeader>
-          <ShadcnTitle className="font-orbitron text-xl gradient-text">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px] bg-card border-primary/20 backdrop-blur-2xl">
+        <DialogHeader>
+          <DialogTitle className="font-orbitron text-xl gradient-text">
             {status === 'success' ? '¡Todo listo!' : 'Confirmar Suscripción'}
-          </ShadcnTitle>
-          <ShadcnDescription className="font-exo">
+          </DialogTitle>
+          <DialogDescription className="font-exo">
             {method === 'wompi' 
               ? 'Serás redirigido de forma segura a Wompi para completar el pago con Tarjeta o Nequi.' 
               : 'Preparando tu orden segura en Binance Pay para el pago con Criptomonedas.'}
-          </ShadcnDescription>
-        </ShadcnHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="py-6 flex flex-col items-center justify-center space-y-4">
           {status === 'idle' && (
@@ -135,7 +125,7 @@ export function PaymentModal({ isOpen, onClose, method, amount }: PaymentModalPr
             <Button onClick={onClose} className="w-full font-bold">Cerrar</Button>
           )}
         </DialogFooter>
-      </ShadcnContent>
-    </ShadcnDialog>
+      </DialogContent>
+    </Dialog>
   );
 }
