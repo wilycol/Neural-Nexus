@@ -81,6 +81,11 @@ export function useInfiniteNews(options: UseInfiniteNewsOptions = {}): UseInfini
     setNews((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
+  const refresh = useCallback(() => {
+    setPage(1);
+    fetchNews(1, false);
+  }, [fetchNews]);
+
   return {
     news,
     loading,
