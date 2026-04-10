@@ -13,6 +13,8 @@ import {
   Scale,
   Shield,
   Cookie,
+  Zap,
+  Code2,
 } from "lucide-react";
 
 export const primaryMenuItems = [
@@ -24,6 +26,7 @@ export const primaryMenuItems = [
   { href: "/categoria/papers", label: "Papers", icon: FileText },
   { href: "/categoria/drama", label: "Drama", icon: Drama },
   { href: "/creditos", label: "Créditos", icon: Info },
+  { href: "/developers", label: "Desarrolladores", icon: Code2 },
 ];
 
 export const destacadosItems = [

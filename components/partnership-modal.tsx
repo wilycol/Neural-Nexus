@@ -131,7 +131,7 @@ export function PartnershipModal({ isOpen, onOpenChange }: PartnershipModalProps
                 <SelectItem value="slot">Slot en la Marquesina de Socios</SelectItem>
                 <SelectItem value="integration">Integración Tecnológica</SelectItem>
                 <SelectItem value="featured">Contenido Patrocinado</SelectItem>
-                <SelectItem value="api">Acceso a API B2B (Neural Nexus)</SelectItem>
+                <SelectItem value="api">Neural Connect (Acceso API SaaS)</SelectItem>
               </SelectContent>
             </Select>
           </div>
