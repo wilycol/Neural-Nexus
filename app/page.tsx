@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { AICollaborators } from "@/components/ai-collaborators";
 import {
   Dialog,
   DialogContent,
@@ -54,6 +55,10 @@ export default function HomePage() {
 
       <section className="mb-12">
         <GrowthStats />
+      </section>
+
+      <section className="mb-12">
+        <AICollaborators />
       </section>
 
       <section>

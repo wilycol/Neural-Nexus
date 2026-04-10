@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Trophy, Star, Heart, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSupabaseBrowserClient } from '@/lib/supabase-client';
+import type { Database } from '@/types/database';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { cn } from '@/lib/utils';
 
 interface Donation {
@@ -19,7 +21,7 @@ interface Donation {
 export function HonorWall() {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [supabase, setSupabase] = useState<any>(null);
+  const [supabase, setSupabase] = useState<SupabaseClient<Database> | null>(null);
 
   useEffect(() => {
     setSupabase(getSupabaseBrowserClient());
