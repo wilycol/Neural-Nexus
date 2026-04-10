@@ -1,4 +1,5 @@
 "use client";
+// Activate Motor 5: AI Collaborators Deployment
 
 import React, { useEffect, useMemo, useState } from "react";
 import { NewsFeed } from "@/components/news-feed";
