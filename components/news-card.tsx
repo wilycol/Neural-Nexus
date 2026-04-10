@@ -26,6 +26,7 @@ import { formatRelativeTime, extractDomain } from "@/lib/utils";
 import { toast } from "sonner";
 import { Comments } from "@/components/comments";
 import { useAuth } from "@/hooks/use-auth";
+import { findAffiliateMatch } from "@/lib/affiliate-config";
 
 interface NewsCardProps {
   news: NewsItem;
@@ -54,6 +55,8 @@ export function NewsCard({
   const router = useRouter();
   const [showComments, setShowComments] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const affiliateMatch = findAffiliateMatch(news.title + " " + (news.summary || ""), news.tags);
 
   const handleShare = async (platform: string) => {
     const url = `${window.location.origin}/news/${news.slug}`;
@@ -212,6 +215,21 @@ export function NewsCard({
         <p className="text-sm text-muted-foreground line-clamp-3">
           {news.summary}
         </p>
+
+        {/* Affiliate CTA (Motor 2) */}
+        {affiliateMatch && (
+          <div className="mt-4 pt-4 border-t border-white/5">
+            <a 
+              href={affiliateMatch.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-blue/10 border border-neon-blue/30 text-neon-blue text-xs font-orbitron font-bold uppercase tracking-widest hover:bg-neon-blue/20 hover:border-neon-blue transition-all group/cta"
+            >
+              <span>{affiliateMatch.ctaLabel}</span>
+              <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+          </div>
+        )}
 
         {/* Source & Date */}
         <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
