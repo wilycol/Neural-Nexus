@@ -8,10 +8,11 @@ import { cn } from '@/lib/utils';
 
 interface Donation {
   id: string;
+  user_id: string | null;
   donor_name: string;
   amount: number;
   currency: string;
-  comment: string;
+  comment: string | null;
   created_at: string;
 }
 
