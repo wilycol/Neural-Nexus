@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatRelativeTime } from "@/lib/utils";
+import { formatRelativeTime, formatDate } from "@/lib/utils";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 import { toast } from "sonner";
 import {
