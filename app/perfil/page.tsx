@@ -84,8 +84,18 @@ export default function ProfilePage() {
 
       {authLoading || loading || !isMounted ? (
         <Card>
-          <CardContent className="p-12 text-center">
+          <CardContent className="p-12 text-center flex flex-col items-center gap-4">
             <p className="text-muted-foreground animate-pulse">Sincronizando búnker industrial...</p>
+            {isMounted && !authLoading && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => window.location.reload()}
+                className="mt-2 border-neon-blue/30 text-xs"
+              >
+                ¿Tardando mucho? Reintentar
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : !user ? (
