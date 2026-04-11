@@ -232,7 +232,7 @@ export function NewsCard({
                       event_type: 'affiliate_click',
                       engine_id: 2,
                       metadata: { 
-                        affiliate_product: affiliateMatch.product,
+                        affiliate_product: affiliateMatch.keywords[0],
                         news_id: news.id,
                         title: news.title 
                       }
