@@ -11,7 +11,12 @@ export const createBrowserClient = () => {
   }
 
   return createSupabaseBrowserClient<Database>(supabaseUrl, supabaseAnonKey, { 
-    isSingleton: true
+    isSingleton: true,
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
   });
 };
 
