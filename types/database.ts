@@ -615,6 +615,24 @@ export interface Database {
         };
         Relationships: [];
       };
+      site_metrics: {
+        Row: {
+          id: string;
+          count: number;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          count?: number;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          count?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
