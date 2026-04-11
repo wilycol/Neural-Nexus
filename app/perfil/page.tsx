@@ -210,11 +210,11 @@ function ActivityTab({ userId }: { userId: string }) {
           supabase.from("favorites").select("created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
         ]);
 
-        const merged = [
-          ...(shares.data || []).map(s => ({ type: 'share', text: `Compartió una noticia en ${s.platform}`, time: new Date(s.created_at) })),
-          ...(comments.data || []).map(c => ({ type: 'comment', text: `Comentó: "${c.content.substring(0, 30)}..."`, time: new Date(c.created_at) })),
-          ...(likes.data || []).map(l => ({ type: 'like', text: 'Le dio like a una noticia', time: new Date(l.created_at) })),
-          ...(favorites.data || []).map(f => ({ type: 'favorite', text: 'Guardó una noticia en favoritos', time: new Date(f.created_at) })),
+        const merged: UserActivity[] = [
+          ...(shares.data || []).map(s => ({ type: 'share' as const, text: `Compartió una noticia en ${s.platform}`, time: new Date(s.created_at) })),
+          ...(comments.data || []).map(c => ({ type: 'comment' as const, text: `Comentó: "${c.content.substring(0, 30)}..."`, time: new Date(c.created_at) })),
+          ...(likes.data || []).map(() => ({ type: 'like' as const, text: 'Le dio like a una noticia', time: new Date() })),
+          ...(favorites.data || []).map(f => ({ type: 'favorite' as const, text: 'Guardó una noticia en favoritos', time: new Date(f.created_at) })),
         ].sort((a, b) => b.time.getTime() - a.time.getTime()).slice(0, 10);
 
         setActivities(merged);
