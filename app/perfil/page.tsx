@@ -45,15 +45,16 @@ export default function ProfilePage() {
       }
       try {
         const supabase = getSupabaseBrowserClient();
-        setShareCount(profile?.share_count || 0);
-
-        const [favoritesRes, commentsRes] = await Promise.all([
+        
+        const [favoritesRes, commentsRes, sharesRes] = await Promise.all([
           supabase.from("favorites").select("*", { count: "exact", head: true }).eq("user_id", user.id),
           supabase.from("comments").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+          supabase.from("shares").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         ]);
 
         setFavoriteCount(favoritesRes.count || 0);
         setCommentCount(commentsRes.count || 0);
+        setShareCount(sharesRes.count || 0);
       } catch (err) {
         console.error("[Profile] Stats error:", err);
       } finally {
@@ -117,10 +118,20 @@ export default function ProfilePage() {
                   </p>
                   <p className="text-muted-foreground text-sm">{user.email}</p>
                 </div>
-                <EditProfileModal
-                  currentNickname={profile?.nickname || user.email?.split("@")[0] || ""}
-                  currentAvatarUrl={profile?.avatar_url || ""}
-                />
+                <div className="flex gap-2">
+                  {profile?.role === 'admin' && (
+                    <Button variant="outline" size="sm" asChild className="border-neon-purple/30 hover:border-neon-purple">
+                      <Link href="/admin/monetization">
+                        <TrendingUp className="h-4 w-4 mr-1 text-neon-purple" />
+                        Búnker 30K
+                      </Link>
+                    </Button>
+                  )}
+                  <EditProfileModal
+                    currentNickname={profile?.nickname || user.email?.split("@")[0] || ""}
+                    currentAvatarUrl={profile?.avatar_url || ""}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
@@ -160,7 +171,7 @@ export default function ProfilePage() {
             </TabsList>
 
             <TabsContent value="actividad">
-              <ActivityTab />
+              <ActivityTab userId={user.id} />
             </TabsContent>
 
             <TabsContent value="comentarios">
@@ -177,13 +188,41 @@ export default function ProfilePage() {
   );
 }
 
-function ActivityTab() {
-  const activities = [
-    { type: 'share', text: 'Compartió una noticia sobre ChatGPT', time: 'hace 2 horas' },
-    { type: 'comment', text: 'Comentó en "Nuevo modelo de OpenAI"', time: 'hace 5 horas' },
-    { type: 'like', text: 'Le dio like a 3 noticias', time: 'hace 1 día' },
-    { type: 'favorite', text: 'Guardó en favoritos', time: 'hace 2 días' },
-  ];
+function ActivityTab({ userId }: { userId: string }) {
+  const [activities, setActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadActivity = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        
+        const [shares, comments, likes, favorites] = await Promise.all([
+          supabase.from("shares").select("created_at, platform").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
+          supabase.from("comments").select("created_at, content").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
+          supabase.from("likes").select("created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
+          supabase.from("favorites").select("created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
+        ]);
+
+        const merged = [
+          ...(shares.data || []).map(s => ({ type: 'share', text: `Compartió una noticia en ${s.platform}`, time: new Date(s.created_at) })),
+          ...(comments.data || []).map(c => ({ type: 'comment', text: `Comentó: "${c.content.substring(0, 30)}..."`, time: new Date(c.created_at) })),
+          ...(likes.data || []).map(l => ({ type: 'like', text: 'Le dio like a una noticia', time: new Date(l.created_at) })),
+          ...(favorites.data || []).map(f => ({ type: 'favorite', text: 'Guardó una noticia en favoritos', time: new Date(f.created_at) })),
+        ].sort((a, b) => b.time.getTime() - a.time.getTime()).slice(0, 10);
+
+        setActivities(merged);
+      } catch (err) {
+        console.error("Activity load error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadActivity();
+  }, [userId]);
+
+  if (loading) return <CardContent><p className="text-center text-muted-foreground">Cargando actividad...</p></CardContent>;
 
   return (
     <Card>
@@ -192,20 +231,26 @@ function ActivityTab() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {activities.map((activity, i) => (
-            <div key={i} className="flex items-start gap-3 pb-4 border-b last:border-0">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                {activity.type === 'share' && <Share2 className="h-4 w-4" />}
-                {activity.type === 'comment' && <MessageCircle className="h-4 w-4" />}
-                {activity.type === 'like' && <Heart className="h-4 w-4" />}
-                {activity.type === 'favorite' && <Heart className="h-4 w-4" />}
+          {activities.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">No hay actividad reciente registrada.</p>
+          ) : (
+            activities.map((activity, i) => (
+              <div key={i} className="flex items-start gap-3 pb-4 border-b last:border-0">
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                  {activity.type === 'share' && <Share2 className="h-4 w-4" />}
+                  {activity.type === 'comment' && <MessageCircle className="h-4 w-4" />}
+                  {activity.type === 'like' && <Heart className="h-4 w-4" />}
+                  {activity.type === 'favorite' && <Heart className="h-4 w-4" />}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm">{activity.text}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatRelativeTime(activity.time.toISOString())}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-sm">{activity.text}</p>
-                <p className="text-xs text-muted-foreground">{activity.time}</p>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </CardContent>
     </Card>
