@@ -45,6 +45,8 @@ export default function ProfilePage() {
 
   // Stats loading
   useEffect(() => {
+    if (!isMounted) return; // 🛡️ ESCUDO TOTAL: No hacer nada hasta que estemos en el navegador
+    
     const loadStats = async () => {
       if (!user) {
         setLoading(false);
@@ -70,7 +72,7 @@ export default function ProfilePage() {
     };
 
     if (!authLoading) loadStats();
-  }, [user, profile, authLoading]);
+  }, [user, profile, authLoading, isMounted]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
