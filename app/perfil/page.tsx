@@ -115,7 +115,7 @@ export default function ProfilePage() {
                     )}
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    Miembro desde {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("es-ES") : "—"}
+                    Miembro desde {profile?.created_at ? formatDate(profile.created_at) : "—"}
                   </p>
                   <p className="text-muted-foreground text-sm">{user.email}</p>
                 </div>
@@ -252,7 +252,9 @@ function ActivityTab({ userId }: { userId: string }) {
                 <div className="flex-1">
                   <p className="text-sm">{activity.text}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatRelativeTime(activity.time.toISOString())}
+                    {activity.time instanceof Date && !isNaN(activity.time.getTime()) 
+                      ? formatRelativeTime(activity.time) 
+                      : "Recientemente"}
                   </p>
                 </div>
               </div>
