@@ -92,6 +92,72 @@ export default function MonetizationAdminPage() {
     }
   }, [isMounted, authLoading, user, role, router]);
 
+  const handleCompleteMission = async (missionId: string, title: string, type: string) => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      
+      // 3. Analizar Cumplimiento de Misiones Recientes para el Tono
+      const { data: recentMissions } = await supabase
+        .from('ai_missions')
+        .select('id, status, metadata')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      const completedMissionIds = recentMissions
+        ?.filter((m) => m.status === 'completed')
+        .map((m) => m.metadata?.news_id)
+        .filter(Boolean) || [];
+
+      const completedCount = recentMissions?.filter((m) => m.status === 'completed').length || 0;
+      
+      // Lógica de Tono
+      let tone = 'strategic_partner';
+      if (recentMissions && recentMissions.length >= 3 && completedCount < 1) {
+        tone = 'military_disciplined';
+      }
+
+      // 4. Obtener contenido fresco para misiones (filtrar las ya completadas)
+      const { data: recentNews } = await supabase
+        .from('news')
+        .select('id, title, slug')
+        .not('id', 'in', `(${completedMissionIds.length > 0 ? completedMissionIds.join(',') : '00000000-0000-0000-0000-000000000000'})`)
+        .order('published_at', { ascending: false })
+        .limit(3);
+
+      // 5. Generar Sugerencias y Misiones
+      const insights: AIInsight = {
+        title: tone === 'strategic_partner' ? "Reporte de Inteligencia Estratégica" : "ORDEN DE OPERACIONES: PRIORIDAD CRÍTICA",
+        message: "",
+        tone: tone as any,
+        priority: 'medium',
+        current_goal: 180000,
+        gap: 0,
+        missions: recentNews?.map((n: any, i: number) => ({
+          id: n.id,
+          title: `Compartir en ${i === 0 ? 'TikTok' : i === 1 ? 'YouTube' : 'Instagram'}: ${n.title}`,
+          type: i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram'),
+          url: `https://neural-nexus.ai/news/${n.slug}`
+        })) || []
+      };
+
+      const { error } = await supabase
+        .from('ai_missions')
+        .insert([{
+          title: title,
+          mission_type: type,
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          metadata: { news_id: missionId }
+        }]);
+
+      if (error) throw error;
+      
+      setAdvisor(insights);
+    } catch (err) {
+      console.error("[Bunker] Error completando misión:", err);
+    }
+  };
+
   if (!isMounted || authLoading || loading) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4">
@@ -247,29 +313,38 @@ export default function MonetizationAdminPage() {
                     <Badge className="text-[8px] bg-white/10 text-zinc-400 border-none">{mission.type}</Badge>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2">
-                     <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="text-[10px] h-8 border-white/5 hover:bg-green-500/20 hover:text-green-500"
-                       asChild
-                     >
-                        <a href={generateShareLinks(mission.title, mission.url || '').whatsapp} target="_blank">
-                          <Send className="h-3 w-3 mr-2" />
-                          WHATSAPP
-                        </a>
-                     </Button>
-                     <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="text-[10px] h-8 border-white/5 hover:bg-blue-500/20 hover:text-blue-500"
-                       asChild
-                     >
-                        <a href={generateShareLinks(mission.title, mission.url || '').telegram} target="_blank">
-                          <Send className="h-3 w-3 mr-2" />
-                          TELEGRAM
-                        </a>
-                     </Button>
+                  <div className="flex flex-col gap-2">
+                    <div className="grid grid-cols-2 gap-2">
+                       <Button 
+                         variant="outline" 
+                         size="sm" 
+                         className="text-[10px] h-8 border-white/5 hover:bg-green-500/20 hover:text-green-500"
+                         asChild
+                       >
+                          <a href={generateShareLinks(mission.title, mission.url || '').whatsapp} target="_blank">
+                            <Send className="h-3 w-3 mr-2" />
+                            WHATSAPP
+                          </a>
+                       </Button>
+                       <Button 
+                         variant="outline" 
+                         size="sm" 
+                         className="text-[10px] h-8 border-white/5 hover:bg-blue-500/20 hover:text-blue-500"
+                         asChild
+                       >
+                          <a href={generateShareLinks(mission.title, mission.url || '').telegram} target="_blank">
+                            <Send className="h-3 w-3 mr-2" />
+                            TELEGRAM
+                          </a>
+                       </Button>
+                    </div>
+                    <Button 
+                      className="w-full h-8 text-[10px] font-orbitron font-bold tracking-widest bg-neon-blue/10 hover:bg-neon-blue text-neon-blue hover:text-black border border-neon-blue/20 transition-all"
+                      onClick={() => handleCompleteMission(mission.id, mission.title, mission.type)}
+                    >
+                      <CheckCircle2 className="h-3 w-3 mr-2" />
+                      MARCAR CUMPLIDA
+                    </Button>
                   </div>
                 </div>
               ))}
