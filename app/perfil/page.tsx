@@ -1,36 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-export const dynamic = "force-dynamic";
-import Link from "next/link";
-import { 
-  Heart, 
-  MessageCircle, 
-  Share2, 
-  Crown,
-  Edit,
-  TrendingUp,
-  ArrowLeft
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatRelativeTime, formatDate } from "@/lib/utils";
-import { getSupabaseBrowserClient } from "@/lib/supabase-client";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import type { NewsItem } from "@/types";
-import { useAuth } from "@/hooks/use-auth";
-
 export default function ProfilePage() {
   const { user, profile, isLoading: authLoading } = useAuth();
   const [isMounted, setIsMounted] = React.useState(false);
