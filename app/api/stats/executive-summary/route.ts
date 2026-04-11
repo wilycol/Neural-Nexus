@@ -27,7 +27,16 @@ export async function GET() {
     const { data: overview, error } = await supabase.rpc('get_monetization_overview');
     if (error) throw error;
 
-    const stats = overview[0];
+    const stats = (overview && overview.length > 0) ? overview[0] : {
+      total_ads: 0,
+      total_affiliate: 0,
+      total_premium: 0,
+      total_donations: 0,
+      total_leads: 0,
+      total_api_calls: 0,
+      total_revenue: 0,
+      progress_percentage: 0
+    };
 
     // 3. Obtener visitas globales
     const { data: siteViews } = await supabase
@@ -41,17 +50,17 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       executive_summary: {
         total_visits: siteViews?.count || 0,
-        total_clicks: Number(stats.engine_1_clicks) + Number(stats.engine_2_clicks),
-        active_revenue: `$${Number(stats.engine_3_revenue).toLocaleString('en-US')}`,
-        barbie_goal_progress: `${stats.progress_percent}%`,
+        total_clicks: Number(stats.total_ads) + Number(stats.total_affiliate),
+        active_revenue: `$${Number(stats.total_revenue).toLocaleString('en-US')}`,
+        barbie_goal_progress: `${stats.progress_percentage}%`,
       },
       engines: {
-        ads: stats.engine_1_clicks,
-        affiliates: stats.engine_2_clicks,
-        subscriptions: stats.engine_3_revenue,
-        newsletter_leads: stats.engine_4_subs,
-        partnership_leads: stats.engine_5_leads,
-        api_usage: stats.engine_6_usage
+        ads: stats.total_ads,
+        affiliates: stats.total_affiliate,
+        premium: stats.total_premium,
+        donations: stats.total_donations,
+        partnership_leads: stats.total_leads,
+        api_usage: stats.total_api_calls
       },
       status: "MISSION_ACTIVE"
     };
