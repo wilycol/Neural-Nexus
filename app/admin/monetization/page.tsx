@@ -291,7 +291,8 @@ export default function BunkerOpsPage() {
   const handleCompleteMission = async (missionId: string, title: string, type: string) => {
     try {
       const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
         .from('ai_missions')
         .insert([{
           title: title,
@@ -299,7 +300,7 @@ export default function BunkerOpsPage() {
           status: 'completed',
           completed_at: new Date().toISOString(),
           metadata: { news_id: missionId }
-        }]);
+        } as any]);
 
       if (error) throw error;
       
