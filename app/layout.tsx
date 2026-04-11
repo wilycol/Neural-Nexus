@@ -38,6 +38,22 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const originalError = console.error;
+                console.error = function() {
+                  const msg = arguments[0] ? arguments[0].toString() : '';
+                  if (msg.includes('toolbar.js') || msg.includes('Receiving end does not exist')) {
+                    return;
+                  }
+                  originalError.apply(console, arguments);
+                };
+              })();
+            `,
+          }}
+        />
         <script 
           async 
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1327982622260280"
