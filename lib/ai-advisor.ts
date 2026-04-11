@@ -1,10 +1,11 @@
 import { BeatrizTone, AIInsight, METAS_VOLANTES } from "./ai-shared";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Beatriz AI-Advisor: El Cerebro Estratégico de Neural Nexus
  */
 
-export async function getBeatrizAdvisorMissions(supabase: any): Promise<AIInsight> {
+export async function getBeatrizAdvisorMissions(supabase: SupabaseClient): Promise<AIInsight> {
   // 1. Obtener Visión Global de Monetización
   const { data: stats, error } = await supabase.rpc('get_monetization_overview');
   if (error) throw error;
@@ -47,10 +48,10 @@ export async function getBeatrizAdvisorMissions(supabase: any): Promise<AIInsigh
     priority: gap > (currentTarget * 0.5) ? 'high' : 'medium',
     current_goal: currentTarget,
     gap: gap,
-    missions: recentNews?.map((n: any, i: number) => ({
+    missions: recentNews?.map((n, i: number) => ({
       id: n.id,
       title: `Compartir en ${i === 0 ? 'TikTok' : i === 1 ? 'YouTube' : 'Instagram'}: ${n.title}`,
-      type: i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram'),
+      type: i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram' as any),
       url: `https://neural-nexus.ai/news/${n.slug}`
     })) || []
   };

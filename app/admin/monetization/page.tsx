@@ -31,9 +31,11 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { AIInsight } from "@/lib/ai-shared";
 
 export default function MonetizationAdminPage() {
-  const { user, profile, isLoading: authLoading, role } = useAuth();
+  const { user, isLoading: authLoading, role } = useAuth();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,7 @@ export default function MonetizationAdminPage() {
     total_revenue: 0,
     progress_percentage: 0
   });
-  const [advisor, setAdvisor] = useState<any>(null);
+  const [advisor, setAdvisor] = useState<AIInsight | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -68,7 +70,7 @@ export default function MonetizationAdminPage() {
 
     const loadData = async () => {
       try {
-        const supabase = getSupabaseBrowserClient();
+        const supabase: SupabaseClient = getSupabaseBrowserClient();
         const [overviewRes, advisorData] = await Promise.all([
           supabase.rpc('get_monetization_overview'),
           getBeatrizAdvisorMissions(supabase)
@@ -236,7 +238,7 @@ export default function MonetizationAdminPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {advisor?.missions.map((mission: any) => (
+              {advisor?.missions.map((mission) => (
                 <div key={mission.id} className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-4 group">
                   <div className="flex justify-between items-start gap-4">
                     <h5 className="text-sm font-bold leading-tight group-hover:text-neon-blue transition-colors">
