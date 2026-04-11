@@ -188,8 +188,14 @@ export default function ProfilePage() {
   );
 }
 
+interface UserActivity {
+  type: 'share' | 'comment' | 'like' | 'favorite';
+  text: string;
+  time: Date;
+}
+
 function ActivityTab({ userId }: { userId: string }) {
-  const [activities, setActivities] = useState<any[]>([]);
+  const [activities, setActivities] = useState<UserActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
