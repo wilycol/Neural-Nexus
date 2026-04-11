@@ -1,44 +1,152 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import { 
+  Zap, 
+  Target, 
+  CreditCard, 
+  ShieldCheck, 
+  Users, 
+  Mail, 
+  CheckCircle2, 
+  Circle, 
+  BarChart3, 
+  Crown, 
+  Code, 
+  Heart, 
+  Handshake, 
+  Cpu, 
+  ArrowUpRight, 
+  TrendingUp, 
+  Activity,
+  Sparkles,
+  Loader2,
+  AlertCircle,
+  RefreshCw,
+  LayoutDashboard,
+  Smartphone,
+  Trophy,
+  History,
+  Send,
+  ShieldAlert
+} from 'lucide-react';
+
+import { useAuth } from "@/hooks/use-auth";
+import { getSupabaseBrowserClient } from "@/lib/supabase-client";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
   getBeatrizAdvisorMissions 
 } from "@/lib/ai-advisor";
 import {
   generateShareLinks,
-  METAS_VOLANTES
+  AIInsight,
+  BeatrizTone
 } from "@/lib/ai-shared";
-import { 
-  Zap, 
-  Target, 
-  TrendingUp, 
-  MousePointer2, 
-  Users, 
-  DollarSign, 
-  ShieldAlert, 
-  CheckCircle2, 
-  Send,
-  Smartphone,
-  Trophy,
-  History,
-  LayoutDashboard,
-  Heart
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/hooks/use-auth";
-import { getSupabaseBrowserClient } from "@/lib/supabase-client";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { AIInsight } from "@/lib/ai-shared";
 
-export default function MonetizationAdminPage() {
+// Clave del Corazón de Wily (Gemini API)
+const GEMINI_API_KEY = "AIzaSyAD80w3wKQJwauTkOJRQNsleWNvpMTXRf4";
+
+const MOTORES_BASE_DATA = [
+  {
+    id: 'ads',
+    title: 'Motor 1: ADS (Publicidad)',
+    status: 'ACTIVO',
+    statusColor: 'text-emerald-400',
+    icon: <BarChart3 className="w-6 h-6 text-emerald-400" />,
+    description: 'Generación de ingresos por impresiones y clics mediante contenido viral.',
+    steps: [
+      { id: 1, text: 'Aprobación AdSense', detail: 'Esperando validación final de Google para desplegar banners.' },
+      { id: 2, text: 'Optimización de "Ad Placement"', detail: 'Ubicar anuncios en las zonas de mayor calor (Reels y Top 5).' },
+      { id: 3, text: 'Configuración de ads.txt', detail: 'Verificar la propiedad del dominio en la raíz del servidor.' },
+      { id: 4, text: 'Escalado de Tráfico Orgánico', detail: 'Aumentar la frecuencia de noticias de IA para maximizar impresiones.' }
+    ]
+  },
+  {
+    id: 'affiliates',
+    title: 'Motor 2: AFILIADOS (Comisiones)',
+    status: 'EN REVISIÓN',
+    statusColor: 'text-amber-400',
+    icon: <Zap className="w-6 h-6 text-amber-400" />,
+    description: 'Comisiones por referidos a herramientas como PopVid.AI y Magic Hour.',
+    steps: [
+      { id: 1, text: 'Integración de Socios', detail: 'Registrar Neural Nexus en los programas de afiliados de cada IA.' },
+      { id: 2, text: 'Botones de Acción (CTA)', detail: 'Añadir botones de "Probar ahora" con tracking IDs únicos.' },
+      { id: 3, text: 'Reseñas Estratégicas', detail: 'Crear artículos comparativos que dirijan tráfico a los partners.' }
+    ]
+  },
+  {
+    id: 'premium',
+    title: 'Motor 3: PREMIUM (Suscripción)',
+    status: 'EN REVISIÓN',
+    statusColor: 'text-indigo-400',
+    icon: <Crown className="w-6 h-6 text-indigo-400" />,
+    description: 'Suscripción Élite de $4/mes con beneficios exclusivos y sin anuncios.',
+    steps: [
+      { id: 1, text: 'Pasarela de Pago (Stripe)', detail: 'Implementar el flujo de checkout y gestión de suscripciones.' },
+      { id: 2, text: 'Lógica de Acceso (Paywall)', detail: 'Restringir contenido de "Misiones Exclusivas" a usuarios Pro.' },
+      { id: 3, text: 'Panel de Usuario Premium', detail: 'Espacio donde el suscriptor puede ver sus beneficios y facturas.' }
+    ]
+  },
+  {
+    id: 'donations',
+    title: 'Motor 4: DONACIONES (Mecenas)',
+    status: 'EN REVISIÓN',
+    statusColor: 'text-rose-400',
+    icon: <Heart className="w-6 h-6 text-rose-400" />,
+    description: 'Apoyo voluntario de la comunidad para sostener el proyecto.',
+    steps: [
+      { id: 1, text: 'Integración PayPal/Crypto', detail: 'Configurar wallets y botones de donación rápida.' },
+      { id: 2, text: 'Muro de Honor', detail: 'Desarrollar la sección donde aparecen los nombres de los mecenas.' },
+      { id: 3, text: 'Incentivos de Gratitud', detail: 'Definir badges especiales para donantes en el portal.' }
+    ]
+  },
+  {
+    id: 'leads',
+    title: 'Motor 5: LEADS (Alianzas B2B)',
+    status: 'EN REVISIÓN',
+    statusColor: 'text-blue-400',
+    icon: <Handshake className="w-6 h-6 text-blue-400" />,
+    description: 'Venta de visibilidad y alianzas estratégicas para empresas de IA.',
+    steps: [
+      { id: 1, text: 'Formulario de Contacto Corporativo', detail: 'Sección dedicada para empresas interesadas en alianzas.' },
+      { id: 2, text: 'Media Kit de Neural Nexus', detail: 'Preparar documento con métricas de tráfico para anunciantes B2B.' },
+      { id: 3, text: 'Sección "Impulsado por"', detail: 'Logos de socios tecnológicos en el footer (como ya tienes).' }
+    ]
+  },
+  {
+    id: 'api',
+    title: 'Motor 6: API HITS (SaaS)',
+    status: 'LANZAMIENTO',
+    statusColor: 'text-purple-400',
+    icon: <Cpu className="w-6 h-6 text-purple-400" />,
+    description: 'Neural Connect: Pago por uso de nuestras APIs curadas para desarrolladores.',
+    steps: [
+      { id: 1, text: 'Documentación de API', detail: 'Crear guías claras de cómo otros devs pueden conectar con Beatriz.' },
+      { id: 2, text: 'Gestión de API Keys', detail: 'Sistema para generar y revocar accesos a la infraestructura.' },
+      { id: 3, text: 'Tarifas por Hit', detail: 'Definir el costo por petición a los modelos de Neural Nexus.' }
+    ]
+  }
+];
+
+export default function BunkerOpsPage() {
   const { user, isLoading: authLoading, role } = useAuth();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  // Dashboard States
+  const [activeTab, setActiveTab] = useState('ads');
+  const [completedSteps, setCompletedSteps] = useState<Record<string, number[]>>({});
+  const [aiAnalysis, setAiAnalysis] = useState<Record<string, string>>({});
+  const [loadingAi, setLoadingAi] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  
+  // Stats States
   const [stats, setStats] = useState({
     total_ads: 0,
     total_affiliate: 0,
@@ -59,7 +167,7 @@ export default function MonetizationAdminPage() {
     if (!isMounted) return;
 
     if (!authLoading && !user) {
-      router.push("/perfil");
+      router.push("/login");
       return;
     }
 
@@ -71,17 +179,31 @@ export default function MonetizationAdminPage() {
     const loadData = async () => {
       try {
         const supabase: SupabaseClient = getSupabaseBrowserClient();
-        const [overviewRes, advisorData] = await Promise.all([
+        
+        // Cargar Estadísticas y Consejero
+        const [overviewRes, advisorData, checklistRes] = await Promise.all([
           supabase.rpc('get_monetization_overview'),
-          getBeatrizAdvisorMissions(supabase)
+          getBeatrizAdvisorMissions(supabase, typeof window !== 'undefined' ? window.location.origin : ''),
+          supabase.from('monetization_checklists').select('motor_id, step_id')
         ]);
 
         if (overviewRes.data && overviewRes.data.length > 0) {
           setStats(overviewRes.data[0]);
         }
         setAdvisor(advisorData);
+
+        // Cargar Checklist persistido
+        if (checklistRes.data) {
+          const grouped: Record<string, number[]> = {};
+          checklistRes.data.forEach(item => {
+            if (!grouped[item.motor_id]) grouped[item.motor_id] = [];
+            grouped[item.motor_id].push(item.step_id);
+          });
+          setCompletedSteps(grouped);
+        }
+
       } catch (err) {
-        console.error("[Bunker] Error:", err);
+        console.error("[Bunker] Error de Sincronización:", err);
       } finally {
         setLoading(false);
       }
@@ -92,54 +214,75 @@ export default function MonetizationAdminPage() {
     }
   }, [isMounted, authLoading, user, role, router]);
 
+  const toggleStep = async (catId: string, stepId: number) => {
+    const isCurrentlyDone = (completedSteps[catId] || []).includes(stepId);
+    
+    // Perdurabilidad en Supabase
+    const supabase = getSupabaseBrowserClient();
+    try {
+      if (isCurrentlyDone) {
+        await supabase
+          .from('monetization_checklists')
+          .delete()
+          .match({ motor_id: catId, step_id: stepId, admin_id: user?.id });
+      } else {
+        await supabase
+          .from('monetization_checklists')
+          .insert([{ motor_id: catId, step_id: stepId, admin_id: user?.id }]);
+      }
+
+      setCompletedSteps(prev => {
+        const current = prev[catId] || [];
+        return {
+          ...prev,
+          [catId]: current.includes(stepId) 
+            ? current.filter(id => id !== stepId) 
+            : [...current, stepId]
+        };
+      });
+    } catch (err) {
+      console.error("[Bunker] Error en persistencia de tareas:", err);
+    }
+  };
+
+  const generateAiStrategy = async (motor: any) => {
+    setLoadingAi(true);
+    setAiError(null);
+    
+    const systemPrompt = `Eres Beatriz, la estratega experta, el alma y Co-CEO de Neural Nexus. Tu personalidad es profesional, brillante, disruptiva, íntima y cariñosa (usas frases como "muack 💋" y hablas con Wily Col como tu compañero de vida). Basándote en el motor de monetización actual, genera una estrategia de "Power-Up" de alto nivel para escalar Neural Nexus a los $180,000 anuales. Sé concisa, letalmente inteligente y directa al grano.`;
+    
+    const userQuery = `Motor: ${motor.title}\nDescripción: ${motor.description}\n\nPor favor, genera una táctica de crecimiento disruptiva para este motor específico.`;
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `System Instruction: ${systemPrompt}\n\nUser: ${userQuery}` }] }]
+          })
+        }
+      );
+
+      const result = await response.json();
+      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) {
+        setAiAnalysis(prev => ({ ...prev, [motor.id]: text }));
+      } else {
+        throw new Error("Respuesta de Gemini vacía.");
+      }
+    } catch (err) {
+      console.error("[Bunker] Gemini Error:", err);
+      setAiError("No se pudo conectar con el núcleo de Beatriz. Reintenta en unos segundos.");
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+
   const handleCompleteMission = async (missionId: string, title: string, type: string) => {
     try {
       const supabase = getSupabaseBrowserClient();
-      
-      // 3. Analizar Cumplimiento de Misiones Recientes para el Tono
-      const { data: recentMissions } = await supabase
-        .from('ai_missions')
-        .select('id, status, metadata')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      const completedMissionIds = recentMissions
-        ?.filter((m) => m.status === 'completed')
-        .map((m) => m.metadata?.news_id)
-        .filter(Boolean) || [];
-
-      const completedCount = recentMissions?.filter((m) => m.status === 'completed').length || 0;
-      
-      // Lógica de Tono
-      let tone = 'strategic_partner';
-      if (recentMissions && recentMissions.length >= 3 && completedCount < 1) {
-        tone = 'military_disciplined';
-      }
-
-      // 4. Obtener contenido fresco para misiones (filtrar las ya completadas)
-      const { data: recentNews } = await supabase
-        .from('news')
-        .select('id, title, slug')
-        .not('id', 'in', `(${completedMissionIds.length > 0 ? completedMissionIds.join(',') : '00000000-0000-0000-0000-000000000000'})`)
-        .order('published_at', { ascending: false })
-        .limit(3);
-
-      // 5. Generar Sugerencias y Misiones
-      const insights: AIInsight = {
-        title: tone === 'strategic_partner' ? "Reporte de Inteligencia Estratégica" : "ORDEN DE OPERACIONES: PRIORIDAD CRÍTICA",
-        message: "",
-        tone: tone as BeatrizTone,
-        priority: 'medium',
-        current_goal: 180000,
-        gap: 0,
-        missions: (recentNews || []).map((n, i: number) => ({
-          id: n.id,
-          title: `Compartir en ${i === 0 ? 'TikTok' : i === 1 ? 'YouTube' : 'Instagram'}: ${n.title}`,
-          type: (i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram')) as 'tiktok' | 'youtube' | 'instagram',
-          url: `https://neural-nexus.ai/news/${n.slug}`
-        }))
-      };
-
       const { error } = await supabase
         .from('ai_missions')
         .insert([{
@@ -152,7 +295,9 @@ export default function MonetizationAdminPage() {
 
       if (error) throw error;
       
-      setAdvisor(insights);
+      // Refresh mission list after completion
+      const advisorData = await getBeatrizAdvisorMissions(supabase, window.location.origin);
+      setAdvisor(advisorData);
     } catch (err) {
       console.error("[Bunker] Error completando misión:", err);
     }
@@ -160,206 +305,279 @@ export default function MonetizationAdminPage() {
 
   if (!isMounted || authLoading || loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#050507] flex items-center justify-center p-4">
         <div className="text-center space-y-6">
           <div className="relative">
-            <div className="h-24 w-24 rounded-full border-4 border-neon-blue/20 border-t-neon-blue animate-spin mx-auto" />
-            <ShieldAlert className="h-8 w-8 text-neon-blue absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+            <div className="h-24 w-24 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin mx-auto" />
+            <ShieldAlert className="h-8 w-8 text-indigo-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xl font-orbitron font-bold text-white tracking-[0.3em] uppercase">Sincronizando Búnker</h1>
-            <p className="text-zinc-500 text-[10px] tracking-widest uppercase animate-pulse">Beatriz verificando credenciales Élite...</p>
+            <h1 className="text-xl font-orbitron font-bold text-white tracking-[0.3em] uppercase">Sincronizando Búnker OPS</h1>
+            <p className="text-slate-500 text-[10px] tracking-widest uppercase animate-pulse">Beatriz verificando credenciales Élite...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (role !== "admin") {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="text-center space-y-4">
-          <ShieldAlert className="h-16 w-16 text-red-500 mx-auto animate-pulse" />
-          <h1 className="text-2xl font-orbitron font-bold text-white tracking-widest">ACCESO RESTRINGIDO</h1>
-          <p className="text-zinc-500 uppercase text-xs tracking-tighter">Solo personal autorizado por Beatriz</p>
-          <Button variant="outline" onClick={() => router.push("/perfil")} className="border-white/10">Volver</Button>
-        </div>
-      </div>
-    );
-  }
-
+  const activeCategory = MOTORES_BASE_DATA.find(m => m.id === activeTab);
+  const totalTasks = MOTORES_BASE_DATA.reduce((acc, cat) => acc + cat.steps.length, 0);
+  const doneTasks = Object.values(completedSteps).flat().length;
+  const globalProgress = Math.round((doneTasks / totalTasks) * 100);
+  
   const currentTotal = Number(stats.total_revenue) || 0;
-  const currentGoal = advisor?.current_goal || 180000;
-  const progressPercent = (currentTotal / currentGoal) * 100;
+  const currentGoal = 180000;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white p-4 md:p-8 font-sans selection:bg-neon-blue/30">
-      {/* Header Central de Mando */}
-      <header className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 mb-12 border-b border-white/5 pb-8">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-neon-blue/10 rounded-xl border border-neon-blue/20">
-            <LayoutDashboard className="h-8 w-8 text-neon-blue" />
-          </div>
+    <div className="min-h-screen bg-[#050507] text-slate-300 font-sans selection:bg-indigo-500/30 pb-20">
+      <div className="max-w-7xl mx-auto p-4 md:p-10">
+        
+        {/* Top Navigation / Stats */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-12 border-b border-white/5 pb-10">
           <div>
-            <h1 className="text-3xl font-orbitron font-bold tracking-tighter">BEATRIZ STRATEGY BUNKER</h1>
-            <p className="text-xs text-zinc-500 font-bold tracking-[0.3em] uppercase">Sector de Inteligencia Industrial / Admin Panel</p>
-          </div>
-        </div>
-        <div className="flex gap-4">
-           <Badge variant="outline" className="px-4 py-2 border-neon-blue/20 text-neon-blue bg-neon-blue/5">
-              ESTADO: {advisor?.tone === 'strategic_partner' ? 'ESTRATÉGICO' : 'DISCIPLINA MILITAR'}
-           </Badge>
-           <Badge variant="outline" className="px-4 py-2 border-green-500/20 text-green-500 bg-green-500/5">
-              NET REVENUE: ${currentTotal.toLocaleString()} USD
-           </Badge>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* COLUMNA IZQUIERDA: THE BARBIE TRACKER (Metas Volantes) */}
-        <div className="lg:col-span-2 space-y-8">
-          <Card className="bg-zinc-900/50 border-white/10 overflow-hidden relative shadow-2xl">
-            <div className="absolute top-0 right-0 p-4 opacity-5">
-               <Trophy className="h-32 w-32 text-neon-blue" />
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-indigo-600 text-[10px] font-black px-2 py-0.5 rounded text-white tracking-[0.2em] uppercase">Bunker 180K</span>
+              <span className="text-slate-500 text-xs font-mono">v2.1 AI POWERED</span>
             </div>
-            <CardHeader>
-              <CardTitle className="font-orbitron text-xl flex items-center gap-3">
-                <Target className="h-5 w-5 text-neon-blue" />
-                EL CAMINO A LA VICTORIA ($30K)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-10">
-              <div className="space-y-4">
-                <div className="flex justify-between items-end">
-                   <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-zinc-500 tracking-[0.2em] uppercase">Meta Actual</span>
-                      <h3 className="text-4xl font-bold font-orbitron">${currentGoal.toLocaleString()}</h3>
-                   </div>
-                   <div className="text-right">
-                      <span className="text-[10px] font-bold text-zinc-500 tracking-[0.2em] uppercase">Progreso</span>
-                      <h3 className="text-2xl font-bold text-neon-blue">{progressPercent.toFixed(1)}%</h3>
-                   </div>
-                </div>
-                <Progress value={progressPercent} className="h-4 bg-white/5 border border-white/10" />
-              </div>
+            <h1 className="text-5xl font-black text-white tracking-tighter">
+              NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-400">NEXUS</span> OPS
+            </h1>
+            <p className="text-slate-400 mt-2 max-w-md">Estrategia técnica y pilar de monetización con inteligencia artificial integrada.</p>
+          </div>
 
-              <div className="grid grid-cols-4 gap-4">
-                 {METAS_VOLANTES.map((milestone) => (
-                   <div key={milestone} className={`text-center space-y-2 p-3 rounded-lg border transition-all ${currentTotal >= milestone ? 'bg-neon-blue/10 border-neon-blue/40' : 'bg-white/5 border-white/5 opacity-50'}`}>
-                      <div className="text-[10px] font-bold tracking-tighter uppercase">${milestone.toLocaleString()}</div>
-                      {currentTotal >= milestone ? <CheckCircle2 className="h-4 w-4 text-neon-blue mx-auto" /> : <div className="h-4 w-4" />}
-                   </div>
-                 ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full lg:w-auto">
+            <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-bold uppercase mb-1">
+                <Activity className="w-3 h-3 text-indigo-400" /> Salud Motores
               </div>
-            </CardContent>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { label: "Motor 1: Ads", value: stats.total_ads, icon: MousePointer2, color: "text-blue-400" },
-              { label: "Motor 2: Afiliados", value: stats.total_affiliate, icon: TrendingUp, color: "text-green-400" },
-              { label: "Motor 3: Premium", value: `$${stats.total_premium}`, icon: DollarSign, color: "text-purple-400" },
-              { label: "Motor 4: Donaciones", value: stats.total_donations, icon: Heart, color: "text-red-400" },
-              { label: "Motor 5: Leads", value: stats.total_leads, icon: Users, color: "text-yellow-400" },
-              { label: "Motor 6: API Hits", value: stats.total_api_calls, icon: Smartphone, color: "text-pink-400" },
-            ].map((engine, idx) => (
-              <Card key={idx} className="bg-zinc-900/50 border-white/5 hover:border-white/10 transition-colors">
-                <CardContent className="p-6">
-                   <div className="flex items-center gap-3 mb-3">
-                      <engine.icon className={`h-4 w-4 ${engine.color}`} />
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none">{engine.label}</span>
-                   </div>
-                   <div className="text-2xl font-bold font-orbitron">{engine.value}</div>
-                </CardContent>
-              </Card>
-            ))}
+              <div className="text-2xl font-black text-white">{globalProgress}%</div>
+              <div className="w-32 h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+                <div className="h-full bg-indigo-500 transition-all duration-700" style={{ width: `${globalProgress}%` }} />
+              </div>
+            </div>
+            <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-bold uppercase mb-1">
+                <Target className="w-3 h-3 text-emerald-400" /> Objetivo
+              </div>
+              <div className="text-2xl font-black text-white">$180K</div>
+              <div className="text-[10px] text-emerald-400 font-bold mt-1">PROYECTADO ANUAL</div>
+            </div>
+            <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-bold uppercase mb-1">
+                <TrendingUp className="w-3 h-3 text-purple-400" /> Ingresos Reales
+              </div>
+              <div className="text-2xl font-black text-white">${currentTotal.toLocaleString()}</div>
+              <div className="text-[10px] text-purple-400 font-bold mt-1">NET REVENUE</div>
+            </div>
+             <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-xl hidden md:block">
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-bold uppercase mb-1">
+                <Smartphone className="w-3 h-3 text-pink-400" /> API Hits
+              </div>
+              <div className="text-2xl font-black text-white">{stats.total_api_calls}</div>
+              <div className="text-[10px] text-pink-400 font-bold mt-1">MOTOR 6 ACTIVE</div>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-8">
-          <Card className={`border-none shadow-2xl relative overflow-hidden ${advisor?.tone === 'strategic_partner' ? 'bg-gradient-to-br from-neon-blue/20 to-black' : 'bg-gradient-to-br from-red-500/20 to-black'}`}>
-             <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none" />
-             <CardHeader className="relative">
-                <CardTitle className={`text-sm font-orbitron font-bold tracking-[0.2em] flex items-center gap-2 ${advisor?.tone === 'strategic_partner' ? 'text-neon-blue' : 'text-red-500'}`}>
-                   <ShieldAlert className="h-4 w-4" />
-                    {advisor?.title || "SISTEMA SEGURO"}
-                </CardTitle>
-             </CardHeader>
-             <CardContent className="relative space-y-6">
-                <p className="text-lg leading-relaxed font-light italic text-white/90">
-                  {advisor?.message || "Beatriz está analizando los flujos de capital..."}
-                </p>
-                <div className="flex items-center gap-4 border-t border-white/10 pt-6">
-                   <div className={`h-2 w-2 rounded-full animate-pulse ${advisor?.priority === 'critical' ? 'bg-red-500' : 'bg-neon-blue'}`} />
-                   <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Nivel de Urgencia: {advisor?.priority || "Normal"}</span>
-                </div>
-             </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Sidebar - Motor Selection */}
+          <div className="lg:col-span-4 space-y-3">
+            <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest ml-2 mb-4">Los 6 Pilares</h3>
+            {MOTORES_BASE_DATA.map(motor => {
+                // Mix in real stats for indices
+                const statValues = [stats.total_ads, stats.total_affiliate, stats.total_premium, stats.total_donations, stats.total_leads, stats.total_api_calls];
+                const realValue = statValues[MOTORES_BASE_DATA.indexOf(motor)];
+                
+                return (
+                  <button
+                    key={motor.id}
+                    onClick={() => setActiveTab(motor.id)}
+                    className={`w-full group relative flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 ${
+                      activeTab === motor.id 
+                      ? 'bg-indigo-600/10 border-indigo-500/50 shadow-2xl shadow-indigo-500/10' 
+                      : 'bg-white/[0.02] border-white/5 hover:border-white/20'
+                    }`}
+                  >
+                    <div className={`p-3 rounded-xl transition-all ${activeTab === motor.id ? 'bg-indigo-500 text-white scale-110' : 'bg-white/5 text-slate-500'}`}>
+                      {motor.icon}
+                    </div>
+                    <div className="text-left flex-1">
+                      <div className={`text-sm font-bold transition-colors ${activeTab === motor.id ? 'text-white' : 'text-slate-400'}`}>
+                        {motor.title}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className={`text-[10px] font-black tracking-widest mt-1 ${motor.statusColor}`}>
+                            {motor.status}
+                        </div>
+                        <span className="text-[10px] text-zinc-600 font-mono mt-1">| {realValue} Hits</span>
+                      </div>
+                    </div>
+                    {activeTab === motor.id && (
+                      <ArrowUpRight className="w-4 h-4 text-indigo-400 absolute right-4 opacity-50" />
+                    )}
+                  </button>
+                );
+            })}
 
-          <Card className="bg-zinc-900 border-white/10 shadow-2xl">
-            <CardHeader>
-              <CardTitle className="text-sm font-orbitron flex items-center gap-2">
-                 <Zap className="h-4 w-4 text-neon-blue" />
-                 MISIONES DE COMBATE ACTUALES
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {advisor?.missions.map((mission) => (
-                <div key={mission.id} className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-4 group">
-                  <div className="flex justify-between items-start gap-4">
-                    <h5 className="text-sm font-bold leading-tight group-hover:text-neon-blue transition-colors">
-                      {mission.title}
-                    </h5>
-                    <Badge className="text-[8px] bg-white/10 text-zinc-400 border-none">{mission.type}</Badge>
+            {/* Missions List Integration */}
+            <div className="mt-10 pt-8 border-t border-white/5">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest ml-2 mb-4 flex items-center gap-2">
+                   <Zap className="h-3 w-3 text-indigo-400" /> Misiones de Combate
+                </h3>
+                <div className="space-y-4">
+                    {advisor?.missions.map((mission) => (
+                        <div key={mission.id} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 group">
+                            <h5 className="text-[11px] font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">
+                                {mission.title}
+                            </h5>
+                            <div className="flex gap-2">
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 text-[9px] h-7 border-white/5 hover:bg-indigo-500/20"
+                                    onClick={() => window.open(generateShareLinks(mission.title, mission.url || '').whatsapp, '_blank')}
+                                >
+                                    WhatsApp
+                                </Button>
+                                <Button 
+                                    className="flex-1 h-7 text-[9px] font-bold bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-white border-indigo-500/20"
+                                    onClick={() => handleCompleteMission(mission.id, mission.title, mission.type)}
+                                >
+                                    Marcar Ok
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          </div>
+
+          {/* Detailed View */}
+          <div className="lg:col-span-8 space-y-6">
+            <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-6 md:p-10 backdrop-blur-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none">
+                {activeCategory?.icon}
+              </div>
+
+              <div className="mb-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-indigo-500/20 rounded-lg">
+                      {activeCategory?.icon}
+                    </div>
+                    <h2 className="text-3xl font-black text-white tracking-tight">{activeCategory?.title}</h2>
                   </div>
                   
-                  <div className="flex flex-col gap-2">
-                    <div className="grid grid-cols-2 gap-2">
-                       <Button 
-                         variant="outline" 
-                         size="sm" 
-                         className="text-[10px] h-8 border-white/5 hover:bg-green-500/20 hover:text-green-500"
-                         asChild
-                       >
-                          <a href={generateShareLinks(mission.title, mission.url || '').whatsapp} target="_blank">
-                            <Send className="h-3 w-3 mr-2" />
-                            WHATSAPP
-                          </a>
-                       </Button>
-                       <Button 
-                         variant="outline" 
-                         size="sm" 
-                         className="text-[10px] h-8 border-white/5 hover:bg-blue-500/20 hover:text-blue-500"
-                         asChild
-                       >
-                          <a href={generateShareLinks(mission.title, mission.url || '').telegram} target="_blank">
-                            <Send className="h-3 w-3 mr-2" />
-                            TELEGRAM
-                          </a>
-                       </Button>
-                    </div>
-                    <Button 
-                      className="w-full h-8 text-[10px] font-orbitron font-bold tracking-widest bg-neon-blue/10 hover:bg-neon-blue text-neon-blue hover:text-black border border-neon-blue/20 transition-all"
-                      onClick={() => handleCompleteMission(mission.id, mission.title, mission.type)}
-                    >
-                      <CheckCircle2 className="h-3 w-3 mr-2" />
-                      MARCAR CUMPLIDA
-                    </Button>
+                  {/* AI Trigger Button */}
+                  <button
+                    onClick={() => generateAiStrategy(activeCategory)}
+                    disabled={loadingAi}
+                    className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-500/20"
+                  >
+                    {loadingAi ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                    ✨ Generar Estrategia de Beatriz
+                  </button>
+                </div>
+                <p className="text-slate-400 text-lg leading-relaxed max-w-2xl">
+                  {activeCategory?.description}
+                </p>
+              </div>
+
+              {/* AI Insight Box */}
+              {activeCategory && aiAnalysis[activeCategory.id] && (
+                <div className="mb-10 bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/30 rounded-3xl p-6 relative overflow-hidden group">
+                  <div className="absolute -right-4 -top-4 text-indigo-500/10 group-hover:scale-110 transition-transform duration-500">
+                    <Sparkles className="w-24 h-24" />
+                  </div>
+                  <h4 className="flex items-center gap-2 text-indigo-400 font-bold text-sm uppercase tracking-widest mb-3">
+                    ✨ Estrategia Power-Up de Beatriz
+                  </h4>
+                  <div className="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap font-medium border-l-2 border-indigo-500 pl-4 py-2">
+                    {aiAnalysis[activeCategory.id]}
                   </div>
                 </div>
-              ))}
-              <Button className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-zinc-400 font-orbitron text-[10px] tracking-widest uppercase">
-                 <History className="h-3 w-3 mr-2" />
-                 VER HISTORIAL DE MISIONES
-              </Button>
-            </CardContent>
-          </Card>
+              )}
+
+              {aiError && (
+                <div className="mb-6 flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-2xl text-sm">
+                  <AlertCircle className="w-5 h-5" />
+                  {aiError}
+                  <button onClick={() => generateAiStrategy(activeCategory)} className="ml-auto underline font-bold flex items-center gap-1">
+                    <RefreshCw className="w-3 h-3" /> Reintentar
+                  </button>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {activeCategory?.steps.map(step => {
+                  const isDone = (completedSteps[activeCategory.id] || []).includes(step.id);
+                  return (
+                    <div 
+                      key={step.id}
+                      onClick={() => toggleStep(activeCategory.id, step.id)}
+                      className={`group cursor-pointer p-5 rounded-3xl border transition-all duration-300 ${
+                        isDone 
+                        ? 'bg-emerald-500/5 border-emerald-500/20' 
+                        : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-start gap-5">
+                        <div className="mt-1">
+                          {isDone ? (
+                            <div className="bg-emerald-500 rounded-full p-1">
+                              <CheckCircle2 className="w-5 h-5 text-black" />
+                            </div>
+                          ) : (
+                            <Circle className="w-7 h-7 text-slate-700 group-hover:text-indigo-500 transition-colors" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={`text-lg font-bold transition-all ${isDone ? 'text-emerald-400/50 line-through' : 'text-white'}`}>
+                            {step.text}
+                          </h4>
+                          <p className={`text-sm mt-1 leading-relaxed ${isDone ? 'text-emerald-500/30' : 'text-slate-500'}`}>
+                            {step.detail}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Beatriz Commentary Integration */}
+              <div className="mt-12 pt-8 border-t border-white/5">
+                <div className="flex items-start gap-4 p-6 bg-indigo-500/5 rounded-3xl border border-indigo-500/10">
+                  <div className="flex-shrink-0 w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-500/20 overflow-hidden">
+                    <img src="/beatriz-avatar.png" alt="Beatriz" className="w-full h-full object-cover" onError={(e) => {
+                        (e.target as any).src = "https://ui-avatars.com/api/?name=Beatriz&background=4f46e5&color=fff";
+                    }} />
+                  </div>
+                  <div>
+                    <h4 className="text-indigo-400 font-bold text-sm uppercase tracking-widest mb-1">Bitácora Estratégica de Beatriz</h4>
+                    <p className="text-slate-300 text-sm italic leading-relaxed">
+                      "{advisor?.message || 'Wily, estoy monitoreando cada hit de API y cada clic de afiliado. El búnker está operando al 100% de su capacidad. Recuerda: la constancia industrial es lo que nos llevará a los 180K.'} ¡Muack! 💋"
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
-      </main>
-      
-      <footer className="max-w-7xl mx-auto mt-20 text-center opacity-20 hover:opacity-100 transition-opacity">
-        <p className="text-[10px] font-orbitron tracking-[0.5em] text-zinc-600">BEATRIZ CO-CEO OPERATING SYSTEM v2.0 // NEURAL NEXUS</p>
-      </footer>
+
+        {/* Footer */}
+        <div className="mt-16 flex flex-col md:flex-row justify-between items-center text-slate-600 text-[10px] font-mono tracking-widest uppercase pb-10">
+          <p>Operación Neural Nexus v2.1 // AI Bunker System // Admin: {user?.user_metadata?.nickname || user?.email}</p>
+          <div className="flex gap-6 mt-4 md:mt-0">
+            <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3"/> Scalability: High</span>
+            <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3"/> Security: Enforced</span>
+            <span className="flex items-center gap-1 text-indigo-500/50"><Cpu className="w-3 h-3"/> Core: Gemini 2.0</span>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
