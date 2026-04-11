@@ -189,7 +189,7 @@ export default function BunkerOpsPage() {
         const [overviewRes, advisorData, checklistRes] = await Promise.all([
           supabase.rpc('get_monetization_overview'),
           getBeatrizAdvisorMissions(supabase, typeof window !== 'undefined' ? window.location.origin : ''),
-          supabase.from('monetization_checklists').select('motor_id, step_id')
+          (supabase as any).from('monetization_checklists').select('motor_id, step_id')
         ]);
 
         if (overviewRes.data && overviewRes.data.length > 0) {
@@ -226,12 +226,12 @@ export default function BunkerOpsPage() {
     const supabase = getSupabaseBrowserClient();
     try {
       if (isCurrentlyDone) {
-        await supabase
+        await (supabase as any)
           .from('monetization_checklists')
           .delete()
           .match({ motor_id: catId, step_id: stepId, admin_id: user?.id });
       } else {
-        await supabase
+        await (supabase as any)
           .from('monetization_checklists')
           .insert([{ motor_id: catId, step_id: stepId, admin_id: user?.id }]);
       }
