@@ -53,34 +53,44 @@ CREATE POLICY "Public can insert monetization events" ON public.monetization_eve
 -- 5. RPC Maestro: get_monetization_overview
 CREATE OR REPLACE FUNCTION public.get_monetization_overview()
 RETURNS TABLE (
-    engine_1_clicks BIGINT,
-    engine_2_clicks BIGINT,
-    engine_3_revenue DECIMAL(15, 2),
-    engine_4_subs BIGINT,
-    engine_5_leads BIGINT,
-    engine_6_usage BIGINT,
+    total_ads BIGINT,
+    total_affiliate BIGINT,
+    total_premium DECIMAL(15, 2),
+    total_donations DECIMAL(15, 2),
+    total_leads BIGINT,
+    total_api_calls BIGINT,
     total_revenue DECIMAL(15, 2),
-    progress_percent DECIMAL(5, 2)
+    progress_percentage DECIMAL(5, 2)
 ) AS $$
 DECLARE
-    current_rev DECIMAL(15, 2);
-    target_val DECIMAL(15, 2) := 30000.00;
+    target_val DECIMAL(15, 2) := 30000.00; -- Meta industrial: $30K
+    rev_premium DECIMAL(15, 2);
+    rev_donations DECIMAL(15, 2);
+    total_rev DECIMAL(15, 2);
 BEGIN
-    -- Sumar suscripciones (estimadas $10) + donaciones reales
-    SELECT 
-        (SELECT COALESCE(COUNT(*), 0) * 10 FROM public.subscriptions WHERE status = 'active') + 
-        (SELECT COALESCE(SUM(amount), 0) FROM public.donations)
-    INTO current_rev;
+    -- 1. Calcular Ingresos Premium (Suscripciones activas * $10)
+    SELECT COALESCE(COUNT(*), 0) * 10 
+    INTO rev_premium 
+    FROM public.subscriptions 
+    WHERE status = 'active';
+    
+    -- 2. Calcular Donaciones Reales
+    SELECT COALESCE(SUM(amount), 0) 
+    INTO rev_donations 
+    FROM public.donations;
+    
+    -- 3. Calcular Total Global
+    total_rev := rev_premium + rev_donations;
 
     RETURN QUERY
     SELECT 
-        (SELECT COUNT(*) FROM public.monetization_events WHERE engine_id = 1)::BIGINT,
-        (SELECT COUNT(*) FROM public.monetization_events WHERE engine_id = 2)::BIGINT,
-        current_rev,
-        (SELECT COUNT(*) FROM public.newsletter_subscriptions)::BIGINT,
-        (SELECT COUNT(*) FROM public.partnership_leads)::BIGINT,
-        (SELECT COALESCE(count, 0) FROM public.site_metrics WHERE id = 'api_hits')::BIGINT,
-        current_rev,
-        (LEAST((current_rev / target_val) * 100, 100))::DECIMAL(5, 2);
+        (SELECT COUNT(*) FROM public.monetization_events WHERE engine_id = 1)::BIGINT AS total_ads,
+        (SELECT COUNT(*) FROM public.monetization_events WHERE engine_id = 2)::BIGINT AS total_affiliate,
+        rev_premium AS total_premium,
+        rev_donations AS total_donations,
+        (SELECT COUNT(*) FROM public.partnership_leads)::BIGINT AS total_leads,
+        (SELECT COALESCE(count, 0) FROM public.site_metrics WHERE id = 'api_hits' LIMIT 1)::BIGINT AS total_api_calls,
+        total_rev AS total_revenue,
+        (LEAST((total_rev / target_val) * 100, 100))::DECIMAL(5, 2) AS progress_percentage;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
