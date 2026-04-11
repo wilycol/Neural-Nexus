@@ -128,16 +128,16 @@ export default function MonetizationAdminPage() {
       const insights: AIInsight = {
         title: tone === 'strategic_partner' ? "Reporte de Inteligencia Estratégica" : "ORDEN DE OPERACIONES: PRIORIDAD CRÍTICA",
         message: "",
-        tone: tone as any,
+        tone: tone as BeatrizTone,
         priority: 'medium',
         current_goal: 180000,
         gap: 0,
-        missions: recentNews?.map((n: any, i: number) => ({
+        missions: (recentNews || []).map((n, i: number) => ({
           id: n.id,
           title: `Compartir en ${i === 0 ? 'TikTok' : i === 1 ? 'YouTube' : 'Instagram'}: ${n.title}`,
-          type: i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram'),
+          type: (i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram')) as 'tiktok' | 'youtube' | 'instagram',
           url: `https://neural-nexus.ai/news/${n.slug}`
-        })) || []
+        }))
       };
 
       const { error } = await supabase
