@@ -33,10 +33,15 @@ import { useAuth } from "@/hooks/use-auth";
 
 export default function ProfilePage() {
   const { user, profile, isLoading: authLoading } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [shareCount, setShareCount] = useState<number>(0);
-  const [commentCount, setCommentCount] = useState<number>(0);
-  const [favoriteCount, setFavoriteCount] = useState<number>(0);
+  const [isMounted, setIsMounted] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [shareCount, setShareCount] = React.useState<number>(0);
+  const [commentCount, setCommentCount] = React.useState<number>(0);
+  const [favoriteCount, setFavoriteCount] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Stats loading
   useEffect(() => {
@@ -77,10 +82,10 @@ export default function ProfilePage() {
         </Link>
       </Button>
 
-      {authLoading || loading ? (
+      {authLoading || loading || !isMounted ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <p className="text-muted-foreground">Cargando perfil...</p>
+            <p className="text-muted-foreground animate-pulse">Sincronizando búnker industrial...</p>
           </CardContent>
         </Card>
       ) : !user ? (
