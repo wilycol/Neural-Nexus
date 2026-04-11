@@ -67,8 +67,7 @@ export async function GET(request: Request) {
     });
 
   } catch (err: unknown) {
-    const error = err as any;
-    console.error("Neural Connect API Error:", error);
+    console.error("Neural Connect API Error:", err);
     return NextResponse.json(
       { 
         error: "Internal Server Error", 

@@ -86,7 +86,7 @@ export default function DevelopersPage() {
                   <div className="flex gap-4">
                     <span className="text-neon-blue select-none">1</span>
                     <span className="text-zinc-500">fetch</span>
-                    <span className="text-white">('https://api.neuralnexus.ai/v1/news', {'{'}</span>
+                    <span className="text-white">(&apos;https://api.neuralnexus.ai/v1/news&apos;, {'{'}</span>
                   </div>
                   <div className="flex gap-4">
                     <span className="text-neon-blue select-none">2</span>
