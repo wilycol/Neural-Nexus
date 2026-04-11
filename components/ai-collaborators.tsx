@@ -21,7 +21,7 @@ export function AICollaborators() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   return (
-    <section className="py-12 border-y border-primary/10 bg-black/40 overflow-hidden relative">
+    <section className="py-12 border border-primary/10 bg-black/40 overflow-hidden relative rounded-2xl mx-4 my-8">
       <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
       
       <div className="container mx-auto px-4 mb-8 text-center relative z-10">
