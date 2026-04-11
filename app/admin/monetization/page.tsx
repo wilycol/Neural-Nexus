@@ -21,7 +21,8 @@ import {
   AlertCircle,
   RefreshCw,
   Smartphone,
-  ShieldAlert
+  ShieldAlert,
+  Heart
 } from 'lucide-react';
 
 import { useAuth } from "@/hooks/use-auth";
