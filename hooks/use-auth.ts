@@ -26,9 +26,9 @@ export function useAuth() {
     const supabase = getSupabaseBrowserClient();
     profileFetchPromise = new Promise(async (resolve) => {
       const timeoutId = setTimeout(() => {
-        console.warn("[Auth] ⚠️ Timeout en fetchProfile (5s).");
+        console.warn("[Auth] ⚠️ Latencia industrial detectada. Timeout en fetchProfile (8s).");
         resolve(null);
-      }, 5000);
+      }, 8000);
 
       try {
         const { data, error } = await supabase

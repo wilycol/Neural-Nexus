@@ -107,7 +107,7 @@ export default function ProfilePage() {
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold">@{profile?.nickname || user.email?.split("@")[0]}</h1>
+                  <h1 className="text-2xl font-bold">@{profile?.nickname || user.email?.split("@")[0]}</h1>
                     {profile?.is_premium && (
                       <Badge className="bg-gradient-to-r from-neon-blue to-neon-purple">
                         <Crown className="h-3 w-3 mr-1" />
@@ -116,7 +116,17 @@ export default function ProfilePage() {
                     )}
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    Miembro desde {profile?.created_at ? formatDate(profile.created_at) : "—"}
+                    Miembro desde {profile?.created_at ? (
+                      (() => {
+                        try {
+                          return formatDate(profile.created_at);
+                        } catch (e) {
+                          return "Sincronizando...";
+                        }
+                      })()
+                    ) : (
+                      "Accediendo al búnker..."
+                    )}
                   </p>
                   <p className="text-muted-foreground text-sm">{user.email}</p>
                 </div>
@@ -125,7 +135,7 @@ export default function ProfilePage() {
                     <Button variant="outline" size="sm" asChild className="border-neon-purple/30 hover:border-neon-purple">
                       <Link href="/admin/monetization">
                         <TrendingUp className="h-4 w-4 mr-1 text-neon-purple" />
-                        Búnker 30K
+                        Búnker de los 30K
                       </Link>
                     </Button>
                   )}
@@ -217,7 +227,10 @@ function ActivityTab({ userId }: { userId: string }) {
           ...(comments.data || []).map(c => ({ type: 'comment' as const, text: `Comentó: "${c.content.substring(0, 30)}..."`, time: new Date(c.created_at) })),
           ...(likes.data || []).map(() => ({ type: 'like' as const, text: 'Le dio like a una noticia', time: new Date() })),
           ...(favorites.data || []).map(f => ({ type: 'favorite' as const, text: 'Guardó una noticia en favoritos', time: new Date(f.created_at) })),
-        ].sort((a, b) => b.time.getTime() - a.time.getTime()).slice(0, 10);
+        ]
+        .filter(activity => activity.time instanceof Date && !isNaN(activity.time.getTime()))
+        .sort((a, b) => b.time.getTime() - a.time.getTime())
+        .slice(0, 10);
 
         setActivities(merged);
       } catch (err) {
@@ -306,7 +319,15 @@ function CommentsTab() {
           <div className="space-y-3">
             {items.map((c) => (
               <div key={c.id} className="rounded-md border p-3">
-                <div className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">
+                  {(() => {
+                    try {
+                      return new Date(c.created_at).toLocaleString();
+                    } catch (e) {
+                      return "Recientemente";
+                    }
+                  })()}
+                </div>
                 <p className="text-sm">{c.content}</p>
               </div>
             ))}
@@ -371,7 +392,15 @@ function FavoritesTab() {
             {items.map((n) => (
               <Link key={n.id} href={`/news/${n.slug}`} className="rounded-md border p-3 hover:bg-accent group transition-colors">
                 <p className="text-sm font-medium group-hover:text-neon-blue">{n.title}</p>
-                <p className="text-xs text-muted-foreground">{new Date(n.published_at).toLocaleDateString("es-ES")}</p>
+                <p className="text-xs text-muted-foreground">
+                  {(() => {
+                    try {
+                      return new Date(n.published_at).toLocaleDateString("es-ES");
+                    } catch (e) {
+                      return "Recién";
+                    }
+                  })()}
+                </p>
               </Link>
             ))}
           </div>
