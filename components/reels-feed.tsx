@@ -176,7 +176,6 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
                 variant="ghost" 
                 size="icon" 
                 className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white shadow-lg"
-                onClick={(e) => e.stopPropagation()}
               >
                 <MessageCircle className="h-6 w-6" />
               </Button>
