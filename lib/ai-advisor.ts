@@ -25,7 +25,7 @@ export async function getBeatrizAdvisorMissions(supabase: SupabaseClient): Promi
     .order('created_at', { ascending: false })
     .limit(5);
 
-  const completedCount = recentMissions?.filter((m: any) => m.status === 'completed').length || 0;
+  const completedCount = recentMissions?.filter((m: { status: string }) => m.status === 'completed').length || 0;
   
   // Lógica de Tono
   let tone: BeatrizTone = 'strategic_partner';
@@ -51,7 +51,7 @@ export async function getBeatrizAdvisorMissions(supabase: SupabaseClient): Promi
     missions: recentNews?.map((n, i: number) => ({
       id: n.id,
       title: `Compartir en ${i === 0 ? 'TikTok' : i === 1 ? 'YouTube' : 'Instagram'}: ${n.title}`,
-      type: i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram' as any),
+      type: i === 0 ? 'tiktok' : (i === 1 ? 'youtube' : 'instagram'),
       url: `https://neural-nexus.ai/news/${n.slug}`
     })) || []
   };
