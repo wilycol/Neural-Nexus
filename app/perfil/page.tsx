@@ -120,7 +120,7 @@ export default function ProfilePage() {
                       (() => {
                         try {
                           return formatDate(profile.created_at);
-                        } catch (e) {
+                        } catch {
                           return "Sincronizando...";
                         }
                       })()
@@ -323,7 +323,7 @@ function CommentsTab() {
                   {(() => {
                     try {
                       return new Date(c.created_at).toLocaleString();
-                    } catch (e) {
+                    } catch {
                       return "Recientemente";
                     }
                   })()}
@@ -396,7 +396,7 @@ function FavoritesTab() {
                   {(() => {
                     try {
                       return new Date(n.published_at).toLocaleDateString("es-ES");
-                    } catch (e) {
+                    } catch {
                       return "Recién";
                     }
                   })()}
