@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { 
-  getBeatrizAdvisorMissions, 
-  generateShareLinks, 
-  METAS_VOLANTES 
+  getBeatrizAdvisorMissions 
 } from "@/lib/ai-advisor";
+import {
+  generateShareLinks,
+  METAS_VOLANTES
+} from "@/lib/ai-shared";
 import { 
   Zap, 
   Target, 
@@ -69,7 +71,7 @@ export default function MonetizationAdminPage() {
         const supabase = getSupabaseBrowserClient();
         const [overviewRes, advisorData] = await Promise.all([
           supabase.rpc('get_monetization_overview'),
-          getBeatrizAdvisorMissions()
+          getBeatrizAdvisorMissions(supabase)
         ]);
 
         if (overviewRes.data && overviewRes.data.length > 0) {
