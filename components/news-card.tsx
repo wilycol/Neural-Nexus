@@ -223,6 +223,25 @@ export function NewsCard({
               href={affiliateMatch.url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={async () => {
+                try {
+                  await fetch('/api/monetization/track', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      event_type: 'affiliate_click',
+                      engine_id: 2,
+                      metadata: { 
+                        affiliate_product: affiliateMatch.product,
+                        news_id: news.id,
+                        title: news.title 
+                      }
+                    })
+                  });
+                } catch (err) {
+                  console.error("Failed to track click:", err);
+                }
+              }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-blue/10 border border-neon-blue/30 text-neon-blue text-xs font-orbitron font-bold uppercase tracking-widest hover:bg-neon-blue/20 hover:border-neon-blue transition-all group/cta"
             >
               <span>{affiliateMatch.ctaLabel}</span>

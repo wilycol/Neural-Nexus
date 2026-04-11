@@ -46,21 +46,26 @@ export function PartnershipModal({ isOpen, onOpenChange }: PartnershipModalProps
     };
 
     try {
-      // Usamos el cliente de Supabase para guardar el lead de partnership
       const supabase = getSupabaseBrowserClient();
       
-      // Intentamos guardar en una tabla de leads o enviar un email interno
-      // Por ahora simulamos el éxito y registramos en la consola para industrializar luego
-      console.log("Partnership Lead Captured:", data);
-      
-      // Simulación de delay de red industrial
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase
+        .from("partnership_leads")
+        .insert([{
+          name: data.name,
+          email: data.email,
+          company: data.company,
+          type: data.type,
+          message: data.message,
+          source: data.source
+        }]);
 
-      toast.success("Propuesta enviada. Nuestro departamento comercial contactará contigo.");
+      if (error) throw error;
+
+      toast.success("Propuesta enviada. Beatriz contactará contigo pronto.");
       onOpenChange(false);
     } catch (error) {
       console.error("Error sending partnership lead:", error);
-      toast.error("Error al enviar la propuesta. Inténtalo de nuevo.");
+      toast.error("Error al enviar la propuesta industrial.");
     } finally {
       setLoading(false);
     }
