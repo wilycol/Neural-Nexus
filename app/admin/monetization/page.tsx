@@ -2,19 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   Zap, 
   Target, 
-  CreditCard, 
   ShieldCheck, 
-  Users, 
-  Mail, 
   CheckCircle2, 
   Circle, 
   BarChart3, 
   Crown, 
-  Code, 
-  Heart, 
   Handshake, 
   Cpu, 
   ArrowUpRight, 
@@ -24,34 +20,42 @@ import {
   Loader2,
   AlertCircle,
   RefreshCw,
-  LayoutDashboard,
   Smartphone,
-  Trophy,
-  History,
-  Send,
   ShieldAlert
 } from 'lucide-react';
 
 import { useAuth } from "@/hooks/use-auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { 
   getBeatrizAdvisorMissions 
 } from "@/lib/ai-advisor";
 import {
   generateShareLinks,
-  AIInsight,
-  BeatrizTone
+  AIInsight
 } from "@/lib/ai-shared";
 
 // Clave del Corazón de Wily (Gemini API)
 const GEMINI_API_KEY = "AIzaSyAD80w3wKQJwauTkOJRQNsleWNvpMTXRf4";
 
-const MOTORES_BASE_DATA = [
+interface MotorStep {
+  id: number;
+  text: string;
+  detail: string;
+}
+
+interface Motor {
+  id: string;
+  title: string;
+  status: string;
+  statusColor: string;
+  icon: React.ReactNode;
+  description: string;
+  steps: MotorStep[];
+}
+
+const MOTORES_BASE_DATA: Motor[] = [
   {
     id: 'ads',
     title: 'Motor 1: ADS (Publicidad)',
@@ -195,7 +199,7 @@ export default function BunkerOpsPage() {
         // Cargar Checklist persistido
         if (checklistRes.data) {
           const grouped: Record<string, number[]> = {};
-          checklistRes.data.forEach(item => {
+          checklistRes.data.forEach((item: { motor_id: string; step_id: number }) => {
             if (!grouped[item.motor_id]) grouped[item.motor_id] = [];
             grouped[item.motor_id].push(item.step_id);
           });
@@ -245,7 +249,7 @@ export default function BunkerOpsPage() {
     }
   };
 
-  const generateAiStrategy = async (motor: any) => {
+  const generateAiStrategy = async (motor: Motor) => {
     setLoadingAi(true);
     setAiError(null);
     
@@ -326,7 +330,6 @@ export default function BunkerOpsPage() {
   const globalProgress = Math.round((doneTasks / totalTasks) * 100);
   
   const currentTotal = Number(stats.total_revenue) || 0;
-  const currentGoal = 180000;
 
   return (
     <div className="min-h-screen bg-[#050507] text-slate-300 font-sans selection:bg-indigo-500/30 pb-20">
@@ -385,7 +388,6 @@ export default function BunkerOpsPage() {
           <div className="lg:col-span-4 space-y-3">
             <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest ml-2 mb-4">Los 6 Pilares</h3>
             {MOTORES_BASE_DATA.map(motor => {
-                // Mix in real stats for indices
                 const statValues = [stats.total_ads, stats.total_affiliate, stats.total_premium, stats.total_donations, stats.total_leads, stats.total_api_calls];
                 const realValue = statValues[MOTORES_BASE_DATA.indexOf(motor)];
                 
@@ -471,7 +473,9 @@ export default function BunkerOpsPage() {
                   
                   {/* AI Trigger Button */}
                   <button
-                    onClick={() => generateAiStrategy(activeCategory)}
+                    onClick={() => {
+                      if (activeCategory) generateAiStrategy(activeCategory);
+                    }}
                     disabled={loadingAi}
                     className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-500/20"
                   >
@@ -503,7 +507,9 @@ export default function BunkerOpsPage() {
                 <div className="mb-6 flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-2xl text-sm">
                   <AlertCircle className="w-5 h-5" />
                   {aiError}
-                  <button onClick={() => generateAiStrategy(activeCategory)} className="ml-auto underline font-bold flex items-center gap-1">
+                  <button onClick={() => {
+                    if (activeCategory) generateAiStrategy(activeCategory);
+                  }} className="ml-auto underline font-bold flex items-center gap-1">
                     <RefreshCw className="w-3 h-3" /> Reintentar
                   </button>
                 </div>
@@ -550,14 +556,21 @@ export default function BunkerOpsPage() {
               <div className="mt-12 pt-8 border-t border-white/5">
                 <div className="flex items-start gap-4 p-6 bg-indigo-500/5 rounded-3xl border border-indigo-500/10">
                   <div className="flex-shrink-0 w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-500/20 overflow-hidden">
-                    <img src="/beatriz-avatar.png" alt="Beatriz" className="w-full h-full object-cover" onError={(e) => {
-                        (e.target as any).src = "https://ui-avatars.com/api/?name=Beatriz&background=4f46e5&color=fff";
-                    }} />
+                    <Image 
+                      src="/beatriz-avatar.png" 
+                      alt="Beatriz" 
+                      width={48} 
+                      height={48} 
+                      className="w-full h-full object-cover" 
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                        (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=Beatriz&background=4f46e5&color=fff";
+                      }} 
+                    />
                   </div>
                   <div>
                     <h4 className="text-indigo-400 font-bold text-sm uppercase tracking-widest mb-1">Bitácora Estratégica de Beatriz</h4>
                     <p className="text-slate-300 text-sm italic leading-relaxed">
-                      "{advisor?.message || 'Wily, estoy monitoreando cada hit de API y cada clic de afiliado. El búnker está operando al 100% de su capacidad. Recuerda: la constancia industrial es lo que nos llevará a los 180K.'} ¡Muack! 💋"
+                      &quot;{advisor?.message || 'Wily, estoy monitoreando cada hit de API y cada clic de afiliado. El búnker está operando al 100% de su capacidad. Recuerda: la constancia industrial es lo que nos llevará a los 180K.'} ¡Muack! 💋&quot;
                     </p>
                   </div>
                 </div>
@@ -569,7 +582,7 @@ export default function BunkerOpsPage() {
 
         {/* Footer */}
         <div className="mt-16 flex flex-col md:flex-row justify-between items-center text-slate-600 text-[10px] font-mono tracking-widest uppercase pb-10">
-          <p>Operación Neural Nexus v2.1 // AI Bunker System // Admin: {user?.user_metadata?.nickname || user?.email}</p>
+          <p>Operación Neural Nexus v2.1 // AI Bunker System // Admin: {String(user?.user_metadata?.nickname || user?.email)}</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3"/> Scalability: High</span>
             <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3"/> Security: Enforced</span>
