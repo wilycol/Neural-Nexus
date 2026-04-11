@@ -53,10 +53,22 @@ export default async function MonetizationAdminPage() {
 
   // 2. Obtener Datos del Búnker
   const { data: overviewData } = await supabase.rpc('get_monetization_overview');
-  const stats = overviewData[0];
+  
+  // Garantizar seguridad de tipos y fallbacks ante datos nulos
+  const stats = (overviewData && overviewData.length > 0) ? overviewData[0] : {
+    total_ads: 0,
+    total_affiliate: 0,
+    total_premium: 0,
+    total_donations: 0,
+    total_leads: 0,
+    total_api_calls: 0,
+    total_revenue: 0,
+    progress_percentage: 0
+  };
+
   const advisor = await getBeatrizAdvisorMissions();
   
-  const currentTotal = Number(stats.engine_3_revenue) || 0;
+  const currentTotal = Number(stats.total_revenue) || 0;
   const currentGoal = advisor.current_goal;
   const progressPercent = (currentTotal / currentGoal) * 100;
 
@@ -128,12 +140,12 @@ export default async function MonetizationAdminPage() {
           {/* Grid de los 6 Motores */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { label: "Motor 1: Ads", value: stats.engine_1_clicks, icon: MousePointer2, color: "text-blue-400" },
-              { label: "Motor 2: Afiliados", value: stats.engine_2_clicks, icon: TrendingUp, color: "text-green-400" },
-              { label: "Motor 3: Premium", value: `$${stats.engine_3_revenue}`, icon: DollarSign, color: "text-purple-400" },
-              { label: "Motor 4: Leads", value: stats.engine_4_subs, icon: Users, color: "text-orange-400" },
-              { label: "Motor 5: Partners", value: stats.engine_5_leads, icon: Zap, color: "text-yellow-400" },
-              { label: "Motor 6: API Hits", value: stats.engine_6_usage, icon: Smartphone, color: "text-pink-400" },
+              { label: "Motor 1: Ads", value: stats.total_ads, icon: MousePointer2, color: "text-blue-400" },
+              { label: "Motor 2: Afiliados", value: stats.total_affiliate, icon: TrendingUp, color: "text-green-400" },
+              { label: "Motor 3: Premium", value: `$${stats.total_premium}`, icon: DollarSign, color: "text-purple-400" },
+              { label: "Motor 4: Donaciones", value: stats.total_donations, icon: Heart, color: "text-red-400" },
+              { label: "Motor 5: Leads", value: stats.total_leads, icon: Users, color: "text-yellow-400" },
+              { label: "Motor 6: API Hits", value: stats.total_api_calls, icon: Smartphone, color: "text-pink-400" },
             ].map((engine, idx) => (
               <Card key={idx} className="bg-zinc-900/50 border-white/5 hover:border-white/10 transition-colors">
                 <CardContent className="p-6">
