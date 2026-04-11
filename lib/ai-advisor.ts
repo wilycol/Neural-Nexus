@@ -32,8 +32,8 @@ export async function getBeatrizAdvisorMissions(): Promise<AIInsight> {
   const { data: stats, error } = await supabase.rpc('get_monetization_overview');
   if (error) throw error;
   
-  const overview = stats[0];
-  const currentTotal = Number(overview.engine_3_revenue) || 0;
+  const overview = (stats && stats.length > 0) ? stats[0] : { total_revenue: 0 };
+  const currentTotal = Number(overview.total_revenue) || 0;
   
   // 2. Determinar Meta Actual (Múltiplos x10)
   const currentTarget = METAS_VOLANTES.find(m => m > currentTotal) || 30000;
