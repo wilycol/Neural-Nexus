@@ -14,6 +14,7 @@ const collaborators = [
   { name: 'Supabase', icon: Box, color: 'text-emerald-500', url: 'https://supabase.com' },
   { name: 'Alibaba Cloud', icon: Cpu, color: 'text-blue-500', url: 'https://www.alibabacloud.com' },
   { name: 'FLUX.ai', icon: Sparkles, color: 'text-white', url: 'https://blackforestlabs.ai' },
+  { name: 'PopVid AI', icon: Zap, color: 'text-[#D02090]', url: 'https://popvid.ai' },
   { name: 'Únete al Ecosistema', icon: Building2, color: 'text-neon-blue', isCallToAction: true },
 ];
 
