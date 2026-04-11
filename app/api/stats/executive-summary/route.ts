@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Resumen Ejecutivo para el móvil del Co-CEO
  * Solo accesible para usuarios con el rol 'admin'
