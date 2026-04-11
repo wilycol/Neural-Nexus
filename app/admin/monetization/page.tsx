@@ -52,11 +52,8 @@ export default async function MonetizationAdminPage() {
     );
   }
 
-  // 2. Obtener Datos del Búnker
-  const { data: overviewData } = await supabase.rpc('get_monetization_overview');
-  
-  // Garantizar seguridad de tipos y fallbacks ante datos nulos
-  const stats = (overviewData && overviewData.length > 0) ? overviewData[0] : {
+  // 2. Obtener Datos del Búnker con Blindaje de Beatriz
+  let stats = {
     total_ads: 0,
     total_affiliate: 0,
     total_premium: 0,
@@ -66,6 +63,15 @@ export default async function MonetizationAdminPage() {
     total_revenue: 0,
     progress_percentage: 0
   };
+
+  try {
+    const { data: overviewData, error: rpcError } = await supabase.rpc('get_monetization_overview');
+    if (!rpcError && overviewData && overviewData.length > 0) {
+      stats = overviewData[0];
+    }
+  } catch (err) {
+    console.error("[Bunker] ⚠️ Latencia extrema en RPC monetization:", err);
+  }
 
   const advisor = await getBeatrizAdvisorMissions();
   
