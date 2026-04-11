@@ -519,12 +519,120 @@ export interface Database {
           }
         ];
       };
+      monetization_events: {
+        Row: {
+          id: string;
+          event_type: string;
+          engine_id: number;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_type: string;
+          engine_id: number;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          event_type?: string;
+          engine_id?: number;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      ai_missions: {
+        Row: {
+          id: string;
+          type: string;
+          title: string;
+          description: string;
+          platform: string;
+          status: 'pending' | 'completed' | 'failed';
+          metadata: Json;
+          created_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          type: string;
+          title: string;
+          description: string;
+          platform: string;
+          status?: 'pending' | 'completed' | 'failed';
+          metadata?: Json;
+          created_at?: string;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          type?: string;
+          title?: string;
+          description?: string;
+          platform?: string;
+          status?: 'pending' | 'completed' | 'failed';
+          metadata?: Json;
+          created_at?: string;
+          completed_at?: string | null;
+        };
+        Relationships: [];
+      };
+      partnership_leads: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          company: string;
+          type: string;
+          message: string | null;
+          source: string | null;
+          status: 'new' | 'contacted' | 'closed';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          company: string;
+          type: string;
+          message?: string | null;
+          source?: string | null;
+          status?: 'new' | 'contacted' | 'closed';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          company?: string;
+          type?: string;
+          message?: string | null;
+          source?: string | null;
+          status?: 'new' | 'contacted' | 'closed';
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_monetization_overview: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          total_ads: number;
+          total_affiliate: number;
+          total_premium: number;
+          total_donations: number;
+          total_leads: number;
+          total_api_calls: number;
+          total_revenue: number;
+          progress_percentage: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
