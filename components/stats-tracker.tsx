@@ -10,6 +10,20 @@ export function StatsTracker() {
   const hasTracked = useRef(false);
 
   useEffect(() => {
+    // 🛡️ Filtro de Ruido Industrial: Silenciar errores de extensiones externas
+    const originalError = console.error;
+    console.error = (...args) => {
+      const msg = args[0]?.toString() || "";
+      if (msg.includes("toolbar.js") || msg.includes("Receiving end does not exist")) {
+        return; // Ignorar ruido de Vercel Toolbar o extensiones
+      }
+      originalError.apply(console, args);
+    };
+
+    return () => { console.error = originalError; };
+  }, []);
+
+  useEffect(() => {
     // 1. Evitar tracking múltiple en el mismo montaje de componente
     if (hasTracked.current) return;
     
