@@ -1,18 +1,11 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  Code2, 
-  Cpu, 
   Globe, 
-  Layers, 
   Terminal, 
   Zap, 
-  Workflow, 
   Database,
   ShieldCheck,
-  ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -101,8 +94,8 @@ export default function DevelopersPage() {
                   </div>
                   <div className="flex gap-4">
                     <span className="text-neon-blue select-none">3</span>
-                    <span className="text-purple-400 ml-16">'Authorization':</span>
-                    <span className="text-green-400">'Bearer YOUR_API_KEY'</span>
+                    <span className="text-purple-400 ml-16">&apos;Authorization&apos;:</span>
+                    <span className="text-green-400">&apos;Bearer YOUR_API_KEY&apos;</span>
                   </div>
                   <div className="flex gap-4">
                     <span className="text-neon-blue select-none">4</span>
@@ -145,8 +138,8 @@ export default function DevelopersPage() {
               <div className="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
                 <h4 className="text-neon-blue font-bold mb-2">Instalación</h4>
                 <div className="bg-black p-4 rounded-lg font-mono text-xs text-zinc-400 border border-white/5">
-                  &lt;script src="https://nexus.ai/sdk.js"&gt;&lt;/script&gt;<br />
-                  &lt;div id="nexus-widget" data-key="DEV_KEY"&gt;&lt;/div&gt;
+                  &lt;script src=&quot;https://nexus.ai/sdk.js&quot;&gt;&lt;/script&gt;<br />
+                  &lt;div id=&quot;nexus-widget&quot; data-key=&quot;DEV_KEY&quot;&gt;&lt;/div&gt;
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 border-l-2 border-neon-blue bg-neon-blue/5">
@@ -215,7 +208,7 @@ export default function DevelopersPage() {
       {/* Footer CTA */}
       <section className="py-20 text-center">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-orbitron font-bold mb-8 italic text-zinc-400">"El único límite es tu capacidad de integración."</h2>
+          <h2 className="text-3xl font-orbitron font-bold mb-8 italic text-zinc-400">&quot;El único límite es tu capacidad de integración.&quot;</h2>
           <Link href="/">
              <Button variant="link" className="text-zinc-500 hover:text-neon-blue transition-colors">
                Volver al Portal Neural Nexus

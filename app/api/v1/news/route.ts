@@ -66,7 +66,8 @@ export async function GET(request: Request) {
       }
     });
 
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err as any;
     console.error("Neural Connect API Error:", error);
     return NextResponse.json(
       { 

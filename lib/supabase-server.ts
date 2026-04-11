@@ -41,6 +41,7 @@ export const createServerClient = () => {
 
 // Alias para el callback de autenticación
 export const createRouteHandlerSupabaseClient = createServerClient;
+export const getSupabaseServerClient = createServerClient;
 
 // Cliente para uso directo como Service Role (Server Only)
 export const createSupabaseAdmin = () => {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Cpu, Zap, Box, Shield, Workflow, Sparkles, Building2 } from 'lucide-react';
+import { Cpu, Zap, Box, Workflow, Sparkles, Building2 } from 'lucide-react';
 import { PartnershipModal } from './partnership-modal';
 
 const collaborators = [

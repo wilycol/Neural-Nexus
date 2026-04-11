@@ -13,7 +13,6 @@ import {
   Scale,
   Shield,
   Cookie,
-  Zap,
   Code2,
 } from "lucide-react";
 

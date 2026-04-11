@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Building2, Mail, Send, Sparkles } from "lucide-react";
+import { Building2, Send, Sparkles } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 
 interface PartnershipModalProps {
