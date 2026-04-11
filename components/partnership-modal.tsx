@@ -37,11 +37,11 @@ export function PartnershipModal({ isOpen, onOpenChange }: PartnershipModalProps
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      company: formData.get("company"),
-      type: formData.get("type"),
-      message: formData.get("message"),
+      name: String(formData.get("name") || ""),
+      email: String(formData.get("email") || ""),
+      company: String(formData.get("company") || ""),
+      type: String(formData.get("type") || ""),
+      message: String(formData.get("message") || ""),
       source: "marquee_partner_button"
     };
 
