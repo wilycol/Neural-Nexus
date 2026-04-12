@@ -9,7 +9,6 @@ import {
   Clock, 
   Cpu, 
   Database,
-  ChevronRight,
   ShieldCheck,
   Zap,
   CheckCircle2,
@@ -44,6 +43,7 @@ interface DebugRecord {
   has_audio: boolean;
   has_subtitles: boolean;
   author_id: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Para permitir el volcado JSON
 }
 
