@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: `Misión encolada con éxito: ${mutation.video_title}. hmmmm... 🔥`,
-      missionId: mission.id
+      missionId: (mission as any)?.id
     });
 
   } catch (err) {
