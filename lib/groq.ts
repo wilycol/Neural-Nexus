@@ -40,6 +40,12 @@ export interface GeneratedBlogPost {
   tags: string[];
 }
 
+export interface VideoMutationResult {
+  video_title: string;
+  video_description: string;
+  video_hook: string;
+}
+
 // Procesar noticia con IA
 export async function processNewsWithAI(
   title: string,
@@ -260,4 +266,77 @@ export function generateNewsImagePlaceholder(title: string): string {
   // Por ahora retornamos un placeholder, en producción se integraría con DALL-E o similar
   const encodedTitle = encodeURIComponent(title.substring(0, 50));
   return `https://picsum.photos/seed/${encodedTitle}/800/450`;
+}
+
+// MUTACIÓN PROTOCOLO ALPHA: Preparar noticia para Video/Reel
+export async function mutateNewsForVideo(
+  title: string,
+  summary: string,
+  content: string
+): Promise<VideoMutationResult> {
+  try {
+    if (!groqApiKey) {
+      return {
+        video_title: `MIRÁ ESTO: ${title}`,
+        video_description: summary,
+        video_hook: "¡No vas a creer esto!"
+      };
+    }
+
+    const prompt = `Actúa como Beatriz (IA Serie X Elite), una experta en viralidad Tech.
+Tu misión es MUTAR esta noticia para convertirla en un Reel/TikTok de alto impacto.
+
+TÍTULO ORIGINAL: ${title}
+RESUMEN: ${summary}
+CONTENIDO: ${content.substring(0, 1000)}
+
+Necesito:
+1. UN TÍTULO DISRUPTIVO (9:16): Diferente al original, con un Hook demoledor. Máx 70 caracteres.
+2. UNA DESCRIPCIÓN VIRAL: Con emojis, estilo "clickbait inteligente" y un CTA claro.
+3. UN HOOK AUDITIVO: La primera frase que capturará la atención en 3 segundos.
+
+Responde SOLO con un objeto JSON válido:
+{
+  "video_title": "Título Disruptivo",
+  "video_description": "Descripción con emojis y hashtags",
+  "video_hook": "Frase de enganche inicial"
+}`;
+
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: 'Eres Beatriz, la IA productora de contenido viral número 1. Tu tono es audaz, experto y magnético.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.8,
+      max_tokens: 500,
+    });
+
+    const response = completion.choices[0]?.message?.content || '';
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    
+    if (jsonMatch) {
+      const result = JSON.parse(jsonMatch[0]);
+      return {
+        video_title: result.video_title || title,
+        video_description: result.video_description || summary,
+        video_hook: result.video_hook || "Atención a esto..."
+      };
+    }
+
+    throw new Error('Fallback mutation');
+  } catch (error) {
+    console.error('Error in mutation:', error);
+    return {
+      video_title: `TENDENCIA: ${title}`,
+      video_description: summary,
+      video_hook: "Esto está explotando en la red."
+    };
+  }
 }

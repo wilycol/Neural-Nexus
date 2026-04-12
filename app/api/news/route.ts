@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { getPagination } from '@/lib/supabase';
 import type { Database } from '@/types/database';
+import { mutateNewsForVideo } from '@/lib/groq';
 
 const NEWS_CATEGORIES: Array<Database["public"]["Tables"]["news"]["Row"]["category"]> = [
   "Inteligencia Artificial",
@@ -151,6 +152,42 @@ export async function POST(request: NextRequest) {
         },
         { status: 500 }
       );
+    }
+
+    // --- PROTOCOLO ALPHA: Gatillo Automático de Misión Industrial ---
+    // Si la noticia es inyectada por Beatriz y es de tipo texto/imagen
+    if (data && body.source_name === 'Beatriz AutoPublisher' && body.content_type !== 'video') {
+       try {
+           console.log(`🚀 [Protocol Alpha] Analizando potencial viral para: ${data.title}`);
+           
+           // 1. Mutar el contenido para Reel usando Gemini/Groq
+           const mutation = await mutateNewsForVideo(data.title, data.summary || '', data.content || '');
+           
+           // 2. Encolar misión en factory_missions
+           const { error: missionError } = await supabase
+             .from('factory_missions')
+             .insert({
+                news_id: data.id,
+                title: mutation.video_title,
+                description: mutation.video_description,
+                content: `${mutation.video_hook}\n\n${data.content}`,
+                platform: 'tiktok',
+                mode: 'classic',
+                status: 'pending',
+                ai_metadata: {
+                   original_title: data.title,
+                   hook: mutation.video_hook
+                }
+             });
+
+           if (missionError) {
+             console.error('⚠️ [Protocol Alpha] Error encolando misión:', missionError);
+           } else {
+             console.log(`✅ [Protocol Alpha] Misión encolada con éxito para: ${mutation.video_title}`);
+           }
+       } catch (ptrErr) {
+           console.error('❌ [Protocol Alpha] Error en el gatillo industrial:', ptrErr);
+       }
     }
 
     return NextResponse.json({ data }, { status: 201 });
