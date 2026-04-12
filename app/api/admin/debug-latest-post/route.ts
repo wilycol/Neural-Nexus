@@ -25,6 +25,11 @@ export async function GET(request: Request) {
       count: data?.length || 0,
       data: data
     });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}
 
 export async function DELETE(request: Request) {
   try {
