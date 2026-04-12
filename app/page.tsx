@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { NewsFeed } from "@/components/news-feed";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp } from "lucide-react";
+import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { AICollaborators } from "@/components/ai-collaborators";
 import {
