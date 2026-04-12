@@ -13,11 +13,23 @@ import {
   ShieldCheck,
   Zap,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Trash2,
+  Code,
+  Copy,
+  ExternalLink,
+  Play
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -32,6 +44,7 @@ interface DebugRecord {
   has_audio: boolean;
   has_subtitles: boolean;
   author_id: string | null;
+  [key: string]: any; // Para permitir el volcado JSON
 }
 
 function MonitorTerminal() {
@@ -72,6 +85,45 @@ function MonitorTerminal() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePurge = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/debug-latest-post?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || "Registro purgado.");
+        setRecords(prev => prev.filter(r => r.id !== id));
+      } else {
+        toast.error(data.error || "Error al purgar.");
+      }
+    } catch {
+      toast.error("Falla crítica en el sistema de purga.");
+    }
+  };
+
+  const handleReprocess = async (newsId: string) => {
+    try {
+      toast.info("Gatillando Protocolo Alpha... hmmmm...");
+      const res = await fetch('/api/admin/missions/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newsId })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || "Misión encolada.");
+      } else {
+        toast.error(data.error || "Error al disparar.");
+      }
+    } catch {
+      toast.error("Falla crítica en el disparador.");
+    }
+  };
+
+  const handleCopyLink = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast.success("Enlace copiado al portapapeles. hmmmm... 🔥");
   };
 
   useEffect(() => {
@@ -176,7 +228,7 @@ function MonitorTerminal() {
                              <span className="flex items-center gap-1.5"><Clock className="w-3 h-3"/> {new Date(record.created_at).toLocaleString()}</span>
                              <span className="flex items-center gap-1.5 text-indigo-400/80"><Database className="w-3 h-3"/> ID: {record.id.slice(0, 8)}...</span>
                              <Badge className="bg-white/5 text-[9px] font-black uppercase text-zinc-400 group-hover:text-indigo-400 border-none">
-                               TYPE: {record.content_type}
+                                TYPE: {record.content_type}
                              </Badge>
                           </div>
                        </div>
@@ -186,9 +238,15 @@ function MonitorTerminal() {
                              <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Estado Enlace</p>
                              <p className="text-[11px] font-bold text-emerald-500 uppercase tracking-tighter">SINCRONIZADO</p>
                           </div>
-                          <div className="p-2 bg-indigo-500/10 rounded-lg group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                             <ChevronRight className="w-5 h-5 text-indigo-400 group-hover:text-white" />
-                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handlePurge(record.id)}
+                            className="text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 transition-all rounded-xl"
+                            title="Limpiar registro del búnker"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                        </div>
                     </div>
                   </div>
@@ -244,9 +302,83 @@ function MonitorTerminal() {
                              </div>
                           </div>
                           
-                          <div className="flex items-center justify-between text-zinc-600 pt-2 border-t border-white/5">
-                             <span className="text-[9px] font-mono tracking-tighter uppercase">{new Date(record.created_at).toLocaleDateString()}</span>
-                             <Zap className="h-3 w-3 group-hover:text-yellow-400 group-hover:scale-125 transition-all" />
+                          {/* Administrador de Identidad de Beatriz */}
+                          <div className="flex items-center justify-between gap-1.5 pt-4 border-t border-white/5">
+                             <div className="flex gap-1.5">
+                                <Button 
+                                  variant="outline" 
+                                  size="icon" 
+                                  onClick={() => handleReprocess(record.id)}
+                                  className="h-8 w-8 bg-white/5 border-white/10 hover:border-indigo-500 hover:text-indigo-400 transition-all"
+                                  title="Reprocesar con Protocolo Alpha"
+                                >
+                                  <Play className="h-3 w-3 fill-current" />
+                                </Button>
+                                
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button 
+                                      variant="outline" 
+                                      size="icon" 
+                                      className="h-8 w-8 bg-white/5 border-white/10 hover:border-purple-500 hover:text-purple-400"
+                                      title="Inspeccionar Pulso (JSON)"
+                                    >
+                                      <Code className="h-3 w-3" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl bg-[#09090b] border-white/10 text-slate-300 font-mono rounded-3xl">
+                                    <DialogHeader>
+                                      <DialogTitle className="flex items-center gap-2 text-indigo-400 text-sm tracking-widest uppercase italic">
+                                        <Database className="h-4 w-4" /> Inspección de Pulso Industrial // {record.id.slice(0, 8)}
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="mt-4 bg-black/40 p-6 rounded-2xl border border-white/5 overflow-auto max-h-[60vh] text-xs">
+                                      <pre className="text-emerald-400/80 leading-relaxed font-mono">
+                                        {JSON.stringify(record, null, 2)}
+                                      </pre>
+                                    </div>
+                                    <div className="flex justify-end gap-3 mt-4">
+                                       <Button 
+                                         variant="outline" 
+                                         size="sm" 
+                                         onClick={() => handleCopyLink(JSON.stringify(record))}
+                                         className="text-[9px] font-black uppercase tracking-widest bg-white/5 border-white/10 rounded-xl"
+                                       >
+                                         <Copy className="mr-2 h-3 w-3" /> Copiar Raw
+                                       </Button>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+
+                                <Button 
+                                  variant="outline" 
+                                  size="icon" 
+                                  onClick={() => record.video_url && handleCopyLink(record.video_url)}
+                                  className="h-8 w-8 bg-white/5 border-white/10 hover:border-emerald-500 hover:text-emerald-400"
+                                  disabled={!record.video_url}
+                                  title="Copiar Link de Video"
+                                >
+                                  <ExternalLink className="h-3 w-3" />
+                                </Button>
+
+                                <Button 
+                                  variant="outline" 
+                                  size="icon" 
+                                  onClick={() => handlePurge(record.id)}
+                                  className="h-8 w-8 bg-white/5 border-white/10 hover:border-rose-500 hover:text-rose-400"
+                                  title="Purgar del Búnker"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                             </div>
+                             
+                             <div className="ml-auto">
+                                <Zap className="h-3.5 w-3.5 text-zinc-800 group-hover:text-yellow-400 group-hover:scale-125 transition-all" />
+                             </div>
+                          </div>
+                          
+                          <div className="text-[9px] font-mono tracking-tighter uppercase text-zinc-700 pt-2 text-right">
+                             {new Date(record.created_at).toLocaleString()}
                           </div>
                        </div>
                     </div>

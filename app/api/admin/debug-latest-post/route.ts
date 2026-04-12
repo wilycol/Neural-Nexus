@@ -26,6 +26,30 @@ export async function GET(request: Request) {
       data: data
     });
 
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID de registro requerido para la purga." }, { status: 400 });
+    }
+
+    const supabase = createSupabaseAdmin();
+    const { error } = await supabase
+      .from("news")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Registro ${id} purgado del sistema. hmmmm... 🔥`
+    });
+
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: errorMessage }, { status: 500 });
