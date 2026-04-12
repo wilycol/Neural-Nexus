@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     }
 
     // 4. Actualizar noticia (video y/o imagen)
-    const updates: any = {};
+    const updates: Record<string, string> = {};
     if (video_url) {
         updates.video_url = video_url;
         updates.content_type = 'video';
