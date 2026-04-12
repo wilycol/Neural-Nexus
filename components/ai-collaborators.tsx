@@ -6,7 +6,7 @@ import { Cpu, Zap, Box, Workflow, Sparkles, Building2 } from 'lucide-react';
 import { PartnershipModal } from './partnership-modal';
 
 const collaborators = [
-  { name: 'Google Antigravity', icon: Workflow, color: 'text-red-500', url: 'https://github.com/google-deepmind' },
+  { name: 'Google Antigravity', icon: Workflow, color: 'text-red-500', url: 'https://deepmind.google/' },
   { name: 'OpenAI', icon: Sparkles, color: 'text-green-500', url: 'https://openai.com' },
   { name: 'NVIDIA', icon: Zap, color: 'text-[#76B900]', url: 'https://www.nvidia.com/en-us/ai/' },
   { name: 'Magic Hour', icon: Zap, color: 'text-purple-500', url: 'https://magichour.ai' },

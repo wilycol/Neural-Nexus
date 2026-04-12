@@ -184,6 +184,18 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
               Control de Misiones 💋
             </Link>
             <Link
+              href="/admin/leads"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mb-1",
+                pathname === "/admin/leads"
+                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <Handshake className="h-4 w-4" />
+              Vigilancia de Alianzas 🤝
+            </Link>
+            <Link
               href="/api/admin/debug-latest-post"
               target="_blank"
               className={cn(
