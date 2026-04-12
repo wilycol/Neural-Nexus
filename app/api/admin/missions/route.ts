@@ -27,6 +27,7 @@ export async function GET(request: Request) {
 
     // 2. Consultar Misiones
     let query = supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('factory_missions' as any)
       .select('*, news(title, slug)')
       .order('created_at', { ascending: false })
