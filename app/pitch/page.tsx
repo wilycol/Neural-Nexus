@@ -344,29 +344,8 @@ export default function PitchPage() {
         {/* Modal de Socios */}
         <PartnershipModal isOpen={isPartnerModalOpen} onOpenChange={setIsPartnerModalOpen} />
       </div>
-      </div>
-
-      <style jsx global>{`
-        @keyframes spin-slow {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @keyframes spin-reverse-slow {
-          0% { transform: rotate(360deg); }
-          100% { transform: rotate(0deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        .animate-spin-reverse-slow {
-          animation: spin-reverse-slow 25s linear infinite;
-        }
-        .gradient-text {
-          background: linear-gradient(to right, #00a3ff, #a855f7);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-      `}</style>
     </div>
+  );
+}
   );
 }
