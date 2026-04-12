@@ -165,7 +165,8 @@ export async function POST(request: NextRequest) {
            
            // 2. Encolar misión en factory_missions
            const { error: missionError } = await supabase
-             .from('factory_missions')
+             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             .from('factory_missions' as any)
              .insert({
                 news_id: data.id,
                 title: mutation.video_title,
