@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
  */
 export async function POST(req: Request) {
   try {
-    const { title, slug, video_url, secret } = await req.json();
+    const { title, slug, video_url, image_url, secret } = await req.json();
     
     // 1. Validar Token de Seguridad (Industrial Bridge)
     const adminKey = process.env.ADMIN_SYNC_KEY || "nexus_super_secret_bridge_2026";
@@ -19,8 +19,8 @@ export async function POST(req: Request) {
 
     console.log(`[Bridge] Petición de sincronización para slug: "${slug}" o título: "${title}"`);
 
-    if (!video_url || (!title && !slug)) {
-      return NextResponse.json({ error: "Faltan datos (slug/title o video_url)" }, { status: 400 });
+    if ((!video_url && !image_url) || (!title && !slug)) {
+      return NextResponse.json({ error: "Faltan datos (slug/title o video_url/image_url)" }, { status: 400 });
     }
 
     // 2. Conectar a Supabase
@@ -73,10 +73,17 @@ export async function POST(req: Request) {
       }, { status: 404 });
     }
 
-    // 4. Actualizar video_url
+    // 4. Actualizar noticia (video y/o imagen)
+    const updates: any = {};
+    if (video_url) {
+        updates.video_url = video_url;
+        updates.content_type = 'video';
+    }
+    if (image_url) updates.image_url = image_url;
+
     const { error: updateError } = await supabase
       .from("news")
-      .update({ video_url })
+      .update(updates)
       .eq("id", newsItem.id);
 
     if (updateError) {
@@ -87,7 +94,8 @@ export async function POST(req: Request) {
       success: true, 
       message: "¡Puente cruzado con éxito!", 
       news_id: newsItem.id,
-      matched_title: newsItem.title 
+      matched_title: newsItem.title,
+      updates
     });
 
   } catch (err) {

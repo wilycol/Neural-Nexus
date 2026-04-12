@@ -2,15 +2,10 @@
 
 import React, { useState } from "react";
 import { 
-  Cpu, 
   Workflow, 
-  Sparkles, 
   Network, 
-  Zap, 
   Flame, 
-  Globe, 
   ArrowRight,
-  ChevronRight,
   Layers,
   BarChart3,
   TrendingUp,
@@ -22,8 +17,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PitchVideoCarousel } from "@/components/pitch-video-carousel";
 import { AICollaborators } from "@/components/ai-collaborators";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 const PITCH_CONTENT = {
   en: {
