@@ -29,11 +29,11 @@ export default function DevelopersPage() {
               Integra el cerebro de Neural Nexus en tus propias aplicaciones. Distribución masiva de contenido generado por IA mediante API y Widgets White-Label.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" className="bg-neon-blue hover:bg-neon-blue/80 text-black font-bold font-orbitron tracking-wider px-8 h-14 w-full sm:w-auto">
-                SOLICITAR API KEY
+              <Button asChild size="lg" className="bg-neon-blue hover:bg-neon-blue/80 text-black font-bold font-orbitron tracking-wider px-8 h-14 w-full sm:w-auto">
+                <Link href="/under-construction">SOLICITAR API KEY</Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white/10 hover:bg-white/5 font-bold font-orbitron tracking-wider px-8 h-14 w-full sm:w-auto">
-                VER DOCUMENTACIÓN
+              <Button asChild size="lg" variant="outline" className="border-white/10 hover:bg-white/5 font-bold font-orbitron tracking-wider px-8 h-14 w-full sm:w-auto">
+                <Link href="/under-construction">VER DOCUMENTACIÓN</Link>
               </Button>
             </div>
           </div>

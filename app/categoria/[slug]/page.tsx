@@ -121,9 +121,11 @@ export default function CategoryPage() {
                 </div>
               </div>
               <div className="shrink-0">
-                <Button className="bg-neon-blue hover:bg-neon-blue/80 text-black font-orbitron font-bold px-8 py-6 rounded-xl transition-all shadow-lg shadow-neon-blue/20 group">
-                   UNIRSE A LA BETA CERRADA
-                   <ArrowLeft className="h-4 w-4 ml-2 rotate-180 group-hover:translate-x-1 transition-transform" />
+                <Button asChild className="bg-neon-blue hover:bg-neon-blue/80 text-black font-orbitron font-bold px-8 py-6 rounded-xl transition-all shadow-lg shadow-neon-blue/20 group">
+                   <Link href="/developers">
+                      UNIRSE A LA BETA CERRADA
+                      <ArrowLeft className="h-4 w-4 ml-2 rotate-180 group-hover:translate-x-1 transition-transform" />
+                   </Link>
                 </Button>
               </div>
             </div>
