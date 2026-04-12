@@ -97,7 +97,7 @@ export default function AdminLeadsPage() {
       } else {
         toast.error("Error al actualizar estado");
       }
-    } catch (error) {
+    } catch {
       toast.error("Error de red");
     }
   };
