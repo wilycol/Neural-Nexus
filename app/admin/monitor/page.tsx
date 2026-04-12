@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { 
   Activity, 
   RefreshCw, 
@@ -20,7 +20,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import { useSearchParams } from "next/navigation";
 
 interface DebugRecord {
   id: string;
@@ -35,7 +34,7 @@ interface DebugRecord {
   author_id: string | null;
 }
 
-export default function AdminMonitorPage() {
+function MonitorTerminal() {
   const { user, role, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -285,5 +284,17 @@ export default function AdminMonitorPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function AdminMonitorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#050507] flex flex-col items-center justify-center p-4">
+        <div className="h-24 w-24 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+      </div>
+    }>
+      <MonitorTerminal />
+    </Suspense>
   );
 }

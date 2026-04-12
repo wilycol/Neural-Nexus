@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 
+export const dynamic = "force-dynamic";
+
 /**
  * 🔐 GESTIÓN DE ALIANZAS (SOLO ADMINS)
  * Permite listar y actualizar el estado de los leads industriales.

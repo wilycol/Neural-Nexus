@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -69,8 +70,10 @@ export default function RootLayout({
         >
           <StatsTracker />
           <div className="flex min-h-screen bg-background text-foreground">
-            {/* Sidebar persistente */}
-            <Sidebar />
+            {/* Sidebar persistente wrapped in Suspense for useSearchParams fix */}
+            <Suspense fallback={<div className="hidden h-[calc(100vh-4rem)] w-64 border-r bg-background md:flex" />}>
+              <Sidebar />
+            </Suspense>
             
             {/* Contenedor principal con Header y Contenido */}
             <div className="flex-1 flex flex-col md:ml-64 relative min-w-0">

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 
+export const dynamic = "force-dynamic";
+
 /**
  * API Administrativa para Consultar Misiones de Beatriz Factoría (Protocolo Alpha)
  */
