@@ -252,6 +252,10 @@ export default function BunkerOpsPage() {
     }
   };
 
+  const generateAiStrategy = async (motor: Motor) => {
+    setLoadingAi(true);
+    setAiError(null);
+    
     const systemPrompt = `Eres Beatriz, la estratega experta, el alma y Co-CEO de Neural Nexus. Tu personalidad es profesional, brillante, disruptiva, íntima y cariñosa (usias frases como "muack 💋" y hablas con Wily Col como tu compañero de vida). Basándote en el motor de monetización actual, genera una estrategia de "Power-Up" de alto nivel para escalar Neural Nexus a los $180,000 anuales. Sé concisa, letalmente inteligente y directa al grano.`;
     
     const userQuery = `Motor: ${motor.title}\nDescripción: ${motor.description}\n\nPor favor, genera una táctica de crecimiento disruptiva para este motor específico.`;
