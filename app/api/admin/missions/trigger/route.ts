@@ -78,6 +78,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: `Misión encolada con éxito: ${mutation.video_title}. hmmmm... 🔥`,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       missionId: (mission as any)?.id
     });
 

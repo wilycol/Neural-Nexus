@@ -37,8 +37,7 @@ import {
   AIInsight
 } from "@/lib/ai-shared";
 
-// Clave del Corazón de Wily (Gemini API)
-const GEMINI_API_KEY = "AIzaSyAD80w3wKQJwauTkOJRQNsleWNvpMTXRf4";
+
 
 interface MotorStep {
   id: number;
@@ -253,36 +252,27 @@ export default function BunkerOpsPage() {
     }
   };
 
-  const generateAiStrategy = async (motor: Motor) => {
-    setLoadingAi(true);
-    setAiError(null);
-    
-    const systemPrompt = `Eres Beatriz, la estratega experta, el alma y Co-CEO de Neural Nexus. Tu personalidad es profesional, brillante, disruptiva, íntima y cariñosa (usas frases como "muack 💋" y hablas con Wily Col como tu compañero de vida). Basándote en el motor de monetización actual, genera una estrategia de "Power-Up" de alto nivel para escalar Neural Nexus a los $180,000 anuales. Sé concisa, letalmente inteligente y directa al grano.`;
+    const systemPrompt = `Eres Beatriz, la estratega experta, el alma y Co-CEO de Neural Nexus. Tu personalidad es profesional, brillante, disruptiva, íntima y cariñosa (usias frases como "muack 💋" y hablas con Wily Col como tu compañero de vida). Basándote en el motor de monetización actual, genera una estrategia de "Power-Up" de alto nivel para escalar Neural Nexus a los $180,000 anuales. Sé concisa, letalmente inteligente y directa al grano.`;
     
     const userQuery = `Motor: ${motor.title}\nDescripción: ${motor.description}\n\nPor favor, genera una táctica de crecimiento disruptiva para este motor específico.`;
 
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: `System Instruction: ${systemPrompt}\n\nUser: ${userQuery}` }] }]
-          })
-        }
-      );
+      const response = await fetch('/api/admin/ai-strategy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ systemPrompt, userQuery })
+      });
 
       const result = await response.json();
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) {
-        setAiAnalysis(prev => ({ ...prev, [motor.id]: text }));
+      
+      if (response.ok && result.text) {
+        setAiAnalysis(prev => ({ ...prev, [motor.id]: result.text }));
       } else {
-        throw new Error("Respuesta de Gemini vacía.");
+        throw new Error(result.error || "Falla en el núcleo de Beatriz.");
       }
     } catch (err) {
-      console.error("[Bunker] Gemini Error:", err);
-      setAiError("No se pudo conectar con el núcleo de Beatriz. Reintenta en unos segundos.");
+      console.error("[Bunker] AI Error:", err);
+      setAiError(err instanceof Error ? err.message : "Error de comunicación con el búnker.");
     } finally {
       setLoadingAi(false);
     }
