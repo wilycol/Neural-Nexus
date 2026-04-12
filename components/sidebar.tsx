@@ -10,6 +10,7 @@ import {
   Crown,
   LogOut,
   Video,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -171,10 +172,22 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
               Administración
             </p>
             <Link
+              href="/admin/missions"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mb-1",
+                pathname === "/admin/missions"
+                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <Zap className="h-4 w-4" />
+              Control de Misiones 💋
+            </Link>
+            <Link
               href="/api/admin/debug-latest-post"
               target="_blank"
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-muted-foreground hover:bg-accent hover:text-foreground"
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-muted-foreground hover:bg-accent hover:text-foreground mb-1"
               )}
             >
               <FileText className="h-4 w-4" />
