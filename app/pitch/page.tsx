@@ -15,8 +15,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogTrigger 
+} from "@/components/ui/dialog";
 import { PitchVideoCarousel } from "@/components/pitch-video-carousel";
 import { AICollaborators } from "@/components/ai-collaborators";
+import { PartnershipModal } from "@/components/partnership-modal";
+import { ArchitectureEcosystem } from "@/components/architecture-ecosystem";
+import { 
+  Scale, 
+  Shield, 
+  Cookie, 
+  ExternalLink, 
+  Coins, 
+  Terminal,
+  ChevronRight,
+  Maximize2
+} from "lucide-react";
 
 const PITCH_CONTENT = {
   en: {
@@ -117,6 +137,8 @@ const PITCH_CONTENT = {
 
 export default function PitchPage() {
   const [lang, setLang] = useState<"en" | "es">("es");
+  const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
+  const [isGovModalOpen, setIsGovModalOpen] = useState(false);
   const content = PITCH_CONTENT[lang];
 
   return (
@@ -205,26 +227,8 @@ export default function PitchPage() {
                 ))}
               </div>
             </div>
-            <div className="relative">
-              <div className="aspect-square rounded-3xl border border-neon-blue/20 bg-gradient-to-br from-neon-blue/5 via-transparent to-neon-purple/5 p-8 flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-grid-white/[0.03]" />
-                <div className="relative z-10 flex flex-col items-center gap-6">
-                  <div className="h-20 w-20 rounded-full bg-neon-blue/20 flex items-center justify-center shadow-[0_0_30px_rgba(0,163,255,0.3)] animate-pulse">
-                    <Workflow className="h-10 w-10 text-neon-blue" />
-                  </div>
-                  <div className="flex gap-8">
-                    <div className="h-14 w-14 rounded-xl bg-neon-purple/10 border border-neon-purple/20 flex items-center justify-center animate-bounce delay-100">
-                      <BarChart3 className="h-6 w-6 text-neon-purple" />
-                    </div>
-                    <div className="h-14 w-14 rounded-xl bg-neon-cyan/10 border border-neon-cyan/20 flex items-center justify-center animate-bounce delay-300">
-                      <TrendingUp className="h-6 w-6 text-blue-400" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Floating orbits */}
-              <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full border border-dashed border-neon-blue/30 animate-spin-slow" />
-              <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full border border-dashed border-neon-purple/20 animate-spin-reverse-slow" />
+            <div className="relative h-full flex items-center justify-center">
+              <ArchitectureEcosystem />
             </div>
           </div>
         </section>
@@ -262,16 +266,84 @@ export default function PitchPage() {
         {/* Footer Call to Action */}
         <footer className="text-center py-20 border-t border-white/5">
           <h2 className="text-3xl font-orbitron font-bold mb-6">Ready to scale?</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-gradient-to-r from-neon-blue to-neon-purple text-white px-8 rounded-full shadow-[0_0_20px_rgba(0,163,255,0.4)]">
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <Button 
+              size="lg" 
+              onClick={() => setIsPartnerModalOpen(true)}
+              className="bg-gradient-to-r from-neon-blue to-neon-purple text-white px-8 rounded-full shadow-[0_0_20px_rgba(0,163,255,0.4)]"
+            >
               Partner with Neural Nexus
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline" className="rounded-full border-neon-blue/20 text-neon-blue hover:bg-neon-blue/10">
-              Documentation
-            </Button>
+            
+            <Dialog open={isGovModalOpen} onOpenChange={setIsGovModalOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" variant="outline" className="rounded-full border-neon-blue/20 text-neon-blue hover:bg-neon-blue/10">
+                  Documentation
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-zinc-950 border-white/10 text-white sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="font-orbitron text-neon-blue tracking-tighter">CENTRO DE GOBERNANZA</DialogTitle>
+                  <DialogDescription className="text-zinc-400">
+                    Accede a la documentación oficial y legal del ecosistema.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  {[
+                    { title: "Términos de Servicio", icon: Scale, href: "/legal/terminos" },
+                    { title: "Privacidad", icon: Shield, href: "/legal/privacidad" },
+                    { title: "Política de Cookies", icon: Cookie, href: "/legal/cookies" },
+                  ].map((gov) => (
+                    <Link 
+                      key={gov.title} 
+                      href={gov.href}
+                      className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10 hover:border-neon-blue/40 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <gov.icon className="h-5 w-5 text-neon-blue" />
+                        <span className="font-medium">{gov.title}</span>
+                      </div>
+                      <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Link>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Monetización - Motores */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <Card className="p-6 bg-white/[0.02] border-white/10 hover:border-neon-purple/40 transition-all group cursor-pointer">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-neon-purple/10">
+                  <Terminal className="h-6 w-6 text-neon-purple" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-orbitron text-sm font-bold">Neural Connect API</h4>
+                  <p className="text-[10px] text-muted-foreground uppercase">Monetización B2B / SaaS Access</p>
+                </div>
+                <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground group-hover:text-neon-purple transition-colors" />
+              </div>
+            </Card>
+            <Card className="p-6 bg-white/[0.02] border-white/10 hover:border-neon-cyan/40 transition-all group cursor-pointer">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-neon-cyan/10">
+                  <Coins className="h-6 w-6 text-blue-400" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-orbitron text-sm font-bold">Afiliados IA Plus</h4>
+                  <p className="text-[10px] text-muted-foreground uppercase">Revenue Share / Ecosistema</p>
+                </div>
+                <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
+              </div>
+            </Card>
           </div>
         </footer>
+
+        {/* Modal de Socios */}
+        <PartnershipModal isOpen={isPartnerModalOpen} onOpenChange={setIsPartnerModalOpen} />
+      </div>
       </div>
 
       <style jsx global>{`
