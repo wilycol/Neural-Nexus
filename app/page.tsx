@@ -87,7 +87,7 @@ export default function HomePage() {
                 <NewsFeed />
               </div>
 
-              <div className="hidden lg:block space-y-6">
+      <div className="hidden lg:block space-y-6">
                 <TrendingTags />
                 <NewsletterCard />
                 <AboutCard />
@@ -435,12 +435,17 @@ function NewsletterCard() {
 
 function AboutCard() {
   return (
-    <div className="rounded-lg border p-4">
-      <h3 className="font-semibold mb-2">Sobre Neural Nexus</h3>
-      <p className="text-sm text-muted-foreground">
+    <div className="rounded-lg border p-4 bg-card/20 backdrop-blur-sm border-neon-blue/10">
+      <h3 className="font-semibold mb-2 font-orbitron text-xs uppercase tracking-widest text-neon-blue">Sobre Neural Nexus</h3>
+      <p className="text-sm text-muted-foreground mb-4">
         Portal automatizado de contenido. Usamos inteligencia artificial para resumir, analizar y curar contenido del
         ecosistema IA.
       </p>
+      <Button variant="outline" size="sm" className="w-full border-neon-blue/20 hover:bg-neon-blue/10 font-orbitron text-[10px] tracking-tighter" asChild>
+        <Link href="/pitch">
+          CONOCER MÁS <ArrowRight className="ml-2 h-3 w-3" />
+        </Link>
+      </Button>
     </div>
   );
 }
