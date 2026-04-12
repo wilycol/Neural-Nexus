@@ -3,11 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { 
-  Terminal, 
   Activity, 
   RefreshCw, 
   Video, 
-  FileCode, 
   Clock, 
   Cpu, 
   Database,
@@ -15,8 +13,7 @@ import {
   ShieldCheck,
   Zap,
   CheckCircle2,
-  AlertCircle,
-  Loader2
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,7 +23,16 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSearchParams } from "next/navigation";
 
 interface DebugRecord {
-  // ... (lines 28-39)
+  id: string;
+  title: string;
+  created_at: string;
+  content_type: string;
+  video_url: string | null;
+  is_short: boolean;
+  is_reusable: boolean;
+  has_audio: boolean;
+  has_subtitles: boolean;
+  author_id: string | null;
 }
 
 export default function AdminMonitorPage() {
