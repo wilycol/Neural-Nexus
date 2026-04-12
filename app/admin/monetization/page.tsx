@@ -300,6 +300,7 @@ export default function BunkerOpsPage() {
           status: 'completed',
           completed_at: new Date().toISOString(),
           metadata: { news_id: missionId }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any]);
 
       if (error) throw error;
