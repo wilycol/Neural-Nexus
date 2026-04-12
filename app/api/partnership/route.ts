@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
     const supabase = createServerClient();
 
     // 2. Insertar Lead en partnership_leads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('partnership_leads' as any)
       .insert({
         name,

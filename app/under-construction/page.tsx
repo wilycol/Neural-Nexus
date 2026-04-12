@@ -5,11 +5,9 @@ import Link from "next/link";
 import { 
   Construction, 
   Terminal, 
-  Zap, 
   ArrowLeft, 
   Send, 
   ShieldCheck, 
-  Cpu,
   Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

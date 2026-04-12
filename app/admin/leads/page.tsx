@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { 
   Handshake, 
   Search, 
-  Filter, 
   ChevronRight, 
   Mail, 
   Building2, 
@@ -14,15 +13,12 @@ import {
   Globe,
   Loader2,
   CheckCircle2,
-  XCircle,
   HelpCircle,
-  ExternalLink,
   ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -74,9 +70,8 @@ export default function AdminLeadsPage() {
       const data = await res.json();
       if (res.ok) setLeads(data.data || []);
       else toast.error("Error al cargar leads");
-    } catch (error) {
+    } catch {
       toast.error("Error de conexión");
-      console.error(error);
     } finally {
       setLoading(false);
     }

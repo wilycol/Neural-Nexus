@@ -24,8 +24,8 @@ export async function GET() {
     }
 
     // 2. Obtener Leads
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: leads, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('partnership_leads' as any)
       .select('*')
       .order('created_at', { ascending: false });
@@ -62,8 +62,8 @@ export async function PATCH(request: Request) {
     const { id, status } = await request.json();
     if (!id || !status) return NextResponse.json({ error: 'ID y Status requeridos' }, { status: 400 });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('partnership_leads' as any)
       .update({ status })
       .eq('id', id)
