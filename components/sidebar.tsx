@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Wrench,
   FileText,
@@ -35,6 +35,8 @@ interface SidebarProps {
 
 export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogout: manualOnLogout }: SidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
   const { user: authUser, profile, isLoggedIn: authIsLoggedIn, isPremium: authIsPremium } = useAuth();
 
   const isLoggedIn = manualIsLoggedIn !== undefined ? manualIsLoggedIn : authIsLoggedIn;
@@ -197,24 +199,28 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
               Vigilancia de Alianzas 🤝
             </Link>
             <Link
-              href="/api/admin/debug-latest-post"
-              target="_blank"
+              href="/admin/monitor?tab=reception"
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-muted-foreground hover:bg-accent hover:text-foreground mb-1"
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mb-1",
+                pathname === "/admin/monitor" && tab !== "reels"
+                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
             >
               <FileText className="h-4 w-4" />
-              Log de Recepción
+              Log de Recepción 📡
             </Link>
             <Link
-              href="/api/admin/debug-latest-post?limit=10"
-              target="_blank"
+              href="/admin/monitor?tab=reels"
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-muted-foreground hover:bg-accent hover:text-foreground"
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+                pathname === "/admin/monitor" && tab === "reels"
+                  ? "bg-neon-purple/20 text-neon-purple border border-neon-purple/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
             >
               <Video className="h-4 w-4" />
-              Depurar Reels
+              Depurar Reels 🎬
             </Link>
           </div>
         )}
