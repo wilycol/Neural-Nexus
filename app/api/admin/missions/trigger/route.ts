@@ -56,7 +56,7 @@ export async function POST(request: Request) {
         news_id: news.id,
         title: mutation.video_title,
         description: mutation.video_description,
-        content: `${mutation.video_hook}\n\n${news.content}`,
+        content: mutation.video_script,
         platform: 'tiktok',
         mode: 'classic',
         status: 'pending',

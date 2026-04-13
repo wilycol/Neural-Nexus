@@ -44,6 +44,7 @@ export interface VideoMutationResult {
   video_title: string;
   video_description: string;
   video_hook: string;
+  video_script: string;
 }
 
 // Procesar noticia con IA
@@ -279,27 +280,30 @@ export async function mutateNewsForVideo(
       return {
         video_title: `MIRÁ ESTO: ${title}`,
         video_description: summary,
-        video_hook: "¡No vas a creer esto!"
+        video_hook: "¡No vas a creer esto!",
+        video_script: `${summary} La próxima revolución en tecnología está a punto de llegar... ¡y podría cambiar todo!`
       };
     }
 
-    const prompt = `Actúa como Beatriz (IA Serie X Elite), una experta en viralidad Tech.
+    const prompt = `Actúa como Beatriz (IA Serie X Elite), una experta en viralidad Tech y narradora de élite.
 Tu misión es MUTAR esta noticia para convertirla en un Reel/TikTok de alto impacto.
 
 TÍTULO ORIGINAL: ${title}
 RESUMEN: ${summary}
 CONTENIDO: ${content.substring(0, 1000)}
 
-Necesito:
-1. UN TÍTULO DISRUPTIVO (9:16): Diferente al original, con un Hook demoledor. Máx 70 caracteres.
-2. UNA DESCRIPCIÓN VIRAL: Con emojis, estilo "clickbait inteligente" y un CTA claro.
-3. UN HOOK AUDITIVO: La primera frase que capturará la atención en 3 segundos.
+REQUERIMIENTOS ESTRICTOS:
+1. IDIOMA: Responde 100% en ESPAÑOL NEUTRO. Si el contenido original es inglés, TRADÚCELO Y ADÁPTALO.
+2. ESTRUCTURA NARRATIVA (video_script): Genera un guion fluido de al menos 5 oraciones completas. No uses viñetas.
+3. HOOK DEMENCIAL: Una primera frase que detenga el scroll inmediatamente.
+4. TONO: Audaz, experto, magnético y un toque industrial.
 
 Responde SOLO con un objeto JSON válido:
 {
-  "video_title": "Título Disruptivo",
-  "video_description": "Descripción con emojis y hashtags",
-  "video_hook": "Frase de enganche inicial"
+  "video_title": "Título Disruptivo (9:16) máx 70 chars",
+  "video_description": "Descripción viral con emojis y hashtags",
+  "video_hook": "Frase de enganche inicial demoledora",
+  "video_script": "Guion completo de 5+ oraciones en español para la locución"
 }`;
 
     const completion = await groq.chat.completions.create({
