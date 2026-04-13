@@ -330,7 +330,8 @@ Responde SOLO con un objeto JSON válido:
       return {
         video_title: result.video_title || title,
         video_description: result.video_description || summary,
-        video_hook: result.video_hook || "Atención a esto..."
+        video_hook: result.video_hook || "Atención a esto...",
+        video_script: result.video_script || `${summary} La próxima revolución en tecnología está aquí.`
       };
     }
 
@@ -340,7 +341,8 @@ Responde SOLO con un objeto JSON válido:
     return {
       video_title: `TENDENCIA: ${title}`,
       video_description: summary,
-      video_hook: "Esto está explotando en la red."
+      video_hook: "Esto está explotando en la red.",
+      video_script: `${summary} Mantente conectado para más actualizaciones de élite.`
     };
   }
 }
