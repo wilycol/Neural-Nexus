@@ -63,7 +63,8 @@ function IntegrityTerminal() {
       } else {
         toast.error(data.error || "Falla en el transporte a cuarentena.");
       }
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       toast.error("Falla crítica de comunicación con el sistema de transporte.");
     }
   };
@@ -169,6 +170,13 @@ function IntegrityTerminal() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {auditData.map((bucket) => (
             <React.Fragment key={bucket.bucket}>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest leading-none mb-1">Último Escaneo</p>
+                  <p className="text-sm font-mono text-emerald-400 font-bold">
+                    {lastRefreshed ? lastRefreshed.toLocaleTimeString() : "--:--:--"}
+                  </p>
+                </div>
+              
               <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
                 <div className="flex justify-between items-start">
                   <div className="p-2 bg-emerald-500/10 rounded-lg">
