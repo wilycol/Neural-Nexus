@@ -9,7 +9,7 @@ interface PitchVideo {
   id: string;
   url: string;
   title: string;
-  category?: string;
+  category?: string | null;
 }
 
 const FALLBACK_VIDEOS: PitchVideo[] = [
