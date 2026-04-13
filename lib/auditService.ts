@@ -68,9 +68,9 @@ export async function performSystemAudit(): Promise<AuditResult[]> {
       for (const col of tableConfig.columns) {
         const { data: rows } = await supabase
           .from(tableConfig.name)
-          // @ts-ignore - Dynamic columns require any casting to satisfy strict select types
+          // @ts-expect-error - Dynamic columns require any casting to satisfy strict select types
           .select(`id, title, ${col}` as string)
-          // @ts-ignore - Dynamic columns require any casting
+          // @ts-expect-error - Dynamic columns require any casting
           .not(col as string, 'is', null);
 
         if (rows) {
