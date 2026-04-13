@@ -77,9 +77,9 @@ export function PitchVideoCarousel() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl mx-auto aspect-video rounded-3xl border border-white/5 bg-zinc-900/50 flex flex-col items-center justify-center gap-4">
-        <Sparkles className="h-8 w-8 text-neon-blue animate-spin" />
-        <p className="text-[10px] font-orbitron tracking-widest text-zinc-500 animate-pulse uppercase">Sincronizando Archivos de Beatriz...</p>
+      <div className="w-full max-w-4xl mx-auto h-[500px] rounded-[40px] border border-white/5 bg-zinc-900/50 flex flex-col items-center justify-center gap-4">
+        <Sparkles className="h-10 w-10 text-neon-blue animate-spin" />
+        <p className="text-[10px] font-orbitron tracking-[0.4em] text-zinc-500 animate-pulse uppercase">Sincronizando Archivos de Beatriz...</p>
       </div>
     );
   }
@@ -88,67 +88,85 @@ export function PitchVideoCarousel() {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto group">
-      <Card className="relative overflow-hidden bg-black/40 border-neon-blue/20 backdrop-blur-xl rounded-3xl aspect-video shadow-[0_0_50px_rgba(0,163,255,0.15)] transition-all hover:border-neon-blue/40">
-        <video
-          ref={videoRef}
-          key={currentVideo.url}
-          className="w-full h-full object-cover opacity-80"
-          autoPlay
-          muted
-          loop
-          playsInline
-        >
-          <source src={currentVideo.url} type="video/mp4" />
-        </video>
+      <Card className="relative overflow-hidden bg-black/60 border-white/5 backdrop-blur-3xl rounded-[40px] h-[600px] shadow-[0_0_80px_rgba(0,0,0,0.5)] transition-all hover:border-neon-blue/20">
+        {/* Background Blur Effect for 9:16 videos */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <video
+            key={`bg-${currentVideo.url}`}
+            className="w-full h-full object-cover scale-150 blur-3xl opacity-30"
+            autoPlay
+            muted
+            loop
+            playsInline
+          >
+            <source src={currentVideo.url} type="video/mp4" />
+          </video>
+        </div>
+
+        {/* Main Video (9:16 centered) */}
+        <div className="relative z-10 h-full w-full flex items-center justify-center p-4">
+          <video
+            ref={videoRef}
+            key={currentVideo.url}
+            className="h-full rounded-2xl shadow-2xl border border-white/10"
+            autoPlay
+            muted
+            loop
+            playsInline
+          >
+            <source src={currentVideo.url} type="video/mp4" />
+          </video>
+        </div>
         
         {/* Overlay Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20 pointer-events-none z-20" />
 
-        {/* Info */}
-        <div className="absolute bottom-8 left-8 right-8 z-10 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-orbitron text-neon-blue tracking-widest uppercase mb-1">Nexus Vision Series</p>
-            <h3 className="text-xl font-orbitron font-bold text-white drop-shadow-md">
+        {/* Info & Navigation */}
+        <div className="absolute bottom-10 left-10 right-10 z-30 flex items-end justify-between">
+          <div className="max-w-[70%]">
+            <Badge className="bg-neon-blue/20 text-neon-blue border-neon-blue/30 px-3 py-1 mb-3">NEURAL VISION SERIES</Badge>
+            <h3 className="text-3xl font-orbitron font-bold text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] italic">
               {currentVideo.title}
             </h3>
+            <p className="text-sm text-zinc-400 mt-2 font-light tracking-wide">{currentVideo.category || 'Industrial Media'}</p>
           </div>
-          <div className="flex gap-2">
+          
+          <div className="flex gap-3 mb-2">
             <Button
               variant="outline"
               size="icon"
               onClick={prevVideo}
-              className="rounded-full border-white/10 bg-black/20 hover:bg-neon-blue/20 hover:border-neon-blue/40"
+              className="h-12 w-12 rounded-2xl border-white/10 bg-black/40 backdrop-blur-md hover:bg-neon-blue/20 hover:border-neon-blue/40 transition-all"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" />
             </Button>
             <Button
               variant="outline"
               size="icon"
               onClick={nextVideo}
-              className="rounded-full border-white/10 bg-black/20 hover:bg-neon-blue/20 hover:border-neon-blue/40"
+              className="h-12 w-12 rounded-2xl border-white/10 bg-black/40 backdrop-blur-md hover:bg-neon-blue/20 hover:border-neon-blue/40 transition-all"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-6 w-6" />
             </Button>
           </div>
         </div>
 
         {/* Indicators */}
-        <div className="absolute top-8 right-8 flex gap-1.5 ring-1 ring-white/10 bg-black/20 p-2 rounded-full backdrop-blur-md">
+        <div className="absolute top-10 right-10 z-30 flex gap-2 ring-1 ring-white/10 bg-black/40 p-2.5 rounded-2xl backdrop-blur-md">
           {videos.map((_, i) => (
             <div
               key={i}
               className={cn(
-                "h-1.5 transition-all rounded-full",
-                i === activeIndex ? "w-6 bg-neon-blue shadow-[0_0_8px_rgba(0,163,255,0.8)]" : "w-1.5 bg-white/20"
+                "h-2 transition-all rounded-full",
+                i === activeIndex ? "w-8 bg-neon-blue shadow-[0_0_12px_rgba(0,163,255,0.8)]" : "w-2 bg-white/20"
               )}
             />
           ))}
         </div>
       </Card>
       
-      {/* Decorative Glow */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-neon-blue to-neon-purple rounded-3xl blur opacity-10 group-hover:opacity-20 transition-all pointer-events-none" />
+      {/* Decorative Outer Glow */}
+      <div className="absolute -inset-2 bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 rounded-[45px] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none" />
     </div>
   );
 }
