@@ -633,6 +633,30 @@ export interface Database {
         };
         Relationships: [];
       };
+      pitch_videos: {
+        Row: {
+          id: string;
+          title: string;
+          url: string;
+          category: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          url: string;
+          category?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          url?: string;
+          category?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
