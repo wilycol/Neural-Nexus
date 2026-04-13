@@ -185,6 +185,14 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
           {/* Theme toggle */}
           <ThemeToggle />
 
+          {/* Identity Alignment Badge (Subtle) */}
+          <div className="hidden lg:flex items-center gap-2 px-2 py-1 rounded-full bg-neon-blue/5 border border-neon-blue/20 animate-pulse-slow">
+            <div className="h-1.5 w-1.5 rounded-full bg-neon-blue shadow-[0_0_5px_rgba(0,243,255,0.8)]" />
+            <span className="text-[9px] font-black uppercase tracking-tighter text-neon-blue/70">
+              Elite Protocol: Active
+            </span>
+          </div>
+
           {userNickname ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
