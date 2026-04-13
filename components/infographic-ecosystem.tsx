@@ -6,18 +6,12 @@ import {
   Cpu, 
   Globe, 
   Search, 
-  Mic2, 
-  Video, 
-  FileJson, 
   Database, 
   Maximize2, 
   X,
   Zap,
-  ArrowRight,
   TrendingUp,
-  LineChart,
   HardDrive,
-  Cloud,
   RefreshCcw,
   BarChart4,
   LayoutDashboard,
@@ -27,8 +21,6 @@ import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
   DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
   DialogClose 
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
@@ -218,7 +210,16 @@ export function InfographicEcosystem() {
   );
 }
 
-function InfographicNode({ title, icon: Icon, desc, color, tags, glow }: any) {
+interface InfographicNodeProps {
+  title: string;
+  icon: React.ElementType;
+  desc: string;
+  color: string;
+  tags: string[];
+  glow?: string;
+}
+
+function InfographicNode({ title, icon: Icon, desc, color, tags, glow }: InfographicNodeProps) {
   return (
     <motion.div 
       whileHover={{ y: -5, scale: 1.02 }}
