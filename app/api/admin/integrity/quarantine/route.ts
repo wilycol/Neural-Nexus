@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // 2. Ejecutar Movimiento (Copia + Borrado)
     // Nota: El bucket 'quarantine' debe existir en Supabase
-    const { data: copyData, error: copyError } = await supabase
+    const { error: copyError } = await supabase
       .storage
       .from(sourceBucket)
       .copy(fileName, `${sourceBucket}/${fileName}`, { 

@@ -7,16 +7,13 @@ import {
   ShieldCheck, 
   RefreshCw, 
   AlertTriangle, 
-  FileJson, 
+  AlertTriangle, 
   FileWarning, 
-  Database,
-  Search,
-  Box,
-  Trash2,
-  Download,
-  ShieldAlert,
-  ChevronRight,
-  HardDrive
+  Box, 
+  Trash2, 
+  Download, 
+  ShieldAlert, 
+  HardDrive 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -40,7 +37,7 @@ function IntegrityTerminal() {
   
   const [auditData, setAuditData] = useState<AuditResult[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleQuarantine = async (fileName: string, sourceBucket: string) => {
     try {
@@ -89,7 +86,8 @@ function IntegrityTerminal() {
       } else {
         toast.error(json.error || "Falla en el escaneo de integridad.");
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Error crítico de conexión con el núcleo Beatriz.");
     } finally {
       setLoading(false);

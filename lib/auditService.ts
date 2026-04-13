@@ -1,6 +1,4 @@
-
 import { createServerClient } from './supabase-server';
-import { Database } from '@/types/database';
 
 export interface AuditResult {
   bucket: string;
@@ -74,7 +72,8 @@ export async function performSystemAudit(): Promise<AuditResult[]> {
           .not(col as any, 'is', null);
 
         if (rows) {
-          rows.forEach((row: any) => {
+          (rows as unknown[]).forEach((item: unknown) => {
+            const row = item as { id: string; title?: string; [key: string]: string | undefined };
             const url = row[col];
             if (url && typeof url === 'string') {
               const fileName = url.split('/').pop();

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
  * API Administrador: Integridad del Sistema 🛡️
  * Provee los datos para el Integrity Dashboard.
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   const supabase = createServerClient();
 
   try {
