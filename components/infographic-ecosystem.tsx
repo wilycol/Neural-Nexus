@@ -30,11 +30,13 @@ export function InfographicEcosystem() {
 
   const DiagramContent = ({ fullscreen = false }) => (
     <div className={`relative w-full h-full flex flex-col items-center justify-between p-12 bg-black/60 backdrop-blur-3xl border border-white/5 rounded-[40px] overflow-hidden ${fullscreen ? 'min-h-[90vh]' : 'aspect-[16/10]'}`}>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,163,255,0.1),transparent_70%)]" />
-      <div className="absolute inset-0 bg-grid-white/[0.02]" />
+      {/* Contenedor con escala para mejor visibilidad (80%) */}
+      <div className={`w-full h-full flex flex-col items-center justify-between transition-transform duration-500 origin-center ${fullscreen ? 'scale-90' : 'scale-[0.85]'}`}>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,163,255,0.1),transparent_70%)]" />
+        <div className="absolute inset-0 bg-grid-white/[0.02]" />
 
-      {/* --- NIVEL 1: LOCAL (BEATRIZ AUTOPUBLISHER) --- */}
-      <div className="relative z-10 w-full flex flex-col items-center gap-6">
+        {/* --- NIVEL 1: LOCAL (BEATRIZ AUTOPUBLISHER) --- */}
+        <div className="relative z-10 w-full flex flex-col items-center gap-6">
         <div className="flex items-center gap-3 mb-2">
           <Badge className="bg-neon-blue/20 text-neon-blue border-neon-blue/30 px-4 py-1 text-xs font-bold tracking-widest">LOCAL TO CLOUD ARCHITECTURE</Badge>
           <div className="h-[2px] w-20 bg-gradient-to-r from-neon-blue to-transparent" />
