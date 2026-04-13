@@ -67,7 +67,8 @@ export async function performSystemAudit(): Promise<AuditResult[]> {
     for (const tableConfig of bucket.tables) {
       for (const col of tableConfig.columns) {
         const { data: rows } = await supabase
-          .from(tableConfig.name as any)
+          // @ts-expect-error - Dynamic table names require suppression for strict Supabase types
+          .from(tableConfig.name)
           // @ts-expect-error - Dynamic columns require any casting to satisfy strict select types
           .select(`id, title, ${col}` as string)
           // @ts-expect-error - Dynamic columns require any casting
