@@ -131,12 +131,16 @@ export async function POST(request: NextRequest) {
       .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
+    // --- BLINDAJE INDUSTRIAL: Upsert basado en slug o source_url ---
     const { data, error } = await supabase
       .from('news')
-      .insert({
+      .upsert({
         ...body,
         slug,
-        created_at: new Date().toISOString(),
+        created_at: body.created_at || new Date().toISOString(),
+      }, {
+        onConflict: 'slug',
+        ignoreDuplicates: false // Actualizar si hay cambios
       })
       .select()
       .single();
