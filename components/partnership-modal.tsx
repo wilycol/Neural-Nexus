@@ -73,7 +73,7 @@ export function PartnershipModal({ isOpen, onOpenChange }: PartnershipModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-white/10 text-white">
+      <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-white/10 text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
             <div className="p-2 rounded-lg bg-neon-blue/20">
