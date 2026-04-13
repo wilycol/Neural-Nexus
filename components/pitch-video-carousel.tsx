@@ -112,7 +112,7 @@ export function PitchVideoCarousel() {
             className="h-full rounded-2xl shadow-2xl border border-white/10"
             autoPlay
             muted
-            loop
+            onEnded={nextVideo}
             playsInline
           >
             <source src={currentVideo.url} type="video/mp4" />
