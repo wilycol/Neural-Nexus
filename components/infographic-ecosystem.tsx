@@ -29,7 +29,7 @@ export function InfographicEcosystem() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const DiagramContent = ({ fullscreen = false }: { fullscreen?: boolean }) => (
-    <div className={`relative w-full h-full flex flex-col items-center justify-between p-1 bg-black/60 backdrop-blur-3xl border border-white/5 rounded-[40px] overflow-hidden ${fullscreen ? 'min-h-[90vh]' : 'aspect-[16/10]'}`}>
+    <div className={`relative w-full flex flex-col items-center justify-between p-1 bg-black/60 backdrop-blur-3xl border border-white/5 rounded-[40px] overflow-hidden ${fullscreen ? 'h-[95vh]' : 'h-auto min-h-[600px]'}`}>
       {/* Contenedor con escala optimizada por el Comandante (75% / 80%) */}
       <div className={`w-full h-full flex flex-col items-center justify-between transition-transform duration-500 origin-center ${fullscreen ? 'scale-[0.80]' : 'scale-[0.75]'}`}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,163,255,0.1),transparent_70%)]" />
