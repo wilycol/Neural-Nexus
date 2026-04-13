@@ -21,7 +21,7 @@ export async function GET() {
 
     // Verificar Rol
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('users')
       .select('role')
       .eq('id', user.id)
       .single();
