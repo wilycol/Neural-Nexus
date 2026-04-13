@@ -7,7 +7,6 @@ import {
   ShieldCheck, 
   RefreshCw, 
   AlertTriangle, 
-  AlertTriangle, 
   FileWarning, 
   Box, 
   Trash2, 
@@ -37,7 +36,7 @@ function IntegrityTerminal() {
   
   const [auditData, setAuditData] = useState<AuditResult[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   const handleQuarantine = async (fileName: string, sourceBucket: string) => {
     try {
