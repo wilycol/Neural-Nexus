@@ -9,13 +9,8 @@ import {
   Mic2, 
   Video, 
   FileJson, 
-  Database, 
   Maximize2, 
-  X,
-  Zap,
-  ArrowRight,
-  TrendingUp,
-  LineChart
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -25,7 +20,7 @@ import {
   DialogTitle, 
   DialogClose 
 } from "@/components/ui/dialog";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export function ArchitectureEcosystem() {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -140,7 +135,18 @@ export function ArchitectureEcosystem() {
   );
 }
 
-function NodeItem({ node, delay }: { node: any, delay: number }) {
+interface NodeItemProps {
+  node: {
+    id: string;
+    label: string;
+    icon: React.ElementType;
+    desc: string;
+    color: string;
+  };
+  delay: number;
+}
+
+function NodeItem({ node, delay }: NodeItemProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

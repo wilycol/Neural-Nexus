@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from './ui/card';
-import { ChevronLeft, ChevronRight, Sparkles, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { getSupabaseBrowserClient } from '@/lib/supabase-client';
@@ -34,7 +34,6 @@ export function PitchVideoCarousel() {
   const [videos, setVideos] = useState<PitchVideo[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   useEffect(() => {

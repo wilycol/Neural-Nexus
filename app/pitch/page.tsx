@@ -2,16 +2,14 @@
 
 import React, { useState } from "react";
 import { 
-  Workflow, 
   Network, 
   Flame, 
   ArrowRight,
   Layers,
-  BarChart3,
-  TrendingUp,
   ShieldCheck,
   Languages
 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,8 +32,7 @@ import {
   ExternalLink, 
   Coins, 
   Terminal,
-  ChevronRight,
-  Maximize2
+  ChevronRight
 } from "lucide-react";
 
 const PITCH_CONTENT = {
