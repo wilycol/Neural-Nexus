@@ -24,7 +24,7 @@ import {
 import { PitchVideoCarousel } from "@/components/pitch-video-carousel";
 import { AICollaborators } from "@/components/ai-collaborators";
 import { PartnershipModal } from "@/components/partnership-modal";
-import { ArchitectureEcosystem } from "@/components/architecture-ecosystem";
+import { InfographicEcosystem } from "@/components/infographic-ecosystem";
 import { 
   Scale, 
   Shield, 
@@ -225,7 +225,7 @@ export default function PitchPage() {
               </div>
             </div>
             <div className="relative h-full flex items-center justify-center">
-              <ArchitectureEcosystem />
+              <InfographicEcosystem />
             </div>
           </div>
         </section>
