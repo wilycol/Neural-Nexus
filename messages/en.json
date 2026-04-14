@@ -1,0 +1,29 @@
+{
+  "NeuralSites": {
+    "title": "Neural Sites SaaS",
+    "tagline": "AI-Native Website Factory",
+    "cta": "Start Building",
+    "plans": {
+      "silver": "Neural Silver",
+      "gold": "Neural Gold",
+      "platinum": "Neural Platinum",
+      "setup": "Launch Trigger (Setup)"
+    },
+    "checkout": {
+      "pay_monthly": "Pay Monthly Fee",
+      "pay_setup": "Pay Production Setup",
+      "method_credit": "Credit Card (Wompi)",
+      "method_debit": "Debit / Transfer (Nequi Negocios)",
+      "method_crypto": "Binance Pay / Crypto",
+      "success_msg": "Payment detected! Beatriz is starting the engines..."
+    },
+    "onboarding": {
+      "step1": "Your Business",
+      "step2": "Tone of Voice",
+      "step3": "Activate Site",
+      "title": "Neural Site Configuration",
+      "description": "Give us the industrial details so Beatriz can start building.",
+      "success": "Inputs received! Starting construction..."
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { AICollaborators } from "@/components/ai-collaborators";
+import { NeuralSitesPricing } from "@/components/neural-sites-pricing";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +21,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export default function HomePage() {
-
-  // 📈 Operación Independencia: El tracking ahora es manejado ÚNICAMENTE por StatsTracker en el Layout global.
+  const t = useTranslations('NeuralSites');
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -35,10 +35,10 @@ export default function HomePage() {
                 Top Story Live
               </div>
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold font-orbitron mb-4 leading-tight">
-                <span className="gradient-text drop-shadow-[0_0_15px_rgba(0,163,255,0.5)]">Neural Nexus</span>
+                <span className="gradient-text drop-shadow-[0_0_15px_rgba(0,163,255,0.5)]">{t('title')}</span>
               </h1>
               <p className="text-sm md:text-lg text-white/80 max-w-lg leading-relaxed font-light backdrop-blur-sm p-2 rounded-lg bg-black/10">
-                Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente.
+                {t('tagline')}
               </p>
             </div>
             <Button
@@ -60,6 +60,10 @@ export default function HomePage() {
 
       <section className="mb-12">
         <AICollaborators />
+      </section>
+
+      <section className="mb-12">
+        <NeuralSitesPricing />
       </section>
 
       <section>
