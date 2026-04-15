@@ -23,8 +23,9 @@ export function LanguageSwitcher() {
     // Reconstruimos la ruta
     const nextPathname = segments.join('/') || `/${nextLocale}`;
     
-    // Redirigimos al usuario a la misma página pero en el nuevo idioma
-    router.push(nextPathname);
+    // Redirigimos al usuario usando window.location.href para forzar una recarga completa
+    // y asegurar que el middleware y el servidor detecten el nuevo locale correctamente.
+    window.location.href = nextPathname;
   };
 
   return (
