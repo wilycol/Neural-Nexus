@@ -57,7 +57,7 @@ interface AdminAlert {
   severity: 'info' | 'warning' | 'critical';
   status: 'pending' | 'resolved';
   created_at: string;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
 }
 
 function MonitorTerminal() {

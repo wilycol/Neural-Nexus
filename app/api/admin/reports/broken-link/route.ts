@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   const supabase = createServerClient();
 
   try {
-    const { newsId, url, type, title } = await request.json();
+    const { newsId, url, title } = await request.json();
 
     if (!newsId || !url) {
       return NextResponse.json({ error: 'Datos insuficientes' }, { status: 400 });

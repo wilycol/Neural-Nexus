@@ -79,6 +79,26 @@ export function NewsCard({
     }
   };
 
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+
+  React.useEffect(() => {
+    if (!videoRef.current || !news.video_url) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting && videoRef.current) {
+            videoRef.current.pause();
+          }
+        });
+      },
+      { threshold: 0.2 } // Pausa cuando menos del 20% es visible
+    );
+
+    observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, [news.video_url]);
+
   // Si el link está roto y no somos admin, ocultamos la tarjeta por seguridad industrial
   if (isBroken && role !== 'admin') {
     return null;
@@ -126,25 +146,6 @@ export function NewsCard({
     'general': "bg-gray-500/10 text-gray-500 border-gray-500/20",
   };
 
-  const videoRef = React.useRef<HTMLVideoElement>(null);
-
-  React.useEffect(() => {
-    if (!videoRef.current || !news.video_url) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting && videoRef.current) {
-            videoRef.current.pause();
-          }
-        });
-      },
-      { threshold: 0.2 } // Pausa cuando menos del 20% es visible
-    );
-
-    observer.observe(videoRef.current);
-    return () => observer.disconnect();
-  }, [news.video_url]);
 
   return (
     <Card className={`overflow-hidden hover:shadow-lg transition-all duration-300 ${isFavorited ? 'border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.1)]' : ''}`}>

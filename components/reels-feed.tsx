@@ -60,10 +60,6 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
     }
   };
 
-  if (isBroken && role !== 'admin') {
-    return null;
-  }
-
   useEffect(() => {
     if (isActive && videoRef.current) {
       setIsPaused(false);
@@ -78,6 +74,11 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
       videoRef.current.currentTime = 0;
     }
   }, [isActive]);
+
+  if (isBroken && role !== 'admin') {
+    return null;
+  }
+
 
   const togglePlay = (e: React.MouseEvent) => {
     // Evitar que el click en los botones dispare el toggle de pausa
