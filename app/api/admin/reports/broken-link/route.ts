@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     // 1. Verificar si ya existe un reporte reciente para esta noticia
     const { data: existing } = await supabase
-      .from('admin_alerts')
+      .from('admin_alerts' as any)
       .select('id')
       .eq('target_id', newsId)
       .eq('type', 'link_broken')
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     // 2. Insertar nueva alerta administrativa
     const { error } = await supabase
-      .from('admin_alerts')
+      .from('admin_alerts' as any)
       .insert({
         type: 'link_broken',
         title: `⚠️ Link Roto Detectado: ${title || 'Noticia ID ' + newsId}`,

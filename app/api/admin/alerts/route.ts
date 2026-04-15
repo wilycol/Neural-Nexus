@@ -20,7 +20,7 @@ export async function GET() {
 
     // 2. Obtener Alertas Pendientes
     const { data, error } = await supabase
-      .from('admin_alerts')
+      .from('admin_alerts' as any)
       .select('*')
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
@@ -48,7 +48,7 @@ export async function PATCH(request: Request) {
 
     // Resolver alerta
     const { error } = await supabase
-      .from('admin_alerts')
+      .from('admin_alerts' as any)
       .update({ status: 'resolved', resolved_at: new Date().toISOString() })
       .eq('id', id);
 
