@@ -72,7 +72,7 @@ export function BusinessForm({ onSuccess }: BusinessFormProps) {
 
       toast.success("¡Insumos recibidos! Beatriz ha comenzado la construcción.");
       onSuccess();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
       toast.error("Error al enviar insumos. Verifica tu suscripción.");
     } finally {
@@ -88,11 +88,11 @@ export function BusinessForm({ onSuccess }: BusinessFormProps) {
           name="businessName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-primary font-orbitron text-xs uppercase tracking-widest">Nombre del Negocio</FormLabel>
+              <FormLabel className="text-primary font-orbitron text-xs uppercase tracking-widest">{t('form.name_label')}</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: TechNexus Pro" {...field} className="bg-background/20 border-primary/20 h-12 rounded-xl" />
+                <Input placeholder={t('form.name_placeholder')} {...field} className="bg-background/20 border-primary/20 h-12 rounded-xl" />
               </FormControl>
-              <FormDescription className="text-[10px] opacity-60">Como aparecerá en el encabezado de tu sitio.</FormDescription>
+              <FormDescription className="text-[10px] opacity-60">{t('form.name_description')}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -104,11 +104,11 @@ export function BusinessForm({ onSuccess }: BusinessFormProps) {
             name="niche"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-primary font-orbitron text-xs uppercase tracking-widest">Nicho Industrial</FormLabel>
+                <FormLabel className="text-primary font-orbitron text-xs uppercase tracking-widest">{t('form.niche_label')}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className="bg-background/20 border-primary/20 h-12 rounded-xl">
-                      <SelectValue placeholder="Selecciona Nicho" />
+                      <SelectValue placeholder={t('form.niche_placeholder')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -129,11 +129,11 @@ export function BusinessForm({ onSuccess }: BusinessFormProps) {
             name="tone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-primary font-orbitron text-xs uppercase tracking-widest">Tono de Beatriz</FormLabel>
+                <FormLabel className="text-primary font-orbitron text-xs uppercase tracking-widest">{t('form.tone_label')}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger className="bg-background/20 border-primary/20 h-12 rounded-xl">
-                      <SelectValue placeholder="Selecciona Tono" />
+                      <SelectValue placeholder={t('form.tone_placeholder')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -153,11 +153,11 @@ export function BusinessForm({ onSuccess }: BusinessFormProps) {
           {loading ? (
             <>
               <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-              Procesando Insumos...
+              {t('form.submitting')}
             </>
           ) : (
             <>
-              Activar Construcción <ArrowRight className="ml-3 h-5 w-5" />
+              {t('form.submit_button')} <ArrowRight className="ml-3 h-5 w-5" />
             </>
           )}
         </Button>

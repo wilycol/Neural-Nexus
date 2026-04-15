@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Check, Zap, Sparkles, Crown, ArrowRight } from 'lucide-react';
+import { Check, Zap, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { NeuralCheckoutModal } from './payment/NeuralCheckoutModal';
 import { getSupabaseBrowserClient } from '@/lib/supabase';
 
 export function NeuralSitesPricing() {
   const t = useTranslations('NeuralSites');
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [remainingSlots, setRemainingSlots] = useState(39);
   const supabase = getSupabaseBrowserClient();
@@ -108,7 +109,12 @@ export function NeuralSitesPricing() {
             )}
 
             <div className="relative h-48 mb-6 rounded-xl overflow-hidden border border-white/10">
-              <img src={plan.image} alt={plan.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              <Image 
+                src={plan.image} 
+                alt={plan.name} 
+                fill 
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-4 left-4">
                 <h3 className="text-xl font-orbitron font-bold text-white tracking-widest">{plan.name}</h3>
@@ -149,7 +155,7 @@ export function NeuralSitesPricing() {
       <NeuralCheckoutModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        planId={selectedPlan} 
+        planId={selectedPlan as any} 
       />
     </section>
   );

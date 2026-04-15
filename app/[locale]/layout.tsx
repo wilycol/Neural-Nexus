@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
@@ -9,7 +8,7 @@ import { MascotOverlay } from "@/components/mascot-overlay";
 import { StatsTracker } from "@/components/stats-tracker";
 import { AffiliateTracker } from "@/components/affiliate-tracker";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getTranslations } from 'next-intl/server';
+import { getMessages } from 'next-intl/server';
 import "./globals.css";
 
 // ... generateMetadata implementation ...

@@ -1,5 +1,25 @@
+import React, { useState, useEffect } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslations } from "next-intl";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { 
+  Sparkles, 
+  CreditCard, 
+  Smartphone, 
+  Globe, 
+  Coins, 
+  Loader2, 
+  X 
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface NeuralCheckoutModalProps {
   isOpen: boolean;
@@ -27,8 +47,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const supabase = getSupabaseBrowserClient();
-
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) setUserId(user.id);
@@ -43,7 +62,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   };
 
   const getIframeUrl = () => {
-    let baseUrl = PAYMENT_LINKS[paymentType][planId] || PAYMENT_LINKS['monthly']['silver'];
+    const baseUrl = PAYMENT_LINKS[paymentType][planId] || PAYMENT_LINKS['monthly']['silver'];
     
     if (typeof window !== 'undefined') {
       const refCode = localStorage.getItem('neural_nexus_ref');
@@ -73,7 +92,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
         </DialogHeader>
 
         <div className="px-6 mb-4">
-          <Tabs defaultValue="monthly" className="w-full" onValueChange={(v) => setPaymentType(v as any)}>
+          <Tabs defaultValue="monthly" className="w-full" onValueChange={(v) => setPaymentType(v as 'monthly' | 'setup')}>
             <TabsList className="grid w-full grid-cols-2 bg-primary/10 border border-primary/20">
               <TabsTrigger value="monthly" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground uppercase text-[10px] font-bold tracking-widest">
                 {t('pay_monthly')}

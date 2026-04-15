@@ -8,6 +8,7 @@ import { NewsFeed } from "@/components/news-feed";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ModelsRanking } from "@/components/models-ranking";
 
 const categoryInfo: Record<string, { title: string; description: string; icon: React.ElementType }> = {
   modelos: {
@@ -131,6 +132,13 @@ export default function CategoryPage() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Models Ranking System (Only for modelos) */}
+      {slug === 'modelos' && (
+        <div className="mb-12">
+          <ModelsRanking />
+        </div>
       )}
 
       {/* News Feed */}

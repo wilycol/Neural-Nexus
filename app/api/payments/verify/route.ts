@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   try {
     // 1. Determinar el plan y monto basado en el SKU
     let planName = 'silver';
-    let isSetup = sku.includes('SETUP');
+    const isSetup = sku.includes('SETUP');
     
     if (sku.includes('GOLD')) planName = 'gold';
     if (sku.includes('PLATINUM')) planName = 'platinum';
