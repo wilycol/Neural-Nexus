@@ -29,7 +29,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data });
 
-  } catch (_error) {
+  } catch (error) {
     console.error('❌ Error en API de Alertas:', error);
     return NextResponse.json({ error: 'Error del servidor' }, { status: 500 });
   }
@@ -56,7 +56,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ success: true, message: 'Alerta resuelta' });
 
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: 'Error al actualizar alerta' }, { status: 500 });
   }
 }
