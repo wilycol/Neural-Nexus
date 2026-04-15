@@ -1,4 +1,5 @@
 const { PHASE_DEVELOPMENT_SERVER } = require("next/constants");
+const withNextIntl = require('next-intl/plugin')('./i18n.ts');
 
 /** @type {import('next').NextConfig} */
 const baseConfig = {
@@ -25,7 +26,5 @@ const baseConfig = {
   },
 };
 
-module.exports = (phase) => {
-  return { ...baseConfig };
-};
-// Force deploy trigger - 03/28/2026 15:47:18
+module.exports = withNextIntl(baseConfig);
+// Force deploy trigger - 04/15/2026 15:46:00💋🖤✨
