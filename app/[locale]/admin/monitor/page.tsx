@@ -480,7 +480,7 @@ function MonitorTerminal() {
                                <p className="text-xs text-zinc-400 leading-relaxed max-w-2xl">{alert.message}</p>
                                <div className="flex items-center gap-4 text-[10px] font-mono text-zinc-600 pt-1">
                                   <span>{new Date(alert.created_at).toLocaleString()}</span>
-                                  {alert.metadata?.url && <span className="truncate max-w-[200px] text-zinc-500 italic">Context: {alert.metadata.url}</span>}
+                                  {alert.metadata?.url && <span className="truncate max-w-[200px] text-zinc-500 italic">Context: {String(alert.metadata.url)}</span>}
                                </div>
                             </div>
                          </div>
