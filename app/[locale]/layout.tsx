@@ -18,7 +18,12 @@ export const metadata: Metadata = {
   title: "Neural Nexus",
   description: "Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 };
 
