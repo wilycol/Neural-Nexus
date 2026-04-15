@@ -17,6 +17,8 @@ import {
   Code,
   Copy,
   ExternalLink,
+  Archive,
+  Bell,
   Play
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -47,19 +49,31 @@ interface DebugRecord {
   [key: string]: any; // Para permitir el volcado JSON
 }
 
+interface AdminAlert {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  severity: 'info' | 'warning' | 'critical';
+  status: 'pending' | 'resolved';
+  created_at: string;
+  metadata: any;
+}
+
 function MonitorTerminal() {
   const { user, role, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   
   const [records, setRecords] = useState<DebugRecord[]>([]);
+  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("reception");
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'reels' || tab === 'reception') {
+    if (tab === 'reels' || tab === 'reception' || tab === 'alerts') {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -84,6 +98,36 @@ function MonitorTerminal() {
       toast.error("Falla crítica de conexión con la API.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAlerts = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/admin/alerts'); // Necesitaremos este API
+      const data = await res.json();
+      if (res.ok) {
+        setAlerts(data.data || []);
+        setLastUpdated(new Date());
+      } else {
+        toast.error("Error al obtener alertas industriales.");
+      }
+    } catch {
+      toast.error("Falla de red con el búnker de alertas.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const markAlertResolved = async (alertId: string) => {
+    try {
+       const res = await fetch(`/api/admin/alerts?id=${alertId}`, { method: 'PATCH' });
+       if (res.ok) {
+         setAlerts(prev => prev.filter(a => a.id !== alertId));
+         toast.success("Alerta marcada como resuelta. hmmmm... 🔥");
+       }
+    } catch {
+      toast.error("Error al resolver alerta.");
     }
   };
 
@@ -128,7 +172,11 @@ function MonitorTerminal() {
 
   useEffect(() => {
     if (role === "admin") {
-      fetchLogs(activeTab === "reception" ? 5 : 10);
+      if (activeTab === "alerts") {
+        fetchAlerts();
+      } else {
+        fetchLogs(activeTab === "reception" ? 5 : 10);
+      }
     }
   }, [role, activeTab]);
 
@@ -204,6 +252,13 @@ function MonitorTerminal() {
              >
                <Video className="w-3.5 h-3.5 mr-2" />
                Auditoría de Reels 🎬
+             </TabsTrigger>
+             <TabsTrigger 
+               value="alerts" 
+               className="rounded-xl px-6 py-2.5 data-[state=active]:bg-rose-600 data-[state=active]:text-white font-bold text-[11px] uppercase tracking-widest transition-all"
+             >
+               <Bell className="w-3.5 h-3.5 mr-2" />
+               Alertas Industriales 🚨
              </TabsTrigger>
           </TabsList>
 
@@ -384,6 +439,64 @@ function MonitorTerminal() {
                     </div>
                   </div>
                 ))}
+             </div>
+          </TabsContent>
+
+          <TabsContent value="alerts" className="space-y-4 outline-none">
+             <div className="grid gap-4">
+                {alerts.length === 0 ? (
+                  <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-10 text-center space-y-3">
+                     <ShieldCheck className="w-12 h-12 text-emerald-500/20 mx-auto" />
+                     <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">No hay alertas pendientes. hmmmm... 🔥</p>
+                  </div>
+                ) : (
+                  alerts.map((alert) => (
+                    <div 
+                      key={alert.id}
+                      className={`bg-white/[0.02] border ${alert.severity === 'critical' ? 'border-red-500/30' : 'border-white/5'} rounded-2xl p-5 hover:bg-white/[0.04] transition-all group overflow-hidden`}
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                         <div className="flex items-start gap-4 flex-1">
+                            <div className={`p-3 rounded-xl ${
+                              alert.type === 'lifecycle_archive' ? 'bg-blue-500/10 text-blue-400' :
+                              alert.type === 'link_broken' ? 'bg-amber-500/10 text-amber-400' :
+                              'bg-rose-500/10 text-rose-400'
+                            }`}>
+                               {alert.type === 'lifecycle_archive' ? <Archive className="w-5 h-5" /> : 
+                                alert.type === 'link_broken' ? <AlertCircle className="w-5 h-5" /> : 
+                                <Bell className="w-5 h-5" />}
+                            </div>
+                            <div className="space-y-1">
+                               <div className="flex items-center gap-2">
+                                  <h4 className="font-bold text-white group-hover:text-indigo-300 transition-colors uppercase tracking-tight">{alert.title}</h4>
+                                  <Badge className={`${
+                                    alert.severity === 'critical' ? 'bg-red-500' : 
+                                    alert.severity === 'warning' ? 'bg-amber-600' : 
+                                    'bg-indigo-600'
+                                  } text-[8px] font-black border-none uppercase`}>
+                                    {alert.severity}
+                                  </Badge>
+                               </div>
+                               <p className="text-xs text-zinc-400 leading-relaxed max-w-2xl">{alert.message}</p>
+                               <div className="flex items-center gap-4 text-[10px] font-mono text-zinc-600 pt-1">
+                                  <span>{new Date(alert.created_at).toLocaleString()}</span>
+                                  {alert.metadata?.url && <span className="truncate max-w-[200px] text-zinc-500 italic">Context: {alert.metadata.url}</span>}
+                               </div>
+                            </div>
+                         </div>
+                         
+                         <div className="flex items-center gap-2">
+                            <Button 
+                              onClick={() => markAlertResolved(alert.id)}
+                              className="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-black uppercase tracking-widest px-4 h-9 rounded-xl border border-white/5"
+                            >
+                              Resolver
+                            </Button>
+                         </div>
+                      </div>
+                    </div>
+                  ))
+                )}
              </div>
           </TabsContent>
         </Tabs>

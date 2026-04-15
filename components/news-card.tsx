@@ -57,6 +57,32 @@ export function NewsCard({
   const [isPlaying, setIsPlaying] = useState(false);
 
   const affiliateMatch = findAffiliateMatch(news.title + " " + (news.summary || ""), news.tags);
+  const [isBroken, setIsBroken] = useState(false);
+
+  const reportBrokenLink = async () => {
+    if (isBroken) return;
+    setIsBroken(true);
+
+    try {
+      await fetch('/api/admin/reports/broken-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          newsId: news.id,
+          url: news.content_type === 'video' ? news.video_url : (news.cover_url || news.image_url),
+          type: news.content_type,
+          title: news.title
+        })
+      });
+    } catch (err) {
+      console.error("Falla al reportar link roto:", err);
+    }
+  };
+
+  // Si el link está roto y no somos admin, ocultamos la tarjeta por seguridad industrial
+  if (isBroken && role !== 'admin') {
+    return null;
+  }
 
   const handleShare = async (platform: string) => {
     const url = `${window.location.origin}/news/${news.slug}`;
@@ -146,6 +172,7 @@ export function NewsCard({
               crossOrigin="anonymous"
               onPause={() => !news.is_short && setIsPlaying(false)}
               onPlay={() => !news.is_short && setIsPlaying(true)}
+              onError={reportBrokenLink}
             />
             {(!isPlaying || news.is_short) && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover/video:bg-black/20 transition-all z-20">
@@ -167,6 +194,7 @@ export function NewsCard({
             alt={news.title}
             fill
             className="object-cover transition-transform hover:scale-105"
+            onError={reportBrokenLink}
           />
         )}
         <div className="absolute top-2 left-2 z-10">

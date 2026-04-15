@@ -37,10 +37,32 @@ interface ReelItemProps {
 function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(news.mention_count || 0);
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [isBroken, setIsBroken] = useState(false);
   const { user, role } = useAuth();
+
+  const reportBrokenLink = async () => {
+    if (isBroken) return;
+    setIsBroken(true);
+
+    try {
+      await fetch('/api/admin/reports/broken-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          newsId: news.id,
+          url: news.video_url,
+          type: 'reel',
+          title: news.title
+        })
+      });
+    } catch (err) {
+      console.error("Falla al reportar reel roto:", err);
+    }
+  };
+
+  if (isBroken && role !== 'admin') {
+    return null;
+  }
 
   useEffect(() => {
     if (isActive && videoRef.current) {
@@ -144,6 +166,7 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
         crossOrigin="anonymous"
         preload="auto"
         poster={news.cover_url || news.image_url}
+        onError={reportBrokenLink}
       />
       
       {isPaused && (
