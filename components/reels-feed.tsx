@@ -39,6 +39,9 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [isBroken, setIsBroken] = useState(false);
   const { user, role } = useAuth();
+  const [isLiked, setIsLiked] = useState(news.is_liked || false);
+  const [likesCount, setLikesCount] = useState(news.likes_count || 0);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const reportBrokenLink = async () => {
     if (isBroken) return;
