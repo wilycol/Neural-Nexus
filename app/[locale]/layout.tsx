@@ -11,7 +11,16 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import "./globals.css";
 
-// ... generateMetadata implementation ...
+import { Metadata } from "next";
+import { CookieConsent } from "@/components/cookie-consent";
+
+export const metadata: Metadata = {
+  title: "Neural Nexus",
+  description: "Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
 
 export default async function RootLayout({
   children,
@@ -57,6 +66,7 @@ export default async function RootLayout({
             </div>
             
             <MascotOverlay />
+            <CookieConsent />
             <Toaster position="bottom-right" richColors />
             <Analytics />
           </ThemeProvider>

@@ -39,6 +39,21 @@ export default function PrivacyPage() {
         </ul>
       </section>
 
+      <section className="p-4 border-l-4 border-neon-blue bg-neon-blue/5">
+        <h3 className="text-xl font-bold text-foreground">Google AdSense y Cookies</h3>
+        <div className="mt-4 space-y-4 text-sm text-muted-foreground">
+          <p>
+            • <strong>Proveedores de Terceros:</strong> Google, como proveedor de terceros, utiliza cookies para publicar anuncios en Neural Nexus.
+          </p>
+          <p>
+            • <strong>Cookie de DoubleClick:</strong> El uso de la cookie de DoubleClick permite a Google y a sus socios publicar anuncios basados en las visitas que los usuarios realizan en nuestro portal o en otros sitios de Internet.
+          </p>
+          <p>
+            • <strong>Control del Usuario:</strong> Los usuarios pueden inhabilitar el uso de la cookie de DoubleClick para la publicidad basada en intereses visitando <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-neon-blue hover:underline">Configuración de anuncios de Google</a>.
+          </p>
+        </div>
+      </section>
+
       <section className="p-4 border-l-4 border-neon-purple bg-neon-purple/5">
         <h3 className="text-xl font-bold text-foreground">Sus Derechos</h3>
         <p className="mt-2 text-sm text-muted-foreground">
