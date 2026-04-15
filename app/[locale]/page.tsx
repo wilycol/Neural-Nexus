@@ -2,6 +2,7 @@
 // Activate Motor 5: AI Collaborators Deployment
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { NewsFeed } from "@/components/news-feed";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
