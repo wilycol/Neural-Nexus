@@ -52,6 +52,10 @@ export interface NewsItem {
   has_subtitles: boolean;
   is_short: boolean;
   is_reusable: boolean;
+
+  // Social Stats (Dynamic)
+  is_liked?: boolean;
+  likes_count?: number;
 }
 
 export type NewsCategory = 
