@@ -19,11 +19,18 @@ export const metadata: Metadata = {
   description: "Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente",
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/favicon.ico", sizes: "16x16" },
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
     ],
     shortcut: "/favicon.ico",
     apple: "/favicon.ico",
+    other: [
+      {
+        rel: "apple-touch-icon-precomposed",
+        url: "/favicon.ico",
+      },
+    ],
   },
 };
 

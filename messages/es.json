@@ -14,10 +14,11 @@
       "setup": "Gatillo de Lanzamiento (Setup)"
     },
     "checkout": {
+      "title": "Pasarela de Pago Neural",
       "pay_monthly": "Pagar Mensualidad",
-      "pay_setup": "Pagar Setup de Producción",
-      "method_credit": "Tarjeta de Crédito (Wompi)",
-      "method_debit": "Nequi / Débito (Nequi Negocios)",
+      "pay_setup": "Pagar Setup de Producción (50% OFF)",
+      "method_credit": "Tarjeta de Crédito / Nequi",
+      "method_debit": "Botón de Pago Bancario",
       "method_crypto": "Binance Pay / Crypto",
       "success_msg": "¡Pago detectado! Beatriz está encendiendo los motores..."
     },

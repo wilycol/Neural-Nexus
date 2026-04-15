@@ -14,10 +14,11 @@
       "setup": "Launch Trigger (Setup)"
     },
     "checkout": {
+      "title": "Neural Payment Gateway",
       "pay_monthly": "Pay Monthly Fee",
-      "pay_setup": "Pay Production Setup",
-      "method_credit": "Credit Card (Wompi)",
-      "method_debit": "Debit / Transfer (Nequi Negocios)",
+      "pay_setup": "Pay Production Setup (50% OFF)",
+      "method_credit": "Credit Card / Local Payments",
+      "method_debit": "Bank Transfer Button",
       "method_crypto": "Binance Pay / Crypto",
       "success_msg": "Payment detected! Beatriz is starting the engines..."
     },
