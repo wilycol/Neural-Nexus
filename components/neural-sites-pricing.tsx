@@ -1,16 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Check, Zap, Sparkles, Crown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NeuralCheckoutModal } from './payment/NeuralCheckoutModal';
+import { getSupabaseBrowserClient } from '@/lib/supabase';
 
 export function NeuralSitesPricing() {
   const t = useTranslations('NeuralSites');
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [remainingSlots, setRemainingSlots] = useState(39);
+  const supabase = getSupabaseBrowserClient();
+
+  useEffect(() => {
+    const fetchSlots = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('client_sites')
+          .select('*', { count: 'exact', head: true });
+        
+        if (!error && count !== null) {
+          const calculated = 100 - count;
+          setRemainingSlots(Math.max(calculated, 7)); // Mantener un mínimo de 7 para urgencia real
+        }
+      } catch (err) {
+        console.error('Error fetching site slots:', err);
+      }
+    };
+    fetchSlots();
+  }, [supabase]);
 
   const openCheckout = (plan: string) => {
     setSelectedPlan(plan);
@@ -60,7 +81,7 @@ export function NeuralSitesPricing() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-500 text-sm font-bold uppercase tracking-widest mb-6 animate-pulse"
         >
           <Zap className="h-4 w-4 fill-current" />
-          ¡Solo quedan 39 de 100 cupos (50% OFF Setup)!
+          ¡Solo quedan {remainingSlots} de 100 cupos (50% OFF Setup)!
         </motion.div>
         
         <h2 className="text-4xl md:text-5xl font-orbitron font-bold gradient-text mb-4">

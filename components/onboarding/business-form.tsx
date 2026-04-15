@@ -60,13 +60,13 @@ export function BusinessForm({ onSuccess }: BusinessFormProps) {
       const { error } = await supabase
         .from('client_sites')
         .update({
-          business_name: values.businessName,
+          site_name: values.businessName,
           niche: values.niche,
-          tone: values.tone,
-          status: 'building'
+          beatriz_config: { tone: values.tone },
+          setup_status: 'in_production'
         })
-        .eq('user_id', user.id)
-        .eq('status', 'pending_onboarding');
+        .eq('owner_id', user.id)
+        .eq('setup_status', 'pending_onboarding');
 
       if (error) throw error;
 

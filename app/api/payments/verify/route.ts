@@ -30,11 +30,11 @@ export async function GET(request: Request) {
       .from('subscriptions')
       .upsert({
         user_id: userId,
-        plan: planName,
+        price_id: `price_${planName}`,
         status: 'active',
-        started_at: new Date().toISOString(),
-        expires_at: expiresAt.toISOString(),
-        payment_method: 'wompi'
+        current_period_start: new Date().toISOString(),
+        current_period_end: expiresAt.toISOString(),
+        provider: 'wompi'
       });
 
     if (subError) throw subError;
@@ -44,10 +44,11 @@ export async function GET(request: Request) {
       await supabase
         .from('client_sites')
         .insert({
-          user_id: userId,
-          plan: planName,
-          status: 'pending_onboarding',
-          domain: `pending-${userId.slice(0, 5)}.neuralnexus.pro`
+          owner_id: userId,
+          plan_type: planName,
+          setup_status: 'pending_onboarding',
+          site_name: `Nuevo Sitio de ${userId.slice(0, 5)}`,
+          site_url: `https://pending-${userId.slice(0, 5)}.neuralnexus.pro`
         });
     }
 
@@ -65,10 +66,7 @@ export async function GET(request: Request) {
           .from('affiliate_referrals')
           .insert({
             referrer_id: referrer.id,
-            referred_id: userId,
-            sku_purchased: sku,
-            commission_amount: 0, // Se calcula offline o por trigger
-            status: 'pending_verification'
+            referred_id: userId
           });
       }
     }
