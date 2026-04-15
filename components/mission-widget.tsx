@@ -25,6 +25,7 @@ export function MissionWidget() {
     const checkAdmin = async () => {
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) return;

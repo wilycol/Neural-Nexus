@@ -52,6 +52,7 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
       manualOnLogout();
     } else {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       await supabase.auth.signOut();
       window.location.href = "/";
     }

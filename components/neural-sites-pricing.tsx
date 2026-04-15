@@ -19,6 +19,7 @@ export function NeuralSitesPricing() {
   useEffect(() => {
     const fetchSlots = async () => {
       try {
+        if (!supabase) return;
         const { count, error } = await supabase
           .from('client_sites')
           .select('*', { count: 'exact', head: true });

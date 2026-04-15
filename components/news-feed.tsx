@@ -44,6 +44,7 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
       if (ids.length === 0) return;
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         const rpcResult = await (
           supabase as unknown as {
             rpc: (
@@ -243,6 +244,7 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
   const handleDelete = async (newsId: string) => {
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       const { error } = await supabase.from('news').delete().eq('id', newsId);
 
       if (error) throw error;

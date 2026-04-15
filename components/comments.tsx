@@ -65,6 +65,7 @@ export function Comments({ kind, entityId }: CommentsProps) {
     const loadUser = async () => {
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         const { data } = await supabase.auth.getUser();
         const authUser = data.user;
         if (authUser) {

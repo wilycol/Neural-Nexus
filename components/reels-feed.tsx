@@ -321,6 +321,7 @@ export function ReelsFeed() {
       try {
         setLoading(true);
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
 
         console.log(`[Reels] [${timestamp}]📡 Consultando DB industrial...`);
         const { data, error } = await supabase
@@ -411,6 +412,7 @@ export function ReelsFeed() {
   const handleDelete = async (newsId: string) => {
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       const { error } = await supabase.from('news').delete().eq('id', newsId);
       if (error) throw error;
       setNews(prev => prev.filter(item => item.id !== newsId));

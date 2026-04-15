@@ -34,6 +34,7 @@ export default function ModerationPage() {
     const load = async () => {
       try {
         const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
         const { data } = await supabase.auth.getUser();
         const userId = data.user?.id;
         if (!userId) {
@@ -62,6 +63,7 @@ export default function ModerationPage() {
   const approve = async (id: string) => {
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       const { data } = await supabase.auth.getUser();
       const moderatorId = data.user?.id;
       const { error } = await supabase.from("comments").update({ is_moderated: false }).eq("id", id);

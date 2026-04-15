@@ -49,6 +49,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   const supabase = getSupabaseBrowserClient();
   useEffect(() => {
     const fetchUser = async () => {
+      if (!supabase) return;
       const { data: { user } } = await supabase.auth.getUser();
       if (user) setUserId(user.id);
     };

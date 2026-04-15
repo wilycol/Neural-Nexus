@@ -8,7 +8,6 @@ import { Database } from "@/types/database";
 type Profile = Database["public"]["Tables"]["users"]["Row"];
 
 // 🚀 CACHÉ MOLECULAR: Evita martillear la base de datos desde múltiples componentes
-// 🚀 CACHÉ MOLECULAR: Evita martillear la base de datos desde múltiples componentes
 let cachedProfile: Profile | null = null;
 let profileFetchPromise: Promise<Profile | null> | null = null;
 let globalAuthInitPromise: Promise<void> | null = null;
@@ -24,6 +23,8 @@ export function useAuth() {
     if (profileFetchPromise) return profileFetchPromise;
 
     const supabase = getSupabaseBrowserClient();
+    if (!supabase) return null;
+    
     profileFetchPromise = new Promise(async (resolve) => {
       const timeoutId = setTimeout(() => {
         console.warn("[Auth] ⚠️ Latencia industrial detectada. Timeout en fetchProfile (8s).");
@@ -58,16 +59,22 @@ export function useAuth() {
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
 
     const initAuth = async () => {
       // Bloqueo global: si ya hay una inicialización en curso, esperamos a esa.
       if (globalAuthInitPromise) {
         await globalAuthInitPromise;
         // Al terminar la global, actualizamos este estado local
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setUser(session.user);
-          if (cachedProfile) setProfile(cachedProfile);
+        if (supabase) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            setUser(session.user);
+            if (cachedProfile) setProfile(cachedProfile);
+          }
         }
         setIsLoading(false);
         return;
@@ -75,6 +82,10 @@ export function useAuth() {
 
       globalAuthInitPromise = new Promise(async (resolve) => {
         try {
+          if (!supabase) {
+            resolve();
+            return;
+          }
           console.log("[Auth] 🛡️ Sincronizando sesión industrial única...");
           const { data: { session }, error } = await supabase.auth.getSession();
           
@@ -121,7 +132,6 @@ export function useAuth() {
           const p = await fetchProfileAtomic(session.user.id);
           if (p) {
             setProfile(p);
-            // Pequeña pausa para asegurar sincronización en el primer login
             if (event === 'SIGNED_IN') {
               console.log("[Auth] 🚀 Login exitoso, perfil sincronizado.");
             }

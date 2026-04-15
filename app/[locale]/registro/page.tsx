@@ -26,6 +26,7 @@ export default function RegisterPage() {
   const handleGoogleRegister = async () => {
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -44,6 +45,7 @@ export default function RegisterPage() {
   const handleGithubRegister = async () => {
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {

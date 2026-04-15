@@ -47,6 +47,7 @@ export function PartnershipModal({ isOpen, onOpenChange }: PartnershipModalProps
 
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       
       const { error } = await supabase
         .from("partnership_leads")

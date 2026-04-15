@@ -52,6 +52,7 @@ export function BusinessForm({ onSuccess }: BusinessFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!supabase) return;
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();

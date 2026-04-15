@@ -27,7 +27,6 @@ import {
 
 import { useAuth } from "@/hooks/use-auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
-import { SupabaseClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { 
   getBeatrizAdvisorMissions 
@@ -182,7 +181,8 @@ export default function BunkerOpsPage() {
 
     const loadData = async () => {
       try {
-        const supabase: SupabaseClient = getSupabaseBrowserClient();
+        const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         
         // Cargar Estadísticas y Consejero
         const [overviewRes, advisorData, checklistRes] = await Promise.all([
@@ -224,6 +224,8 @@ export default function BunkerOpsPage() {
     
     // Perdurabilidad en Supabase
     const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    
     try {
       if (isCurrentlyDone) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -285,6 +287,8 @@ export default function BunkerOpsPage() {
   const handleCompleteMission = async (missionId: string, title: string, type: string) => {
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
+      
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('ai_missions')

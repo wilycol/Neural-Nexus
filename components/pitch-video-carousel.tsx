@@ -41,6 +41,7 @@ export function PitchVideoCarousel() {
     async function fetchVideos() {
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         const { data, error: fetchError } = await supabase
           .from('pitch_videos')
           .select('*')

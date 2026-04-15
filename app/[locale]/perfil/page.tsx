@@ -52,6 +52,7 @@ export default function ProfilePage() {
       }
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         
         const [favoritesRes, commentsRes, sharesRes] = await Promise.all([
           supabase.from("favorites").select("*", { count: "exact", head: true }).eq("user_id", user.id),
@@ -229,6 +230,7 @@ function ActivityTab({ userId }: { userId: string }) {
     const loadActivity = async () => {
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         
         const [shares, comments, likes, favorites] = await Promise.all([
           supabase.from("shares").select("created_at, platform").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
@@ -302,6 +304,7 @@ function CommentsTab() {
     const load = async () => {
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         const { data } = await supabase.auth.getUser();
         const userId = data.user?.id;
         if (!userId) {
@@ -360,6 +363,7 @@ function FavoritesTab() {
     const load = async () => {
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         const { data } = await supabase.auth.getUser();
         const userId = data.user?.id;
         if (!userId) {
@@ -441,6 +445,7 @@ function EditProfileModal({
     setSaving(true);
     try {
       const supabase = getSupabaseBrowserClient();
+      if (!supabase) return;
       const { data } = await supabase.auth.getUser();
       const userId = data.user?.id;
       if (!userId) return;

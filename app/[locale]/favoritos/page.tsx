@@ -26,6 +26,7 @@ export default function FavoritesPage() {
 
       try {
         const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
         
         const { data: favorites, error: favoritesError } = await supabase
           .from("favorites")

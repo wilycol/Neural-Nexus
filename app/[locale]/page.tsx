@@ -402,6 +402,7 @@ function NewsletterCard() {
               onClick={async () => {
                 try {
                   const supabase = getSupabaseBrowserClient();
+                  if (!supabase) return;
                   const { data } = await supabase.auth.getUser();
                   const userId = data.user?.id;
                   if (!userId) {

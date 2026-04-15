@@ -110,6 +110,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                       <button
                         onClick={async () => {
                           const supabase = getSupabaseBrowserClient();
+                          if (!supabase) return;
                           await supabase.auth.signOut();
                           window.location.href = "/";
                         }}
@@ -235,6 +236,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                   onClick={async () => {
                     try {
                       const supabase = getSupabaseBrowserClient();
+                      if (!supabase) return;
                       await supabase.auth.signOut();
                       window.location.href = "/";
                     } catch {}
