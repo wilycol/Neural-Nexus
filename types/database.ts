@@ -21,6 +21,7 @@ export interface Database {
           share_count: number;
           credits: number;
           role: 'user' | 'admin' | 'moderator';
+          affiliate_code: string | null;
         };
         Insert: {
           id?: string;
@@ -32,6 +33,7 @@ export interface Database {
           is_premium?: boolean;
           share_count?: number;
           role?: 'user' | 'admin' | 'moderator';
+          affiliate_code?: string | null;
         };
         Update: {
           id?: string;
@@ -43,6 +45,7 @@ export interface Database {
           is_premium?: boolean;
           share_count?: number;
           role?: 'user' | 'admin' | 'moderator';
+          affiliate_code?: string | null;
         };
         Relationships: [];
       };
@@ -653,6 +656,63 @@ export interface Database {
           title?: string;
           url?: string;
           category?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      client_sites: {
+        Row: {
+          id: string;
+          owner_id: string;
+          site_name: string;
+          site_url: string;
+          plan_type: string;
+          setup_status: 'pending_onboarding' | 'in_production' | 'active' | 'suspended';
+          niche: string | null;
+          beatriz_config: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          site_name: string;
+          site_url: string;
+          plan_type: string;
+          setup_status?: 'pending_onboarding' | 'in_production' | 'active' | 'suspended';
+          niche?: string | null;
+          beatriz_config?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          owner_id?: string;
+          site_name?: string;
+          site_url?: string;
+          plan_type?: string;
+          setup_status?: 'pending_onboarding' | 'in_production' | 'active' | 'suspended';
+          niche?: string | null;
+          beatriz_config?: Json | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      affiliate_referrals: {
+        Row: {
+          id: string;
+          referrer_id: string;
+          referred_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          referrer_id: string;
+          referred_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          referrer_id?: string;
+          referred_id?: string;
           created_at?: string;
         };
         Relationships: [];

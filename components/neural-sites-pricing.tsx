@@ -39,7 +39,7 @@ export function NeuralSitesPricing() {
     setIsModalOpen(true);
   };
 
-  const plans = [
+  const plans: { id: 'silver' | 'gold' | 'platinum'; name: string; priceUSD: string; priceCOP: string; image: string; features: string[]; color: string; glow: string; popular?: boolean }[] = [
     {
       id: 'silver',
       name: t('plans.silver'),

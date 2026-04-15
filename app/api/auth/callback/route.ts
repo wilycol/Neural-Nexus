@@ -13,11 +13,11 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('Auth Callback ERROR (Exchange):', error.message);
       return NextResponse.redirect(
-        `${requestUrl.origin}/?error=${encodeURIComponent(error.message)}`
+        `${requestUrl.origin}/login?error=${encodeURIComponent(error.message)}`
       );
     }
   }
 
-  // URL de retorno exitoso
+  // URL de retorno exitoso (Redirigir a la home)
   return NextResponse.redirect(requestUrl.origin);
 }

@@ -29,11 +29,11 @@ export async function GET(request: Request) {
       .from('subscriptions')
       .upsert({
         user_id: userId,
-        price_id: `price_${planName}`,
         status: 'active',
-        current_period_start: new Date().toISOString(),
-        current_period_end: expiresAt.toISOString(),
-        provider: 'wompi'
+        plan: sku.includes('YEARLY') ? 'yearly' : 'monthly',
+        started_at: new Date().toISOString(),
+        expires_at: expiresAt.toISOString(),
+        payment_method: 'wompi'
       });
 
     if (subError) throw subError;
