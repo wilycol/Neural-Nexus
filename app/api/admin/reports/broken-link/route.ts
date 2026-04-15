@@ -19,6 +19,7 @@ export async function POST(request: Request) {
 
     // 1. Verificar si ya existe un reporte reciente para esta noticia
     const { data: existing } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('admin_alerts' as any)
       .select('id')
       .eq('target_id', newsId)
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
 
     // 2. Insertar nueva alerta administrativa
     const { error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('admin_alerts' as any)
       .insert({
         type: 'link_broken',
