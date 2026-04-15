@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Search, Menu, X, User, Heart, LogOut } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -185,6 +186,11 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
 
           {/* Theme toggle */}
           <ThemeToggle />
+
+          {/* Language Switcher */}
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
+          </div>
 
           {/* Identity Alignment Badge (Subtle) */}
           <div className="hidden lg:flex items-center gap-2 px-2 py-1 rounded-full bg-neon-blue/5 border border-neon-blue/20 animate-pulse-slow">
