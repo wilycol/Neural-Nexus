@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase-server';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -12,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL('/es?error=missing_data', request.url));
   }
 
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = createServerClient();
 
   try {
     // 1. Determinar el plan y monto basado en el SKU
