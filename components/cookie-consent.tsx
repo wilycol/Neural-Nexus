@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { X, Cookie, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
