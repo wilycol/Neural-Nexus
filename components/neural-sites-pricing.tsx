@@ -11,7 +11,7 @@ import { getSupabaseBrowserClient } from '@/lib/supabase';
 
 export function NeuralSitesPricing() {
   const t = useTranslations('NeuralSites');
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<'silver' | 'gold' | 'platinum' | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [remainingSlots, setRemainingSlots] = useState(39);
   const supabase = getSupabaseBrowserClient();
@@ -34,7 +34,7 @@ export function NeuralSitesPricing() {
     fetchSlots();
   }, [supabase]);
 
-  const openCheckout = (plan: string) => {
+  const openCheckout = (plan: 'silver' | 'gold' | 'platinum') => {
     setSelectedPlan(plan);
     setIsModalOpen(true);
   };
@@ -155,7 +155,7 @@ export function NeuralSitesPricing() {
       <NeuralCheckoutModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        planId={selectedPlan as any} 
+        planId={selectedPlan || 'silver'} 
       />
     </section>
   );
