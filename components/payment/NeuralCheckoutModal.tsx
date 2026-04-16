@@ -47,6 +47,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const supabase = getSupabaseBrowserClient();
+
   useEffect(() => {
     const fetchUser = async () => {
       if (!supabase) return;
@@ -80,110 +81,144 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
     return baseUrl;
   };
 
+  const methods = [
+    { id: 'wompi', icon: CreditCard, label: t('method_credit'), color: 'text-cyan-400', glow: 'shadow-cyan-500/20' },
+    { id: 'nequi', icon: Smartphone, label: t('method_debit'), color: 'text-fuchsia-500', glow: 'shadow-fuchsia-600/20' },
+    { id: 'paypal', icon: Globe, label: 'PayPal', color: 'text-blue-500', glow: 'shadow-blue-600/20' },
+    { id: 'binance', icon: Coins, label: 'Binance Pay', color: 'text-yellow-500', glow: 'shadow-yellow-600/20' },
+  ] as const;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-xl border-primary/20 p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-2xl font-orbitron font-bold text-primary tracking-tight flex items-center gap-3">
-            <Sparkles className="h-6 w-6" /> {t('title')}
+      <DialogContent className="sm:max-w-[650px] bg-background/40 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,163,255,0.1)] scanline cyber-grid">
+        <DialogHeader className="p-8 pb-4 relative z-10">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-pulse" />
+          <DialogTitle className="text-3xl font-orbitron font-black text-primary tracking-[0.1em] flex items-center gap-4 uppercase italic">
+            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(255,255,255,0.17)]">
+              <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+            </div>
+            {t('title')}
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            {planId.toUpperCase()} Tier - Elige el componente a financiar
-          </DialogDescription>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="h-px flex-1 bg-gradient-to-r from-primary/50 to-transparent" />
+            <span className="text-[10px] font-orbitron font-bold text-muted-foreground uppercase tracking-widest bg-muted/30 px-2 py-0.5 rounded border border-border/50">
+              {planId} TIER / SECTOR: {paymentType === 'monthly' ? 'DURABILIDAD' : 'CONSTRUCCIÓN'}
+            </span>
+          </div>
         </DialogHeader>
 
-        <div className="px-6 mb-4">
+        <div className="px-8 mb-6 relative z-10">
           <Tabs defaultValue="monthly" className="w-full" onValueChange={(v) => setPaymentType(v as 'monthly' | 'setup')}>
-            <TabsList className="grid w-full grid-cols-2 bg-primary/10 border border-primary/20">
-              <TabsTrigger value="monthly" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground uppercase text-[10px] font-bold tracking-widest">
+            <TabsList className="grid w-full grid-cols-2 h-12 bg-black/40 border border-primary/20 p-1 rounded-xl">
+              <TabsTrigger 
+                value="monthly" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-orbitron text-[10px] font-black tracking-[0.2em] transition-all uppercase"
+              >
                 {t('pay_monthly')}
               </TabsTrigger>
-              <TabsTrigger value="setup" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground uppercase text-[10px] font-bold tracking-widest">
-                {t('pay_setup')} (50% OFF)
+              <TabsTrigger 
+                value="setup" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-orbitron text-[10px] font-black tracking-[0.2em] transition-all uppercase relative overflow-hidden group"
+              >
+                <span className="relative z-10">{t('pay_setup')}</span>
+                <span className="ml-2 text-[8px] bg-red-500/20 text-red-500 px-1 rounded animate-pulse border border-red-500/30">
+                  50% OFF
+                </span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        <div className="p-6 pt-2 h-[450px] flex flex-col">
+        <div className="p-8 pt-2 min-h-[480px] flex flex-col relative z-10">
           <AnimatePresence mode="wait">
             {!selectedMethod ? (
               <motion.div
                 key="methods"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-2 gap-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="grid grid-cols-2 gap-6"
               >
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col gap-2 border-primary/20 hover:border-primary hover:bg-primary/5 group relative overflow-hidden"
-                  onClick={() => handleMethodSelect('wompi')}
-                >
-                  <CreditCard className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
-                  <span className="text-xs font-semibold uppercase">{t('method_credit')}</span>
-                </Button>
+                {methods.map((method, idx) => (
+                  <motion.div
+                    key={method.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Button
+                      variant="outline"
+                      className={`w-full h-32 flex flex-col items-center justify-center gap-4 bg-black/20 backdrop-blur-sm border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 group relative overflow-hidden rounded-2xl ${method.glow}`}
+                      onClick={() => handleMethodSelect(method.id as any)}
+                    >
+                      <div className="absolute top-0 right-0 p-2 opacity-5 scale-150 rotate-12 group-hover:opacity-20 transition-all">
+                        <method.icon className="w-12 h-12" />
+                      </div>
+                      
+                      <div className={`p-3 rounded-2xl bg-black/40 border border-white/5 shadow-xl group-hover:scale-110 group-hover:bg-black/60 transition-all duration-500 ${method.color}`}>
+                        <method.icon className="w-8 h-8" />
+                      </div>
+                      
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-[10px] font-orbitron font-black uppercase tracking-[0.2em] text-foreground/90 group-hover:text-primary transition-colors">
+                          {method.label}
+                        </span>
+                        <div className="h-0.5 w-0 bg-primary group-hover:w-full transition-all duration-500" />
+                      </div>
 
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col gap-2 border-primary/20 hover:border-primary hover:bg-primary/5 group"
-                  onClick={() => handleMethodSelect('nequi')}
-                >
-                  <Smartphone className="w-8 h-8 text-[#E6007E] group-hover:scale-110 transition-transform" />
-                  <span className="text-xs font-semibold uppercase">{t('method_debit')}</span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col gap-2 border-primary/20 hover:border-primary hover:bg-primary/5 group"
-                  onClick={() => handleMethodSelect('paypal')}
-                >
-                  <Globe className="w-8 h-8 text-[#0070BA] group-hover:scale-110 transition-transform" />
-                  <span className="text-xs font-semibold uppercase">PayPal</span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col gap-2 border-primary/20 hover:border-primary hover:bg-primary/5 group"
-                  onClick={() => handleMethodSelect('binance')}
-                >
-                  <Coins className="w-8 h-8 text-[#F3BA2F] group-hover:scale-110 transition-transform" />
-                  <span className="text-xs font-semibold uppercase">Binance Pay</span>
-                </Button>
+                      {/* Laser edge detail */}
+                      <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-primary/40 opacity-0 group-hover:opacity-100 transition-all" />
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-primary/40 opacity-0 group-hover:opacity-100 transition-all" />
+                    </Button>
+                  </motion.div>
+                ))}
               </motion.div>
             ) : (
               <motion.div
                 key="iframe-container"
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex-1 relative bg-black/5 rounded-lg border border-primary/10 overflow-hidden"
+                className="flex-1 relative bg-black/40 rounded-2xl border border-primary/20 overflow-hidden shadow-2xl"
               >
                 {isLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10">
-                    <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-md z-10 font-orbitron">
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-full border-t-2 border-primary border-r-2 border-transparent animate-spin" />
+                      <div className="absolute inset-0 w-16 h-16 rounded-full border-b-2 border-primary/30 border-l-2 border-transparent animate-spin-reverse-slow" />
+                      <Sparkles className="absolute inset-0 m-auto h-6 w-6 text-primary animate-pulse" />
+                    </div>
+                    <p className="mt-4 text-[10px] uppercase tracking-[0.3em] font-black text-primary animate-pulse">
+                      ESTABLECIENDO ENLACE NEURAL
+                    </p>
                   </div>
                 )}
                 
-                <div className="absolute top-2 right-2 z-20">
+                <div className="absolute top-4 right-4 z-20">
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20"
+                    className="h-10 w-10 rounded-full bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-110 active:scale-95 transition-all text-white backdrop-blur-md"
                     onClick={() => setSelectedMethod(null)}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-5 h-5" />
                   </Button>
                 </div>
 
                 <iframe
                   src={getIframeUrl()}
-                  className="w-full h-full border-none bg-white"
+                  className="w-full h-full border-none bg-white/95"
                   title="Payment Gateway"
                   allow="payment"
                 />
               </motion.div>
             )}
           </AnimatePresence>
+
+          <footer className="mt-6 flex items-center justify-center gap-2 text-[8px] font-orbitron uppercase tracking-[0.3em] text-muted-foreground/40">
+            <div className="h-px w-8 bg-muted-foreground/20" />
+            CONEXIÓN SEGURA BINARIA 256-BIT
+            <div className="h-px w-8 bg-muted-foreground/20" />
+          </footer>
         </div>
       </DialogContent>
     </Dialog>
