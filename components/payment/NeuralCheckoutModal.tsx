@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -16,7 +15,6 @@ import {
   Smartphone, 
   Globe, 
   Coins, 
-  Loader2, 
   X 
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -149,7 +147,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
                     <Button
                       variant="outline"
                       className={`w-full h-32 flex flex-col items-center justify-center gap-4 bg-black/20 backdrop-blur-sm border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 group relative overflow-hidden rounded-2xl ${method.glow}`}
-                      onClick={() => handleMethodSelect(method.id as any)}
+                      onClick={() => handleMethodSelect(method.id)}
                     >
                       <div className="absolute top-0 right-0 p-2 opacity-5 scale-150 rotate-12 group-hover:opacity-20 transition-all">
                         <method.icon className="w-12 h-12" />
