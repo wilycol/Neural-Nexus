@@ -17,21 +17,6 @@ import { CookieConsent } from "@/components/cookie-consent";
 export const metadata: Metadata = {
   title: "Neural Nexus",
   description: "Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "32x32" },
-      { url: "/favicon.ico", sizes: "16x16" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
-    other: [
-      {
-        rel: "apple-touch-icon-precomposed",
-        url: "/favicon.ico",
-      },
-    ],
-  },
 };
 
 export default async function RootLayout({
