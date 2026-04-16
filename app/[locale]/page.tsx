@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { AICollaborators } from "@/components/ai-collaborators";
-import { NeuralSitesPricing } from "@/components/neural-sites-pricing";
 import {
   Dialog,
   DialogContent,

@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { 
-  Zap, 
   ArrowRight,
   ShieldCheck,
   Cpu,
@@ -12,10 +11,8 @@ import {
   Factory,
   Database,
   Cloud,
-  ChevronRight,
   ScanHeart
 } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

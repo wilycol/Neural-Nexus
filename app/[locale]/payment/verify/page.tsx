@@ -1,15 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 
 export default function PaymentVerifyPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const t = useTranslations('payment.verify');
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
 
   useEffect(() => {
