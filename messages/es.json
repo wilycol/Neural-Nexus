@@ -20,7 +20,14 @@
       "method_credit": "Tarjeta de Crédito / Nequi",
       "method_debit": "Botón de Pago Bancario",
       "method_crypto": "Binance Pay / Crypto",
-      "success_msg": "¡Pago detectado! Beatriz está encendiendo los motores..."
+      "success_msg": "¡Pago detectado! Beatriz está encendiendo los motores...",
+      "difficulty": {
+        "low": "Baja Complejidad",
+        "mid_low": "Complejidad Media-Baja",
+        "middle": "Complejidad Estándar",
+        "mid_high": "Alta Complejidad",
+        "high": "Máximo Nivel Industrial"
+      }
     },
     "onboarding": {
       "step1": "Tu Negocio",

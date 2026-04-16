@@ -40,9 +40,27 @@ export function PaymentModal({ isOpen, onClose, method, amount }: PaymentModalPr
 
       if (!response.ok) throw new Error(data.error || 'Error al procesar el pago');
 
-      // Redirigir a la pasarela
-      if (data.url) {
-        window.location.href = data.url;
+      // Redirigir a la pasarela (Wompi link estático si es portal o dinámico si es SaaS)
+      let finalUrl = data.url;
+      
+      if (method === 'wompi') {
+        // Si el precio es 4 USD y no hay URL del API, usamos el link estático de suscripción del portal
+        if (amount === 4 && !data.url) {
+          finalUrl = 'https://checkout.nequi.wompi.co/l/d91R8J';
+        } else if (!data.url) {
+          // Para donaciones u otros montos en el portal
+          finalUrl = 'https://checkout.nequi.wompi.co/l/tOKROV';
+        }
+      }
+
+      if (finalUrl) {
+        const url = new URL(finalUrl);
+        if (typeof window !== 'undefined') {
+          const ref = localStorage.getItem('neural_nexus_ref');
+          if (ref) url.searchParams.append('ref', ref);
+          url.searchParams.append('sku', amount === 4 ? 'NN-PRE-SUB' : 'NN-DON-POR');
+        }
+        window.location.href = url.toString();
       } else {
         setStatus('success');
       }

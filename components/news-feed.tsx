@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { NewsCard } from "@/components/news-card";
 import { InfiniteScroll } from "@/components/infinite-scroll";
 import { AdBanner } from "@/components/ad-banner";
+import { AdCard } from "@/components/ad-card";
 import { useInfiniteNews } from "@/hooks/use-infinite-news";
 import { toast } from "sonner";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
@@ -288,6 +289,12 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
             {(index + 1) % 4 === 0 && (
               <AdBanner 
                 slot={`feed-slot-${Math.floor(index / 4)}`} 
+                className="my-2"
+              />
+            )}
+            {(index + 1) % 3 === 0 && (
+              <AdCard 
+                slot={`industrial-ad-${Math.floor(index / 3)}`}
                 className="my-2"
               />
             )}

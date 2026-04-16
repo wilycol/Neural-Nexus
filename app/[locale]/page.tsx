@@ -63,9 +63,6 @@ export default function HomePage() {
         <AICollaborators />
       </section>
 
-      <section className="mb-12">
-        <NeuralSitesPricing />
-      </section>
 
       <section>
         <Tabs defaultValue="todas" className="w-full">

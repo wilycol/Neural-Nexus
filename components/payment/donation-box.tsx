@@ -86,19 +86,19 @@ export function DonationBox() {
         <div className="w-full grid grid-cols-2 gap-3">
           <Button 
             onClick={() => handleDonate('wompi')}
-            className="w-full bg-[#2D2D2D] hover:bg-[#3D3D3D] text-white border-none h-12"
+            className="w-full bg-[#2D2D2D] hover:bg-[#3D3D3D] text-white border-none h-12 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             disabled={!finalAmount || finalAmount <= 0}
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            Wompi
+            Nequi / PSE
           </Button>
           <Button 
             onClick={() => handleDonate('binance')}
-            className="w-full bg-[#f3ba2f] hover:bg-[#e2aa27] text-black border-none h-12"
+            className="w-full bg-[#f3ba2f] hover:bg-[#e2aa27] text-black border-none h-12 shadow-[0_0_15px_rgba(243,186,47,0.2)]"
             disabled={!finalAmount || finalAmount <= 0}
           >
             <Coins className="mr-2 h-4 w-4" />
-            Binance
+            Binance Pay
           </Button>
         </div>
         <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-orbitron opacity-50">
