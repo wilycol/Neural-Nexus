@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { 
@@ -89,6 +90,19 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[580px] bg-background/40 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,163,255,0.1)] scanline cyber-grid">
+        {/* Priority Close Button - Industrial Style */}
+        <div className="absolute top-4 right-4 z-[100]">
+          <DialogClose asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-110 active:scale-95 transition-all text-white backdrop-blur-md"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </DialogClose>
+        </div>
+
         <DialogHeader className="p-6 pb-2 relative z-10">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-pulse" />
           <DialogTitle className="text-2xl font-orbitron font-black text-primary tracking-[0.1em] flex items-center gap-4 uppercase italic">
