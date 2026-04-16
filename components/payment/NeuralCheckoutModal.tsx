@@ -88,80 +88,82 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[650px] bg-background/40 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,163,255,0.1)] scanline cyber-grid">
-        <DialogHeader className="p-8 pb-4 relative z-10">
+      <DialogContent className="sm:max-w-[580px] bg-background/40 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,163,255,0.1)] scanline cyber-grid">
+        <DialogHeader className="p-6 pb-2 relative z-10">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-pulse" />
-          <DialogTitle className="text-3xl font-orbitron font-black text-primary tracking-[0.1em] flex items-center gap-4 uppercase italic">
-            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(255,255,255,0.17)]">
-              <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+          <DialogTitle className="text-2xl font-orbitron font-black text-primary tracking-[0.1em] flex items-center gap-4 uppercase italic">
+            <div className="p-1.5 rounded-lg bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(255,255,255,0.17)]">
+              <Sparkles className="h-5 w-5 text-primary animate-pulse" />
             </div>
             {t('title')}
           </DialogTitle>
           <div className="mt-2 flex items-center gap-2">
             <div className="h-px flex-1 bg-gradient-to-r from-primary/50 to-transparent" />
-            <span className="text-[10px] font-orbitron font-bold text-muted-foreground uppercase tracking-widest bg-muted/30 px-2 py-0.5 rounded border border-border/50">
+            <span className="text-[9px] font-orbitron font-bold text-muted-foreground uppercase tracking-widest bg-muted/30 px-2 py-0.5 rounded border border-border/50">
               {planId} TIER / SECTOR: {paymentType === 'monthly' ? 'DURABILIDAD' : 'CONSTRUCCIÓN'}
             </span>
           </div>
         </DialogHeader>
 
-        <div className="px-8 mb-6 relative z-10">
+        <div className="px-6 mb-4 relative z-10">
           <Tabs defaultValue="monthly" className="w-full" onValueChange={(v) => setPaymentType(v as 'monthly' | 'setup')}>
-            <TabsList className="grid w-full grid-cols-2 h-12 bg-black/40 border border-primary/20 p-1 rounded-xl">
+            <TabsList className="grid w-full grid-cols-2 h-10 bg-black/40 border border-primary/20 p-1 rounded-xl">
               <TabsTrigger 
                 value="monthly" 
-                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-orbitron text-[10px] font-black tracking-[0.2em] transition-all uppercase"
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-orbitron text-[9px] font-black tracking-[0.1em] transition-all uppercase"
               >
                 {t('pay_monthly')}
               </TabsTrigger>
               <TabsTrigger 
                 value="setup" 
-                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-orbitron text-[10px] font-black tracking-[0.2em] transition-all uppercase relative overflow-hidden group"
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-orbitron text-[9px] font-black tracking-[0.05em] transition-all uppercase relative overflow-hidden group px-1"
               >
-                <span className="relative z-10">{t('pay_setup')}</span>
-                <span className="ml-2 text-[8px] bg-red-500/20 text-red-500 px-1 rounded animate-pulse border border-red-500/30">
-                  50% OFF
-                </span>
+                <div className="flex items-center gap-1">
+                  <span className="relative z-10 truncate">{t('pay_setup')}</span>
+                  <span className="shrink-0 text-[7px] bg-red-500/20 text-red-500 px-1 rounded animate-pulse border border-red-500/30">
+                    50% OFF
+                  </span>
+                </div>
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        <div className="p-8 pt-2 min-h-[480px] flex flex-col relative z-10">
+        <div className="p-6 pt-0 min-h-[420px] flex flex-col relative z-10">
           <AnimatePresence mode="wait">
             {!selectedMethod ? (
               <motion.div
                 key="methods"
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="grid grid-cols-2 gap-6"
+                exit={{ opacity: 0, x: 15 }}
+                className="grid grid-cols-2 gap-4"
               >
                 {methods.map((method, idx) => (
                   <motion.div
                     key={method.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: idx * 0.05 }}
                   >
                     <Button
                       variant="outline"
-                      className={`w-full h-32 flex flex-col items-center justify-center gap-4 bg-black/20 backdrop-blur-sm border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 group relative overflow-hidden rounded-2xl ${method.glow}`}
+                      className={`w-full h-28 flex flex-col items-center justify-center gap-3 bg-black/20 backdrop-blur-sm border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 group relative overflow-hidden rounded-2xl ${method.glow}`}
                       onClick={() => handleMethodSelect(method.id)}
                     >
-                      <div className="absolute top-0 right-0 p-2 opacity-5 scale-150 rotate-12 group-hover:opacity-20 transition-all">
-                        <method.icon className="w-12 h-12" />
+                      <div className="absolute top-0 right-0 p-1.5 opacity-5 scale-125 rotate-12 group-hover:opacity-15 transition-all">
+                        <method.icon className="w-10 h-10" />
                       </div>
                       
-                      <div className={`p-3 rounded-2xl bg-black/40 border border-white/5 shadow-xl group-hover:scale-110 group-hover:bg-black/60 transition-all duration-500 ${method.color}`}>
-                        <method.icon className="w-8 h-8" />
+                      <div className={`p-2.5 rounded-xl bg-black/40 border border-white/5 shadow-xl group-hover:scale-110 group-hover:bg-black/60 transition-all duration-500 ${method.color}`}>
+                        <method.icon className="w-7 h-7" />
                       </div>
                       
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-[10px] font-orbitron font-black uppercase tracking-[0.2em] text-foreground/90 group-hover:text-primary transition-colors">
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className="text-[9px] font-orbitron font-black uppercase tracking-[0.15em] text-foreground/90 group-hover:text-primary transition-colors">
                           {method.label}
                         </span>
-                        <div className="h-0.5 w-0 bg-primary group-hover:w-full transition-all duration-500" />
+                        <div className="h-px w-0 bg-primary group-hover:w-full transition-all duration-500" />
                       </div>
 
                       {/* Laser edge detail */}
