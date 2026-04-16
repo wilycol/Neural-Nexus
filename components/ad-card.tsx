@@ -3,13 +3,22 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Megaphone } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function AdCard() {
+interface AdCardProps {
+  className?: string;
+  slot?: string;
+}
+
+export function AdCard({ className, slot }: AdCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      className="relative overflow-hidden rounded-xl border border-neon-blue/20 bg-card/10 backdrop-blur-md p-6 min-h-[200px] flex flex-col items-center justify-center text-center group"
+      className={cn(
+        "relative overflow-hidden rounded-xl border border-neon-blue/20 bg-card/10 backdrop-blur-md p-6 min-h-[200px] flex flex-col items-center justify-center text-center group",
+        className
+      )}
     >
       {/* Cyber Grid Background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:20px_20px]"></div>
@@ -34,8 +43,8 @@ export function AdCard() {
         </div>
 
         {/* AdSense Placeholder */}
-        <div className="w-full h-[60px] border border-dashed border-muted-foreground/30 rounded-lg flex items-center justify-center text-[10px] text-muted-foreground/50 font-mono italic">
-          GOOGLE ADSENSE SLOT [AUTO-INJECTED]
+        <div className="w-full h-[60px] border border-dashed border-muted-foreground/30 rounded-lg flex items-center justify-center text-[10px] text-muted-foreground/50 font-mono italic px-2">
+          ADSENSE SLOT: {slot || "AUTO-INJECTED"}
         </div>
       </div>
 
