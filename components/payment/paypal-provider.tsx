@@ -8,9 +8,15 @@ interface PayPalProviderProps {
 }
 
 export function PayPalProvider({ children }: PayPalProviderProps) {
+  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+
+  if (!clientId) {
+    console.warn("[PayPal] Warning: NEXT_PUBLIC_PAYPAL_CLIENT_ID is missing.");
+  }
+
   return (
     <PayPalScriptProvider options={{ 
-      clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AZ-Q_K85b1l0mT2kl0rSDSkFvpoyzvHcV_Y4Xs-Vtwvkhsl8",
+      clientId: clientId || "",
       currency: "USD",
       intent: "capture"
     }}>

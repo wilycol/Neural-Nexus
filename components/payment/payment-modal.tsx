@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Loader2, AlertCircle, ChevronRight, X, Sparkles, DollarSign, CreditCard, ShieldCheck } from 'lucide-react';
-import { PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -31,6 +31,7 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
   const [customAmount, setCustomAmount] = useState<string>(initialAmount.toString());
   const [errorMessage, setErrorMessage] = useState('');
   const [finalUrl, setFinalUrl] = useState('');
+  const [{ isPending, isRejected }] = usePayPalScriptReducer();
 
   // Sincronizar estados cuando cambia el monto inicial o el método
   useEffect(() => {
@@ -221,51 +222,70 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
                   <p className="text-[10px] font-orbitron font-bold text-primary uppercase mb-1">Pasarela PayPal</p>
                   <p className="text-2xl font-black">${currentAmount.toFixed(2)} USD</p>
                 </div>
-                <div className="w-full max-w-sm min-h-[150px]">
-                  <PayPalButtons
-                    key={`${currentAmount}-${type}`}
-                    style={{ layout: 'vertical', shape: 'rect', label: type === 'subscription' ? 'subscribe' : 'donate' }}
-                    createOrder={(data, actions) => {
-                      if (currentAmount <= 0) {
-                        toast.error('El monto debe ser mayor a 0 para utilizar PayPal.');
-                        return Promise.reject(new Error('Invalid amount'));
-                      }
-                      return actions.order.create({
-                        intent: "CAPTURE",
-                        purchase_units: [{
-                          amount: { currency_code: "USD", value: currentAmount.toString() },
-                          description: type === 'subscription' ? 'Nexus Premium Subscription' : 'Neural Nexus Support Donation'
-                        }]
-                      });
-                    }}
-                    onError={(err) => {
-                      console.error('[PayPal Error]', err);
-                      toast.error('Error al cargar la pasarela de PayPal.');
-                    }}
-                    onApprove={async (data) => {
-                      setStatus('processing');
-                      try {
-                        const response = await fetch('/api/payments/paypal/capture', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ orderID: data.orderID, type: type })
+                
+                <div className="w-full max-w-sm min-h-[150px] relative flex flex-col items-center justify-center">
+                  {isPending && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm z-20 rounded-xl border border-white/5">
+                      <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
+                      <p className="text-[9px] font-orbitron font-black tracking-widest text-primary animate-pulse uppercase">Sincronizando Pasarela Industrial...</p>
+                    </div>
+                  )}
+
+                  {isRejected && (
+                    <div className="w-full p-6 rounded-xl border border-destructive/20 bg-destructive/5 flex flex-col items-center text-center">
+                      <AlertCircle className="h-10 w-10 text-destructive mb-3" />
+                      <p className="text-[10px] font-orbitron font-black text-destructive tracking-widest uppercase mb-1">Error de Conexión</p>
+                      <p className="text-[9px] text-muted-foreground uppercase leading-tight">No se pudo materializar la interfaz de pago. Verifica tu Client ID.</p>
+                    </div>
+                  )}
+
+                  {!isRejected && (
+                    <PayPalButtons
+                      key={`${currentAmount}-${type}`}
+                      style={{ layout: 'vertical', shape: 'rect', label: type === 'subscription' ? 'subscribe' : 'donate' }}
+                      createOrder={(data, actions) => {
+                        if (currentAmount <= 0) {
+                          toast.error('El monto debe ser mayor a 0 para utilizar PayPal.');
+                          return Promise.reject(new Error('Invalid amount'));
+                        }
+                        return actions.order.create({
+                          intent: "CAPTURE",
+                          purchase_units: [{
+                            amount: { currency_code: "USD", value: currentAmount.toString() },
+                            description: type === 'subscription' ? 'Nexus Premium Subscription' : 'Neural Nexus Support Donation'
+                          }]
                         });
-                        const result = await response.json();
-                        if (result.status === 'success') {
-                          toast.success('¡Operación Exitosa! Gracias por tu apoyo industrial.');
-                          onClose();
-                        } else {
-                          toast.error('Error en la base de datos.');
+                      }}
+                      onError={(err) => {
+                        console.error('[PayPal Error]', err);
+                        toast.error('Error al cargar la pasarela de PayPal.');
+                      }}
+                      onApprove={async (data) => {
+                        setStatus('processing');
+                        try {
+                          const response = await fetch('/api/payments/paypal/capture', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ orderID: data.orderID, type: type })
+                          });
+                          const result = await response.json();
+                          if (result.status === 'success') {
+                            toast.success('¡Operación Exitosa! Gracias por tu apoyo industrial.');
+                            onClose();
+                          } else {
+                            toast.error('Error en la base de datos.');
+                            setStatus('error');
+                          }
+                        } catch (err) {
+                          console.error('[PayPal Capture Catch]', err);
+                          toast.error('Fallo en sincronización.');
                           setStatus('error');
                         }
-                      } catch (err) {
-                        console.error('[PayPal Capture Catch]', err);
-                        toast.error('Fallo en sincronización.');
-                        setStatus('error');
-                      }
-                    }}
-                  />
+                      }}
+                    />
+                  )}
                 </div>
+                
                 <Button variant="ghost" size="sm" onClick={() => setStatus('selection')} className="mt-4 text-[9px] uppercase tracking-widest font-orbitron">
                   Volver a selección
                 </Button>
