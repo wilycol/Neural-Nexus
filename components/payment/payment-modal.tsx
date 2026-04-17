@@ -94,25 +94,24 @@ export function PaymentModal({ isOpen, onClose, method, amount }: PaymentModalPr
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent 
+        hideClose
         className={`${
           (status === 'iframe' || status === 'qr') 
             ? 'sm:max-w-2xl h-[700px] max-h-[90vh]' 
             : 'sm:max-w-[425px]'
         } bg-[#020817]/95 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-2xl transition-all duration-500`}
       >
-        {/* Botón de cierre superior para modos expansivos */}
-        {(status === 'iframe' || status === 'qr') && (
-          <div className="absolute top-4 right-4 z-[100]">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-9 w-9 rounded-full bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-110 active:scale-95 transition-all text-white backdrop-blur-md"
-              onClick={onClose}
-            >
-              <X className="w-5 h-5" />
-            </Button>
-          </div>
-        )}
+        {/* Botón de cierre superior persistente con alta prioridad */}
+        <div className="absolute top-4 right-4 z-[100]">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-9 w-9 rounded-full bg-white/5 border border-white/10 hover:bg-white/20 hover:scale-110 active:scale-95 transition-all text-white backdrop-blur-md"
+            onClick={onClose}
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
 
         <div className="p-6 h-full flex flex-col relative z-10">
           {/* Header (Oculto en iframe/qr para maximizar espacio) */}

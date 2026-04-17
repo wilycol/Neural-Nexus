@@ -136,7 +136,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] w-[95vw] bg-[#020817]/95 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,163,255,0.15)] ring-1 ring-white/10 cyber-grid">
+      <DialogContent hideClose className="sm:max-w-[500px] w-[95vw] bg-[#020817]/95 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,163,255,0.15)] ring-1 ring-white/10 cyber-grid">
         {/* Priority Close Button */}
         <div className="absolute top-4 right-4 z-[100]">
           <Button
