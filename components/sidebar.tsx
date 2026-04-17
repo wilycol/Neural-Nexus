@@ -7,7 +7,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import {
   Wrench,
   FileText,
-  Crown,
   LogOut,
   Video,
   Zap,
@@ -19,7 +18,6 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 import { primaryMenuItems, destacadosItems, userMenuItems, legalMenuItems } from "@/lib/nav-config";
-import { PremiumCard } from "@/components/premium-card";
 import { MissionWidget } from "@/components/mission-widget";
 import { DonationBox } from "@/components/payment/donation-box";
 import { calculateUserRank } from "@/lib/user-rankings";

@@ -126,7 +126,7 @@ export function DonationBox({ compact = false }: DonationBoxProps) {
                   ],
                 });
               }}
-              onApprove={async (data, actions) => {
+              onApprove={async (data) => {
                 try {
                   const response = await fetch('/api/payments/paypal/capture', {
                     method: 'POST',
@@ -249,7 +249,7 @@ export function DonationBox({ compact = false }: DonationBoxProps) {
                 ],
               });
             }}
-            onApprove={async (data, actions) => {
+            onApprove={async (data) => {
               try {
                 const response = await fetch('/api/payments/paypal/capture', {
                   method: 'POST',
