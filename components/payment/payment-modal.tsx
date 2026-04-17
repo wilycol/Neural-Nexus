@@ -172,21 +172,26 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
                 
                 <p className="text-[10px] font-orbitron font-bold text-muted-foreground uppercase tracking-widest text-center">Selecciona Método Industrial</p>
                 <div className="grid gap-3">
-                  <MethodButton 
-                    icon={<PayPalIcon />} 
-                    label="PayPal / Tarjeta" 
-                    onClick={() => { setSelectedMethod('paypal'); setStatus('idle'); }} 
-                  />
-                  <MethodButton 
-                    icon={<CreditCard className="h-4 w-4" />} 
-                    label="Nequi / Wompi" 
-                    onClick={() => { setSelectedMethod('wompi'); setStatus('idle'); }} 
-                  />
-                  <MethodButton 
-                    icon={<ShieldCheck className="h-4 w-4" />} 
-                    label="Binance Pay" 
-                    onClick={() => { setSelectedMethod('binance'); setStatus('idle'); }} 
-                  />
+                  {type === 'donation' ? (
+                    <MethodButton 
+                      icon={<PayPalIcon />} 
+                      label="PayPal / Tarjeta" 
+                      onClick={() => { setSelectedMethod('paypal'); setStatus('idle'); }} 
+                    />
+                  ) : (
+                    <>
+                      <MethodButton 
+                        icon={<CreditCard className="h-4 w-4" />} 
+                        label="Nequi / Wompi" 
+                        onClick={() => { setSelectedMethod('wompi'); setStatus('idle'); }} 
+                      />
+                      <MethodButton 
+                        icon={<ShieldCheck className="h-4 w-4" />} 
+                        label="Binance Pay" 
+                        onClick={() => { setSelectedMethod('binance'); setStatus('idle'); }} 
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             )}
