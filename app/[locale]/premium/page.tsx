@@ -62,7 +62,8 @@ export default function PremiumPage() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           method={selectedMethod}
-          amount={4.0} // Precio fijo de la suscripción
+          amount={4.0}
+          type="subscription"
         />
       </div>
     </div>

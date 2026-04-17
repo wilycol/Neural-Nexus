@@ -46,7 +46,7 @@ async function captureOrder(orderID: string) {
 
 export async function POST(request: Request) {
   try {
-    const { orderID, isAnonymous, donorName: manualDonorName } = await request.json();
+    const { orderID, isAnonymous, donorName: manualDonorName, type = 'donation' } = await request.json();
     
     // 1. Capturar el pago en PayPal
     const captureData = await captureOrder(orderID);
@@ -63,6 +63,7 @@ export async function POST(request: Request) {
     const currency = captureData.purchase_units[0].payments.captures[0].amount.currency_code;
     const donorName = manualDonorName || captureData.payer.name.given_name + " " + captureData.payer.name.surname;
 
+    // A. Registrar la donación/pago en el historial
     const { error: donationError } = await supabase
       .from("donations")
       .insert({
@@ -70,22 +71,34 @@ export async function POST(request: Request) {
         amount,
         currency,
         donor_name: donorName,
-        comment: isAnonymous ? "Donación Anónima" : null,
-        is_public: !isAnonymous,
+        comment: type === 'subscription' ? "Suscripción Premium" : (isAnonymous ? "Donación Anónima" : null),
+        is_public: type === 'subscription' ? false : !isAnonymous,
         provider: "paypal",
         transaction_id: captureData.id,
       });
 
     if (donationError) {
       console.error("Error saving donation:", donationError);
-      // No devolvemos error 500 porque el pago YA se capturó. Registramos el log.
+    }
+
+    // B. Si es suscripción, ACTIVAR PREMIUM instantáneamente
+    if (type === 'subscription' && user) {
+      console.log(`[PayPal] 🚀 Activando Premium para usuario: ${user.email}`);
+      const { error: premiumError } = await supabase
+        .from("users")
+        .update({ is_premium: true })
+        .eq("id", user.id);
+
+      if (premiumError) {
+        console.error("Error activating premium:", premiumError);
+      }
     }
 
     // 3. Respuesta industrial
     return NextResponse.json({ 
       status: "success", 
       id: captureData.id,
-      rank_upgrade: !isAnonymous && user ? true : false
+      rank_upgrade: type === 'subscription' ? true : (!isAnonymous && user ? true : false)
     });
 
   } catch (error: unknown) {

@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Heart, Coins, CreditCard, DollarSign } from 'lucide-react';
+import { Heart, Coins, CreditCard, DollarSign, Zap } from 'lucide-react';
 import { PaymentModal } from './payment-modal';
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from 'sonner';
@@ -21,6 +21,7 @@ export function DonationBox({ compact = false }: DonationBoxProps) {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [method, setMethod] = useState<'wompi' | 'binance' | 'paypal' | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentType, setPaymentType] = useState<'subscription' | 'donation'>('donation');
   const [rate, setRate] = useState<number>(0);
 
   const presets = [5, 10, 20, 50];
@@ -34,6 +35,7 @@ export function DonationBox({ compact = false }: DonationBoxProps) {
 
   const handleDonate = (selectedMethod: 'wompi' | 'binance') => {
     setMethod(selectedMethod);
+    setPaymentType('donation');
     setIsModalOpen(true);
   };
 
@@ -45,114 +47,66 @@ export function DonationBox({ compact = false }: DonationBoxProps) {
       <Card className="w-full border-neon-blue/20 bg-black/40 backdrop-blur-xl overflow-hidden relative group">
         <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/5 to-transparent opacity-50 pointer-events-none" />
         
-        <CardHeader className="p-4 pb-2 relative z-10">
+        <CardHeader className="p-4 pb-0 relative z-10">
           <div className="flex items-center gap-2 mb-1">
             <Heart className="h-4 w-4 text-primary animate-pulse" />
-            <CardTitle className="font-orbitron tracking-tighter text-sm uppercase">Apoyo Nexus</CardTitle>
+            <CardTitle className="font-orbitron tracking-tighter text-sm uppercase">Crecimiento Nexus</CardTitle>
           </div>
-          <CardDescription className="text-[10px] leading-tight">
-            Impulsa nuestra infraestructura de IA.
+          <CardDescription className="text-[10px] leading-tight font-exo">
+            Impulsa nuestra infraestructura y desbloquea el máximo potencial.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-4 pt-0 space-y-3 relative z-10">
-          <div className="grid grid-cols-4 gap-1">
-            {presets.map((preset) => (
-              <button
-                key={preset}
-                onClick={() => {
-                  setAmount(preset);
-                  setCustomAmount('');
-                }}
-                className={cn(
-                  "py-1 rounded-md text-[10px] font-bold border transition-all",
-                  amount === preset && !customAmount 
-                    ? "bg-primary text-primary-foreground border-primary" 
-                    : "bg-background/50 border-white/5 text-muted-foreground hover:border-white/20"
-                )}
-              >
-                ${preset}
-              </button>
-            ))}
-          </div>
-
-          <div className="relative">
-            <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-            <input
-              type="number"
-              placeholder="Otro"
-              className="w-full bg-background/50 border border-white/5 rounded-md py-1 pl-6 pr-2 text-[10px] outline-none focus:border-primary/50 transition-all font-exo"
-              value={customAmount}
-              onChange={(e) => setCustomAmount(e.target.value)}
-            />
-          </div>
-
-          <div className="flex items-center space-x-2 py-1">
-            <Checkbox 
-              id="anonymous-compact" 
-              checked={isAnonymous}
-              onCheckedChange={(checked) => setIsAnonymous(checked === true)}
-              className="h-3 w-3 border-white/20"
-            />
-            <label
-              htmlFor="anonymous-compact"
-              className="text-[9px] font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground uppercase tracking-widest"
+        <CardContent className="p-4 space-y-3 relative z-10">
+          {/* Opción Premium */}
+          <div className="space-y-2 p-3 rounded-lg bg-primary/5 border border-primary/10">
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center gap-1">
+                <Zap className="h-3 w-3 fill-current" />
+                Membresía Premium
+              </p>
+              <p className="text-[9px] text-muted-foreground leading-tight">
+                Sin anuncios, contenido Deep-Tech y acceso anticipado a Reels.
+              </p>
+            </div>
+            <Button 
+              size="sm" 
+              className="w-full h-8 text-[10px] font-black tracking-widest bg-primary hover:bg-primary/80 text-primary-foreground shadow-[0_0_10px_rgba(0,163,255,0.3)] transition-all hover:scale-[1.02]"
+              onClick={() => {
+                setAmount(4);
+                setPaymentType('subscription');
+                setMethod(null);
+                setIsModalOpen(true);
+              }}
             >
-              Donación Anónima
-            </label>
+              ACTIVAR PLAN ($4 USD)
+            </Button>
           </div>
 
-          <div className="space-y-1 pt-1">
-            <PayPalButtons
-              style={{ 
-                layout: 'horizontal',
-                color: 'blue',
-                shape: 'rect',
-                label: 'donate',
-                height: 32,
-                tagline: false
+          {/* Opción Donación */}
+          <div className="pt-1">
+            <Button 
+              variant="outline"
+              size="sm" 
+              className="w-full h-8 text-[10px] font-bold tracking-widest border-neon-blue/20 hover:bg-neon-blue/5 text-muted-foreground"
+              onClick={() => {
+                setAmount(10);
+                setPaymentType('donation');
+                setMethod(null);
+                setIsModalOpen(true);
               }}
-              createOrder={(data, actions) => {
-                return actions.order.create({
-                  intent: "CAPTURE",
-                  purchase_units: [
-                    {
-                      amount: {
-                        currency_code: "USD",
-                        value: finalAmount.toString(),
-                      },
-                      description: `Donación a Neural Nexus${isAnonymous ? ' (Anónima)' : ''}`
-                    },
-                  ],
-                });
-              }}
-              onApprove={async (data) => {
-                try {
-                  const response = await fetch('/api/payments/paypal/capture', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      orderID: data.orderID,
-                      isAnonymous: isAnonymous
-                    })
-                  });
-                  
-                  const result = await response.json();
-                  if (result.status === 'success') {
-                    toast.success('¡Gracias por tu apoyo industrial! Tu donación ha sido registrada.');
-                    if (result.rank_upgrade) {
-                      toast.info('¡Tu rango ha sido actualizado en la Sidebar!');
-                    }
-                  } else {
-                    toast.error('Hubo un problema al registrar la donación en el búnker.');
-                  }
-                } catch (err) {
-                  console.error('Capture error:', err);
-                  toast.error('Error crítico en la comunicación con PayPal.');
-                }
-              }}
-            />
+            >
+              HACER DONACIÓN LIBRE ❤️
+            </Button>
           </div>
+
+          <PaymentModal 
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            method={method}
+            amount={amount}
+            type={paymentType}
+          />
         </CardContent>
       </Card>
     );
