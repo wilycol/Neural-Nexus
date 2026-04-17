@@ -152,7 +152,7 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex-1 flex flex-col items-center justify-center w-full overflow-y-auto custom-scrollbar pt-2">
+          <div className={`flex-1 flex flex-col items-center ${selectedMethod === 'paypal' ? 'justify-start' : 'justify-center'} w-full overflow-y-auto custom-scrollbar pt-2 pb-6`}>
             {status === 'selection' && (
               <div className="w-full space-y-4">
                 {type === 'donation' && (
@@ -223,7 +223,7 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
                   <p className="text-2xl font-black">${currentAmount.toFixed(2)} USD</p>
                 </div>
                 
-                <div className="w-full max-w-sm min-h-[150px] relative flex flex-col items-center justify-center">
+                <div className="w-full max-w-md min-h-[150px] relative flex flex-col items-center justify-center pb-12">
                   {isPending && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm z-20 rounded-xl border border-white/5">
                       <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
