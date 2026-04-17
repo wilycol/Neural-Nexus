@@ -18,7 +18,7 @@ export function DonationBox({ compact = false }: DonationBoxProps) {
   const params = useParams();
   const locale = params.locale as string;
 
-  const [amount, setAmount] = useState<number>(10);
+  const [amount, setAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState<string>('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [rate, setRate] = useState<number>(0);

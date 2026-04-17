@@ -221,10 +221,15 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
                   <p className="text-[10px] font-orbitron font-bold text-primary uppercase mb-1">Pasarela PayPal</p>
                   <p className="text-2xl font-black">${currentAmount.toFixed(2)} USD</p>
                 </div>
-                <div className="w-full max-w-sm">
+                <div className="w-full max-w-sm min-h-[150px]">
                   <PayPalButtons
+                    key={`${currentAmount}-${type}`}
                     style={{ layout: 'vertical', shape: 'rect', label: type === 'subscription' ? 'subscribe' : 'donate' }}
                     createOrder={(data, actions) => {
+                      if (currentAmount <= 0) {
+                        toast.error('El monto debe ser mayor a 0 para utilizar PayPal.');
+                        return Promise.reject(new Error('Invalid amount'));
+                      }
                       return actions.order.create({
                         intent: "CAPTURE",
                         purchase_units: [{
@@ -232,6 +237,10 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
                           description: type === 'subscription' ? 'Nexus Premium Subscription' : 'Neural Nexus Support Donation'
                         }]
                       });
+                    }}
+                    onError={(err) => {
+                      console.error('[PayPal Error]', err);
+                      toast.error('Error al cargar la pasarela de PayPal.');
                     }}
                     onApprove={async (data) => {
                       setStatus('processing');
