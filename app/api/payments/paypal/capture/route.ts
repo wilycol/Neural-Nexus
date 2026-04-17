@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase-server";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
 const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
@@ -57,7 +56,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Registrar en Supabase
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     const amount = parseFloat(captureData.purchase_units[0].payments.captures[0].amount.value);
