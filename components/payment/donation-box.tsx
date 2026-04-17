@@ -33,9 +33,9 @@ export function DonationBox() {
 
   return (
     <Card className="w-full max-w-md mx-auto border-primary/20 bg-card/50 backdrop-blur-md overflow-hidden relative group">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       
-      <CardHeader className="text-center">
+      <CardHeader className="text-center relative z-10">
         <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
           <Heart className="h-6 w-6 text-primary animate-pulse" />
         </div>

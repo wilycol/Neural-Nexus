@@ -37,6 +37,7 @@ export function PaymentModal({ isOpen, onClose, method, amount }: PaymentModalPr
   }, [isOpen]);
 
   const handleProcessPayment = async () => {
+    console.log('[Payment] Iniciando proceso:', { method, amount });
     setStatus('processing');
     
     // Si es suscripción de 4 USD usamos el link directo verificado por el Comandante

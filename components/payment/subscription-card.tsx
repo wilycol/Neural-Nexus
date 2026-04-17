@@ -33,7 +33,7 @@ export function SubscriptionCard({ onSubscribe, className }: SubscriptionCardPro
   return (
     <Card className={cn(
       "relative overflow-hidden border-primary/20 bg-card/50 backdrop-blur-xl transition-all hover:border-primary/40 group",
-      "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/10 before:to-purple-500/10 before:opacity-0 before:transition-opacity hover:before:opacity-100",
+      "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/10 before:to-purple-500/10 before:opacity-0 before:transition-opacity hover:before:opacity-100 before:pointer-events-none",
       className
     )}>
       {/* Badge de "Más Popular" o "Cyberpunk" */}
@@ -44,7 +44,7 @@ export function SubscriptionCard({ onSubscribe, className }: SubscriptionCardPro
         </span>
       </div>
 
-      <CardHeader className="text-center pb-2">
+      <CardHeader className="text-center pb-2 relative z-10">
         <CardTitle className="font-orbitron text-2xl tracking-tight gradient-text">
           Nexus Premium
         </CardTitle>
@@ -53,7 +53,7 @@ export function SubscriptionCard({ onSubscribe, className }: SubscriptionCardPro
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6 pt-4">
+      <CardContent className="space-y-6 pt-4 relative z-10">
         <div className="flex flex-col items-center justify-center space-y-1">
           <div className="flex items-baseline gap-1">
             <span className="text-4xl font-black tracking-tighter">$4.00</span>
@@ -80,7 +80,7 @@ export function SubscriptionCard({ onSubscribe, className }: SubscriptionCardPro
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-3 pt-6">
+      <CardFooter className="flex flex-col gap-3 pt-6 relative z-10">
         <Button 
           onClick={() => onSubscribe('wompi')}
           className="w-full font-bold h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_15px_-3px_rgba(0,0,0,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98]"
