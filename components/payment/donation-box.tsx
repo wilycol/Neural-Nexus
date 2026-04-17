@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Heart, Coins, CreditCard, DollarSign, Zap } from 'lucide-react';
-import { PaymentModal } from './payment-modal';
+import { Heart, DollarSign } from 'lucide-react';
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 import { useRouter, useParams } from 'next/navigation';
 
@@ -25,9 +23,6 @@ export function DonationBox({ compact = false }: DonationBoxProps) {
   const [amount, setAmount] = useState<number>(10);
   const [customAmount, setCustomAmount] = useState<string>('');
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [method, setMethod] = useState<'wompi' | 'binance' | 'paypal' | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [paymentType, setPaymentType] = useState<'subscription' | 'donation'>('donation');
   const [rate, setRate] = useState<number>(0);
 
   const presets = [5, 10, 20, 50];

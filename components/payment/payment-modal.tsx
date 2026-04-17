@@ -10,11 +10,11 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2, AlertCircle, ChevronRight, X, Sparkles, Coins, DollarSign, Heart, CreditCard, ShieldCheck } from 'lucide-react';
+import { Loader2, AlertCircle, ChevronRight, X, Sparkles, DollarSign, CreditCard, ShieldCheck } from 'lucide-react';
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -250,6 +250,7 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
                           setStatus('error');
                         }
                       } catch (err) {
+                        console.error('[PayPal Capture Catch]', err);
                         toast.error('Fallo en sincronización.');
                         setStatus('error');
                       }
@@ -278,7 +279,14 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
             {status === 'qr' && (
                <div className="w-full h-full flex flex-col items-center justify-center space-y-8 py-10">
                  <div className="relative p-3 rounded-[2.5rem] bg-white border-4 border-yellow-500/50">
-                   <img src="/assets/binance-premium-4usdt.jpg" alt="Binance QR" className="w-[300px] h-auto rounded-[2rem]" />
+                   <div className="relative w-[300px] aspect-[3/4] rounded-[2rem] overflow-hidden">
+                     <Image 
+                       src="/assets/binance-premium-4usdt.jpg" 
+                       alt="Binance QR" 
+                       fill 
+                       className="object-contain" 
+                     />
+                   </div>
                  </div>
                  <div className="text-center space-y-2">
                    <p className="text-yellow-500 font-orbitron text-[10px] font-black tracking-widest">BINANCE PAY ELITE</p>
