@@ -21,6 +21,8 @@ import { getSupabaseBrowserClient } from "@/lib/supabase-client";
 import { primaryMenuItems, destacadosItems, userMenuItems, legalMenuItems } from "@/lib/nav-config";
 import { PremiumCard } from "@/components/premium-card";
 import { MissionWidget } from "@/components/mission-widget";
+import { DonationBox } from "@/components/payment/donation-box";
+import { calculateUserRank } from "@/lib/user-rankings";
 
 interface SidebarProps {
   isLoggedIn?: boolean;
@@ -28,6 +30,7 @@ interface SidebarProps {
     nickname: string;
     avatar_url?: string;
     is_premium?: boolean;
+    share_count?: number;
   } | null;
   onLogout?: () => void;
 }
@@ -44,8 +47,16 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
   const user = manualUser || (isLoggedIn ? { 
     nickname: profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0] || "usuario", 
     avatar_url: profile?.avatar_url || authUser?.user_metadata?.avatar_url || undefined, 
-    is_premium: authIsPremium 
+    is_premium: authIsPremium,
+    share_count: profile?.share_count || 0
   } : null);
+
+  // Calcular rango industrial
+  const userRank = calculateUserRank(
+    user?.is_premium,
+    user?.share_count,
+    0 // TODO: Integrar totalDonated real en el futuro
+  );
   
   const handleLogout = async () => {
     if (manualOnLogout) {
@@ -233,14 +244,20 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
 
       {/* Bottom section */}
       <div className="p-4 space-y-4">
-        {/* Premium button */}
-        {!user?.is_premium && (
-          <PremiumCard />
+        {/* DonationBox (Compacta por Beatriz) */}
+        {!user?.is_premium ? (
+          <DonationBox compact />
+        ) : (
+          <div className="p-3 rounded-lg bg-neon-purple/5 border border-neon-purple/20">
+            <p className="text-[10px] text-neon-purple uppercase font-black tracking-widest text-center">
+              🚀 Portal de Élite Activo
+            </p>
+          </div>
         )}
 
         {/* User section */}
-        {isLoggedIn && user ? (
-          <div className="flex items-center gap-3 rounded-lg border p-3">
+        {isLoggedIn && user && (
+          <div className="flex items-center gap-3 rounded-lg border p-3 bg-secondary/20">
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-xs font-bold overflow-hidden shrink-0">
               {user.avatar_url ? (
                 <Image 
@@ -256,36 +273,17 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{user.nickname}</p>
-              {user.is_premium && (
-                <p className="text-xs text-neon-purple flex items-center gap-1">
-                  <Crown className="h-3 w-3" />
-                  Premium
-                </p>
-              )}
+              <p className={cn("text-[9px] tracking-tighter", userRank.className)}>
+                {userRank.title}
+              </p>
             </div>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 hover:text-destructive transition-colors"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <Button
-              variant="outline"
-              className="w-full"
-              asChild
-            >
-              <Link href="/login">Iniciar sesión</Link>
-            </Button>
-            <Button
-              className="w-full bg-gradient-to-r from-neon-blue to-neon-purple text-white hover:opacity-90"
-              asChild
-            >
-              <Link href="/registro">Crear cuenta</Link>
             </Button>
           </div>
         )}

@@ -1,12 +1,10 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { Trophy, Star, Heart, User } from 'lucide-react';
+import { Trophy, Star, Heart, User as UserIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSupabaseBrowserClient } from '@/lib/supabase-client';
 import type { Database } from '@/types/database';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { cn } from '@/lib/utils';
+import { calculateUserRank } from '@/lib/user-rankings';
 
 interface Donation {
   id: string;
@@ -111,10 +109,13 @@ function DonationItem({ donation, index }: { donation: Donation, index: number }
   // Animación suave basada en el índice
   const isTopDonor = index < 3;
   
+  // Calcular rango basado en la donación actual (simplificado para el muro)
+  const donorRank = calculateUserRank(false, 0, donation.amount);
+  
   return (
     <Card className={cn(
       "relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]",
-      isTopDonor ? "border-primary/40 bg-primary/5" : "border-border/50 bg-card/30"
+      isTopDonor ? "border-primary/40 bg-primary/5 shadow-[0_0_20px_rgba(255,215,0,0.05)]" : "border-border/50 bg-card/30"
     )}>
       {isTopDonor && (
         <div className="absolute -right-2 -top-2">
@@ -127,14 +128,14 @@ function DonationItem({ donation, index }: { donation: Donation, index: number }
           "h-10 w-10 rounded-full flex items-center justify-center border",
           isTopDonor ? "bg-primary/20 border-primary/40" : "bg-muted border-border"
         )}>
-          <User className="h-5 w-5" />
+          <UserIcon className="h-5 w-5" />
         </div>
         <div className="flex flex-col">
           <CardTitle className="text-sm font-bold truncate max-w-[150px]">
             {donation.donor_name}
           </CardTitle>
-          <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
-            {new Date(donation.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}
+          <span className={cn("text-[8px] font-black uppercase tracking-wider", donorRank.className)}>
+            {donorRank.title}
           </span>
         </div>
       </CardHeader>
@@ -149,11 +150,9 @@ function DonationItem({ donation, index }: { donation: Donation, index: number }
           <div className="text-xs font-exo font-bold text-primary px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
             {donation.amount} {donation.currency}
           </div>
-          {isTopDonor && (
-            <span className="text-[10px] bg-yellow-500/10 text-yellow-500 font-bold px-2 py-0.5 rounded-full">
-              Pionero
-            </span>
-          )}
+          <span className="text-[10px] text-muted-foreground font-mono opacity-50">
+            {new Date(donation.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}
+          </span>
         </div>
       </CardContent>
     </Card>
