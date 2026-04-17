@@ -43,7 +43,7 @@ export default function NeuralSitesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
       {/* Background Decor - Industrial Glows */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-neon-blue/20 blur-[150px] rounded-full animate-pulse" />

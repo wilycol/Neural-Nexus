@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { MascotOverlay } from "@/components/mascot-overlay";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { StatsTracker } from "@/components/stats-tracker";
 import { AffiliateTracker } from "@/components/affiliate-tracker";
 import { NextIntlClientProvider } from 'next-intl';
@@ -62,6 +63,7 @@ export default async function RootLayout({
               </div>
             </div>
             
+            <ScrollToTop />
             <MascotOverlay />
             <CookieConsent />
             <Toaster position="bottom-right" richColors />
