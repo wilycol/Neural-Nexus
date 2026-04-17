@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { createServerClient, createSupabaseAdmin } from "@/lib/supabase-server";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
