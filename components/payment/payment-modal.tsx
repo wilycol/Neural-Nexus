@@ -124,9 +124,9 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
         hideClose
         className={`${
           (status === 'iframe' || status === 'qr' || (status === 'idle' && selectedMethod === 'paypal')) 
-            ? 'sm:max-w-2xl h-[700px] max-h-[90vh]' 
-            : 'sm:max-w-[425px]'
-        } bg-[#020817]/95 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-2xl transition-all duration-500`}
+            ? 'sm:max-w-2xl h-auto max-h-[92vh] overflow-y-auto custom-scrollbar' 
+            : 'sm:max-w-[425px] overflow-hidden'
+        } bg-[#020817]/98 backdrop-blur-3xl border-primary/20 p-0 shadow-2xl transition-all duration-500`}
       >
         <div className="absolute top-4 right-4 z-[100]">
           <Button
@@ -139,7 +139,7 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
           </Button>
         </div>
 
-        <div className="p-6 h-full flex flex-col relative z-10">
+        <div className={`p-6 ${status === 'idle' && selectedMethod === 'paypal' ? 'min-h-0' : 'h-full'} flex flex-col relative z-10`}>
           <DialogHeader className={(status === 'iframe' || status === 'qr' || (status === 'idle' && selectedMethod === 'paypal')) ? 'hidden' : 'pb-4'}>
             <DialogTitle className="font-orbitron text-xl gradient-text flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary animate-pulse" />
@@ -152,7 +152,7 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
             </DialogDescription>
           </DialogHeader>
 
-          <div className={`flex-1 flex flex-col items-center ${selectedMethod === 'paypal' ? 'justify-start' : 'justify-center'} w-full overflow-y-auto custom-scrollbar pt-2 pb-6`}>
+          <div className={`flex-1 flex flex-col items-center ${selectedMethod === 'paypal' ? 'justify-start min-h-0' : 'justify-center'} w-full pt-2 pb-6`}>
             {status === 'selection' && (
               <div className="w-full space-y-4">
                 {type === 'donation' && (
@@ -223,67 +223,71 @@ export function PaymentModal({ isOpen, onClose, method: initialMethod, amount: i
                   <p className="text-2xl font-black">${currentAmount.toFixed(2)} USD</p>
                 </div>
                 
-                <div className="w-full max-w-md min-h-[150px] relative flex flex-col items-center justify-center pb-12">
-                  {isPending && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm z-20 rounded-xl border border-white/5">
-                      <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                      <p className="text-[9px] font-orbitron font-black tracking-widest text-primary animate-pulse uppercase">Sincronizando Pasarela Industrial...</p>
-                    </div>
-                  )}
+                <div className="w-full max-w-md relative flex flex-col items-center justify-center pb-12">
+                  <div className="w-full bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-2xl overflow-hidden mb-4">
+                    {isPending && (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
+                        <p className="text-[9px] font-orbitron font-black tracking-widest text-primary animate-pulse uppercase">Sincronizando Pasarela...</p>
+                      </div>
+                    )}
 
-                  {isRejected && (
-                    <div className="w-full p-6 rounded-xl border border-destructive/20 bg-destructive/5 flex flex-col items-center text-center">
-                      <AlertCircle className="h-10 w-10 text-destructive mb-3" />
-                      <p className="text-[10px] font-orbitron font-black text-destructive tracking-widest uppercase mb-1">Error de Conexión</p>
-                      <p className="text-[9px] text-muted-foreground uppercase leading-tight">No se pudo materializar la interfaz de pago. Verifica tu Client ID.</p>
-                    </div>
-                  )}
+                    {isRejected && (
+                      <div className="w-full py-10 flex flex-col items-center text-center">
+                        <AlertCircle className="h-10 w-10 text-destructive mb-3" />
+                        <p className="text-[10px] font-orbitron font-black text-destructive tracking-widest uppercase mb-1">Error de Conexión</p>
+                        <p className="text-[9px] text-muted-foreground uppercase leading-tight">Credenciales inválidas detectadas.</p>
+                      </div>
+                    )}
 
-                  {!isRejected && (
-                    <PayPalButtons
-                      key={`${currentAmount}-${type}`}
-                      style={{ layout: 'vertical', shape: 'rect', label: type === 'subscription' ? 'subscribe' : 'donate' }}
-                      createOrder={(data, actions) => {
-                        if (currentAmount <= 0) {
-                          toast.error('El monto debe ser mayor a 0 para utilizar PayPal.');
-                          return Promise.reject(new Error('Invalid amount'));
-                        }
-                        return actions.order.create({
-                          intent: "CAPTURE",
-                          purchase_units: [{
-                            amount: { currency_code: "USD", value: currentAmount.toString() },
-                            description: type === 'subscription' ? 'Nexus Premium Subscription' : 'Neural Nexus Support Donation'
-                          }]
-                        });
-                      }}
-                      onError={(err) => {
-                        console.error('[PayPal Error]', err);
-                        toast.error('Error al cargar la pasarela de PayPal.');
-                      }}
-                      onApprove={async (data) => {
-                        setStatus('processing');
-                        try {
-                          const response = await fetch('/api/payments/paypal/capture', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ orderID: data.orderID, type: type })
-                          });
-                          const result = await response.json();
-                          if (result.status === 'success') {
-                            toast.success('¡Operación Exitosa! Gracias por tu apoyo industrial.');
-                            onClose();
-                          } else {
-                            toast.error('Error en la base de datos.');
-                            setStatus('error');
-                          }
-                        } catch (err) {
-                          console.error('[PayPal Capture Catch]', err);
-                          toast.error('Fallo en sincronización.');
-                          setStatus('error');
-                        }
-                      }}
-                    />
-                  )}
+                    {!isRejected && (
+                      <div className={isPending ? 'hidden' : 'block'}>
+                        <PayPalButtons
+                          key={`${currentAmount}-${type}`}
+                          style={{ layout: 'vertical', shape: 'rect', label: type === 'subscription' ? 'subscribe' : 'donate' }}
+                          createOrder={(data, actions) => {
+                            if (currentAmount <= 0) {
+                              toast.error('El monto debe ser mayor a 0.');
+                              return Promise.reject(new Error('Invalid amount'));
+                            }
+                            return actions.order.create({
+                              intent: "CAPTURE",
+                              purchase_units: [{
+                                amount: { currency_code: "USD", value: currentAmount.toString() },
+                                description: type === 'subscription' ? 'Nexus Premium Subscription' : 'Neural Nexus Support Donation'
+                              }]
+                            });
+                          }}
+                          onError={(err) => {
+                            console.error('[PayPal Error]', err);
+                            toast.error('Fallo en la pasarela.');
+                          }}
+                          onApprove={async (data) => {
+                            setStatus('processing');
+                            try {
+                              const response = await fetch('/api/payments/paypal/capture', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ orderID: data.orderID, type: type })
+                              });
+                              const result = await response.json();
+                              if (result.status === 'success') {
+                                toast.success('¡Operación Exitosa! Gracias por tu apoyo.');
+                                onClose();
+                              } else {
+                                toast.error('Error en base de datos.');
+                                setStatus('error');
+                              }
+                            } catch (err) {
+                              console.error('[PayPal Capture Catch]', err);
+                              toast.error('Fallo en sincronización.');
+                              setStatus('error');
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <Button variant="ghost" size="sm" onClick={() => setStatus('selection')} className="mt-4 text-[9px] uppercase tracking-widest font-orbitron">
