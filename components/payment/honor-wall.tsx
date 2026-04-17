@@ -1,3 +1,6 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { Trophy, Star, Heart, User as UserIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSupabaseBrowserClient } from '@/lib/supabase-client';
