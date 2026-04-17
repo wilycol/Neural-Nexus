@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase-server";
+import { createServerClient, createSupabaseAdmin } from "@/lib/supabase-server";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
 const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
-const PAYPAL_API = "https://api-m.sandbox.paypal.com"; // Usamos sandbox por defecto según las credenciales del usuario
+const PAYPAL_ENV = process.env.PAYPAL_ENV || 'sandbox';
+const PAYPAL_API = PAYPAL_ENV === 'live' 
+  ? "https://api-m.paypal.com" 
+  : "https://api-m.sandbox.paypal.com";
 
 /**
  * Genera el token de acceso de PayPal
@@ -55,16 +57,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Payment not completed" }, { status: 400 });
     }
 
-    // 2. Registrar en Supabase
+    // 2. Registrar en Supabase con privilegios elevados para evitar bloqueos de RLS en visitantes
     const supabase = createServerClient();
+    const supabaseAdmin = createSupabaseAdmin();
     const { data: { user } } = await supabase.auth.getUser();
 
     const amount = parseFloat(captureData.purchase_units[0].payments.captures[0].amount.value);
     const currency = captureData.purchase_units[0].payments.captures[0].amount.currency_code;
     const donorName = manualDonorName || captureData.payer.name.given_name + " " + captureData.payer.name.surname;
 
-    // A. Registrar la donación/pago en el historial
-    const { error: donationError } = await supabase
+    // A. Registrar la donación/pago en el historial (Usando admin para asegurar el registro)
+    const { error: donationError } = await supabaseAdmin
       .from("donations")
       .insert({
         user_id: user?.id || null,
@@ -78,13 +81,14 @@ export async function POST(request: Request) {
       });
 
     if (donationError) {
-      console.error("Error saving donation:", donationError);
+      console.error("Error saving donation (Supabase Error):", donationError);
+      // Opcional: Podrías querer lanzar un error aquí para que el frontend sepa que falló el registro
     }
 
-    // B. Si es suscripción, ACTIVAR PREMIUM instantáneamente
+    // B. Si es suscripción, ACTIVAR PREMIUM instantáneamente (Usando admin)
     if (type === 'subscription' && user) {
       console.log(`[PayPal] 🚀 Activando Premium para usuario: ${user.email}`);
-      const { error: premiumError } = await supabase
+      const { error: premiumError } = await supabaseAdmin
         .from("users")
         .update({ is_premium: true })
         .eq("id", user.id);
