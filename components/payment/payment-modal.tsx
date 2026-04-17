@@ -10,7 +10,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2, AlertCircle, CheckCircle2, ChevronRight, X, Sparkles, Coins } from 'lucide-react';
+import { Loader2, AlertCircle, ChevronRight, X, Sparkles, Coins } from 'lucide-react';
 
 interface PaymentModalProps {
   isOpen: boolean;
