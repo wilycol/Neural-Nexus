@@ -132,8 +132,8 @@ export default function NeuralSitesPage() {
             La mayoría de las páginas web mueren después de crearse.
           </h2>
           <p className="text-xl text-white/60 leading-relaxed italic">
-            "No hay contenido nuevo. No hay tráfico. No hay resultados. <br/>
-            <span className="text-neon-blue font-bold">Una web sin contenido es invisible.</span>"
+            &quot;No hay contenido nuevo. No hay tráfico. No hay resultados. <br/>
+            <span className="text-neon-blue font-bold">Una web sin contenido es invisible.</span>&quot;
           </p>
         </section>
 
