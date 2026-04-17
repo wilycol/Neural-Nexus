@@ -223,7 +223,7 @@ export function PaymentModal({ isOpen, onClose, method, amount }: PaymentModalPr
                 </Button>
                 <Button 
                   onClick={handleProcessPayment} 
-                  className="font-orbitron text-[10px] font-black tracking-widest bg-primary hover:bg-primary/80 text-white shadow-[0_0_15px_rgba(0,163,255,0.4)]"
+                  className="font-orbitron text-[10px] font-black tracking-widest bg-primary hover:bg-primary/80 text-primary-foreground shadow-[0_0_15px_rgba(0,163,255,0.4)]"
                 >
                   ESTABLECER CONEXIÓN
                 </Button>

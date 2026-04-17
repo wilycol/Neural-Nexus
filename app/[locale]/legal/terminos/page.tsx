@@ -34,7 +34,10 @@ export default function TermsPage() {
       <section>
         <h3 className="text-xl font-bold text-foreground">Suscripciones y Pagos</h3>
         <p className="mt-2 text-muted-foreground">
-          Las suscripciones Premium otorgan acceso a una experiencia sin anuncios. Los pagos son gestionados por procesadores externos (Stripe/PayPal), por lo que Neural Nexus no almacena datos bancarios ni de tarjetas de crédito.
+          Al suscribirse a Nexus Premium, usted acepta los presentes términos de servicio. Las suscripciones otorgan acceso a una experiencia sin anuncios y funciones exclusivas de IA. Ofrecemos una política de <strong>cancelación fácil en cualquier momento</strong> desde su perfil de usuario o contactando a soporte.
+        </p>
+        <p className="mt-2 text-xs text-muted-foreground italic">
+          Los pagos son gestionados por procesadores externos seguros, por lo que Neural Nexus no almacena datos bancarios ni de tarjetas directamente.
         </p>
       </section>
 
