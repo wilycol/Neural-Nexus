@@ -10,7 +10,7 @@ import { StatsTracker } from "@/components/stats-tracker";
 import { AffiliateTracker } from "@/components/affiliate-tracker";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { PayPalProvider } from "@/components/payment/paypal-provider";
 import "./globals.css";
 
 import { Metadata } from "next";
@@ -39,11 +39,7 @@ export default async function RootLayout({
       </head>
       <body className="font-exo antialiased">
         <NextIntlClientProvider messages={messages}>
-          <PayPalScriptProvider options={{ 
-            clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AZ-Q_K85b1l0mT2kl0rSDSkFvpoyzvHcV_Y4Xs-Vtwvkhsl8",
-            currency: "USD",
-            intent: "capture"
-          }}>
+          <PayPalProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -75,7 +71,7 @@ export default async function RootLayout({
               <Toaster position="bottom-right" richColors />
               <Analytics />
             </ThemeProvider>
-          </PayPalScriptProvider>
+          </PayPalProvider>
         </NextIntlClientProvider>
       </body>
     </html>
