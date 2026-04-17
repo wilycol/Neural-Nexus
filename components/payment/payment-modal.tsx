@@ -39,60 +39,48 @@ export function PaymentModal({ isOpen, onClose, method, amount }: PaymentModalPr
   const handleProcessPayment = async () => {
     setStatus('processing');
     
-    // Si es suscripción de 4 USD usamos fallbacks directos por confiabilidad
+    // Si es suscripción de 4 USD usamos el link directo verificado por el Comandante
     const isPremiumSub = amount === 4;
 
     try {
-      // Especial para Binance 4 USDT (Mostrar QR en lugar de redirigir)
+      // Especial para Binance 4 USDT
       if (method === 'binance' && isPremiumSub) {
-        setTimeout(() => setStatus('qr'), 1000);
+        setTimeout(() => setStatus('qr'), 600);
         return;
       }
 
-      const endpoint = method === 'wompi' 
-        ? '/api/payments/wompi/create-link' 
-        : '/api/payments/binance/create-order';
-
-      let data: { url?: string; error?: string } = {};
-      
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount, type: 'subscription' })
-        });
-        
-        if (response.ok) {
-          data = await response.json();
-        }
-      } catch (e) {
-        console.warn("API Error, attempting static connection...", e);
-      }
-
-      let url = data.url;
-      
-      // Fallback para Wompi 4 USD (Referencia directa según Beatriz)
-      if (method === 'wompi' && !url && isPremiumSub) {
-        url = 'https://checkout.nequi.wompi.co/l/d91R8J';
-      }
-
-      if (url) {
+      // Si es Wompi/Nequi y es el plan Premium, saltamos la API para evitar latencias
+      if (method === 'wompi' && isPremiumSub) {
+        const url = 'https://checkout.nequi.wompi.co/l/d91R8J';
         const urlObj = new URL(url);
         if (typeof window !== 'undefined') {
           const ref = localStorage.getItem('neural_nexus_ref');
           if (ref) urlObj.searchParams.append('ref', ref);
-          urlObj.searchParams.append('sku', isPremiumSub ? 'NN-PRE-SUB' : 'NN-DON-POR');
+          urlObj.searchParams.append('sku', 'NN-PRE-SUB');
         }
         setFinalUrl(urlObj.toString());
         setStatus('iframe');
+        return;
+      }
+
+      // Lógica estándar para otros montos (donaciones, etc)
+      const endpoint = method === 'wompi' 
+        ? '/api/payments/wompi/create-link' 
+        : '/api/payments/binance/create-order';
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, type: 'subscription' })
+      });
+      
+      const data = await response.json();
+      
+      if (data.url) {
+        setFinalUrl(data.url);
+        setStatus('iframe');
       } else {
-        // Cobertura final para Wompi Premium en modo búnker
-        if (isPremiumSub && method === 'wompi') {
-           setFinalUrl('https://checkout.nequi.wompi.co/l/d91R8J');
-           setStatus('iframe');
-        } else {
-           throw new Error('No se pudo establecer el enlace de pago seguro.');
-        }
+        throw new Error(data.error || 'No se pudo establecer el enlace de pago seguro.');
       }
     } catch (err) {
       console.error(err);
