@@ -86,7 +86,7 @@ export function SubscriptionCard({ onSubscribe, className }: SubscriptionCardPro
           className="w-full font-bold h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_15px_-3px_rgba(0,0,0,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           <Globe className="mr-2 h-4 w-4" />
-          Pagar con Tarjeta / Nequi
+          Pagar con Tarjeta de Crédito o Débito
         </Button>
         
         <Button 

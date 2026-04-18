@@ -46,7 +46,7 @@ type SetupLevel = 'low' | 'mid-low' | 'middle' | 'mid-high' | 'high';
 
 export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutModalProps) {
   const t = useTranslations('NeuralSites.checkout');
-  const [selectedMethod, setSelectedMethod] = useState<'wompi' | 'nequi' | 'paypal' | 'binance' | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<'wompi' | 'binance' | null>(null);
   const [paymentType, setPaymentType] = useState<'monthly' | 'setup'>('monthly');
   const [setupLevel, setSetupLevel] = useState<SetupLevel>('low');
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +62,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
     if (isOpen) fetchUser();
   }, [isOpen, supabase]);
 
-  const handleMethodSelect = (method: 'wompi' | 'nequi' | 'paypal' | 'binance') => {
+  const handleMethodSelect = (method: 'wompi' | 'binance') => {
     setIsLoading(true);
     setSelectedMethod(method);
     setTimeout(() => setIsLoading(false), 1500);
@@ -103,31 +103,15 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
     { 
       id: 'wompi', 
       icon: CreditCard, 
-      label: t('method_credit'), 
+      label: 'Tarjeta de Crédito o Débito', 
       color: 'text-cyan-400', 
       glow: 'shadow-[0_0_20px_rgba(34,211,238,0.3)]',
       border: 'hover:border-cyan-500/50'
     },
     { 
-      id: 'nequi', 
-      icon: Smartphone, 
-      label: 'Nequi / PSE', 
-      color: 'text-fuchsia-500', 
-      glow: 'shadow-[0_0_20px_rgba(217,70,239,0.3)]',
-      border: 'hover:border-fuchsia-500/50'
-    },
-    { 
-      id: 'paypal', 
-      icon: Globe, 
-      label: 'PayPal', 
-      color: 'text-blue-500', 
-      glow: 'shadow-[0_0_20px_rgba(59,130,246,0.3)]',
-      border: 'hover:border-blue-500/50'
-    },
-    { 
       id: 'binance', 
       icon: Coins, 
-      label: 'Binance Pay', 
+      label: 'Pagar con Cripto', 
       color: 'text-yellow-500', 
       glow: 'shadow-[0_0_20px_rgba(234,179,8,0.3)]',
       border: 'hover:border-yellow-500/50'
@@ -234,7 +218,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
                   </motion.div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   {methods.map((method, idx) => (
                     <motion.div
                       key={method.id}
