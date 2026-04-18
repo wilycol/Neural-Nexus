@@ -3,17 +3,13 @@
 import React, { useState } from "react";
 import { 
   Network, 
-  Zap, 
   ArrowRight,
-  Database,
   ShieldCheck,
   Languages,
   Activity,
   Share2,
   Cpu,
-  Globe,
-  Link as LinkIcon,
-  ChevronRight
+  Globe
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
