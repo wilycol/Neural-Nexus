@@ -116,7 +116,7 @@ export function NeuralBillboard({ className, onPartnershipClick, onDonationClick
           <motion.div
             key={currentSlide.bgImage}
             initial={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
-            animate={{ opacity: 0.25, scale: 1, filter: "blur(4px)" }}
+            animate={{ opacity: 0.5, scale: 1, filter: "blur(1px)" }}
             exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
             className="absolute inset-0"
@@ -125,20 +125,21 @@ export function NeuralBillboard({ className, onPartnershipClick, onDonationClick
               src={currentSlide.bgImage} 
               alt="Background" 
               fill 
-              className="object-cover opacity-60 mix-blend-screen"
+              className="object-cover opacity-80"
+              priority={currentIndex === 0}
             />
-            {/* Ambient Overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-[#020817] opacity-80" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-transparent to-[#020817] opacity-80" />
+            {/* Ambient Overlay for depth - Adjusted for more transparency */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-[#020817] opacity-40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-transparent to-[#020817] opacity-40" />
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Cyber Grid Background overlay */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px] z-1"></div>
+      {/* Cyber Grid Background overlay - Reduced opacity */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px] z-1"></div>
       
-      {/* Scanline Effect */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.08] z-2">
+      {/* Scanline Effect - Subtle */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.04] z-2">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent h-[15%] w-full animate-scanline"></div>
       </div>
 
