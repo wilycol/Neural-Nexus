@@ -12,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { 
   Sparkles, 
   CreditCard, 
-  Smartphone, 
-  Globe, 
   Coins, 
   X,
   Settings2,
