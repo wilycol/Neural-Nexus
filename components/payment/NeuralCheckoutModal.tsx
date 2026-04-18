@@ -125,7 +125,7 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent hideClose className="sm:max-w-[500px] w-[95vw] bg-[#020817]/95 backdrop-blur-3xl border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,163,255,0.15)] ring-1 ring-white/10 cyber-grid">
+      <DialogContent hideClose className="sm:max-w-[500px] w-[95vw] max-h-[96vh] overflow-y-auto bg-[#020817]/95 backdrop-blur-3xl border-primary/20 p-0 shadow-[0_0_50px_rgba(0,163,255,0.15)] ring-1 ring-white/10 cyber-grid">
         {/* Priority Close Button */}
         <div className="absolute top-4 right-4 z-[100]">
           <Button
@@ -206,17 +206,17 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
                         <button
                           key={opt.id}
                           onClick={() => setSetupLevel(opt.id)}
-                          className={`flex items-center justify-between p-3 rounded-xl border transition-all text-left group ${
+                          className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left group ${
                             setupLevel === opt.id 
-                            ? 'bg-white border-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
-                            : 'bg-black/40 border-primary/10 text-muted-foreground hover:border-primary/30'
+                            ? 'bg-primary/10 border-primary text-white shadow-[0_0_25px_rgba(0,163,255,0.4)]' 
+                            : 'bg-black/40 border-primary/10 text-muted-foreground hover:border-primary/40'
                           }`}
                         >
                           <div className="flex flex-col">
-                            <span className={`text-[11px] font-black tracking-tight uppercase ${setupLevel === opt.id ? 'text-black' : ''}`}>
+                            <span className={`text-[11px] font-black tracking-tight uppercase ${setupLevel === opt.id ? 'text-primary' : ''}`}>
                               {opt.label}
                             </span>
-                            <span className={`text-[8px] font-mono opacity-60 ${setupLevel === opt.id ? 'text-black/60' : ''}`}>
+                            <span className={`text-[11px] font-mono opacity-80 ${setupLevel === opt.id ? 'text-white' : ''}`}>
                               NIVEL {opt.id.toUpperCase()} • <span className="line-through">{opt.originalPrice}</span> (50% OFF)
                             </span>
                           </div>
