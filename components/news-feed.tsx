@@ -4,7 +4,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { NewsCard } from "@/components/news-card";
 import { InfiniteScroll } from "@/components/infinite-scroll";
 import { AdBanner } from "@/components/ad-banner";
-import { AdCard } from "@/components/ad-card";
+import { NeuralBillboard } from "@/components/neural-billboard";
+import { PaymentModal } from "@/components/payment/payment-modal";
+import { PartnershipModal } from "@/components/partnership-modal";
 import { useInfiniteNews } from "@/hooks/use-infinite-news";
 import { toast } from "sonner";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
@@ -258,6 +260,9 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
     }
   };
 
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isPartnershipOpen, setIsPartnershipOpen] = useState(false);
+
   if (error) {
     return (
       <div className="text-center py-8">
@@ -293,14 +298,28 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
               />
             )}
             {(index + 1) % 3 === 0 && (
-              <AdCard 
-                slot={`industrial-ad-${Math.floor(index / 3)}`}
+              <NeuralBillboard 
                 className="my-2"
+                onDonationClick={() => setIsPaymentOpen(true)}
+                onPartnershipClick={() => setIsPartnershipOpen(true)}
               />
             )}
           </React.Fragment>
         ))}
       </div>
+
+      <PaymentModal 
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        method={null}
+        amount={10}
+        type="donation"
+      />
+
+      <PartnershipModal 
+        isOpen={isPartnershipOpen}
+        onOpenChange={setIsPartnershipOpen}
+      />
     </InfiniteScroll>
   );
 }
