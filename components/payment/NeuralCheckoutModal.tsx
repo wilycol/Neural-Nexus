@@ -49,6 +49,13 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   const [setupLevel, setSetupLevel] = useState<SetupLevel>('low');
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+
+  // Resetear el método seleccionado cuando se cierra el modal o cambian los parámetros
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedMethod(null);
+    }
+  }, [isOpen]);
   const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
@@ -89,12 +96,12 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
     return baseUrl;
   };
 
-  const difficultyOptions: { id: SetupLevel; label: string; price: string }[] = [
-    { id: 'low', label: t('difficulty.low'), price: '$50' },
-    { id: 'mid-low', label: t('difficulty.mid_low'), price: '$100' },
-    { id: 'middle', label: t('difficulty.middle'), price: '$200' },
-    { id: 'mid-high', label: t('difficulty.mid_high'), price: '$400' },
-    { id: 'high', label: t('difficulty.high'), price: '$800' },
+  const difficultyOptions: { id: SetupLevel; label: string; price: string; originalPrice: string; marketing: string }[] = [
+    { id: 'low', label: t('difficulty.low'), price: '$50', originalPrice: '$100', marketing: "Ideal para aterrizaje digital rápido." },
+    { id: 'mid-low', label: t('difficulty.mid_low'), price: '$100', originalPrice: '$200', marketing: "El equilibrio perfecto para negocios en crecimiento." },
+    { id: 'middle', label: t('difficulty.middle'), price: '$150', originalPrice: '$300', marketing: "Arquitectura estándar de alto tráfico." },
+    { id: 'mid-high', label: t('difficulty.mid_high'), price: '$200', originalPrice: '$400', marketing: "Potencia industrial para imperios digitales." },
+    { id: 'high', label: t('difficulty.high'), price: '$250', originalPrice: '$500', marketing: "Contenido total y autonomía absoluta de Beatriz." },
   ];
 
   const methods = [
@@ -148,7 +155,14 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
         </DialogHeader>
 
         <div className="px-6 mb-4 relative z-10 w-full">
-          <Tabs defaultValue="monthly" className="w-full" onValueChange={(v) => setPaymentType(v as 'monthly' | 'setup')}>
+          <Tabs 
+            defaultValue="monthly" 
+            className="w-full" 
+            onValueChange={(v) => {
+              setPaymentType(v as 'monthly' | 'setup');
+              setSelectedMethod(null); // Resetear al cambiar de pestaña
+            }}
+          >
             <TabsList className="grid w-full grid-cols-2 h-11 bg-black/60 border border-primary/20 p-1 rounded-xl">
               <TabsTrigger 
                 value="monthly" 
@@ -194,16 +208,16 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
                           onClick={() => setSetupLevel(opt.id)}
                           className={`flex items-center justify-between p-3 rounded-xl border transition-all text-left group ${
                             setupLevel === opt.id 
-                            ? 'bg-primary border-primary text-primary-foreground shadow-[0_0_15px_rgba(0,163,255,0.3)]' 
+                            ? 'bg-white border-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
                             : 'bg-black/40 border-primary/10 text-muted-foreground hover:border-primary/30'
                           }`}
                         >
                           <div className="flex flex-col">
-                            <span className={`text-[11px] font-black tracking-tight uppercase ${setupLevel === opt.id ? 'text-white' : ''}`}>
+                            <span className={`text-[11px] font-black tracking-tight uppercase ${setupLevel === opt.id ? 'text-black' : ''}`}>
                               {opt.label}
                             </span>
-                            <span className={`text-[8px] font-mono opacity-60 ${setupLevel === opt.id ? 'text-white' : ''}`}>
-                              NIVEL {opt.id.toUpperCase()}
+                            <span className={`text-[8px] font-mono opacity-60 ${setupLevel === opt.id ? 'text-black/60' : ''}`}>
+                              NIVEL {opt.id.toUpperCase()} • <span className="line-through">{opt.originalPrice}</span> (50% OFF)
                             </span>
                           </div>
                           <div className="flex items-center gap-3">
@@ -212,6 +226,12 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
                           </div>
                         </button>
                       ))}
+                    </div>
+                    {/* Mensaje de Marketing Dinámico */}
+                    <div className="mt-4 p-3 bg-primary/5 border border-primary/20 rounded-xl text-center">
+                      <p className="text-[10px] sm:text-[11px] font-orbitron font-bold text-primary animate-pulse italic leading-relaxed">
+                        &quot;{difficultyOptions.find(o => o.id === setupLevel)?.marketing}&quot;
+                      </p>
                     </div>
                   </motion.div>
                 )}
