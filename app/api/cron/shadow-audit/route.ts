@@ -26,17 +26,17 @@ export async function GET(request: NextRequest) {
     console.log(`[${startedAt}] 🕶️ Disparando Duelo en la Sombra del Vigía...`);
     
     const { error: missionError } = await supabase
-      .from('ai_analysis_queue')
+      .from('factory_missions' as any)
       .insert([
         {
-          type: 'shadow_audit',
-          status: 'pending',
-          priority: 10,
-          params: {
+          title: '🕶️ EL VIGÍA: SHADOW AUDIT',
+          description: 'Duelo semanal de integridad y OSINT.',
+          content: JSON.stringify({
             category: 'AI & Software',
             intensity: 5,
             vigia_mode: true
-          },
+          }),
+          status: 'pending',
           updated_at: new Date().toISOString()
         }
       ]);
