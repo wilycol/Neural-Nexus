@@ -11,7 +11,14 @@ import {
   ExternalLink,
   Archive,
   Bell,
-  Play
+  Play,
+  Database,
+  Trash2,
+  CheckCircle2,
+  AlertCircle,
+  Code,
+  Copy,
+  Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -123,7 +130,6 @@ function MonitorTerminal() {
     }
   };
 
-  const fetchVigiaReports = async () => {}; // Removiendo lógica duplicada
 
   const handlePurge = async (id: string) => {
     try {
