@@ -25,8 +25,9 @@ export async function GET(request: NextRequest) {
     // 2. Insertar Misión de Duelo en la Cola
     console.log(`[${startedAt}] 🕶️ Disparando Duelo en la Sombra del Vigía...`);
     
-    const { error: missionError } = await supabase
-      .from('factory_missions' as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: missionError } = await (supabase as any)
+      .from('factory_missions')
       .insert([
         {
           title: '🕶️ EL VIGÍA: SHADOW AUDIT',
