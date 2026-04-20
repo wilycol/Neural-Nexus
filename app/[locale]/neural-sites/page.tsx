@@ -5,7 +5,6 @@ import {
   ScanHeart,
   Zap,
   Check,
-  Play,
   ArrowRight,
   ShieldCheck,
   Cpu,
