@@ -22,6 +22,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
+    // 1.1 Check de Auto-Pilot (Beatriz Boss Mode)
+    try {
+        const beatrizRes = await fetch('http://localhost:3002/automation/settings');
+        if (beatrizRes.ok) {
+            const settings = await beatrizRes.json();
+            if (settings.data?.automationEnabled === false) {
+                console.log(`[${startedAt}] 🛑 Auto-Pilot Activo (OFF): Auditoría del Vigía cancelada por protocolo de seguridad.`);
+                return NextResponse.json({ 
+                    success: false, 
+                    message: 'Auto-Pilot desactivado en Beatriz. Operación cancelada.' 
+                });
+            }
+        }
+    } catch (e) {
+        console.warn('⚠️ No se pudo verificar el Auto-Pilot en Beatriz. Continuando por precaución...', e);
+    }
+
     // 2. Insertar Misión de Duelo en la Cola
     console.log(`[${startedAt}] 🕶️ Disparando Duelo en la Sombra del Vigía...`);
     
