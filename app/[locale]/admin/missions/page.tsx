@@ -160,7 +160,7 @@ export default function MissionsAdminPage() {
 
           <Card className="bg-white/5 border-white/10">
             <CardContent className="p-4 flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-red-400/10 text-red-400">
+              <div className="p-3 rounded-lg bg-red-400/10 text-red-500">
                   <AlertCircle className="h-5 w-5" />
               </div>
               <div>

@@ -8,14 +8,6 @@ import {
   Video, 
   Clock, 
   Cpu, 
-  Database,
-  ShieldCheck,
-  Zap,
-  CheckCircle2,
-  AlertCircle,
-  Trash2,
-  Code,
-  Copy,
   ExternalLink,
   Archive,
   Bell,
@@ -130,6 +122,8 @@ function MonitorTerminal() {
       toast.error("Error al resolver alerta.");
     }
   };
+
+  const fetchVigiaReports = async () => {}; // Removiendo lógica duplicada
 
   const handlePurge = async (id: string) => {
     try {
@@ -439,10 +433,7 @@ function MonitorTerminal() {
                     </div>
                   </div>
                 ))}
-             </div>
-          </TabsContent>
-
-          <TabsContent value="alerts" className="space-y-4 outline-none">
+             </          <TabsContent value="alerts" className="space-y-4 outline-none">
              <div className="grid gap-4">
                 {alerts.length === 0 ? (
                   <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-10 text-center space-y-3">
@@ -481,7 +472,7 @@ function MonitorTerminal() {
                                <div className="flex items-center gap-4 text-[10px] font-mono text-zinc-600 pt-1">
                                   <span>{new Date(alert.created_at).toLocaleString()}</span>
                                   {!!alert.metadata?.url && <span className="truncate max-w-[200px] text-zinc-500 italic">Context: {String(alert.metadata.url)}</span>}
-                               </div>
+                                </div>
                             </div>
                          </div>
                          
@@ -499,6 +490,7 @@ function MonitorTerminal() {
                 )}
              </div>
           </TabsContent>
+
         </Tabs>
 
         {/* Footer Commentary */}
