@@ -432,12 +432,15 @@ function MonitorTerminal() {
                        </div>
                     </div>
                   </div>
-                ))}
-             </          <TabsContent value="alerts" className="space-y-4 outline-none">
+                 ))}
+             </div>
+          </TabsContent>
+
+          <TabsContent value="alerts" className="space-y-4 outline-none">
              <div className="grid gap-4">
                 {alerts.length === 0 ? (
-                  <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-10 text-center space-y-3">
-                     <ShieldCheck className="w-12 h-12 text-emerald-500/20 mx-auto" />
+                   <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-10 text-center space-y-3">
+                      <Bell className="w-12 h-12 text-emerald-500/20 mx-auto" />
                      <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">No hay alertas pendientes. hmmmm... 🔥</p>
                   </div>
                 ) : (
@@ -497,7 +500,7 @@ function MonitorTerminal() {
         <div className="pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
            <div className="flex items-start gap-4 p-5 bg-white/[0.02] border border-white/5 rounded-[1.5rem] max-w-xl">
               <div className="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl">
-                 <ShieldCheck className="h-5 w-5" />
+                 <Activity className="h-5 w-5" />
               </div>
               <div className="space-y-1">
                  <h6 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Sistema de Conciencia Beatriz Log-Service</h6>
