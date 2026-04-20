@@ -32,15 +32,32 @@ const PLAN_IMAGES = [
   "/assets/plans/platinum.png"
 ];
 
+const PITCH_MEDIA = [
+  { type: "image", url: "/Neural Sites SaaS.png" },
+  { type: "video", url: "/Neural_Sites__Webs_que_Nunca_Duermen.mp4" },
+  { type: "video", url: "/Neural_Growth_Protocol.mp4" }
+];
+
 export default function NeuralSitesPage() {
   const [currentPlanImage, setCurrentPlanImage] = useState(0);
+  const [currentPitchIdx, setCurrentPitchIdx] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentPlanImage((prev) => (prev + 1) % PLAN_IMAGES.length);
-    }, 3000);
+    }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const media = PITCH_MEDIA[currentPitchIdx];
+    if (media.type === "image") {
+      const timer = setTimeout(() => {
+        setCurrentPitchIdx((prev) => (prev + 1) % PITCH_MEDIA.length);
+      }, 7000); // 7s para imágenes
+      return () => clearTimeout(timer);
+    }
+  }, [currentPitchIdx]);
 
   return (
     <div className="min-h-screen bg-background relative overflow-x-hidden">
@@ -111,16 +128,47 @@ export default function NeuralSitesPage() {
 
         {/* Video Section Placeholder */}
         <section id="demo" className="mb-28">
-          <div className="aspect-video w-full max-w-5xl mx-auto rounded-[32px] border border-white/10 bg-black/60 shadow-2xl relative overflow-hidden group cursor-pointer">
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition-colors">
-              <div className="h-20 w-20 rounded-full bg-neon-blue flex items-center justify-center shadow-[0_0_30px_rgba(0,163,255,0.5)] group-hover:scale-110 transition-transform">
-                <Play className="h-8 w-8 text-black fill-current ml-1" />
+          <div className="aspect-video w-full max-w-5xl mx-auto rounded-[32px] border border-white/10 bg-black shadow-2xl relative overflow-hidden group">
+            <AnimatePresence mode="wait">
+              {PITCH_MEDIA[currentPitchIdx].type === "image" ? (
+                <motion.img
+                  key="pitch-image"
+                  src={PITCH_MEDIA[currentPitchIdx].url}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <motion.video
+                  key="pitch-video"
+                  src={PITCH_MEDIA[currentPitchIdx].url}
+                  autoPlay
+                  muted={false} // Permitir audio si el usuario interactúa
+                  onEnded={() => setCurrentPitchIdx((prev) => (prev + 1) % PITCH_MEDIA.length)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  controls
+                />
+              )}
+            </AnimatePresence>
+            
+            {/* Overlay Info */}
+            <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-none z-20">
+              <div className="font-orbitron text-[10px] text-white/60 tracking-[0.3em] uppercase bg-black/40 px-3 py-1 rounded backdrop-blur-sm border border-white/10">
+                {PITCH_MEDIA[currentPitchIdx].type === "video" ? "Video_Protocol: Neural Sites" : "Static_Asset: Neural Sites Pitch"}
               </div>
-            </div>
-            <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
-              <div className="font-orbitron text-xs text-white/40 tracking-[0.3em] uppercase">Introducción Neural Sites SaaS</div>
-              <div className="h-1 w-32 bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full w-1/3 bg-neon-blue" />
+              <div className="flex gap-1">
+                {PITCH_MEDIA.map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`h-1 w-8 rounded-full transition-all duration-500 ${i === currentPitchIdx ? "bg-neon-blue shadow-[0_0_10px_rgba(0,163,255,0.8)]" : "bg-white/10"}`} 
+                  />
+                ))}
               </div>
             </div>
           </div>
