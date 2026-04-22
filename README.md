@@ -356,7 +356,7 @@ MIT License - ver [LICENSE](LICENSE) para más detalles.
 ## Contacto
 
 - Twitter: [@neuralfeed](https://twitter.com/neuralfeed)
-- Email: hola@neuralfeed.ai
+- Email: portalneuralnexus@gmail.com
 
 ---
 
