@@ -15,7 +15,8 @@ import {
   Coins, 
   X,
   Settings2,
-  ChevronRight
+  ChevronRight,
+  CheckCircle2
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -96,12 +97,71 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
     return baseUrl;
   };
 
-  const difficultyOptions: { id: SetupLevel; label: string; price: string; originalPrice: string; marketing: string }[] = [
-    { id: 'low', label: t('difficulty.low'), price: '$50', originalPrice: '$100', marketing: "Ideal para aterrizaje digital rápido." },
-    { id: 'mid-low', label: t('difficulty.mid_low'), price: '$100', originalPrice: '$200', marketing: "El equilibrio perfecto para negocios en crecimiento." },
-    { id: 'middle', label: t('difficulty.middle'), price: '$150', originalPrice: '$300', marketing: "Arquitectura estándar de alto tráfico." },
-    { id: 'mid-high', label: t('difficulty.mid_high'), price: '$200', originalPrice: '$400', marketing: "Potencia industrial para imperios digitales." },
-    { id: 'high', label: t('difficulty.high'), price: '$250', originalPrice: '$500', marketing: "Contenido total y autonomía absoluta de Beatriz." },
+  const difficultyOptions: { id: SetupLevel; label: string; price: string; originalPrice: string; marketing: string; features: string[] }[] = [
+    { 
+      id: 'low', 
+      label: t('difficulty.low'), 
+      price: '$50', 
+      originalPrice: '$100', 
+      marketing: "Ideal para aterrizaje digital rápido.",
+      features: [
+        "MVP (Producto Mínimo Viable) rápido",
+        "Diseño funcional con colores de marca",
+        "Inyección base de noticias IA"
+      ]
+    },
+    { 
+      id: 'mid-low', 
+      label: t('difficulty.mid_low'), 
+      price: '$100', 
+      originalPrice: '$200', 
+      marketing: "El equilibrio perfecto para negocios en crecimiento.",
+      features: [
+        "Todo el nivel Low +",
+        "Animaciones dinámicas (Fade-ins)",
+        "Modo Oscuro/Claro Inteligente",
+        "Optimización SEO Semántica"
+      ]
+    },
+    { 
+      id: 'middle', 
+      label: t('difficulty.middle'), 
+      price: '$150', 
+      originalPrice: '$300', 
+      marketing: "Arquitectura estándar de alto tráfico.",
+      features: [
+        "Todo el nivel Mid-Low +",
+        "Micro-interacciones Premium UX/UI",
+        "Formulario IA de Captación de Leads",
+        "Optimización de velocidad (Lazy Load)"
+      ]
+    },
+    { 
+      id: 'mid-high', 
+      label: t('difficulty.mid_high'), 
+      price: '$200', 
+      originalPrice: '$400', 
+      marketing: "Potencia industrial para imperios digitales.",
+      features: [
+        "Todo el nivel Middle +",
+        "Interfaz Glassmorphism ultra-elegante",
+        "Chatbot IA pre-entrenado (24/7)",
+        "Panel de Analítica nativo"
+      ]
+    },
+    { 
+      id: 'high', 
+      label: t('difficulty.high'), 
+      price: '$250', 
+      originalPrice: '$500', 
+      marketing: "Contenido total y autonomía absoluta de Beatriz.",
+      features: [
+        "Todo el nivel Mid-High +",
+        "Renderizado avanzado (WebGL/Partículas)",
+        "Chatbot IA corporativo con tus datos",
+        "Integración CRM / WhatsApp directa"
+      ]
+    },
   ];
 
   const methods = [
@@ -227,11 +287,25 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
                         </button>
                       ))}
                     </div>
-                    {/* Mensaje de Marketing Dinámico */}
-                    <div className="mt-4 p-3 bg-primary/5 border border-primary/20 rounded-xl text-center">
-                      <p className="text-[10px] sm:text-[11px] font-orbitron font-bold text-primary animate-pulse italic leading-relaxed">
+                    {/* Mensaje de Marketing Dinámico y Beneficios */}
+                    <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                      <p className="text-[11px] sm:text-[12px] font-orbitron font-bold text-primary animate-pulse italic leading-relaxed text-center mb-3">
                         &quot;{difficultyOptions.find(o => o.id === setupLevel)?.marketing}&quot;
                       </p>
+                      <div className="space-y-2 mt-3 pt-3 border-t border-primary/10">
+                        {difficultyOptions.find(o => o.id === setupLevel)?.features.map((feature, idx) => (
+                          <motion.div 
+                            key={idx}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.1 }}
+                            className="flex items-start gap-2 text-[10px] sm:text-[11px] text-muted-foreground"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                            <span>{feature}</span>
+                          </motion.div>
+                        ))}
+                      </div>
                     </div>
                   </motion.div>
                 )}
