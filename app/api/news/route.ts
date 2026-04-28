@@ -110,16 +110,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const supabase = createServerClient();
 
-    // Verificar si ya existe una noticia similar
+    // Verificar si ya existe una noticia similar (Certificación Industrial)
+    // Solo bloqueamos si la URL de origen es exactamente la misma para evitar spam real
     const { data: existing } = await supabase
       .from('news')
       .select('id')
-      .or(`title.ilike.%${body.title.substring(0, 50)}%,source_url.eq.${body.source_url}`)
+      .eq('source_url', body.source_url)
       .limit(1);
 
     if (existing && existing.length > 0) {
       return NextResponse.json(
-        { error: 'Noticia ya existe', id: existing[0].id },
+        { error: 'Noticia ya existe (URL duplicada)', id: existing[0].id },
         { status: 409 }
       );
     }
@@ -138,6 +139,7 @@ export async function POST(request: NextRequest) {
         ...body,
         slug,
         created_at: body.created_at || new Date().toISOString(),
+        published_at: body.published_at || new Date().toISOString(),
       }, {
         onConflict: 'slug',
         ignoreDuplicates: false // Actualizar si hay cambios
