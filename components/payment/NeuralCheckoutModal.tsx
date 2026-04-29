@@ -50,6 +50,8 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   const [setupLevel, setSetupLevel] = useState<SetupLevel>('low');
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [promoCode, setPromoCode] = useState('');
+  const [isBypassSuccess, setIsBypassSuccess] = useState(false);
 
   // Resetear el método seleccionado cuando se cierra el modal o cambian los parámetros
   useEffect(() => {
@@ -69,6 +71,10 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
   }, [isOpen, supabase]);
 
   const handleMethodSelect = (method: 'wompi' | 'binance') => {
+    if (paymentType === 'setup' && promoCode.trim().toUpperCase() === 'FREE-NEXUS-NODE') {
+      setIsBypassSuccess(true);
+      return;
+    }
     setIsLoading(true);
     setSelectedMethod(method);
     setTimeout(() => setIsLoading(false), 1500);
@@ -242,7 +248,27 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
 
         <div className="p-6 pt-0 min-h-[460px] flex flex-col relative z-10">
           <AnimatePresence mode="wait">
-            {!selectedMethod ? (
+            {isBypassSuccess ? (
+              <motion.div
+                key="bypass-success"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex-1 flex flex-col items-center justify-center text-center space-y-6"
+              >
+                <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center shadow-[0_0_50px_rgba(0,163,255,0.4)] animate-pulse">
+                  <CheckCircle2 className="w-12 h-12 text-primary" />
+                </div>
+                <h3 className="text-2xl font-orbitron font-black text-white uppercase tracking-widest">
+                  PAGO CONFIRMADO
+                </h3>
+                <p className="text-sm text-primary animate-pulse font-mono max-w-xs">
+                  Bypass detectado. Transfiriendo coordenadas a The Architect...
+                </p>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                  Construyendo Nodo {setupLevel.toUpperCase()}
+                </div>
+              </motion.div>
+            ) : !selectedMethod ? (
               <motion.div
                 key="methods"
                 initial={{ opacity: 0, y: 10 }}
@@ -307,6 +333,23 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
                         ))}
                       </div>
                     </div>
+                  </motion.div>
+                )}
+
+                {/* Promo Code Input (Solo visible en setup) */}
+                {paymentType === 'setup' && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mb-4"
+                  >
+                    <input 
+                      type="text" 
+                      placeholder="Código Promocional (Opcional)" 
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      className="w-full bg-black/50 border border-primary/20 rounded-xl px-4 py-3 text-[11px] font-orbitron font-bold text-white uppercase tracking-widest placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
+                    />
                   </motion.div>
                 )}
 
