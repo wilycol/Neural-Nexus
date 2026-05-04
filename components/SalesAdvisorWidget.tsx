@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Sparkles, Zap } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // EL CEREBRO DEL VENDEDOR ESTRELLA DE NEURAL SITES
@@ -47,7 +47,7 @@ export function SalesAdvisorWidget() {
         if (isOpen) scrollToBottom();
     }, [messages, isTyping, isOpen]);
 
-    const fetchAIResponse = async (userText: string, chatHistory: any[]) => {
+    const fetchAIResponse = async (userText: string, chatHistory: { id: number, role: string, text: string }[]) => {
         try {
             // Usamos la API Key de Google configurada en el portal
             const apiKey = process.env.NEXT_PUBLIC_GOOGLE_AI_KEY || ""; 
@@ -70,7 +70,7 @@ export function SalesAdvisorWidget() {
             if (!response.ok) throw new Error('Error en la API');
             const data = await response.json();
             return data.candidates[0].content.parts[0].text;
-        } catch (error) {
+        } catch {
             return "Mi conexión neuronal parpadeó un segundo. ¿Me repites eso último? Quiero darte la estrategia exacta para tu negocio.";
         }
     };
