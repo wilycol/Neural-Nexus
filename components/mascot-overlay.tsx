@@ -19,13 +19,14 @@ export function MascotOverlay({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const hasInitCanvasRef = useRef(false);
+  const [aspectRatio, setAspectRatio] = React.useState(1);
 
   const styles = useMemo(
     () => ({
       width: `${sizePx}px`,
-      height: `${sizePx}px`,
+      height: `${sizePx / aspectRatio}px`,
     }),
-    [sizePx]
+    [sizePx, aspectRatio]
   );
 
   useEffect(() => {
@@ -60,6 +61,7 @@ export function MascotOverlay({
       if (!hasInitCanvasRef.current) {
         canvas.width = w;
         canvas.height = h;
+        setAspectRatio(w / h);
         hasInitCanvasRef.current = true;
       }
 
