@@ -11,6 +11,7 @@ import { AffiliateTracker } from "@/components/affiliate-tracker";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { PayPalProvider } from "@/components/payment/paypal-provider";
+import { SalesAdvisorWidget } from "@/components/SalesAdvisorWidget";
 import "./globals.css";
 
 import { Metadata } from "next";
@@ -67,6 +68,7 @@ export default async function RootLayout({
               
               <ScrollToTop />
               <MascotOverlay />
+              <SalesAdvisorWidget />
               <CookieConsent />
               <Toaster position="bottom-right" richColors />
               <Analytics />
