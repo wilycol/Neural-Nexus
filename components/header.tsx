@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Menu, X, User, Heart, LogOut } from "lucide-react";
+import { Search, Menu, X, User, Heart, LogOut, Wrench, Zap, Handshake, Target, FileText, Video } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -120,6 +120,26 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                         <LogOut className="h-4 w-4" />
                         Cerrar sesión
                       </button>
+                    </div>
+                  )}
+
+                  {profile?.role === "admin" && (
+                    <div className="mt-6 space-y-1">
+                      <p className="px-3 text-[10px] font-black uppercase tracking-widest text-neon-blue/50 mb-2 flex items-center gap-2">
+                        <Wrench className="h-3 w-3" /> Administración
+                      </p>
+                      <Link href="/admin/missions" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <Zap className="h-4 w-4 text-neon-blue" /> Control de Misiones
+                      </Link>
+                      <Link href="/admin/hunter" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <Target className="h-4 w-4 text-neon-blue" /> Cacería de Campo 🎯
+                      </Link>
+                      <Link href="/admin/leads" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <Handshake className="h-4 w-4 text-neon-blue" /> Vigilancia de Alianzas
+                      </Link>
+                      <Link href="/admin/monitor?tab=reception" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <FileText className="h-4 w-4 text-neon-blue" /> Log de Recepción
+                      </Link>
                     </div>
                   )}
 
