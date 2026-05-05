@@ -39,6 +39,7 @@ interface Business {
     phone?: string;
     missionUrl?: string;
     status: 'detected' | 'investigating' | 'completed';
+    adn?: string;
 }
 
 const NICHES = [
@@ -446,6 +447,22 @@ export default function AdminHunterPage() {
                                     </div>
                                 </div>
 
+                                <div className="space-y-2">
+                                    <p className="text-[9px] uppercase text-neon-blue font-bold">ADN del Negocio (Alimentar IA)</p>
+                                    <textarea 
+                                        className="w-full h-24 bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-white placeholder:text-white/20 outline-none focus:border-neon-blue/50 transition-all resize-none"
+                                        placeholder="Pega aquí reseñas, servicios, historia o cualquier detalle estratégico..."
+                                        value={selectedBusiness.adn || ''}
+                                        onChange={(e) => {
+                                            const newAdn = e.target.value;
+                                            setBusinesses(prev => prev.map(b => 
+                                                b.id === selectedBusiness.id ? { ...b, adn: newAdn } : b
+                                            ));
+                                            setSelectedBusiness(prev => prev ? { ...prev, adn: newAdn } : null);
+                                        }}
+                                    />
+                                </div>
+
                                 <div className="pt-4 flex gap-3">
                                     <Button 
                                         className="flex-1 bg-neon-blue text-black font-black uppercase text-[10px]"
@@ -462,16 +479,19 @@ export default function AdminHunterPage() {
                                         onClick={() => {
                                             const input = document.createElement('input');
                                             input.type = 'file';
-                                            input.accept = 'image/*';
+                                            input.multiple = true;
+                                            input.accept = 'image/*,video/*';
                                             input.onchange = (e: Event) => {
                                                 const target = e.target as HTMLInputElement;
-                                                const file = target.files?.[0];
-                                                if (file) toast.success(`Foto "${file.name}" cargada como evidencia.`);
+                                                const files = target.files;
+                                                if (files && files.length > 0) {
+                                                    toast.success(`${files.length} archivos de evidencia cargados.`);
+                                                }
                                             };
                                             input.click();
                                         }}
                                     >
-                                        <Camera size={14} className="mr-2" /> Subir Fotos
+                                        <Camera size={14} className="mr-2" /> Multimedia
                                     </Button>
                                 </div>
                             </CardContent>
