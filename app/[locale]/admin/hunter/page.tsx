@@ -17,7 +17,12 @@ import {
     Cpu,
     Wrench,
     Utensils,
-    Sparkles
+    Sparkles,
+    Info,
+    ExternalLink,
+    Phone,
+    Globe,
+    Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +37,8 @@ interface Business {
     rating: number;
     opportunityScore: number;
     location: { lat: number; lng: number };
+    website?: string;
+    phone?: string;
 }
 
 const NICHES = [
@@ -131,23 +138,55 @@ export default function AdminHunterPage() {
         }
     };
 
+    // 🚀 Fase 2: Investigación Profunda (Triple Misión)
+    const investigateDeeply = async (biz: Business) => {
+        setIsScanning(true);
+        setTelemetry(prev => [`🔍 Activando Triple Misión para: ${biz.name}`, ...prev]);
+        setTelemetry(prev => [`🕵️ Hunter: Buscando activos digitales y fotos...`, ...prev]);
+        
+        try {
+            // Simulamos la activación del búnker
+            await fetch(`${backendUrl}/hunter/logs`, {
+                method: 'GET',
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+            
+            setTelemetry(prev => [`🏗️ Arquitecto: Preparando Blueprint para ${biz.name}...`, ...prev]);
+            setTelemetry(prev => [`💌 Seductor: Redactando misiva de conquista...`, ...prev]);
+            
+            setIsApproved(true);
+            toast.success("Triple Misión Iniciada: Hunter, Arquitecto y Seductor en posición.");
+        } catch (err) {
+            toast.error("Error al conectar con el búnker para la investigación.");
+        } finally {
+            setIsScanning(false);
+        }
+    };
+
     // 🏗️ Paso 3: Lanzar Prototipo (Misión Express)
     const launchPrototye = async () => {
+        if (!selectedBusiness) return;
+        
         setIsOnboarding(true);
-        toast.promise(
-            new Promise(resolve => setTimeout(resolve, 3000)), // Simulación de proceso
-            {
-                loading: 'Construyendo Nodo Neural...',
-                success: '¡Página de prueba generada!',
-                error: 'Fallo en la arquitectura',
-            }
-        );
-
-        // Aquí iría el fetch a /api/hunter/onboarding
-        setTimeout(() => {
+        setTelemetry(prev => [`🚀 DESPLEGANDO NODO NEURAL: ${selectedBusiness.name}`, ...prev]);
+        
+        try {
+            // Simulamos la fase de renderizado industrial
+            await new Promise(r => setTimeout(r, 3000));
+            
+            setTelemetry(prev => [`✅ NODO GENERADO: https://neural-hive.vercel.app/node/${selectedBusiness.id}`, ...prev]);
+            toast.success("¡Nodo Creado con Éxito!", {
+                description: "El prototipo ya está vivo en la Federación.",
+                duration: 5000
+            });
+            
+            // Mantenemos el estado para mostrar al cliente
+            setIsApproved(true);
+        } catch {
+            toast.error("Error en el despliegue del nodo");
+        } finally {
             setIsOnboarding(false);
-            window.open('https://github.com/wilycol', '_blank');
-        }, 3500);
+        }
     };
 
     return (
@@ -335,6 +374,77 @@ export default function AdminHunterPage() {
                     </div>
                 )}
             </div>
+            {/* Expediente de Inteligencia (Modal) */}
+            <AnimatePresence>
+                {showConfig && selectedBusiness && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4"
+                    >
+                        <Card className="w-full max-w-lg bg-black border-neon-blue/30 shadow-[0_0_50px_rgba(0,163,255,0.2)]">
+                            <CardHeader className="border-b border-white/5">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <CardTitle className="font-orbitron text-neon-blue uppercase tracking-tighter">{selectedBusiness.name}</CardTitle>
+                                        <CardDescription className="text-[10px] text-white/40 uppercase">Expediente de Inteligencia • Serie X</CardDescription>
+                                    </div>
+                                    <Button variant="ghost" size="icon" onClick={() => setShowConfig(false)}>
+                                        <X size={20} />
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] uppercase text-white/30 font-bold">Estado Digital</p>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            {selectedBusiness.website ? <Globe size={14} className="text-green-500" /> : <Globe size={14} className="text-red-500" />}
+                                            <span>{selectedBusiness.website ? "Sitio Web Detectado" : "Sin Presencia Web"}</span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] uppercase text-white/30 font-bold">Reputación</p>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <Star size={14} className="text-amber-500" />
+                                            <span>{selectedBusiness.rating || "N/A"} / 5.0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <p className="text-[9px] uppercase text-white/30 font-bold">Análisis de Oportunidad</p>
+                                    <div className="p-3 bg-white/5 rounded-lg border border-white/10 text-[11px] leading-relaxed italic">
+                                        "{selectedBusiness.opportunityScore > 80 
+                                            ? "Objetivo de alta prioridad. La ausencia de optimización digital lo hace extremadamente vulnerable a la competencia. Ideal para Neural Site." 
+                                            : "Negocio estable, pero con margen de mejora en automatización de contenido."}"
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 flex gap-3">
+                                    <Button 
+                                        className="flex-1 bg-neon-blue text-black font-black uppercase text-[10px]"
+                                        onClick={() => {
+                                            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedBusiness.name)}&query_place_id=${selectedBusiness.id}`;
+                                            window.open(mapUrl, '_blank');
+                                        }}
+                                    >
+                                        Abrir en Google Maps
+                                    </Button>
+                                    <Button 
+                                        variant="outline" 
+                                        className="flex-1 border-white/10 text-[10px] uppercase font-bold"
+                                        onClick={() => investigateDeeply(selectedBusiness)}
+                                    >
+                                        Investigación Profunda
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Modal de Acción (Sticky Bottom) */}
             <AnimatePresence>
@@ -343,41 +453,70 @@ export default function AdminHunterPage() {
                         initial={{ y: 100 }}
                         animate={{ y: 0 }}
                         exit={{ y: 100 }}
-                        className="fixed bottom-0 left-0 w-full p-4 bg-background/80 backdrop-blur-xl border-t border-neon-blue/20 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
+                        className="fixed bottom-0 left-0 w-full p-4 bg-background/90 backdrop-blur-2xl border-t border-neon-blue/30 z-50 shadow-[0_-20px_40px_rgba(0,0,0,0.7)]"
                     >
-                        <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
-                            <div className="flex-1">
-                                <h4 className="text-xs font-bold uppercase truncate">{selectedBusiness.name}</h4>
-                                <p className="text-[10px] text-neon-blue font-mono">DETECTADO • LISTO PARA SCAFFOLD</p>
+                        <div className="max-w-xl mx-auto flex items-center justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                                <h4 className="text-[11px] font-black uppercase truncate text-white">{selectedBusiness.name}</h4>
+                                <p className="text-[9px] text-neon-blue font-mono flex items-center gap-1">
+                                    <Sparkles size={8} /> LISTO PARA SCAFFOLD
+                                </p>
                             </div>
-                            <div className="flex gap-2">
+                            
+                            <div className="flex items-center gap-2">
+                                {/* Inteligencia Geográfica */}
                                 <Button 
                                     variant="outline" 
                                     size="icon"
-                                    className="border-white/10"
-                                    onClick={() => setSelectedBusiness(null)}
+                                    className="border-white/10 text-white/40 hover:text-neon-blue hover:border-neon-blue transition-all h-10 w-10"
+                                    onClick={() => setShowConfig(true)}
+                                    title="Ver Expediente"
                                 >
-                                    <AlertCircle size={18} />
+                                    <Info size={16} />
                                 </Button>
+
+                                {/* Disparador del Arquitecto */}
                                 <Button 
-                                    className={`${isApproved ? 'bg-neon-purple shadow-[0_0_20px_rgba(191,0,255,0.4)]' : 'bg-white/5 text-white/40'} hover:bg-neon-purple/80 transition-all gap-2 font-orbitron text-[10px] px-6`}
+                                    className={`font-orbitron font-black text-[10px] uppercase tracking-tighter transition-all h-10 px-4 ${
+                                        isApproved 
+                                        ? 'bg-neon-purple text-white shadow-[0_0_25px_rgba(191,0,255,0.5)] border-none' 
+                                        : 'bg-white/5 text-white/20 border border-white/5'
+                                    }`}
                                     onClick={() => launchPrototye()}
                                     disabled={isOnboarding || !isApproved}
                                 >
-                                    {isOnboarding ? <Loader2 className="animate-spin" /> : (isApproved ? <Zap size={14} /> : <HardHat size={14} />)} 
+                                    {isOnboarding ? <Loader2 className="animate-spin" /> : <HardHat size={14} className="mr-2" />} 
                                     {isApproved ? "Entregar al Arquitecto" : "Esperando Aprobación"}
                                 </Button>
-                                {!isApproved && (
-                                    <Button 
-                                        className="bg-green-500/20 text-green-400 border border-green-500/30 font-orbitron text-[10px]"
-                                        onClick={() => {
-                                            setIsApproved(true);
-                                            toast.success("Misión Aprobada. Preparando entrevista.");
-                                        }}
-                                    >
-                                        <CheckCircle2 size={14} />
-                                    </Button>
-                                )}
+
+                                {/* Switch de Aprobación Industrial */}
+                                <Button 
+                                    size="icon"
+                                    className={`h-10 w-10 transition-all ${
+                                        isApproved 
+                                        ? 'bg-green-500 text-black shadow-[0_0_20px_rgba(34,197,94,0.5)]' 
+                                        : 'bg-white/5 border border-white/10 text-white/30'
+                                    }`}
+                                    onClick={() => {
+                                        if (isApproved) {
+                                            setIsApproved(false);
+                                        } else {
+                                            investigateDeeply(selectedBusiness);
+                                        }
+                                    }}
+                                >
+                                    {isScanning ? <Loader2 className="animate-spin" /> : <CheckCircle2 size={18} />}
+                                </Button>
+
+                                {/* Cerrar Selección */}
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    className="text-white/20 hover:text-red-500 h-10 w-10"
+                                    onClick={() => setSelectedBusiness(null)}
+                                >
+                                    <X size={16} />
+                                </Button>
                             </div>
                         </div>
                     </motion.div>
