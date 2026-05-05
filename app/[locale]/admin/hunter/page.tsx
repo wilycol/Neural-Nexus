@@ -36,6 +36,8 @@ interface Business {
     location: { lat: number; lng: number };
     website?: string;
     phone?: string;
+    missionUrl?: string;
+    status: 'detected' | 'investigating' | 'completed';
 }
 
 const NICHES = [
@@ -171,14 +173,22 @@ export default function AdminHunterPage() {
             // Simulamos la fase de renderizado industrial
             await new Promise(r => setTimeout(r, 3000));
             
-            setTelemetry(prev => [`✅ NODO GENERADO: https://neural-hive.vercel.app/node/${selectedBusiness.id}`, ...prev]);
+            const url = `https://neural-hive.vercel.app/node/${selectedBusiness.id}`;
+            setTelemetry(prev => [`✅ NODO GENERADO: ${url}`, ...prev]);
+            
+            // Actualizamos el estado del negocio
+            setBusinesses(prev => prev.map(b => 
+                b.id === selectedBusiness.id 
+                ? { ...b, status: 'completed', missionUrl: url } 
+                : b
+            ));
+            
+            setSelectedBusiness(prev => prev ? { ...prev, status: 'completed', missionUrl: url } : null);
+
             toast.success("¡Nodo Creado con Éxito!", {
                 description: "El prototipo ya está vivo en la Federación.",
                 duration: 5000
             });
-            
-            // Mantenemos el estado para mostrar al cliente
-            setIsApproved(true);
         } catch {
             toast.error("Error en el despliegue del nodo");
         } finally {
@@ -350,7 +360,10 @@ export default function AdminHunterPage() {
                                                 <Store size={20} className="text-white/60" />
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-sm uppercase">{biz.name}</h3>
+                                                <h3 className="font-bold text-sm uppercase flex items-center gap-2">
+                                                    {biz.name}
+                                                    {biz.status === 'completed' && <Badge className="bg-green-500 text-black text-[8px] h-4">NODO VIVO</Badge>}
+                                                </h3>
                                                 <p className="text-[10px] text-white/40 truncate max-w-[200px]">{biz.address}</p>
                                             </div>
                                         </div>
@@ -402,13 +415,26 @@ export default function AdminHunterPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[9px] uppercase text-white/30 font-bold">Reputación</p>
+                                        <p className="text-[9px] uppercase text-white/30 font-bold">Contacto</p>
                                         <div className="flex items-center gap-2 text-xs">
-                                            <Star size={14} className="text-amber-500" />
-                                            <span>{selectedBusiness.rating || "N/A"} / 5.0</span>
+                                            <Phone size={14} className="text-neon-blue" />
+                                            <span>{selectedBusiness.phone || "Solicitar en Local"}</span>
                                         </div>
                                     </div>
                                 </div>
+
+                                {selectedBusiness.status === 'completed' && (
+                                    <div className="p-3 bg-neon-blue/10 border border-neon-blue/30 rounded-lg space-y-2">
+                                        <p className="text-[9px] uppercase text-neon-blue font-black">Resultado de la Misión</p>
+                                        <a 
+                                            href={selectedBusiness.missionUrl} 
+                                            target="_blank" 
+                                            className="text-xs text-white underline break-all flex items-center gap-2"
+                                        >
+                                            <ExternalLink size={12} /> {selectedBusiness.missionUrl}
+                                        </a>
+                                    </div>
+                                )}
 
                                 <div className="space-y-2">
                                     <p className="text-[9px] uppercase text-white/30 font-bold">Análisis de Oportunidad</p>
@@ -432,9 +458,18 @@ export default function AdminHunterPage() {
                                     <Button 
                                         variant="outline" 
                                         className="flex-1 border-white/10 text-[10px] uppercase font-bold"
-                                        onClick={() => investigateDeeply(selectedBusiness)}
+                                        onClick={() => {
+                                            const input = document.createElement('input');
+                                            input.type = 'file';
+                                            input.accept = 'image/*';
+                                            input.onchange = (e: any) => {
+                                                const file = e.target.files[0];
+                                                if (file) toast.success(`Foto "${file.name}" cargada como evidencia.`);
+                                            };
+                                            input.click();
+                                        }}
                                     >
-                                        Investigación Profunda
+                                        <Camera size={14} className="mr-2" /> Subir Fotos
                                     </Button>
                                 </div>
                             </CardContent>
