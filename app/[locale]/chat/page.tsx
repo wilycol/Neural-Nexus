@@ -70,7 +70,10 @@ export default function BeatrizChatPage() {
         try {
             const response = await fetch(`${backendUrl}/chat/portal`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true"
+                },
                 body: JSON.stringify({ message: input })
             });
 
