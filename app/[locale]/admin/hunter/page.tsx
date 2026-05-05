@@ -8,7 +8,9 @@ import {
     Store, 
     AlertCircle, 
     Camera, 
-    Loader2
+    Loader2,
+    Activity,
+    Terminal
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +26,9 @@ interface Business {
     opportunityScore: number;
     location: { lat: number; lng: number };
 }
+
+// Configuración del Búnker
+const BEATRIZ_BACKEND = "http://localhost:3002";
 
 export default function AdminHunterPage() {
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -63,7 +68,7 @@ export default function AdminHunterPage() {
         
         try {
             // Llamamos a nuestra nueva API en el backend de Beatriz
-            const res = await fetch(`http://localhost:3002/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}`);
+            const res = await fetch(`${BEATRIZ_BACKEND}/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}`);
             const data = await res.json();
             
             if (data.results) {
@@ -128,20 +133,31 @@ export default function AdminHunterPage() {
                     </CardDescription>
                 </CardHeader>
                 
-                <CardContent className="flex gap-3">
+                <CardContent className="space-y-3">
+                    <div className="flex gap-3">
+                        <Button 
+                            onClick={getGPS}
+                            variant="outline" 
+                            className="flex-1 border-white/10 hover:bg-white/5 font-orbitron text-[10px]"
+                        >
+                            {coords ? "Actualizar GPS" : "Activar GPS"}
+                        </Button>
+                        <Button 
+                            onClick={scanNearby}
+                            disabled={!coords || isScanning}
+                            className="flex-1 bg-neon-blue hover:bg-neon-blue/80 text-white font-orbitron text-[10px] shadow-[0_0_15px_rgba(0,163,255,0.4)]"
+                        >
+                            {isScanning ? <Loader2 className="animate-spin" /> : "Escanear Entorno"}
+                        </Button>
+                    </div>
+
                     <Button 
-                        onClick={getGPS}
-                        variant="outline" 
-                        className="flex-1 border-white/10 hover:bg-white/5 font-orbitron text-[10px]"
+                        onClick={() => window.open(`${BEATRIZ_BACKEND}/hunter/logs`, '_blank')}
+                        variant="ghost"
+                        className="w-full border border-neon-blue/20 text-neon-blue font-mono text-[9px] uppercase tracking-widest hover:bg-neon-blue/10 gap-2 h-8"
                     >
-                        {coords ? "Actualizar GPS" : "Activar GPS"}
-                    </Button>
-                    <Button 
-                        onClick={scanNearby}
-                        disabled={!coords || isScanning}
-                        className="flex-1 bg-neon-blue hover:bg-neon-blue/80 text-white font-orbitron text-[10px] shadow-[0_0_15px_rgba(0,163,255,0.4)]"
-                    >
-                        {isScanning ? <Loader2 className="animate-spin" /> : "Escanear Entorno"}
+                        <Activity size={14} className={isScanning ? "animate-pulse" : ""} /> 
+                        Ver Telemetría en Tiempo Real (Logs)
                     </Button>
                 </CardContent>
             </Card>
