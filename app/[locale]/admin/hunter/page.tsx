@@ -210,9 +210,10 @@ export default function AdminHunterPage() {
             } else {
                 throw new Error(data.message || "Fallo en el despliegue");
             }
-        } catch (err: any) {
-            setTelemetry(prev => [`❌ ERROR: ${err.message}`, ...prev]);
-            toast.error("Error en la arquitectura: " + err.message);
+        } catch (err) {
+            const errorMsg = err instanceof Error ? err.message : "Fallo desconocido";
+            setTelemetry(prev => [`❌ ERROR: ${errorMsg}`, ...prev]);
+            toast.error("Error en la arquitectura: " + errorMsg);
         } finally {
             setIsOnboarding(false);
         }
