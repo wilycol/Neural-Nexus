@@ -70,7 +70,7 @@ export default function AdminHunterPage() {
                 setBusinesses(data.results);
                 toast.success(`${data.count} oportunidades detectadas`);
             }
-        } catch (_error) {
+        } catch {
             toast.error("Fallo en la conexión con el Hunter");
         } finally {
             setIsScanning(false);
@@ -78,7 +78,7 @@ export default function AdminHunterPage() {
     };
 
     // 🏗️ Paso 3: Lanzar Prototipo (Misión Express)
-    const launchPrototye = async (_business: Business) => {
+    const launchPrototye = async () => {
         setIsOnboarding(true);
         toast.promise(
             new Promise(resolve => setTimeout(resolve, 3000)), // Simulación de proceso
@@ -215,7 +215,7 @@ export default function AdminHunterPage() {
                                 </Button>
                                 <Button 
                                     className="bg-neon-purple hover:bg-neon-purple/80 text-white gap-2 font-orbitron text-[10px] px-6"
-                                    onClick={() => launchPrototye(selectedBusiness)}
+                                    onClick={() => launchPrototye()}
                                     disabled={isOnboarding}
                                 >
                                     {isOnboarding ? <Loader2 className="animate-spin" /> : <Zap size={14} />} 
