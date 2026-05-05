@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -123,7 +122,7 @@ export default function BeatrizChatPage() {
             </header>
 
             {/* Chat Area */}
-            <ScrollArea className="flex-1 p-4 z-0" ref={scrollRef}>
+            <div className="flex-1 p-4 z-0 overflow-y-auto" ref={scrollRef}>
                 <div className="max-w-3xl mx-auto space-y-6 pb-4">
                     <AnimatePresence initial={false}>
                         {messages.map((msg) => (
@@ -165,7 +164,7 @@ export default function BeatrizChatPage() {
                         </motion.div>
                     )}
                 </div>
-            </ScrollArea>
+            </div>
 
             {/* Input Area */}
             <div className="p-4 border-t border-white/5 bg-black/40 backdrop-blur-xl z-10">
