@@ -6,8 +6,6 @@ import {
     User, 
     Sparkles, 
     Bot, 
-    Mic, 
-    Image as ImageIcon,
     Loader2,
     ArrowLeft,
     Heart,
@@ -218,6 +216,3 @@ export default function BeatrizChatPage() {
     );
 }
 
-function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
-    return <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${className}`}>{children}</div>;
-}
