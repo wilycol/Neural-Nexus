@@ -202,7 +202,7 @@ export default function BeatrizChatPage() {
     );
 }
 
-function Badge({ children, className, variant }: { children: React.ReactNode; className?: string; variant?: string }) {
+function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
         <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${className}`}>
             {children}
