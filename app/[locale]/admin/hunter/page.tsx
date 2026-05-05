@@ -4,9 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { 
     MapPin, 
     Radar, 
-    Zap, 
     Store, 
-    AlertCircle, 
     Camera, 
     Loader2,
     Terminal,
@@ -19,10 +17,9 @@ import {
     Utensils,
     Sparkles,
     Info,
-    ExternalLink,
-    Phone,
     Globe,
-    Star
+    Star,
+    X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -156,7 +153,7 @@ export default function AdminHunterPage() {
             
             setIsApproved(true);
             toast.success("Triple Misión Iniciada: Hunter, Arquitecto y Seductor en posición.");
-        } catch (err) {
+        } catch {
             toast.error("Error al conectar con el búnker para la investigación.");
         } finally {
             setIsScanning(false);
@@ -416,9 +413,9 @@ export default function AdminHunterPage() {
                                 <div className="space-y-2">
                                     <p className="text-[9px] uppercase text-white/30 font-bold">Análisis de Oportunidad</p>
                                     <div className="p-3 bg-white/5 rounded-lg border border-white/10 text-[11px] leading-relaxed italic">
-                                        "{selectedBusiness.opportunityScore > 80 
+                                        &quot;{selectedBusiness.opportunityScore > 80 
                                             ? "Objetivo de alta prioridad. La ausencia de optimización digital lo hace extremadamente vulnerable a la competencia. Ideal para Neural Site." 
-                                            : "Negocio estable, pero con margen de mejora en automatización de contenido."}"
+                                            : "Negocio estable, pero con margen de mejora en automatización de contenido."}&quot;
                                     </div>
                                 </div>
 
