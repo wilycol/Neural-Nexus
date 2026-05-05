@@ -151,7 +151,7 @@ export default function AdminHunterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-background text-white p-4 pb-20 space-y-6">
+        <div className="min-h-screen bg-background text-white p-4 pb-44 space-y-6">
             {/* Header Industrial */}
             <div className="flex items-center justify-between mb-8">
                 <div>
@@ -163,6 +163,14 @@ export default function AdminHunterPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-white/40 hover:text-white"
+                        onClick={() => toast.info("Modo Manual: Sube fotos del local")}
+                    >
+                        <Camera size={20} />
+                    </Button>
                     <Button 
                         variant="ghost" 
                         size="icon" 
@@ -376,15 +384,6 @@ export default function AdminHunterPage() {
                 )}
             </AnimatePresence>
 
-            {/* Floating Action: Onboarding Manual */}
-            <div className="fixed bottom-24 right-4">
-                <Button 
-                    className="w-14 h-14 rounded-full bg-neon-blue shadow-[0_0_20px_rgba(0,163,255,0.6)] flex items-center justify-center p-0"
-                    onClick={() => toast.info("Modo Manual: Sube fotos del local")}
-                >
-                    <Camera size={24} />
-                </Button>
-            </div>
         </div>
     );
 }

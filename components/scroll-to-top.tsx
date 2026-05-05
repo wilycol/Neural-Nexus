@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
 
 export function ScrollToTop() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
+
+  if (pathname.includes("/admin/hunter")) return null;
 
   // Mostrar el botón cuando se hace scroll hacia abajo
   useEffect(() => {

@@ -138,7 +138,7 @@ export function MascotOverlay({
     };
   }, []);
 
-  if (pathname === "/reels") return null;
+  if (pathname === "/reels" || pathname.includes("/admin/hunter")) return null;
 
   return (
     <div

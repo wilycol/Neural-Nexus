@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Sparkles } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // EL CEREBRO DEL VENDEDOR ESTRELLA DE NEURAL SITES
@@ -27,7 +28,10 @@ Tono: Directo, entusiasta, seguro. Eres el mejor vendedor del mundo.
 `;
 
 export function SalesAdvisorWidget() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+
+    if (pathname.includes("/admin/hunter")) return null;
     const [messages, setMessages] = useState([
         {
             id: 1,
