@@ -18,7 +18,8 @@ import {
     Sparkles,
     Info,
     Globe,
-    Star,
+    Phone,
+    ExternalLink,
     X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -462,8 +463,9 @@ export default function AdminHunterPage() {
                                             const input = document.createElement('input');
                                             input.type = 'file';
                                             input.accept = 'image/*';
-                                            input.onchange = (e: any) => {
-                                                const file = e.target.files[0];
+                                            input.onchange = (e: Event) => {
+                                                const target = e.target as HTMLInputElement;
+                                                const file = target.files?.[0];
                                                 if (file) toast.success(`Foto "${file.name}" cargada como evidencia.`);
                                             };
                                             input.click();
