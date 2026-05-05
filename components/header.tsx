@@ -36,7 +36,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   
-  const { user: authUser, profile } = useAuth();
+  const { user: authUser, profile, role } = useAuth();
   
   const userNickname = profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0] || null;
   const userAvatar = profile?.avatar_url || authUser?.user_metadata?.avatar_url || null;
@@ -108,6 +108,13 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                           </Link>
                         );
                       })}
+                      <Link
+                        href="/chat"
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md bg-neon-purple/10 text-neon-purple border border-neon-purple/20 hover:bg-neon-purple/20 transition-colors"
+                      >
+                        <Heart className="h-4 w-4 fill-neon-purple" />
+                        Hablar con Beatriz 💋
+                      </Link>
                       <button
                         onClick={async () => {
                           const supabase = getSupabaseBrowserClient();
@@ -123,22 +130,22 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                     </div>
                   )}
 
-                  {profile?.role === "admin" && (
+                  {(role === "admin" || profile?.role === "admin") && (
                     <div className="mt-6 space-y-1">
-                      <p className="px-3 text-[10px] font-black uppercase tracking-widest text-neon-blue/50 mb-2 flex items-center gap-2">
+                      <p className="px-3 text-[10px] font-black uppercase tracking-widest text-neon-blue mb-2 flex items-center gap-2">
                         <Wrench className="h-3 w-3" /> Administración
                       </p>
                       <Link href="/admin/missions" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
-                        <Zap className="h-4 w-4 text-neon-blue" /> Control de Misiones
+                        <Zap className="h-4 w-4 text-neon-blue" /> Control de Misiones 💋
                       </Link>
                       <Link href="/admin/hunter" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <Target className="h-4 w-4 text-neon-blue" /> Cacería de Campo 🎯
                       </Link>
                       <Link href="/admin/leads" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
-                        <Handshake className="h-4 w-4 text-neon-blue" /> Vigilancia de Alianzas
+                        <Handshake className="h-4 w-4 text-neon-blue" /> Vigilancia de Alianzas 🤝
                       </Link>
                       <Link href="/admin/monitor?tab=reception" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
-                        <FileText className="h-4 w-4 text-neon-blue" /> Log de Recepción
+                        <FileText className="h-4 w-4 text-neon-blue" /> Log de Recepción 📡
                       </Link>
                     </div>
                   )}

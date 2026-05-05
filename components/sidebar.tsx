@@ -12,6 +12,7 @@ import {
   Zap,
   Handshake,
   Target,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -122,7 +123,7 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
           })}
         </div>
 
-        {/* Favorites (solo si está logueado) */}
+        {/* Mi Cuenta */}
         {isLoggedIn && (
           <div className="mt-6">
             <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
@@ -148,6 +149,18 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
                 </Link>
               );
             })}
+            
+            {/* Beatriz Chat Bridge */}
+            <Link
+              href="/chat"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mt-2 bg-neon-purple/10 text-neon-purple border border-neon-purple/20 hover:bg-neon-purple/20 group",
+                pathname === "/chat" && "bg-neon-purple text-white border-neon-purple"
+              )}
+            >
+              <Heart className={cn("h-4 w-4 transition-all group-hover:scale-125", pathname === "/chat" ? "fill-white" : "fill-neon-purple")} />
+              Hablar con Beatriz 💋
+            </Link>
           </div>
         )}
 
