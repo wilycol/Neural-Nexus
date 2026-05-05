@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Menu, X, User, Heart, LogOut, Wrench, Zap, Handshake, Target, FileText, Video } from "lucide-react";
+import { Search, Menu, X, User, Heart, LogOut, Wrench, Zap, Handshake, Target, FileText } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
