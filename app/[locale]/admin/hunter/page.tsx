@@ -170,30 +170,49 @@ export default function AdminHunterPage() {
         if (!selectedBusiness) return;
         
         setIsOnboarding(true);
-        setTelemetry(prev => [`🚀 DESPLEGANDO NODO NEURAL: ${selectedBusiness.name}`, ...prev]);
+        setTelemetry(prev => [`🚀 INICIANDO DESPLIEGUE INDUSTRIAL: ${selectedBusiness.name}`, ...prev]);
+        setTelemetry(prev => [`🔨 Arquitecto: Clonando Plantilla FreeSmoke...`, ...prev]);
         
         try {
-            // Simulamos la fase de renderizado industrial
-            await new Promise(r => setTimeout(r, 3000));
-            
-            const url = `https://neural-hive.vercel.app/node/${selectedBusiness.id}`;
-            const pitch = `¡Hola ${selectedBusiness.name}! 🚀 He estado analizando su presencia en Google y veo un potencial enorme que no se está aprovechando. Beatriz AI ha diseñado este prototipo de Neural Site especialmente para ustedes: ${url} -- ¿Qué les parece si lo activamos para atraer más clientes esta misma semana? 💎🦾`;
-            
-            setTelemetry(prev => [`✅ NODO GENERADO: ${url}`, ...prev]);
-            setTelemetry(prev => [`💌 PITCH LISTO: "¡Hola ${selectedBusiness.name}..."`, ...prev]);
-            
-            // Actualizamos el estado del negocio
-            const updatedBiz = { ...selectedBusiness, status: 'completed' as const, missionUrl: url, pitch };
-            
-            setBusinesses(prev => prev.map(b => b.id === selectedBusiness.id ? updatedBiz : b));
-            setSelectedBusiness(updatedBiz);
-
-            toast.success("¡Operación Exitosa!", {
-                description: "Nodo y Pitch de venta listos.",
-                duration: 5000
+            // Llamada REAL al búnker de Beatriz
+            const res = await fetch(`${backendUrl}/api/nodes/create`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify({
+                    name: selectedBusiness.name.replace(/\s+/g, '_'),
+                    brandHtml: `<span>${selectedBusiness.name}</span>`,
+                    color: "neon-blue",
+                    plan: "premium",
+                    clientEmail: selectedBusiness.phone || "portalneuralnexus@gmail.com"
+                })
             });
-        } catch {
-            toast.error("Error en el despliegue del nodo");
+
+            const data = await res.json();
+            
+            if (data.success) {
+                const url = data.url || `https://neural-hive.vercel.app/node/${selectedBusiness.id}`;
+                const pitch = `¡Hola ${selectedBusiness.name}! 🚀 He estado analizando su presencia en Google y veo un potencial enorme que no se está aprovechando. Beatriz AI ha diseñado este prototipo de Neural Site especialmente para ustedes: ${url} -- ¿Qué les parece si lo activamos para atraer más clientes esta misma semana? 💎🦾`;
+                
+                setTelemetry(prev => [`✅ NODO VIVO: ${url}`, ...prev]);
+                setTelemetry(prev => [`📡 HIVE: Registro en Supabase completado.`, ...prev]);
+                
+                const updatedBiz = { ...selectedBusiness, status: 'completed' as const, missionUrl: url, pitch };
+                setBusinesses(prev => prev.map(b => b.id === selectedBusiness.id ? updatedBiz : b));
+                setSelectedBusiness(updatedBiz);
+
+                toast.success("¡Despliegue Exitoso!", {
+                    description: "El nodo está vivo y registrado en la Federación.",
+                    duration: 5000
+                });
+            } else {
+                throw new Error(data.message || "Fallo en el despliegue");
+            }
+        } catch (err: any) {
+            setTelemetry(prev => [`❌ ERROR: ${err.message}`, ...prev]);
+            toast.error("Error en la arquitectura: " + err.message);
         } finally {
             setIsOnboarding(false);
         }
@@ -532,29 +551,29 @@ export default function AdminHunterPage() {
                         exit={{ y: 100 }}
                         className="fixed bottom-0 left-0 w-full p-4 bg-background/90 backdrop-blur-2xl border-t border-neon-blue/30 z-50 shadow-[0_-20px_40px_rgba(0,0,0,0.7)]"
                     >
-                        <div className="max-w-xl mx-auto flex items-center justify-between gap-3">
+                        <div className="max-w-xl mx-auto flex items-center justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                                <h4 className="text-[11px] font-black uppercase truncate text-white">{selectedBusiness.name}</h4>
-                                <p className="text-[9px] text-neon-blue font-mono flex items-center gap-1">
-                                    <Sparkles size={8} /> LISTO PARA SCAFFOLD
+                                <h4 className="text-[10px] font-black uppercase truncate text-white">{selectedBusiness.name}</h4>
+                                <p className="text-[8px] text-neon-blue font-mono flex items-center gap-1">
+                                    <Sparkles size={8} /> READY
                                 </p>
                             </div>
                             
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5 shrink-0">
                                 {/* Inteligencia Geográfica */}
                                 <Button 
                                     variant="outline" 
                                     size="icon"
-                                    className="border-white/10 text-white/40 hover:text-neon-blue hover:border-neon-blue transition-all h-10 w-10"
+                                    className="border-white/10 text-white/40 hover:text-neon-blue hover:border-neon-blue transition-all h-9 w-9 shrink-0"
                                     onClick={() => setShowConfig(true)}
                                     title="Ver Expediente"
                                 >
-                                    <Info size={16} />
+                                    <Info size={14} />
                                 </Button>
 
                                 {/* Disparador del Arquitecto / Ver Nodo */}
                                 <Button 
-                                    className={`font-orbitron font-black text-[10px] uppercase tracking-tighter transition-all h-10 px-4 ${
+                                    className={`font-orbitron font-black text-[9px] uppercase tracking-tighter transition-all h-9 px-3 shrink-0 ${
                                         selectedBusiness.status === 'completed'
                                         ? 'bg-neon-blue text-black shadow-[0_0_25px_rgba(0,163,255,0.5)] border-none'
                                         : isApproved 
@@ -570,14 +589,14 @@ export default function AdminHunterPage() {
                                     }}
                                     disabled={isOnboarding || (!isApproved && selectedBusiness.status !== 'completed')}
                                 >
-                                    {isOnboarding ? <Loader2 className="animate-spin" /> : <HardHat size={14} className="mr-2" />} 
-                                    {selectedBusiness.status === 'completed' ? "Abrir Nodo Vivo" : isApproved ? "Entregar al Arquitecto" : "Esperando Aprobación"}
+                                    {isOnboarding ? <Loader2 className="animate-spin" /> : <HardHat size={12} className="mr-1.5" />} 
+                                    {selectedBusiness.status === 'completed' ? "Ver Nodo" : isApproved ? "Arquitecto" : "Espera"}
                                 </Button>
 
                                 {/* Switch de Aprobación Industrial */}
                                 <Button 
                                     size="icon"
-                                    className={`h-10 w-10 transition-all ${
+                                    className={`h-9 w-9 shrink-0 transition-all ${
                                         isApproved 
                                         ? 'bg-green-500 text-black shadow-[0_0_20px_rgba(34,197,94,0.5)]' 
                                         : 'bg-white/5 border border-white/10 text-white/30'
@@ -590,17 +609,17 @@ export default function AdminHunterPage() {
                                         }
                                     }}
                                 >
-                                    {isScanning ? <Loader2 className="animate-spin" /> : <CheckCircle2 size={18} />}
+                                    {isScanning ? <Loader2 className="animate-spin" /> : <CheckCircle2 size={16} />}
                                 </Button>
 
                                 {/* Cerrar Selección */}
                                 <Button 
                                     variant="ghost" 
                                     size="icon"
-                                    className="text-white/20 hover:text-red-500 h-10 w-10"
+                                    className="text-white/20 hover:text-red-500 h-9 w-9 shrink-0"
                                     onClick={() => setSelectedBusiness(null)}
                                 >
-                                    <X size={16} />
+                                    <X size={14} />
                                 </Button>
                             </div>
                         </div>

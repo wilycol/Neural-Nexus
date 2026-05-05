@@ -38,7 +38,7 @@ export default async function RootLayout({
       <head>
         {/* ... existing scripts ... */}
       </head>
-      <body className="font-exo antialiased">
+      <body className="font-exo antialiased overflow-x-hidden selection:bg-neon-blue selection:text-black">
         <NextIntlClientProvider messages={messages}>
           <PayPalProvider>
             <ThemeProvider
