@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { 
     MapPin, 
     Radar, 
@@ -9,7 +9,11 @@ import {
     AlertCircle, 
     Camera, 
     Loader2,
-    Activity
+    Activity,
+    Terminal,
+    Settings,
+    CheckCircle2,
+    HardHat
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,15 +30,44 @@ interface Business {
     location: { lat: number; lng: number };
 }
 
-// Configuración del Búnker
-const BEATRIZ_BACKEND = "http://localhost:3002";
-
 export default function AdminHunterPage() {
+    const [backendUrl, setBackendUrl] = useState("http://localhost:3002");
+    const [showConfig, setShowConfig] = useState(false);
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [isScanning, setIsScanning] = useState(false);
     const [businesses, setBusinesses] = useState<Business[]>([]);
     const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
     const [isOnboarding, setIsOnboarding] = useState(false);
+    const [telemetry, setTelemetry] = useState<string[]>([]);
+    const [isApproved, setIsApproved] = useState(false);
+
+    useEffect(() => {
+        const savedUrl = localStorage.getItem("beatriz_backend_url");
+        if (savedUrl) setBackendUrl(savedUrl);
+    }, []);
+
+    // 📡 Polling de Telemetría
+    const fetchLogs = useCallback(async () => {
+        try {
+            const res = await fetch(`${backendUrl}/hunter/logs`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
+            const data = await res.json();
+            if (data.logs) {
+                setTelemetry(data.logs);
+            }
+        } catch (err) {
+            console.error("Error fetching logs", err);
+        }
+    }, [backendUrl]);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isScanning || businesses.length > 0) {
+            interval = setInterval(fetchLogs, 2000);
+        }
+        return () => clearInterval(interval);
+    }, [isScanning, businesses.length, fetchLogs]);
 
     // 🎯 Paso 1: Obtener GPS
     const getGPS = () => {
@@ -66,8 +99,11 @@ export default function AdminHunterPage() {
         setBusinesses([]);
         
         try {
+            setTelemetry(prev => ["📡 Iniciando Escaneo Industrial...", ...prev]);
             // Llamamos a nuestra nueva API en el backend de Beatriz
-            const res = await fetch(`${BEATRIZ_BACKEND}/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}`);
+            const res = await fetch(`${backendUrl}/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             const data = await res.json();
             
             if (data.results) {
@@ -112,10 +148,49 @@ export default function AdminHunterPage() {
                         Nivel de Acceso: SuperAdmin - Serie X Elite
                     </p>
                 </div>
-                <Badge variant="outline" className="border-neon-blue/30 text-neon-blue bg-neon-blue/10 animate-pulse">
-                    Live Sync
-                </Badge>
+                <div className="flex items-center gap-2">
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-white/40 hover:text-white"
+                        onClick={() => setShowConfig(!showConfig)}
+                    >
+                        <Settings size={20} />
+                    </Button>
+                    <Badge variant="outline" className="border-neon-blue/30 text-neon-blue bg-neon-blue/10 animate-pulse">
+                        Live Sync
+                    </Badge>
+                </div>
             </div>
+
+            {/* Configuración del Backend */}
+            <AnimatePresence>
+                {showConfig && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                    >
+                        <Card className="bg-white/5 border-white/10 p-4 mb-6">
+                            <label className="text-[10px] uppercase font-mono text-white/50 block mb-2">Backend IP/URL (Ej: http://192.168.1.5:3002)</label>
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    value={backendUrl}
+                                    onChange={(e) => setBackendUrl(e.target.value)}
+                                    className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono"
+                                />
+                                <Button size="sm" onClick={() => { 
+                                    localStorage.setItem("beatriz_backend_url", backendUrl);
+                                    setShowConfig(false); 
+                                    toast.success("Puente Sincronizado"); 
+                                }}>Guardar</Button>
+                            </div>
+                        </Card>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Panel de Radar */}
             <Card className="bg-black/40 border-neon-blue/20 backdrop-blur-md overflow-hidden relative">
@@ -150,14 +225,22 @@ export default function AdminHunterPage() {
                         </Button>
                     </div>
 
-                    <Button 
-                        onClick={() => window.open(`${BEATRIZ_BACKEND}/hunter/logs`, '_blank')}
-                        variant="ghost"
-                        className="w-full border border-neon-blue/20 text-neon-blue font-mono text-[9px] uppercase tracking-widest hover:bg-neon-blue/10 gap-2 h-8"
-                    >
-                        <Activity size={14} className={isScanning ? "animate-pulse" : ""} /> 
-                        Ver Telemetría en Tiempo Real (Logs)
-                    </Button>
+                    <div className="pt-2 border-t border-white/5">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[9px] uppercase font-bold text-neon-blue flex items-center gap-1">
+                                <Terminal size={12} /> Consola de Telemetría
+                            </span>
+                            {isScanning && <Loader2 size={12} className="animate-spin text-neon-blue" />}
+                        </div>
+                        <div className="h-24 bg-black/60 rounded border border-white/5 p-2 font-mono text-[9px] overflow-y-auto space-y-1">
+                            {telemetry.length === 0 && <p className="text-white/20 italic">Esperando datos de la Serie X...</p>}
+                            {telemetry.map((log, i) => (
+                                <p key={i} className={`${log.includes('Error') ? 'text-red-400' : 'text-green-400/80'}`}>
+                                    {`> ${log}`}
+                                </p>
+                            ))}
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -229,13 +312,24 @@ export default function AdminHunterPage() {
                                     <AlertCircle size={18} />
                                 </Button>
                                 <Button 
-                                    className="bg-neon-purple hover:bg-neon-purple/80 text-white gap-2 font-orbitron text-[10px] px-6"
+                                    className={`${isApproved ? 'bg-neon-purple shadow-[0_0_20px_rgba(191,0,255,0.4)]' : 'bg-white/5 text-white/40'} hover:bg-neon-purple/80 transition-all gap-2 font-orbitron text-[10px] px-6`}
                                     onClick={() => launchPrototye()}
-                                    disabled={isOnboarding}
+                                    disabled={isOnboarding || !isApproved}
                                 >
-                                    {isOnboarding ? <Loader2 className="animate-spin" /> : <Zap size={14} />} 
-                                    Lanzar Prototipo
+                                    {isOnboarding ? <Loader2 className="animate-spin" /> : (isApproved ? <Zap size={14} /> : <HardHat size={14} />)} 
+                                    {isApproved ? "Entregar al Arquitecto" : "Esperando Aprobación"}
                                 </Button>
+                                {!isApproved && (
+                                    <Button 
+                                        className="bg-green-500/20 text-green-400 border border-green-500/30 font-orbitron text-[10px]"
+                                        onClick={() => {
+                                            setIsApproved(true);
+                                            toast.success("Misión Aprobada. Preparando entrevista.");
+                                        }}
+                                    >
+                                        <CheckCircle2 size={14} />
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </motion.div>
