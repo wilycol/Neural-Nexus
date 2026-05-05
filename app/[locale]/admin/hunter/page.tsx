@@ -1,21 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
     MapPin, 
     Radar, 
     Zap, 
-    Search, 
     Store, 
-    Globe, 
     AlertCircle, 
-    CheckCircle2, 
     Camera, 
-    Send,
     Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -74,7 +70,7 @@ export default function AdminHunterPage() {
                 setBusinesses(data.results);
                 toast.success(`${data.count} oportunidades detectadas`);
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Fallo en la conexión con el Hunter");
         } finally {
             setIsScanning(false);
@@ -82,7 +78,7 @@ export default function AdminHunterPage() {
     };
 
     // 🏗️ Paso 3: Lanzar Prototipo (Misión Express)
-    const launchPrototye = async (business: Business) => {
+    const launchPrototye = async (_business: Business) => {
         setIsOnboarding(true);
         toast.promise(
             new Promise(resolve => setTimeout(resolve, 3000)), // Simulación de proceso
