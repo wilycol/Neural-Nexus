@@ -12,7 +12,12 @@ import {
     Terminal,
     Settings,
     CheckCircle2,
-    HardHat
+    HardHat,
+    ShoppingBag,
+    Cpu,
+    Wrench,
+    Utensils,
+    Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,8 +34,18 @@ interface Business {
     location: { lat: number; lng: number };
 }
 
+const NICHES = [
+    { id: 'general', label: 'General', icon: Store, types: 'store' },
+    { id: 'moda', label: 'Zapatos/Moda', icon: ShoppingBag, types: 'shoe_store,clothing_store' },
+    { id: 'tech', label: 'Tecnología', icon: Cpu, types: 'electronics_store,computer_repair' },
+    { id: 'auto', label: 'Automotriz', icon: Wrench, types: 'car_repair,car_dealer' },
+    { id: 'food', label: 'Gastronomía', icon: Utensils, types: 'restaurant,cafe' },
+    { id: 'beauty', label: 'Estética/Gym', icon: Sparkles, types: 'beauty_salon,gym' },
+];
+
 export default function AdminHunterPage() {
     const [backendUrl, setBackendUrl] = useState("http://localhost:3002");
+    const [selectedNiche, setSelectedNiche] = useState(NICHES[0]);
     const [showConfig, setShowConfig] = useState(false);
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [isScanning, setIsScanning] = useState(false);
@@ -98,9 +113,9 @@ export default function AdminHunterPage() {
         setBusinesses([]);
         
         try {
-            setTelemetry(prev => ["📡 Iniciando Escaneo Industrial...", ...prev]);
+            setTelemetry(prev => [`📡 Iniciando Cacería Quirúrgica (${selectedNiche.label})...`, ...prev]);
             // Llamamos a nuestra nueva API en el backend de Beatriz
-            const res = await fetch(`${backendUrl}/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}`, {
+            const res = await fetch(`${backendUrl}/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}&types=${selectedNiche.types}`, {
                 headers: { "ngrok-skip-browser-warning": "true" }
             });
             const data = await res.json();
@@ -206,7 +221,28 @@ export default function AdminHunterPage() {
                     </CardDescription>
                 </CardHeader>
                 
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-4">
+                    {/* Selector de Nichos */}
+                    <div className="space-y-2">
+                        <label className="text-[9px] uppercase font-bold text-white/40 tracking-widest">Nicho de Cacería</label>
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                            {NICHES.map((niche) => (
+                                <button
+                                    key={niche.id}
+                                    onClick={() => setSelectedNiche(niche)}
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all whitespace-nowrap ${
+                                        selectedNiche.id === niche.id 
+                                        ? 'bg-neon-blue/20 border-neon-blue text-neon-blue shadow-[0_0_10px_rgba(0,163,255,0.2)]' 
+                                        : 'bg-white/5 border-white/10 text-white/50 hover:border-white/20'
+                                    }`}
+                                >
+                                    <niche.icon size={14} />
+                                    <span className="text-[10px] font-orbitron uppercase">{niche.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="flex gap-3">
                         <Button 
                             onClick={getGPS}
@@ -232,7 +268,12 @@ export default function AdminHunterPage() {
                             {isScanning && <Loader2 size={12} className="animate-spin text-neon-blue" />}
                         </div>
                         <div className="h-24 bg-black/60 rounded border border-white/5 p-2 font-mono text-[9px] overflow-y-auto space-y-1">
-                            {telemetry.length === 0 && <p className="text-white/20 italic">Esperando datos de la Serie X...</p>}
+                            {telemetry.length === 0 && (
+                                <div className="space-y-1">
+                                    <p className="text-white/20 italic">Esperando datos de la Serie X...</p>
+                                    <p className="text-[8px] text-white/10 uppercase font-mono tracking-tighter">Target: {backendUrl}</p>
+                                </div>
+                            )}
                             {telemetry.map((log, i) => (
                                 <p key={i} className={`${log.includes('Error') ? 'text-red-400' : 'text-green-400/80'}`}>
                                     {`> ${log}`}
