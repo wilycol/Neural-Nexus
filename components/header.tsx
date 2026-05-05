@@ -35,7 +35,7 @@ interface HeaderProps {
 export function Header({ showSidebarToggle = true }: HeaderProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const { user: authUser, profile, role } = useAuth();
   
@@ -52,12 +52,14 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
     }
   };
 
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 font-orbitron">
       <div className="flex h-16 items-center gap-4 px-4 md:px-6">
         {/* Sidebar toggle (mobile) */}
         {showSidebarToggle && (
-          <Sheet>
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -82,7 +84,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                     <p className="px-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 mb-2">
                       Navegación
                     </p>
-                    <NavLinks />
+                    <NavLinks onClick={closeMenu} />
                   </div>
 
                   {!profile?.is_premium ? (
@@ -107,6 +109,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                           <Link
                             key={item.href}
                             href={item.href}
+                            onClick={closeMenu}
                             className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
                           >
                             <Icon className="h-4 w-4 text-muted-foreground" />
@@ -116,6 +119,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                       })}
                       <Link
                         href="/chat"
+                        onClick={closeMenu}
                         className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md bg-neon-purple/10 text-neon-purple border border-neon-purple/20 hover:bg-neon-purple/20 transition-colors"
                       >
                         <Heart className="h-4 w-4 fill-neon-purple" />
@@ -126,6 +130,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                           const supabase = getSupabaseBrowserClient();
                           if (!supabase) return;
                           await supabase.auth.signOut();
+                          closeMenu();
                           window.location.href = "/";
                         }}
                         className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md text-red-500 hover:bg-red-500/10 transition-colors mt-2"
@@ -141,16 +146,16 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                       <p className="px-3 text-[10px] font-black uppercase tracking-widest text-neon-blue mb-2 flex items-center gap-2">
                         <Wrench className="h-3 w-3" /> Administración
                       </p>
-                      <Link href="/admin/missions" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                      <Link href="/admin/missions" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <Zap className="h-4 w-4 text-neon-blue" /> Control de Misiones 💋
                       </Link>
-                      <Link href="/admin/hunter" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                      <Link href="/admin/hunter" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <Target className="h-4 w-4 text-neon-blue" /> Cacería de Campo 🎯
                       </Link>
-                      <Link href="/admin/leads" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                      <Link href="/admin/leads" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <Handshake className="h-4 w-4 text-neon-blue" /> Vigilancia de Alianzas 🤝
                       </Link>
-                      <Link href="/admin/monitor?tab=reception" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                      <Link href="/admin/monitor?tab=reception" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <FileText className="h-4 w-4 text-neon-blue" /> Log de Recepción 📡
                       </Link>
                     </div>
@@ -158,10 +163,10 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
 
                   {!userNickname && (
                     <div className="mt-8 px-2 flex flex-col gap-2">
-                      <Button variant="outline" className="w-full" asChild>
+                      <Button variant="outline" className="w-full" asChild onClick={closeMenu}>
                         <Link href="/login">Iniciar Sesión</Link>
                       </Button>
-                      <Button className="w-full bg-gradient-to-r from-neon-blue to-neon-purple text-white" asChild>
+                      <Button className="w-full bg-gradient-to-r from-neon-blue to-neon-purple text-white" asChild onClick={closeMenu}>
                         <Link href="/registro">Crear Cuenta</Link>
                       </Button>
                     </div>
@@ -320,7 +325,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   );
 }
 
-function NavLinks() {
+function NavLinks({ onClick }: { onClick?: () => void }) {
   return (
     <>
       {primaryMenuItems.map((link) => {
@@ -329,6 +334,7 @@ function NavLinks() {
           <Link
             key={link.href}
             href={link.href}
+            onClick={onClick}
             className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
           >
             <Icon className="h-4 w-4 text-muted-foreground" />
@@ -347,6 +353,7 @@ function NavLinks() {
           <Link
             key={link.href}
             href={link.href}
+            onClick={onClick}
             className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors"
           >
             <Icon className={cn("h-4 w-4", link.color)} />

@@ -416,8 +416,8 @@ export default function AdminHunterPage() {
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4"
                     >
-                        <Card className="w-full max-w-lg bg-black border-neon-blue/30 shadow-[0_0_50px_rgba(0,163,255,0.2)]">
-                            <CardHeader className="border-b border-white/5">
+                        <Card className="w-full max-w-lg max-h-[85vh] md:max-h-[90vh] bg-black border-neon-blue/30 shadow-[0_0_50px_rgba(0,163,255,0.2)] flex flex-col overflow-hidden">
+                            <CardHeader className="border-b border-white/5 shrink-0">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <CardTitle className="font-orbitron text-neon-blue uppercase tracking-tighter">{selectedBusiness.name}</CardTitle>
@@ -428,7 +428,7 @@ export default function AdminHunterPage() {
                                     </Button>
                                 </div>
                             </CardHeader>
-                            <CardContent className="p-6 space-y-6">
+                            <CardContent className="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
                                         <p className="text-[9px] uppercase text-white/30 font-bold">Estado Digital</p>
