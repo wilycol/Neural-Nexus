@@ -30,8 +30,6 @@ Tono: Directo, entusiasta, seguro. Eres el mejor vendedor del mundo.
 export function SalesAdvisorWidget() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-
-    if (pathname.includes("/admin/hunter")) return null;
     const [messages, setMessages] = useState([
         {
             id: 1,
@@ -50,6 +48,8 @@ export function SalesAdvisorWidget() {
     useEffect(() => {
         if (isOpen) scrollToBottom();
     }, [messages, isTyping, isOpen]);
+
+    if (pathname.includes("/admin/hunter")) return null;
 
     const fetchAIResponse = async (userText: string, chatHistory: { id: number, role: string, text: string }[]) => {
         try {

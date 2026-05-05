@@ -10,9 +10,6 @@ export function ScrollToTop() {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
 
-  if (pathname.includes("/admin/hunter")) return null;
-
-  // Mostrar el botón cuando se hace scroll hacia abajo
   useEffect(() => {
     const toggleVisibility = () => {
       if (window.scrollY > 300) {
@@ -25,6 +22,8 @@ export function ScrollToTop() {
     window.addEventListener("scroll", toggleVisibility);
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
+
+  if (pathname.includes("/admin/hunter")) return null;
 
   const scrollToTop = () => {
     window.scrollTo({
