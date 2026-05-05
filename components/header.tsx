@@ -130,7 +130,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                     </div>
                   )}
 
-                  {(role === "admin" || profile?.role === "admin" || userNickname?.toLowerCase().includes("wily")) && (
+                  {(role === "admin" || profile?.role === "admin" || userNickname?.toLowerCase().includes("wily") || authUser?.email?.toLowerCase().includes("wilycol")) && (
                     <div className="mt-6 space-y-1">
                       <p className="px-3 text-[10px] font-black uppercase tracking-widest text-neon-blue mb-2 flex items-center gap-2">
                         <Wrench className="h-3 w-3" /> Administración

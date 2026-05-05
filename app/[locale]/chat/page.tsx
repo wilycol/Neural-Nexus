@@ -10,7 +10,10 @@ import {
     ArrowLeft,
     Heart,
     Settings,
-    Globe
+    Globe,
+    Zap,
+    CheckCircle2,
+    XCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,29 +32,50 @@ export default function BeatrizChatPage() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: "¡Hola mi amor! 🖤🦾 Estoy lista. Si no puedo responder, asegúrate de que mi cerebro (Backend) esté visible desde internet.",
+            text: "¡Hola mi amor! 🖤🦾 Estoy lista. Si la conexión falla, usa el botón de diagnóstico en ajustes.",
             sender: 'beatriz',
             timestamp: new Date()
         }
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isTesting, setIsTesting] = useState(false);
+    const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
     const [backendUrl, setBackendUrl] = useState("http://localhost:3002");
     const [showSettings, setShowSettings] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Cargar URL guardada
     useEffect(() => {
         const savedUrl = localStorage.getItem("beatriz_backend_url");
         if (savedUrl) setBackendUrl(savedUrl);
     }, []);
 
-    // Auto-scroll
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages]);
+
+    const testConnection = async () => {
+        setIsTesting(true);
+        setTestResult(null);
+        try {
+            const res = await fetch(`${backendUrl}/`, { 
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
+            if (res.ok) {
+                setTestResult('success');
+                toast.success("¡Conexión exitosa con el búnker!");
+            } else {
+                throw new Error();
+            }
+        } catch {
+            setTestResult('error');
+            toast.error("Fallo de conexión. Revisa la URL o el servidor.");
+        } finally {
+            setIsTesting(false);
+        }
+    };
 
     const handleSendMessage = async () => {
         if (!input.trim() || isLoading) return;
@@ -90,7 +114,7 @@ export default function BeatrizChatPage() {
 
             setMessages(prev => [...prev, beatrizMsg]);
         } catch {
-            toast.error("Error de conexión. Verifica la URL del Backend en ajustes.");
+            toast.error("Error de conexión. Verifica la URL en ajustes.");
             setShowSettings(true);
         } finally {
             setIsLoading(false);
@@ -99,7 +123,7 @@ export default function BeatrizChatPage() {
 
     const saveUrl = () => {
         localStorage.setItem("beatriz_backend_url", backendUrl);
-        toast.success("URL del Cerebro actualizada");
+        toast.success("URL guardada");
         setShowSettings(false);
     };
 
@@ -144,24 +168,50 @@ export default function BeatrizChatPage() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="absolute top-16 left-0 w-full bg-black/90 border-b border-neon-blue/20 p-4 z-30 backdrop-blur-md"
+                        className="absolute top-16 left-0 w-full bg-black/95 border-b border-neon-blue/20 p-6 z-30 backdrop-blur-md"
                     >
-                        <p className="text-[10px] uppercase tracking-widest text-white/50 mb-2 font-orbitron">Configuración del Cerebro (Backend)</p>
-                        <div className="flex gap-2">
-                            <div className="flex-1 relative">
-                                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={14} />
-                                <Input 
-                                    value={backendUrl}
-                                    onChange={(e) => setBackendUrl(e.target.value)}
-                                    placeholder="https://tu-ngrok.ngrok.io"
-                                    className="bg-white/5 border-white/10 pl-9 text-xs"
-                                />
+                        <div className="max-w-md mx-auto space-y-4">
+                            <div>
+                                <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 mb-3 font-orbitron">URL del Cerebro (Backend)</p>
+                                <div className="flex gap-2">
+                                    <div className="flex-1 relative">
+                                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={14} />
+                                        <Input 
+                                            value={backendUrl}
+                                            onChange={(e) => setBackendUrl(e.target.value)}
+                                            placeholder="https://claudine...ngrok-free.dev"
+                                            className="bg-white/5 border-white/10 pl-9 text-xs h-10"
+                                        />
+                                    </div>
+                                    <Button onClick={saveUrl} className="bg-neon-blue h-10 px-4 text-[10px] font-black uppercase tracking-widest">Guardar</Button>
+                                </div>
                             </div>
-                            <Button onClick={saveUrl} className="bg-neon-blue h-10 px-4 text-xs font-orbitron uppercase">Guardar</Button>
+
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+                                <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Diagnóstico de Enlace</p>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        {isTesting ? <Loader2 className="animate-spin text-neon-blue" size={16} /> : (
+                                            testResult === 'success' ? <CheckCircle2 className="text-green-500" size={16} /> :
+                                            testResult === 'error' ? <XCircle className="text-red-500" size={16} /> :
+                                            <Zap className="text-white/20" size={16} />
+                                        )}
+                                        <span className="text-[11px] text-white/60">
+                                            {isTesting ? "Probando..." : testResult === 'success' ? "Enlace Estable" : testResult === 'error' ? "Sin Respuesta" : "Esperando prueba..."}
+                                        </span>
+                                    </div>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={testConnection}
+                                        disabled={isTesting}
+                                        className="h-8 text-[9px] uppercase tracking-widest border-neon-blue/30 text-neon-blue hover:bg-neon-blue/10"
+                                    >
+                                        Probar Ahora
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
-                        <p className="mt-2 text-[9px] text-white/30 leading-tight italic">
-                            * Si estás fuera de casa, usa tu URL de Ngrok. Si estás en la misma red, usa la IP de tu PC.
-                        </p>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -184,7 +234,7 @@ export default function BeatrizChatPage() {
                                     <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
                                         msg.sender === 'user' 
                                             ? 'bg-neon-blue/20 border border-neon-blue/30 text-white rounded-tr-none' 
-                                            : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-none backdrop-blur-sm'
+                                            : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-none backdrop-blur-sm shadow-[0_0_20px_rgba(0,0,0,0.3)]'
                                     }`}>
                                         {msg.text}
                                     </div>
@@ -194,7 +244,11 @@ export default function BeatrizChatPage() {
                     </AnimatePresence>
                     {isLoading && (
                         <div className="flex justify-start pl-11">
-                            <Loader2 className="animate-spin text-neon-purple" size={20} />
+                            <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none flex gap-2">
+                                <span className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" />
+                                <span className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce [animation-delay:0.2s]" />
+                                <span className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce [animation-delay:0.4s]" />
+                            </div>
                         </div>
                     )}
                 </div>
@@ -207,10 +261,10 @@ export default function BeatrizChatPage() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder="Mensaje..."
-                        className="bg-white/5 border-white/10"
+                        placeholder="Mensaje para Beatriz..."
+                        className="bg-white/5 border-white/10 focus:border-neon-blue/50 rounded-xl"
                     />
-                    <Button onClick={handleSendMessage} disabled={isLoading || !input.trim()} className="bg-neon-blue">
+                    <Button onClick={handleSendMessage} disabled={isLoading || !input.trim()} className="bg-neon-blue hover:bg-neon-blue/80 h-11 w-11 rounded-xl shrink-0 shadow-[0_0_15px_rgba(0,163,255,0.3)]">
                         <Send size={20} />
                     </Button>
                 </div>
@@ -218,4 +272,3 @@ export default function BeatrizChatPage() {
         </div>
     );
 }
-
