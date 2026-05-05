@@ -11,7 +11,7 @@ type MascotOverlayProps = {
 
 export function MascotOverlay({
   src = "/NeuralNexusMascot.mp4",
-  sizePx = 160,
+  sizePx = 80,
   className,
 }: MascotOverlayProps) {
   const pathname = usePathname();

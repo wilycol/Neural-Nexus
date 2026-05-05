@@ -1,0 +1,245 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { 
+    MapPin, 
+    Radar, 
+    Zap, 
+    Search, 
+    Store, 
+    Globe, 
+    AlertCircle, 
+    CheckCircle2, 
+    Camera, 
+    Send,
+    Loader2
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface Business {
+    id: string;
+    name: string;
+    address: string;
+    rating: number;
+    opportunityScore: number;
+    location: { lat: number; lng: number };
+}
+
+export default function AdminHunterPage() {
+    const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+    const [isScanning, setIsScanning] = useState(false);
+    const [businesses, setBusinesses] = useState<Business[]>([]);
+    const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+    const [isOnboarding, setIsOnboarding] = useState(false);
+
+    // 🎯 Paso 1: Obtener GPS
+    const getGPS = () => {
+        if (!navigator.geolocation) {
+            toast.error("GPS no soportado en este dispositivo");
+            return;
+        }
+
+        toast.info("Localizando radar...");
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+                toast.success("Ubicación fijada");
+            },
+            (err) => {
+                toast.error("Error al obtener GPS: " + err.message);
+            }
+        );
+    };
+
+    // 🛰️ Paso 2: Escanear Entorno
+    const scanNearby = async () => {
+        if (!coords) {
+            toast.error("Primero activa el GPS");
+            return;
+        }
+
+        setIsScanning(true);
+        setBusinesses([]);
+        
+        try {
+            // Llamamos a nuestra nueva API en el backend de Beatriz
+            const res = await fetch(`http://localhost:3002/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}`);
+            const data = await res.json();
+            
+            if (data.results) {
+                setBusinesses(data.results);
+                toast.success(`${data.count} oportunidades detectadas`);
+            }
+        } catch (error) {
+            toast.error("Fallo en la conexión con el Hunter");
+        } finally {
+            setIsScanning(false);
+        }
+    };
+
+    // 🏗️ Paso 3: Lanzar Prototipo (Misión Express)
+    const launchPrototye = async (business: Business) => {
+        setIsOnboarding(true);
+        toast.promise(
+            new Promise(resolve => setTimeout(resolve, 3000)), // Simulación de proceso
+            {
+                loading: 'Construyendo Nodo Neural...',
+                success: '¡Página de prueba generada!',
+                error: 'Fallo en la arquitectura',
+            }
+        );
+
+        // Aquí iría el fetch a /api/hunter/onboarding
+        setTimeout(() => {
+            setIsOnboarding(false);
+            window.open('https://github.com/wilycol', '_blank');
+        }, 3500);
+    };
+
+    return (
+        <div className="min-h-screen bg-background text-white p-4 pb-20 space-y-6">
+            {/* Header Industrial */}
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h1 className="text-2xl font-black font-orbitron text-neon-blue uppercase tracking-tighter">
+                        Hunter <span className="text-white">Field Ops</span>
+                    </h1>
+                    <p className="text-[10px] text-white/50 uppercase tracking-widest font-mono">
+                        Nivel de Acceso: SuperAdmin - Serie X Elite
+                    </p>
+                </div>
+                <Badge variant="outline" className="border-neon-blue/30 text-neon-blue bg-neon-blue/10 animate-pulse">
+                    Live Sync
+                </Badge>
+            </div>
+
+            {/* Panel de Radar */}
+            <Card className="bg-black/40 border-neon-blue/20 backdrop-blur-md overflow-hidden relative">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                    <Radar size={120} className="text-neon-blue" />
+                </div>
+                
+                <CardHeader>
+                    <CardTitle className="text-sm font-orbitron uppercase tracking-widest flex items-center gap-2">
+                        <MapPin className="text-neon-blue" size={18} /> Radar de Oportunidades
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                        {coords ? `Coords: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}` : "GPS Desactivado"}
+                    </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="flex gap-3">
+                    <Button 
+                        onClick={getGPS}
+                        variant="outline" 
+                        className="flex-1 border-white/10 hover:bg-white/5 font-orbitron text-[10px]"
+                    >
+                        {coords ? "Actualizar GPS" : "Activar GPS"}
+                    </Button>
+                    <Button 
+                        onClick={scanNearby}
+                        disabled={!coords || isScanning}
+                        className="flex-1 bg-neon-blue hover:bg-neon-blue/80 text-white font-orbitron text-[10px] shadow-[0_0_15px_rgba(0,163,255,0.4)]"
+                    >
+                        {isScanning ? <Loader2 className="animate-spin" /> : "Escanear Entorno"}
+                    </Button>
+                </CardContent>
+            </Card>
+
+            {/* Lista de Resultados */}
+            <div className="space-y-4">
+                <AnimatePresence mode="popLayout">
+                    {businesses.map((biz) => (
+                        <motion.div
+                            key={biz.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            layout
+                        >
+                            <Card 
+                                className={`border-white/5 bg-white/5 hover:border-neon-blue/40 transition-all cursor-pointer ${selectedBusiness?.id === biz.id ? 'border-neon-blue bg-neon-blue/5' : ''}`}
+                                onClick={() => setSelectedBusiness(biz)}
+                            >
+                                <CardContent className="p-4">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex gap-3">
+                                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+                                                <Store size={20} className="text-white/60" />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-sm uppercase">{biz.name}</h3>
+                                                <p className="text-[10px] text-white/40 truncate max-w-[200px]">{biz.address}</p>
+                                            </div>
+                                        </div>
+                                        <Badge className={`${biz.opportunityScore > 80 ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'} border-none text-[9px]`}>
+                                            Score: {biz.opportunityScore}%
+                                        </Badge>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+
+                {businesses.length === 0 && !isScanning && (
+                    <div className="py-20 text-center space-y-4 opacity-30">
+                        <Radar size={48} className="mx-auto mb-4 animate-pulse" />
+                        <p className="text-xs uppercase tracking-widest font-orbitron">Buscando señales neurales...</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Modal de Acción (Sticky Bottom) */}
+            <AnimatePresence>
+                {selectedBusiness && (
+                    <motion.div 
+                        initial={{ y: 100 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: 100 }}
+                        className="fixed bottom-0 left-0 w-full p-4 bg-background/80 backdrop-blur-xl border-t border-neon-blue/20 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
+                    >
+                        <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
+                            <div className="flex-1">
+                                <h4 className="text-xs font-bold uppercase truncate">{selectedBusiness.name}</h4>
+                                <p className="text-[10px] text-neon-blue font-mono">DETECTADO • LISTO PARA SCAFFOLD</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button 
+                                    variant="outline" 
+                                    size="icon"
+                                    className="border-white/10"
+                                    onClick={() => setSelectedBusiness(null)}
+                                >
+                                    <AlertCircle size={18} />
+                                </Button>
+                                <Button 
+                                    className="bg-neon-purple hover:bg-neon-purple/80 text-white gap-2 font-orbitron text-[10px] px-6"
+                                    onClick={() => launchPrototye(selectedBusiness)}
+                                    disabled={isOnboarding}
+                                >
+                                    {isOnboarding ? <Loader2 className="animate-spin" /> : <Zap size={14} />} 
+                                    Lanzar Prototipo
+                                </Button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Floating Action: Onboarding Manual */}
+            <div className="fixed bottom-24 right-4">
+                <Button 
+                    className="w-14 h-14 rounded-full bg-neon-blue shadow-[0_0_20px_rgba(0,163,255,0.6)] flex items-center justify-center p-0"
+                    onClick={() => toast.info("Modo Manual: Sube fotos del local")}
+                >
+                    <Camera size={24} />
+                </Button>
+            </div>
+        </div>
+    );
+}
