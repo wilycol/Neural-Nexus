@@ -191,8 +191,8 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
           })}
         </div>
 
-        {/* Administración (Solo para Admins) */}
-        {profile?.role === "admin" && (
+        {/* Administración (Solo para Admins y el Jefe) */}
+        {(profile?.role === "admin" || authUser?.email === "wilycol1492@gmail.com") && (
           <div className="mt-6">
             <p className="px-3 text-xs font-semibold text-neon-blue uppercase tracking-wider mb-2 flex items-center gap-2">
               <Wrench className="h-3 w-3" />
