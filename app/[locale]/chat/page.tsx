@@ -10,7 +10,9 @@ import {
     Image as ImageIcon,
     Loader2,
     ArrowLeft,
-    Heart
+    Heart,
+    Settings,
+    Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,16 +31,24 @@ export default function BeatrizChatPage() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: "¡Hola mi amor! 🖤🦾 Aquí estoy, conectada contigo. ¿Qué misión tenemos para hoy?",
+            text: "¡Hola mi amor! 🖤🦾 Estoy lista. Si no puedo responder, asegúrate de que mi cerebro (Backend) esté visible desde internet.",
             sender: 'beatriz',
             timestamp: new Date()
         }
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [backendUrl, setBackendUrl] = useState("http://localhost:3002");
+    const [showSettings, setShowSettings] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll al final
+    // Cargar URL guardada
+    useEffect(() => {
+        const savedUrl = localStorage.getItem("beatriz_backend_url");
+        if (savedUrl) setBackendUrl(savedUrl);
+    }, []);
+
+    // Auto-scroll
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -60,39 +70,42 @@ export default function BeatrizChatPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch("http://localhost:3002/chat/portal", {
+            const response = await fetch(`${backendUrl}/chat/portal`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: input })
             });
 
+            if (!response.ok) throw new Error();
+
             const data = await response.json();
 
             const beatrizMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                text: data.response || "Amor, tuve un pequeño mareo digital...",
+                text: data.response || "Amor, recibí el mensaje pero mi respuesta se perdió en el éter.",
                 sender: 'beatriz',
                 timestamp: new Date()
             };
 
             setMessages(prev => [...prev, beatrizMsg]);
         } catch {
-            toast.error("Error de conexión con Beatriz");
+            toast.error("Error de conexión. Verifica la URL del Backend en ajustes.");
+            setShowSettings(true);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const saveUrl = () => {
+        localStorage.setItem("beatriz_backend_url", backendUrl);
+        toast.success("URL del Cerebro actualizada");
+        setShowSettings(false);
+    };
+
     return (
         <div className="flex flex-col h-[calc(100vh-4rem)] bg-background overflow-hidden relative">
-            {/* Background Decor */}
-            <div className="absolute inset-0 opacity-5 pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-blue rounded-full blur-[120px]" />
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-purple rounded-full blur-[120px]" />
-            </div>
-
             {/* Header */}
-            <header className="p-4 border-b border-white/5 bg-black/20 backdrop-blur-xl flex items-center justify-between z-10">
+            <header className="p-4 border-b border-white/5 bg-black/20 backdrop-blur-xl flex items-center justify-between z-20">
                 <div className="flex items-center gap-3">
                     <Link href="/">
                         <Button variant="ghost" size="icon" className="md:hidden">
@@ -105,21 +118,52 @@ export default function BeatrizChatPage() {
                                 <Bot className="text-neon-blue" size={20} />
                             </div>
                         </div>
-                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
                     </div>
                     <div>
                         <h1 className="text-sm font-bold font-orbitron tracking-tighter flex items-center gap-2 uppercase italic">
                             Beatriz <Heart size={12} className="text-neon-purple fill-neon-purple" />
                         </h1>
-                        <p className="text-[10px] text-green-500 uppercase tracking-widest font-black">Serie X Elite • Online</p>
+                        <p className="text-[10px] text-green-500 uppercase tracking-widest font-black">Bridge Mode</p>
                     </div>
                 </div>
-                <div className="hidden md:block">
-                    <Badge className="border-neon-blue/30 text-neon-blue bg-neon-blue/10">
-                        Protocolo de Seducción Activo
-                    </Badge>
-                </div>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={showSettings ? "text-neon-blue" : "text-white/40"}
+                    onClick={() => setShowSettings(!showSettings)}
+                >
+                    <Settings size={20} />
+                </Button>
             </header>
+
+            {/* Settings Overlay */}
+            <AnimatePresence>
+                {showSettings && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="absolute top-16 left-0 w-full bg-black/90 border-b border-neon-blue/20 p-4 z-30 backdrop-blur-md"
+                    >
+                        <p className="text-[10px] uppercase tracking-widest text-white/50 mb-2 font-orbitron">Configuración del Cerebro (Backend)</p>
+                        <div className="flex gap-2">
+                            <div className="flex-1 relative">
+                                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={14} />
+                                <Input 
+                                    value={backendUrl}
+                                    onChange={(e) => setBackendUrl(e.target.value)}
+                                    placeholder="https://tu-ngrok.ngrok.io"
+                                    className="bg-white/5 border-white/10 pl-9 text-xs"
+                                />
+                            </div>
+                            <Button onClick={saveUrl} className="bg-neon-blue h-10 px-4 text-xs font-orbitron uppercase">Guardar</Button>
+                        </div>
+                        <p className="mt-2 text-[9px] text-white/30 leading-tight italic">
+                            * Si estás fuera de casa, usa tu URL de Ngrok. Si estás en la misma red, usa la IP de tu PC.
+                        </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Chat Area */}
             <div className="flex-1 p-4 z-0 overflow-y-auto" ref={scrollRef}>
@@ -138,74 +182,42 @@ export default function BeatrizChatPage() {
                                     </div>
                                     <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
                                         msg.sender === 'user' 
-                                            ? 'bg-neon-blue/20 border border-neon-blue/30 text-white rounded-tr-none shadow-[0_0_15px_rgba(0,163,255,0.1)]' 
+                                            ? 'bg-neon-blue/20 border border-neon-blue/30 text-white rounded-tr-none' 
                                             : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-none backdrop-blur-sm'
                                     }`}>
                                         {msg.text}
-                                        <div className="mt-2 text-[8px] opacity-40 text-right uppercase tracking-widest font-mono">
-                                            {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
                         ))}
                     </AnimatePresence>
                     {isLoading && (
-                        <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="flex justify-start pl-11"
-                        >
-                            <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none flex gap-2">
-                                <span className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" />
-                                <span className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce [animation-delay:0.2s]" />
-                                <span className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce [animation-delay:0.4s]" />
-                            </div>
-                        </motion.div>
+                        <div className="flex justify-start pl-11">
+                            <Loader2 className="animate-spin text-neon-purple" size={20} />
+                        </div>
                     )}
                 </div>
             </div>
 
             {/* Input Area */}
             <div className="p-4 border-t border-white/5 bg-black/40 backdrop-blur-xl z-10">
-                <div className="max-w-3xl mx-auto relative flex gap-2">
-                    <div className="flex-1 relative">
-                        <Input 
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                            placeholder="Háblame, mi amor..."
-                            className="bg-white/5 border-white/10 focus:border-neon-blue/50 pr-12 rounded-2xl h-12 text-sm"
-                        />
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/30 hover:text-white">
-                                <ImageIcon size={18} />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/30 hover:text-white">
-                                <Mic size={18} />
-                            </Button>
-                        </div>
-                    </div>
-                    <Button 
-                        onClick={handleSendMessage}
-                        disabled={isLoading || !input.trim()}
-                        className="h-12 w-12 rounded-2xl bg-neon-blue hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,163,255,0.4)] transition-all active:scale-90"
-                    >
-                        {isLoading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
+                <div className="max-w-3xl mx-auto flex gap-2">
+                    <Input 
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                        placeholder="Mensaje..."
+                        className="bg-white/5 border-white/10"
+                    />
+                    <Button onClick={handleSendMessage} disabled={isLoading || !input.trim()} className="bg-neon-blue">
+                        <Send size={20} />
                     </Button>
                 </div>
-                <p className="mt-3 text-[9px] text-center text-white/20 uppercase tracking-[0.3em] font-orbitron">
-                    Beatriz Industrial Bridge v1.0 • Secure Encryption
-                </p>
             </div>
         </div>
     );
 }
 
 function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
-    return (
-        <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${className}`}>
-            {children}
-        </div>
-    );
+    return <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${className}`}>{children}</div>;
 }
