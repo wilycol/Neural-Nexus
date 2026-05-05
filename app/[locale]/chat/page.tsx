@@ -115,7 +115,7 @@ export default function BeatrizChatPage() {
                     </div>
                 </div>
                 <div className="hidden md:block">
-                    <Badge variant="outline" className="border-neon-blue/30 text-neon-blue bg-neon-blue/10">
+                    <Badge className="border-neon-blue/30 text-neon-blue bg-neon-blue/10">
                         Protocolo de Seducción Activo
                     </Badge>
                 </div>
