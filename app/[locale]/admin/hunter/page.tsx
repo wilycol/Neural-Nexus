@@ -38,6 +38,7 @@ interface Business {
     website?: string;
     phone?: string;
     missionUrl?: string;
+    pitch?: string;
     status: 'detected' | 'investigating' | 'completed';
     adn?: string;
 }
@@ -176,19 +177,19 @@ export default function AdminHunterPage() {
             await new Promise(r => setTimeout(r, 3000));
             
             const url = `https://neural-hive.vercel.app/node/${selectedBusiness.id}`;
+            const pitch = `¡Hola ${selectedBusiness.name}! 🚀 He estado analizando su presencia en Google y veo un potencial enorme que no se está aprovechando. Beatriz AI ha diseñado este prototipo de Neural Site especialmente para ustedes: ${url} -- ¿Qué les parece si lo activamos para atraer más clientes esta misma semana? 💎🦾`;
+            
             setTelemetry(prev => [`✅ NODO GENERADO: ${url}`, ...prev]);
+            setTelemetry(prev => [`💌 PITCH LISTO: "¡Hola ${selectedBusiness.name}..."`, ...prev]);
             
             // Actualizamos el estado del negocio
-            setBusinesses(prev => prev.map(b => 
-                b.id === selectedBusiness.id 
-                ? { ...b, status: 'completed', missionUrl: url } 
-                : b
-            ));
+            const updatedBiz = { ...selectedBusiness, status: 'completed' as const, missionUrl: url, pitch };
             
-            setSelectedBusiness(prev => prev ? { ...prev, status: 'completed', missionUrl: url } : null);
+            setBusinesses(prev => prev.map(b => b.id === selectedBusiness.id ? updatedBiz : b));
+            setSelectedBusiness(updatedBiz);
 
-            toast.success("¡Nodo Creado con Éxito!", {
-                description: "El prototipo ya está vivo en la Federación.",
+            toast.success("¡Operación Exitosa!", {
+                description: "Nodo y Pitch de venta listos.",
                 duration: 5000
             });
         } catch {
@@ -426,15 +427,37 @@ export default function AdminHunterPage() {
                                 </div>
 
                                 {selectedBusiness.status === 'completed' && (
-                                    <div className="p-3 bg-neon-blue/10 border border-neon-blue/30 rounded-lg space-y-2">
-                                        <p className="text-[9px] uppercase text-neon-blue font-black">Resultado de la Misión</p>
-                                        <a 
-                                            href={selectedBusiness.missionUrl} 
-                                            target="_blank" 
-                                            className="text-xs text-white underline break-all flex items-center gap-2"
-                                        >
-                                            <ExternalLink size={12} /> {selectedBusiness.missionUrl}
-                                        </a>
+                                    <div className="space-y-4">
+                                        <div className="p-3 bg-neon-blue/10 border border-neon-blue/30 rounded-lg space-y-2">
+                                            <p className="text-[9px] uppercase text-neon-blue font-black">Link del Nodo Vivo</p>
+                                            <a 
+                                                href={selectedBusiness.missionUrl} 
+                                                target="_blank" 
+                                                className="text-xs text-white underline break-all flex items-center gap-2"
+                                            >
+                                                <ExternalLink size={12} /> {selectedBusiness.missionUrl}
+                                            </a>
+                                        </div>
+
+                                        <div className="p-3 bg-neon-purple/10 border border-neon-purple/30 rounded-lg space-y-2">
+                                            <p className="text-[9px] uppercase text-neon-purple font-black">💌 Mensaje de Conquista (Seductor)</p>
+                                            <p className="text-[11px] text-white/80 leading-relaxed">
+                                                {selectedBusiness.pitch}
+                                            </p>
+                                            <Button 
+                                                size="sm" 
+                                                variant="ghost" 
+                                                className="w-full text-neon-purple hover:bg-neon-purple/10 h-8 text-[10px]"
+                                                onClick={() => {
+                                                    if (selectedBusiness.pitch) {
+                                                        navigator.clipboard.writeText(selectedBusiness.pitch);
+                                                        toast.success("Mensaje copiado para WhatsApp");
+                                                    }
+                                                }}
+                                            >
+                                                Copiar Mensaje de Venta
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
 
@@ -529,18 +552,26 @@ export default function AdminHunterPage() {
                                     <Info size={16} />
                                 </Button>
 
-                                {/* Disparador del Arquitecto */}
+                                {/* Disparador del Arquitecto / Ver Nodo */}
                                 <Button 
                                     className={`font-orbitron font-black text-[10px] uppercase tracking-tighter transition-all h-10 px-4 ${
-                                        isApproved 
+                                        selectedBusiness.status === 'completed'
+                                        ? 'bg-neon-blue text-black shadow-[0_0_25px_rgba(0,163,255,0.5)] border-none'
+                                        : isApproved 
                                         ? 'bg-neon-purple text-white shadow-[0_0_25px_rgba(191,0,255,0.5)] border-none' 
                                         : 'bg-white/5 text-white/20 border border-white/5'
                                     }`}
-                                    onClick={() => launchPrototye()}
-                                    disabled={isOnboarding || !isApproved}
+                                    onClick={() => {
+                                        if (selectedBusiness.status === 'completed' && selectedBusiness.missionUrl) {
+                                            window.open(selectedBusiness.missionUrl, '_blank');
+                                        } else {
+                                            launchPrototye();
+                                        }
+                                    }}
+                                    disabled={isOnboarding || (!isApproved && selectedBusiness.status !== 'completed')}
                                 >
                                     {isOnboarding ? <Loader2 className="animate-spin" /> : <HardHat size={14} className="mr-2" />} 
-                                    {isApproved ? "Entregar al Arquitecto" : "Esperando Aprobación"}
+                                    {selectedBusiness.status === 'completed' ? "Abrir Nodo Vivo" : isApproved ? "Entregar al Arquitecto" : "Esperando Aprobación"}
                                 </Button>
 
                                 {/* Switch de Aprobación Industrial */}
