@@ -23,6 +23,7 @@ import { getBadgeInfo } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { primaryMenuItems, destacadosItems, userMenuItems } from "@/lib/nav-config";
 import { PremiumCard } from "@/components/premium-card";
+import { DonationBox } from "@/components/payment/donation-box";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
@@ -84,9 +85,14 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                     <NavLinks />
                   </div>
 
-                  {!profile?.is_premium && (
-                    <div className="px-2 mt-4">
+                  {!profile?.is_premium ? (
+                    <div className="px-2 mt-4 space-y-4">
                       <PremiumCard />
+                      <DonationBox compact />
+                    </div>
+                  ) : (
+                    <div className="px-2 mt-4">
+                      <DonationBox compact />
                     </div>
                   )}
 
