@@ -9,7 +9,6 @@ import {
     AlertCircle, 
     Camera, 
     Loader2,
-    Activity,
     Terminal,
     Settings,
     CheckCircle2,
