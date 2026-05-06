@@ -142,6 +142,7 @@ export default function AdminHunterPage() {
             const data = await res.json();
             
             if (data.results) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const { data: existingNodes } = await (supabase as any).from("nodes").select("name, url");
                 
                 const processedResults = (data.results as Business[]).map((biz) => {
