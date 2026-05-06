@@ -41,13 +41,19 @@ export default function BeatrizChatPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isTesting, setIsTesting] = useState(false);
     const [testResult, setTestResult] = useState<'success' | 'error' | null>(null);
-    const [backendUrl, setBackendUrl] = useState("http://localhost:3002");
+    const [backendUrl, setBackendUrl] = useState("");
+    const [isDefaultUrl, setIsDefaultUrl] = useState(true);
     const [showSettings, setShowSettings] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const savedUrl = localStorage.getItem("beatriz_backend_url");
-        if (savedUrl) setBackendUrl(savedUrl);
+        if (savedUrl) {
+            setBackendUrl(savedUrl);
+            setIsDefaultUrl(false);
+        } else {
+            setBackendUrl("http://localhost:3002");
+        }
     }, []);
 
     useEffect(() => {
@@ -178,7 +184,16 @@ export default function BeatrizChatPage() {
                                         <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={14} />
                                         <Input 
                                             value={backendUrl}
-                                            onChange={(e) => setBackendUrl(e.target.value)}
+                                            onFocus={() => {
+                                                if (isDefaultUrl) {
+                                                    setBackendUrl("");
+                                                    setIsDefaultUrl(false);
+                                                }
+                                            }}
+                                            onChange={(e) => {
+                                                setBackendUrl(e.target.value);
+                                                setIsDefaultUrl(false);
+                                            }}
                                             placeholder="https://claudine...ngrok-free.dev"
                                             className="bg-white/5 border-white/10 pl-9 text-xs h-10"
                                         />
