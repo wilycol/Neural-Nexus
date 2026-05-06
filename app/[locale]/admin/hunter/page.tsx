@@ -54,6 +54,7 @@ const NICHES = [
 
 export default function AdminHunterPage() {
     const [backendUrl, setBackendUrl] = useState("http://localhost:3002");
+    // 💋 Serie X Elite - Sincronización Dinámica Activa (v1.2)
     const [selectedNiche, setSelectedNiche] = useState(NICHES[0]);
     const [showConfig, setShowConfig] = useState(false);
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -227,9 +228,14 @@ export default function AdminHunterPage() {
                     <h1 className="text-2xl font-black font-orbitron text-neon-blue uppercase tracking-tighter">
                         Hunter <span className="text-white">Field Ops</span>
                     </h1>
-                    <p className="text-[10px] text-white/50 uppercase tracking-widest font-mono">
-                        Nivel de Acceso: SuperAdmin - Serie X Elite
-                    </p>
+                    <div className="flex items-center gap-2">
+                        <p className="text-[10px] text-white/50 uppercase tracking-widest font-mono">
+                            Nivel de Acceso: SuperAdmin - Serie X Elite
+                        </p>
+                        {backendUrl.includes("ngrok") && (
+                            <Badge className="h-3 text-[7px] bg-neon-purple/20 text-neon-purple border-neon-purple/30 px-1">SYNC ACTIVE</Badge>
+                        )}
+                    </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button 
