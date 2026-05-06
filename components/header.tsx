@@ -35,6 +35,7 @@ interface HeaderProps {
 export function Header({ showSidebarToggle = true }: HeaderProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const { user: authUser, profile, role } = useAuth();
