@@ -24,13 +24,27 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    interface NewsItem {
+      id: string;
+      title: string;
+      image_url: string | null;
+      published_at: string;
+      summary?: string;
+      content?: string;
+      author_nickname?: string;
+      read_time?: number;
+      like_count?: number;
+      comment_count?: number;
+      share_count?: number;
+      slug?: string;
+    }
+
     // 🚀 Lógica Industrial Unificada: Priorizar por Novedad y Flag Top 5
-    // Buscamos directamente en la tabla 'news' que es la que Beatriz alimenta
     const { data: newsData, error: newsError } = await supabase
       .from('news')
       .select('*')
-      .order('is_top_5', { ascending: false }) // Primero los marcados como Top 5
-      .order('published_at', { ascending: false }) // Luego por fecha más reciente
+      .order('is_top_5', { ascending: false })
+      .order('published_at', { ascending: false })
       .limit(limit);
 
     if (newsError) {
@@ -38,8 +52,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ data: [], count: 0, error: newsError.message });
     }
 
-    // Mapeo compatible con el frontend con casteo de tipo para evitar errores de compilación
-    const finalData = (newsData || []).map((item: any) => ({
+    // Mapeo compatible con el frontend usando la interfaz NewsItem
+    const finalData = (newsData as unknown as NewsItem[] || []).map((item) => ({
       id: item.id,
       title: item.title,
       image_url: item.image_url,
