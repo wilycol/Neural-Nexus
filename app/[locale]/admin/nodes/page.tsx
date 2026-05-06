@@ -12,7 +12,10 @@ import {
     Loader2,
     Database,
     Zap,
-    Trophy
+    Trophy,
+    MessageSquare,
+    Instagram,
+    Facebook
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,6 +33,11 @@ interface NeuralNode {
     status: string;
     adn?: string;
     client_email?: string;
+    address?: string;
+    whatsapp_number?: string;
+    instagram_url?: string;
+    facebook_url?: string;
+    drive_path?: string;
 }
 
 export default function AdminNodesPage() {
@@ -109,6 +117,37 @@ export default function AdminNodesPage() {
             fetchNodes();
         }
         setIsSaving(false);
+    };
+
+    const handleLaunchHunter = (node: NeuralNode) => {
+        toast.promise(
+            new Promise((resolve) => setTimeout(resolve, 2000)),
+            {
+                loading: `🛰️ Hunter iniciando OSINT profundo para ${node.name}...`,
+                success: 'Búsqueda OSINT enviada al Bridge con éxito',
+                error: 'Error al contactar con el Hunter',
+            }
+        );
+        console.log(`🦅 Hunter: Iniciando OSINT Profundo para ${node.id} usando path: ${node.drive_path}`);
+    };
+
+    const handleLaunchArchitect = (node: NeuralNode) => {
+        toast.promise(
+            new Promise((resolve) => setTimeout(resolve, 2000)),
+            {
+                loading: `🏗️ Arquitecto analizando ADN para refactorizar ${node.name}...`,
+                success: 'Orden de refactorización enviada con éxito',
+                error: 'Error al contactar con el Arquitecto',
+            }
+        );
+        console.log(`🏗️ Arquitecto: Iniciando Regeneración del Nodo ${node.id}`);
+    };
+
+    const handleShareWhatsApp = (node: NeuralNode) => {
+        const text = getSalesPitch(node);
+        const phone = node.whatsapp_number ? node.whatsapp_number.replace(/\D/g, '') : "";
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
     };
 
     const getSalesPitch = (node: NeuralNode) => {
@@ -269,35 +308,107 @@ export default function AdminNodesPage() {
                                             <ExternalLink size={16} />
                                         </Button>
                                     </div>
+
+                                    {/* Dirección y Contacto */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2">
+                                            <p className="text-[9px] uppercase font-black text-white/40 flex items-center gap-1">
+                                                <MapPin size={10} /> Ubicación del Negocio
+                                            </p>
+                                            <p className="text-[11px] text-white leading-tight">
+                                                {selectedNode.address || "Dirección no registrada"}
+                                            </p>
+                                        </div>
+                                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+                                            <p className="text-[9px] uppercase font-black text-white/40 flex items-center gap-1">
+                                                <MessageSquare size={10} /> Canales de Contacto
+                                            </p>
+                                            <div className="flex gap-4">
+                                                {selectedNode.whatsapp_number && (
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:bg-green-500/10" onClick={() => window.open(`https://wa.me/${selectedNode.whatsapp_number.replace(/\D/g, '')}`, '_blank')}>
+                                                        <MessageSquare size={18} />
+                                                    </Button>
+                                                )}
+                                                {selectedNode.instagram_url && (
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-pink-500 hover:bg-pink-500/10" onClick={() => window.open(selectedNode.instagram_url, '_blank')}>
+                                                        <Instagram size={18} />
+                                                    </Button>
+                                                )}
+                                                {selectedNode.facebook_url && (
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:bg-blue-500/10" onClick={() => window.open(selectedNode.facebook_url, '_blank')}>
+                                                        <Facebook size={18} />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {/* Mensaje de Conquista */}
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[10px] uppercase font-black text-neon-purple tracking-widest flex items-center gap-2">
-                                            <Trophy size={14} className="fill-neon-purple" /> Mensaje de Conquista
-                                        </p>
-                                        <Button 
-                                            size="sm" 
-                                            variant="ghost" 
-                                            className="h-7 text-[9px] text-neon-purple uppercase font-bold hover:bg-neon-purple/10"
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(getSalesPitch(selectedNode));
-                                                toast.success("Mensaje copiado");
-                                            }}
-                                        >
-                                            Copiar Pitch
-                                        </Button>
+                                {/* Mensaje de Conquista (Solo para planes FREE) */}
+                                {selectedNode.plan?.toLowerCase() === 'free' && (
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-[10px] uppercase font-black text-neon-purple tracking-widest flex items-center gap-2">
+                                                <Trophy size={14} className="fill-neon-purple" /> Mensaje de Conquista
+                                            </p>
+                                            <Button 
+                                                size="sm" 
+                                                variant="ghost" 
+                                                className="h-7 text-[9px] text-neon-purple uppercase font-bold hover:bg-neon-purple/10"
+                                                onClick={() => handleShareWhatsApp(selectedNode)}
+                                            >
+                                                <MessageSquare size={12} className="mr-1" /> Compartir Pitch
+                                            </Button>
+                                        </div>
+                                        <div className="p-4 bg-neon-purple/5 border border-neon-purple/10 rounded-2xl text-[11px] text-white/70 leading-relaxed italic">
+                                            &quot;{getSalesPitch(selectedNode)}&quot;
+                                        </div>
                                     </div>
-                                    <div className="p-4 bg-neon-purple/5 border border-neon-purple/10 rounded-2xl text-[11px] text-white/70 leading-relaxed italic">
-                                        &quot;{getSalesPitch(selectedNode)}&quot;
-                                    </div>
-                                </div>
+                                )}
 
-                                {/* ADN DEL NEGOCIO (EL CORAZÓN) */}
+                                {/* INTELIGENCIA RECOPILADA (ADN ACTUAL) */}
                                 <div className="space-y-3">
                                     <p className="text-[10px] uppercase font-black text-neon-blue tracking-widest flex items-center gap-2">
-                                        <Database size={14} className="fill-neon-blue" /> ADN del Negocio (Alimentar IA)
+                                        <Database size={14} className="fill-neon-blue" /> Inteligencia Recopilada (ADN)
+                                    </p>
+                                    <div className="p-4 bg-neon-blue/5 border border-neon-blue/10 rounded-2xl">
+                                        {selectedNode.adn ? (
+                                            <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap">
+                                                {selectedNode.adn}
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center py-4 text-center space-y-2">
+                                                <Database className="text-white/10 h-8 w-8" />
+                                                <p className="text-[10px] text-white/30 uppercase font-bold italic text-center">
+                                                    Sin datos OSINT profundos. <br /> Lance al Hunter para recolectar.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* OPERACIONES DE CAMPO (AGENTES) */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Button 
+                                        variant="outline" 
+                                        className="border-neon-blue/20 text-neon-blue text-[9px] uppercase font-black h-10 rounded-xl hover:bg-neon-blue/10 flex items-center justify-center gap-2"
+                                        onClick={() => handleLaunchHunter(selectedNode)}
+                                    >
+                                        <Zap size={14} /> Sincronizar Hunter
+                                    </Button>
+                                    <Button 
+                                        variant="outline" 
+                                        className="border-neon-purple/20 text-neon-purple text-[9px] uppercase font-black h-10 rounded-xl hover:bg-neon-purple/10 flex items-center justify-center gap-2"
+                                        onClick={() => handleLaunchArchitect(selectedNode)}
+                                    >
+                                        <Zap size={14} /> Regenerar Sitio
+                                    </Button>
+                                </div>
+
+                                {/* ADN DEL NEGOCIO (ALIMENTAR IA) */}
+                                <div className="space-y-3">
+                                    <p className="text-[10px] uppercase font-black text-white/40 tracking-widest flex items-center gap-2">
+                                        <MessageSquare size={14} /> Alimentar IA (Notas Manuales)
                                     </p>
                                     <textarea 
                                         className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs text-white placeholder:text-white/20 outline-none focus:border-neon-blue/50 transition-all resize-none custom-scrollbar"
@@ -321,7 +432,8 @@ export default function AdminNodesPage() {
                                     <Button 
                                         className="flex-1 bg-white text-black font-black uppercase text-[10px] h-12 rounded-xl group"
                                         onClick={() => {
-                                            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedNode.name)}`;
+                                            const query = selectedNode.address || selectedNode.name;
+                                            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
                                             window.open(mapUrl, '_blank');
                                         }}
                                     >
@@ -331,9 +443,16 @@ export default function AdminNodesPage() {
                                     <Button 
                                         variant="outline" 
                                         className="flex-1 border-white/10 text-[10px] uppercase font-black h-12 rounded-xl group hover:border-neon-blue"
+                                        onClick={() => {
+                                            if (selectedNode.drive_path) {
+                                                window.open(selectedNode.drive_path, '_blank');
+                                            } else {
+                                                toast.info("Expediente de Drive no vinculado. Por favor, añada el path en Supabase.");
+                                            }
+                                        }}
                                     >
                                         <Camera size={16} className="mr-2 group-hover:scale-125 transition-transform" /> 
-                                        Multimedia
+                                        {selectedNode.drive_path ? "Expediente Multimedia" : "Sin Multimedia"}
                                     </Button>
                                 </div>
                             </CardContent>
