@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ data: [], count: 0, error: newsError.message });
     }
 
-    // Mapeo compatible con el frontend
-    const finalData = (newsData || []).map(item => ({
+    // Mapeo compatible con el frontend con casteo de tipo para evitar errores de compilación
+    const finalData = (newsData || []).map((item: any) => ({
       id: item.id,
       title: item.title,
       image_url: item.image_url,
@@ -47,9 +47,9 @@ export async function GET(request: NextRequest) {
       excerpt: item.summary || item.content?.substring(0, 160) + "...",
       author_nickname: item.author_nickname || "Federación",
       read_time: item.read_time || 3,
-      like_count: item.like_count,
-      comment_count: item.comment_count,
-      share_count: item.share_count,
+      like_count: item.like_count || 0,
+      comment_count: item.comment_count || 0,
+      share_count: item.share_count || 0,
       slug: item.slug || item.id
     }));
 
