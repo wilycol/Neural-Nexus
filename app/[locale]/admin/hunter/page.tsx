@@ -27,7 +27,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { getSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 interface Business {
     id: string;
@@ -68,7 +68,7 @@ export default function AdminHunterPage() {
     const [telemetry, setTelemetry] = useState<string[]>([]);
     const [isApproved, setIsApproved] = useState(false);
 
-    const supabase = getSupabaseBrowserClient();
+    const supabase = getSupabaseHiveClient();
 
     useEffect(() => {
         const savedUrl = localStorage.getItem("beatriz_brain_url");

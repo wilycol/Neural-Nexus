@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { getSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 interface NeuralNode {
     id: string;
@@ -38,7 +38,7 @@ export default function AdminNodesPage() {
     const [selectedNode, setSelectedNode] = useState<NeuralNode | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
-    const supabase = getSupabaseBrowserClient();
+    const supabase = getSupabaseHiveClient();
 
     const fetchNodes = useCallback(async () => {
         setLoading(true);
