@@ -51,12 +51,13 @@ export default function Top5Page() {
       const hasPromo = fetchedPosts.some((p: BlogPost) => p.title.includes("PROMO") || (p as any).video_url?.includes("promo"));
       
       if (!hasPromo) {
+        const timestamp = new Date().getTime();
         const promoPost = {
           id: "promo-neural-nexus-final",
           title: "Neural Nexus: El Amanecer de la Colmena (PROMO OFICIAL)",
           excerpt: "Nuestra infraestructura ha evolucionado. Beatriz AI toma el control total de la generación de contenido. Haz clic para conocer nuestra visión técnica.",
-          image_url: "/media/promo_nexus_final.mp4",
-          video_url: "/media/promo_nexus_final.mp4",
+          image_url: `/media/promo_nexus_final.mp4?v=${timestamp}`,
+          video_url: `/media/promo_nexus_final.mp4?v=${timestamp}`,
           published_at: new Date().toISOString(),
           author_nickname: "Beatriz Serie X",
           read_time: 1,
