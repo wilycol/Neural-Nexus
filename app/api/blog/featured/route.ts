@@ -24,52 +24,34 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // 1. Intentar obtener posts marcados como destacados en blog_posts
-    const { data: blogData } = await supabase
-      .from('blog_posts')
+    // 🚀 Lógica Industrial Unificada: Priorizar por Novedad y Flag Top 5
+    // Buscamos directamente en la tabla 'news' que es la que Beatriz alimenta
+    const { data: newsData, error: newsError } = await supabase
+      .from('news')
       .select('*')
-      .eq('featured', true)
-      .order('published_at', { ascending: false })
+      .order('is_top_5', { ascending: false }) // Primero los marcados como Top 5
+      .order('published_at', { ascending: false }) // Luego por fecha más reciente
       .limit(limit);
 
-    // Definimos una interfaz básica para que el fallback sea compatible con el frontend
-    interface FeaturedItem {
-      id: string;
-      title: string;
-      image_url: string | null;
-      published_at: string;
-      excerpt?: string;
-      summary?: string;
+    if (newsError) {
+      console.error('Error fetching Top 5 news:', newsError);
+      return NextResponse.json({ data: [], count: 0, error: newsError.message });
     }
 
-    let finalData: FeaturedItem[] = (blogData || []).map(item => ({
+    // Mapeo compatible con el frontend
+    const finalData = (newsData || []).map(item => ({
       id: item.id,
       title: item.title,
       image_url: item.image_url,
       published_at: item.published_at,
-      excerpt: item.excerpt,
+      excerpt: item.summary || item.content?.substring(0, 160) + "...",
+      author_nickname: item.author_nickname || "Federación",
+      read_time: item.read_time || 3,
+      like_count: item.like_count,
+      comment_count: item.comment_count,
+      share_count: item.share_count,
+      slug: item.slug || item.id
     }));
-
-    // 2. Si no hay destacados, fallback a las noticias más vistas de la tabla 'news'
-    if (finalData.length === 0) {
-      const { data: newsData, error: newsError } = await supabase
-        .from('news')
-        .select('*')
-        .order('view_count', { ascending: false })
-        .limit(limit);
-      
-      if (!newsError && newsData) {
-        finalData = newsData.map(item => ({
-          id: item.id,
-          title: item.title,
-          image_url: item.image_url,
-          published_at: item.published_at,
-          summary: item.summary,
-        }));
-      } else if (newsError) {
-        console.error('Error fetching news fallback:', newsError);
-      }
-    }
 
     return NextResponse.json({
       data: finalData,
