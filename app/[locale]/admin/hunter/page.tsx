@@ -129,6 +129,12 @@ export default function AdminHunterPage() {
         
         try {
             setTelemetry(prev => [`📡 Iniciando Cacería Quirúrgica (${selectedNiche.label})...`, ...prev]);
+            
+            if (!supabase) {
+                toast.error("Error de conexión con la Federación");
+                return;
+            }
+
             // Llamamos a nuestra nueva API en el backend de Beatriz
             const res = await fetch(`${backendUrl}/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}&types=${selectedNiche.types}`, {
                 headers: { "ngrok-skip-browser-warning": "true" }
