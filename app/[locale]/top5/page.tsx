@@ -62,8 +62,6 @@ export default function Top5Page() {
           read_time: 1,
           slug: "../../es/pitch",
           tags: ["Federación", "IA", "Futuro"],
-          like_count: 342,
-          comment_count: 56,
           is_promo: true
         };
         fetchedPosts = [promoPost, ...fetchedPosts].slice(0, 5);
