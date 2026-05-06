@@ -142,9 +142,18 @@ function Top5PostCard({ post, rank }: { post: BlogPost; rank: number }) {
     <Card className="overflow-hidden hover:shadow-lg transition-all group">
       <Link href={`/blog/${post.slug}`}>
         <div className="flex flex-col md:flex-row">
-          {/* Rank & Image */}
-          <div className="relative md:w-64 h-48 md:h-auto flex-shrink-0">
-            {post.image_url ? (
+          {/* Rank & Image/Video */}
+          <div className="relative md:w-64 h-48 md:h-auto flex-shrink-0 bg-zinc-900">
+            {post.image_url?.endsWith('.mp4') || (post as any).video_url?.endsWith('.mp4') ? (
+              <video
+                src={post.image_url?.endsWith('.mp4') ? post.image_url : (post as any).video_url}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+              />
+            ) : post.image_url ? (
               <Image
                 src={post.image_url}
                 alt={post.title}
@@ -157,7 +166,7 @@ function Top5PostCard({ post, rank }: { post: BlogPost; rank: number }) {
               </div>
             )}
             {/* Rank badge */}
-            <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center text-white font-bold text-lg shadow-lg">
+            <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center text-white font-bold text-lg shadow-lg z-10">
               {rank}
             </div>
           </div>
