@@ -325,17 +325,17 @@ export default function AdminNodesPage() {
                                             </p>
                                             <div className="flex gap-4">
                                                 {selectedNode.whatsapp_number && (
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:bg-green-500/10" onClick={() => window.open(`https://wa.me/${selectedNode.whatsapp_number.replace(/\D/g, '')}`, '_blank')}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:bg-green-500/10" onClick={() => window.open(`https://wa.me/${selectedNode.whatsapp_number!.replace(/\D/g, '')}`, '_blank')}>
                                                         <MessageSquare size={18} />
                                                     </Button>
                                                 )}
                                                 {selectedNode.instagram_url && (
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-pink-500 hover:bg-pink-500/10" onClick={() => window.open(selectedNode.instagram_url, '_blank')}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-pink-500 hover:bg-pink-500/10" onClick={() => window.open(selectedNode.instagram_url!, '_blank')}>
                                                         <Instagram size={18} />
                                                     </Button>
                                                 )}
                                                 {selectedNode.facebook_url && (
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:bg-blue-500/10" onClick={() => window.open(selectedNode.facebook_url, '_blank')}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:bg-blue-500/10" onClick={() => window.open(selectedNode.facebook_url!, '_blank')}>
                                                         <Facebook size={18} />
                                                     </Button>
                                                 )}
