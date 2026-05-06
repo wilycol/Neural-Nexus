@@ -142,7 +142,7 @@ export default function AdminHunterPage() {
             const data = await res.json();
             
             if (data.results) {
-                const { data: existingNodes } = await supabase.from("nodes").select("name, url");
+                const { data: existingNodes } = await (supabase as any).from("nodes").select("name, url");
                 
                 const processedResults = (data.results as Business[]).map((biz) => {
                     const cleanBizName = biz.name.toLowerCase().replace(/\s+/g, '');
