@@ -147,7 +147,7 @@ export default function AdminHunterPage() {
                 
                 const processedResults = (data.results as Business[]).map((biz) => {
                     const cleanBizName = biz.name.toLowerCase().replace(/\s+/g, '');
-                    const existingNode = existingNodes?.find(node => 
+                    const existingNode = (existingNodes as { name: string, url: string }[] | null)?.find((node) => 
                         node.name.toLowerCase().replace(/\s+/g, '').includes(cleanBizName) || 
                         cleanBizName.includes(node.name.toLowerCase().replace(/\s+/g, ''))
                     );
