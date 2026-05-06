@@ -6,10 +6,8 @@ import {
     Globe, 
     Github, 
     ExternalLink, 
-    Info, 
     X, 
     Camera, 
-    Phone, 
     MapPin, 
     Loader2,
     Database,
@@ -42,7 +40,7 @@ export default function AdminNodesPage() {
 
     const supabase = getSupabaseBrowserClient();
 
-    const fetchNodes = async () => {
+    const fetchNodes = useCallback(async () => {
         setLoading(true);
         if (!supabase) return;
 
@@ -57,11 +55,11 @@ export default function AdminNodesPage() {
             setNodes(data || []);
         }
         setLoading(false);
-    };
+    }, [supabase]);
 
     useEffect(() => {
         fetchNodes();
-    }, []);
+    }, [fetchNodes]);
 
     const handleSaveADN = async () => {
         if (!selectedNode || !supabase) return;

@@ -135,7 +135,7 @@ export default function AdminHunterPage() {
             if (data.results) {
                 const { data: existingNodes } = await supabase.from("nodes").select("name, url");
                 
-                const processedResults = data.results.map((biz: any) => {
+                const processedResults = (data.results as Business[]).map((biz) => {
                     const cleanBizName = biz.name.toLowerCase().replace(/\s+/g, '');
                     const existingNode = existingNodes?.find(node => 
                         node.name.toLowerCase().replace(/\s+/g, '').includes(cleanBizName) || 
