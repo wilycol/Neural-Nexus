@@ -65,7 +65,7 @@ export default function AdminHunterPage() {
     const [isApproved, setIsApproved] = useState(false);
 
     useEffect(() => {
-        const savedUrl = localStorage.getItem("beatriz_backend_url");
+        const savedUrl = localStorage.getItem("beatriz_brain_url");
         if (savedUrl) setBackendUrl(savedUrl);
     }, []);
 
