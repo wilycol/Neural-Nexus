@@ -24,9 +24,42 @@ export default function Top5Page() {
       const response = await fetch('/api/blog/featured?limit=5');
       if (!response.ok) throw new Error('Error al cargar posts');
       const data = await response.json();
-      setPosts(data.data || []);
+      
+      let fetchedPosts = data.data || [];
+      
+      // 🚀 Inyección de Emergencia: Si no hay posts o falta nuestra promo, la insertamos manualmente
+      const hasPromo = fetchedPosts.some((p: any) => p.title.includes("PROMO") || p.video_url?.includes("promo"));
+      
+      if (!hasPromo) {
+        const promoPost = {
+          id: "promo-neural-nexus-final",
+          title: "Neural Nexus: El Amanecer de la Colmena (PROMO OFICIAL)",
+          excerpt: "Nuestra infraestructura ha evolucionado. Beatriz AI toma el control total de la generación de contenido. Haz clic para conocer nuestra visión técnica.",
+          image_url: "/media/promo_nexus_final.mp4",
+          video_url: "/media/promo_nexus_final.mp4",
+          published_at: new Date().toISOString(),
+          author_nickname: "Beatriz Serie X",
+          read_time: 1,
+          slug: "../../es/pitch",
+          tags: ["Federación", "IA", "Futuro"]
+        };
+        fetchedPosts = [promoPost, ...fetchedPosts].slice(0, 5);
+      }
+
+      setPosts(fetchedPosts);
     } catch {
-      toast.error('Error al cargar los Top 5');
+      // Si falla la API, al menos mostramos la promo
+      setPosts([{
+          id: "promo-fallback",
+          title: "Neural Nexus: El Amanecer de la Colmena (PROMO OFICIAL)",
+          excerpt: "Nuestra infraestructura ha evolucionado. Beatriz AI toma el control total de la generación de contenido. Haz clic para conocer nuestra visión técnica.",
+          image_url: "/media/promo_nexus_final.mp4",
+          video_url: "/media/promo_nexus_final.mp4",
+          published_at: new Date().toISOString(),
+          author_nickname: "Beatriz Serie X",
+          read_time: 1,
+          slug: "../../es/pitch"
+      }]);
     } finally {
       setLoading(false);
     }
