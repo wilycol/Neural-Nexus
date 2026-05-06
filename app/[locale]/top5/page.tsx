@@ -46,7 +46,7 @@ export default function Top5Page() {
         fetchedPosts = [promoPost, ...fetchedPosts].slice(0, 5);
       }
 
-      setPosts(fetchedPosts);
+      setPosts(fetchedPosts as any);
     } catch {
       // Si falla la API, al menos mostramos la promo
       setPosts([{
@@ -59,7 +59,7 @@ export default function Top5Page() {
           author_nickname: "Beatriz Serie X",
           read_time: 1,
           slug: "../../es/pitch"
-      }]);
+      }] as any);
     } finally {
       setLoading(false);
     }
