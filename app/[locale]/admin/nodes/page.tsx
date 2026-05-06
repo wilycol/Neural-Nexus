@@ -44,15 +44,18 @@ export default function AdminNodesPage() {
         setLoading(true);
         if (!supabase) return;
 
+        console.log("🛰️ Hive Client: Solicitando nodos a la Federación...");
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data, error } = await (supabase as any)
             .from("nodes")
-            .select("*")
-            .order("created_at", { ascending: false });
+            .select("*");
 
         if (error) {
+            console.error("❌ Error Hive:", error);
             toast.error("Error al cargar nodos: " + error.message);
         } else {
+            console.log("✅ Nodos recibidos de la Federación:", data?.length || 0);
             setNodes(data || []);
         }
         setLoading(false);
