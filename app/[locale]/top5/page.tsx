@@ -9,7 +9,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BlogPost } from "@/types";
 import { formatDate } from "@/lib/utils";
-import { toast } from "sonner";
 
 export default function Top5Page() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -28,7 +27,7 @@ export default function Top5Page() {
       let fetchedPosts = data.data || [];
       
       // 🚀 Inyección de Emergencia: Si no hay posts o falta nuestra promo, la insertamos manualmente
-      const hasPromo = fetchedPosts.some((p: any) => p.title.includes("PROMO") || p.video_url?.includes("promo"));
+      const hasPromo = fetchedPosts.some((p: BlogPost) => p.title.includes("PROMO") || (p as any).video_url?.includes("promo"));
       
       if (!hasPromo) {
         const promoPost = {
