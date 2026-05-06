@@ -41,6 +41,8 @@ interface Business {
     pitch?: string;
     status: 'detected' | 'investigating' | 'completed';
     adn?: string;
+    isNodeActive?: boolean;
+    nodeUrl?: string;
 }
 
 const NICHES = [
@@ -131,7 +133,23 @@ export default function AdminHunterPage() {
             const data = await res.json();
             
             if (data.results) {
-                setBusinesses(data.results);
+                const { data: existingNodes } = await supabase.from("nodes").select("name, url");
+                
+                const processedResults = data.results.map((biz: any) => {
+                    const cleanBizName = biz.name.toLowerCase().replace(/\s+/g, '');
+                    const existingNode = existingNodes?.find(node => 
+                        node.name.toLowerCase().replace(/\s+/g, '').includes(cleanBizName) || 
+                        cleanBizName.includes(node.name.toLowerCase().replace(/\s+/g, ''))
+                    );
+
+                    return {
+                        ...biz,
+                        isNodeActive: !!existingNode,
+                        nodeUrl: existingNode?.url
+                    };
+                });
+
+                setBusinesses(processedResults);
                 toast.success(`${data.count} oportunidades detectadas`);
             }
         } catch {
@@ -391,6 +409,7 @@ export default function AdminHunterPage() {
                                             <div>
                                                 <h3 className="font-bold text-sm uppercase flex items-center gap-2">
                                                     {biz.name}
+                                                    {biz.isNodeActive && <Badge className="bg-amber-500 text-black text-[8px] h-4">DENTRO DE LA COLMENA 🛰️</Badge>}
                                                     {biz.status === 'completed' && <Badge className="bg-green-500 text-black text-[8px] h-4">NODO VIVO</Badge>}
                                                 </h3>
                                                 <p className="text-[10px] text-white/40 truncate max-w-[200px]">{biz.address}</p>
@@ -597,7 +616,7 @@ export default function AdminHunterPage() {
                                     disabled={isOnboarding || (!isApproved && selectedBusiness.status !== 'completed')}
                                 >
                                     {isOnboarding ? <Loader2 className="animate-spin" /> : <HardHat size={12} className="mr-1.5" />} 
-                                    {selectedBusiness.status === 'completed' ? "Ver Nodo" : isApproved ? "Arquitecto" : "Espera"}
+                                    {selectedBusiness.isNodeActive ? "Ver Nodo" : selectedBusiness.status === 'completed' ? "Ver Nodo" : isApproved ? "Arquitecto" : "Espera"}
                                 </Button>
 
                                 {/* Switch de Aprobación Industrial */}

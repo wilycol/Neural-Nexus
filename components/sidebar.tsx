@@ -13,6 +13,7 @@ import {
   Handshake,
   Target,
   Heart,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -233,6 +234,18 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
             >
               <Target className="h-4 w-4" />
               Cacería de Campo 🎯
+            </Link>
+            <Link
+              href="/admin/nodes"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mb-1",
+                pathname === "/admin/nodes"
+                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <Share2 className="h-4 w-4" />
+              Neural Nodes 🛰️
             </Link>
             <Link
               href="/admin/monitor?tab=reception"
