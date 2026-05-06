@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Menu, X, User, Heart, LogOut, Wrench, Zap, Handshake, Target, FileText } from "lucide-react";
+import { Search, Menu, X, User, Heart, LogOut, Wrench, Zap, Handshake, Target, FileText, Share2 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -158,6 +158,9 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                       </Link>
                       <Link href="/admin/monitor?tab=reception" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <FileText className="h-4 w-4 text-neon-blue" /> Log de Recepción 📡
+                      </Link>
+                      <Link href="/admin/nodes" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <Share2 className="h-4 w-4 text-neon-blue" /> Neural Nodes 🛰️
                       </Link>
                     </div>
                   )}

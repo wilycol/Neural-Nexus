@@ -36,7 +36,11 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        {/* ... existing scripts ... */}
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1327982622260280"
+          crossOrigin="anonymous"
+        ></script>
       </head>
       <body className="font-exo antialiased overflow-x-hidden selection:bg-neon-blue selection:text-black">
         <NextIntlClientProvider messages={messages}>
