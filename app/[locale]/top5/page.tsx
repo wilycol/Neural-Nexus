@@ -27,6 +27,7 @@ export default function Top5Page() {
       let fetchedPosts = data.data || [];
       
       // 🚀 Inyección de Emergencia: Si no hay posts o falta nuestra promo, la insertamos manualmente
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const hasPromo = fetchedPosts.some((p: BlogPost) => p.title.includes("PROMO") || (p as any).video_url?.includes("promo"));
       
       if (!hasPromo) {
