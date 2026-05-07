@@ -138,7 +138,7 @@ export default function AdminNodesPage() {
             }),
             {
                 loading: `🛰️ Hunter iniciando Apertura de Expediente para ${node.name.replace(/_/g, ' ')}...`,
-                success: (data: any) => `✅ Expediente creado en: ${data.drivePath}`,
+                success: (data: { drivePath: string }) => `✅ Expediente creado en: ${data.drivePath}`,
                 error: '❌ Error al contactar con el Bridge de Beatriz',
             }
         );
