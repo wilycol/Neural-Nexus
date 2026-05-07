@@ -207,7 +207,7 @@ export default function AdminNodesPage() {
                 setSelectedNode({ ...node, adn: data.newPitch }); // Actualizamos el ADN con el nuevo pitch
                 fetchNodes();
             }
-        } catch (err) {
+        } catch {
             toast.error("Fallo al conectar con el Seductor.");
         }
         setIsSaving(false);
