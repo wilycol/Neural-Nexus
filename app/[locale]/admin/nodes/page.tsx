@@ -119,16 +119,29 @@ export default function AdminNodesPage() {
         setIsSaving(false);
     };
 
-    const handleLaunchHunter = (node: NeuralNode) => {
+    const handleLaunchHunter = async (node: NeuralNode) => {
+        // La URL del Bridge de Beatriz (ajustar según tu ngrok o local)
+        const BRIDGE_URL = "https://claudine-tristful-moly.ngrok-free.app"; // Usando el de tu captura
+
         toast.promise(
-            new Promise((resolve) => setTimeout(resolve, 2000)),
+            fetch(`${BRIDGE_URL}/hunter/investigate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    businessId: node.id,
+                    nodeId: node.id,
+                    name: node.name
+                })
+            }).then(async (res) => {
+                if (!res.ok) throw new Error("Fallo en el Bridge");
+                return res.json();
+            }),
             {
-                loading: `🛰️ Hunter iniciando OSINT profundo para ${node.name}...`,
-                success: 'Búsqueda OSINT enviada al Bridge con éxito',
-                error: 'Error al contactar con el Hunter',
+                loading: `🛰️ Hunter iniciando Apertura de Expediente para ${node.name.replace(/_/g, ' ')}...`,
+                success: (data: any) => `✅ Expediente creado en: ${data.drivePath}`,
+                error: '❌ Error al contactar con el Bridge de Beatriz',
             }
         );
-        console.log(`🦅 Hunter: Iniciando OSINT Profundo para ${node.id} usando path: ${node.drive_path}`);
     };
 
     const handleLaunchArchitect = (node: NeuralNode) => {
