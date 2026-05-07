@@ -137,7 +137,10 @@ export default function AdminNodesPage() {
             }),
             {
                 loading: `🛰️ Hunter iniciando Apertura de Expediente para ${node.name.replace(/_/g, ' ')}...`,
-                success: (data: { drivePath: string }) => `✅ Expediente creado en: ${data.drivePath}`,
+                success: (data: { drivePath: string }) => {
+                    fetchNodes(); // 🔄 REFRESCAR DATOS AUTOMÁTICAMENTE
+                    return `✅ Expediente creado en: ${data.drivePath}`;
+                },
                 error: (err) => `❌ Error: ${err.message}`,
             }
         );
@@ -159,7 +162,10 @@ export default function AdminNodesPage() {
             }),
             {
                 loading: `🏗️ Arquitecto analizando ADN para refactorizar ${node.name.replace(/_/g, ' ')}...`,
-                success: '✅ Refactorización Neural iniciada con éxito',
+                success: () => {
+                    fetchNodes(); // 🔄 REFRESCAR DATOS AUTOMÁTICAMENTE
+                    return '✅ Refactorización Neural iniciada con éxito';
+                },
                 error: (err) => `❌ Error: ${err.message}`,
             }
         );
@@ -472,10 +478,34 @@ export default function AdminNodesPage() {
                                                     window.open(path, '_blank');
                                                 } else {
                                                     toast.info(
-                                                        <div className="flex flex-col gap-1">
-                                                            <p className="font-bold">📂 Ruta Local Detectada</p>
-                                                            <p className="text-[9px]">El navegador no permite abrir archivos locales. Copie esta ruta en su explorador:</p>
-                                                            <code className="bg-black/20 p-1 rounded text-[9px] break-all">{path}</code>
+                                                        <div className="space-y-4">
+                                                            {selectedNode.drive_path && (
+                                                                <div className="mt-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
+                                                                    <div className="flex items-center gap-3 mb-3">
+                                                                        <div className="p-2 rounded-lg bg-blue-500/20">
+                                                                            <Folder className="w-5 h-5 text-blue-400" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <h4 className="text-sm font-semibold text-blue-100">Acceso a la Federación</h4>
+                                                                            <p className="text-xs text-blue-400/80">Sincronizado con Google Drive</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <a 
+                                                                        href="https://drive.google.com/drive/folders/1_HEaRRbImiU2DAXNu3wdM2mwS6sLuK5X" 
+                                                                        target="_blank" 
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium transition-all shadow-lg shadow-blue-900/20 active:scale-95"
+                                                                    >
+                                                                        <ExternalLink className="w-4 h-4" />
+                                                                        ABRIR FEDERACIÓN EN DRIVE
+                                                                    </a>
+                                                                    
+                                                                    <p className="mt-3 text-[10px] text-center text-blue-400/50 font-mono break-all">
+                                                                        ID Local: {selectedNode.drive_path}
+                                                                    </p>
+                                                                </div>
+                                                            )}
                                                         </div>,
                                                         { duration: 6000 }
                                                     );
