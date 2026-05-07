@@ -176,6 +176,13 @@ export default function AdminNodesPage() {
         );
     };
 
+    const handleShareWhatsApp = (node: NeuralNode) => {
+        const text = getSalesPitch(node);
+        const phone = node.whatsapp_number ? node.whatsapp_number.replace(/\D/g, '') : "";
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    };
+
     const getDaysLeft = (dateStr?: string) => {
         if (!dateStr) return 0;
         const diff = new Date(dateStr).getTime() - new Date().getTime();
