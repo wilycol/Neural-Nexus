@@ -7,7 +7,6 @@ import {
     Github, 
     ExternalLink, 
     X, 
-    Camera, 
     MapPin, 
     Loader2,
     Database,
@@ -15,9 +14,7 @@ import {
     Trophy,
     MessageSquare,
     Instagram,
-    Facebook,
-    Folder,
-    Cloud
+    Facebook
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +27,7 @@ interface NeuralNode {
     id: string;
     name: string;
     url: string;
-    refactor_url?: string; // 🧪 Nueva columna de laboratorio
+    refactor_url?: string;
     repo_url: string;
     plan: string;
     status: string;
@@ -60,14 +57,15 @@ export default function AdminNodesPage() {
         if (!supabase) return;
 
         console.log("🛰️ Hive Client: Solicitando nodos a la Federación...");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data, error } = await (supabase as any).from("nodes").select("*");
 
         if (error) {
             toast.error("Error al cargar nodos: " + error.message);
         } else {
             setNodes(data || []);
-            // Actualizar el nodo seleccionado si está abierto
             if (selectedNode) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const updated = data?.find((n: any) => n.id === selectedNode.id);
                 if (updated) setSelectedNode(updated);
             }
@@ -82,6 +80,7 @@ export default function AdminNodesPage() {
     const handleSaveADN = async () => {
         if (!selectedNode || !supabase) return;
         setIsSaving(true);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabase as any)
             .from("nodes")
             .update({ 
