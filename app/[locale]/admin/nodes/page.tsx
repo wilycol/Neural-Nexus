@@ -126,7 +126,10 @@ export default function AdminNodesPage() {
         toast.promise(
             fetch(`${BRIDGE_URL}/hunter/investigate`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true" // Saltar advertencia de ngrok
+                },
                 body: JSON.stringify({
                     businessId: node.id,
                     nodeId: node.id,
@@ -145,15 +148,26 @@ export default function AdminNodesPage() {
     };
 
     const handleLaunchArchitect = (node: NeuralNode) => {
+        const BRIDGE_URL = "https://claudine-tristful-moly.ngrok-free.app";
+
         toast.promise(
-            new Promise((resolve) => setTimeout(resolve, 2000)),
+            fetch(`${BRIDGE_URL}/api/nodes/refactor`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true"
+                },
+                body: JSON.stringify({ nodeId: node.id })
+            }).then(async (res) => {
+                if (!res.ok) throw new Error("Fallo en el Architect");
+                return res.json();
+            }),
             {
-                loading: `🏗️ Arquitecto analizando ADN para refactorizar ${node.name}...`,
-                success: 'Orden de refactorización enviada con éxito',
-                error: 'Error al contactar con el Arquitecto',
+                loading: `🏗️ Arquitecto analizando ADN para refactorizar ${node.name.replace(/_/g, ' ')}...`,
+                success: '✅ Refactorización Neural iniciada con éxito',
+                error: '❌ Error al contactar con el Arquitecto de Beatriz',
             }
         );
-        console.log(`🏗️ Arquitecto: Iniciando Regeneración del Nodo ${node.id}`);
     };
 
     const handleShareWhatsApp = (node: NeuralNode) => {
@@ -164,7 +178,7 @@ export default function AdminNodesPage() {
     };
 
     const getSalesPitch = (node: NeuralNode) => {
-        return `¡Hola! 🚀 He analizado su presencia digital y Beatriz AI ha diseñado este prototipo de Neural Site especialmente para ustedes: ${node.url} -- ¿Qué les parece si lo activamos para atraer más clientes esta misma semana? 💎🦾`;
+        return `¡Hola! 🚀 He analizado el potencial de su negocio y Beatriz AI ha diseñado una propuesta de dominancia digital para ustedes. Vean su prototipo aquí: ${node.url} -- Nuestra Federación Neural puede automatizar su crecimiento y captar clientes en piloto automático. ¿Hablamos de cómo llevarlos al siguiente nivel? 💎🦾`;
     };
 
     return (
@@ -457,10 +471,22 @@ export default function AdminNodesPage() {
                                         variant="outline" 
                                         className="flex-1 border-white/10 text-[10px] uppercase font-black h-12 rounded-xl group hover:border-neon-blue"
                                         onClick={() => {
-                                            if (selectedNode.drive_path) {
-                                                window.open(selectedNode.drive_path, '_blank');
+                                            const path = selectedNode.drive_path;
+                                            if (path) {
+                                                if (path.startsWith('http')) {
+                                                    window.open(path, '_blank');
+                                                } else {
+                                                    toast.info(
+                                                        <div className="flex flex-col gap-1">
+                                                            <p className="font-bold">📂 Ruta Local Detectada</p>
+                                                            <p className="text-[9px]">El navegador no permite abrir archivos locales. Copie esta ruta en su explorador:</p>
+                                                            <code className="bg-black/20 p-1 rounded text-[9px] break-all">{path}</code>
+                                                        </div>,
+                                                        { duration: 6000 }
+                                                    );
+                                                }
                                             } else {
-                                                toast.info("Expediente de Drive no vinculado. Por favor, añada el path en Supabase.");
+                                                toast.info("Expediente no vinculado. Lance al Hunter para crearlo.");
                                             }
                                         }}
                                     >
