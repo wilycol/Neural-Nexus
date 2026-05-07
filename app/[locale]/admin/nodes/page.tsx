@@ -501,6 +501,16 @@ export default function AdminNodesPage() {
                                                                         <ExternalLink className="w-4 h-4" />
                                                                         ABRIR FEDERACIÓN EN DRIVE
                                                                     </a>
+
+                                                                    <a 
+                                                                        href={`https://vercel.com/willy-devs-projects/neural-site-${selectedNode.name.toLowerCase().replace(/_/g, '-')}/deployments`}
+                                                                        target="_blank" 
+                                                                        rel="noopener noreferrer"
+                                                                        className="mt-2 flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-medium border border-zinc-700 transition-all active:scale-95"
+                                                                    >
+                                                                        <Cloud className="w-4 h-4 text-white" />
+                                                                        VER DESPLIEGUE EN VERCEL
+                                                                    </a>
                                                                     
                                                                     <p className="mt-3 text-[10px] text-center text-blue-400/50 font-mono break-all">
                                                                         ID Local: {selectedNode.drive_path}
