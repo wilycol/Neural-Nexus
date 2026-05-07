@@ -40,6 +40,9 @@ interface NeuralNode {
     instagram_url?: string;
     facebook_url?: string;
     drive_path?: string;
+    competitor_url?: string;
+    neural_blueprint?: string;
+    expires_at?: string;
 }
 
 export default function AdminNodesPage() {
@@ -173,15 +176,46 @@ export default function AdminNodesPage() {
         );
     };
 
-    const handleShareWhatsApp = (node: NeuralNode) => {
-        const text = getSalesPitch(node);
-        const phone = node.whatsapp_number ? node.whatsapp_number.replace(/\D/g, '') : "";
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
+    const getDaysLeft = (dateStr?: string) => {
+        if (!dateStr) return 0;
+        const diff = new Date(dateStr).getTime() - new Date().getTime();
+        return Math.max(0, Math.ceil(diff / (1000 * 3600 * 24)));
+    };
+
+    const handleRegeneratePitch = async (node: NeuralNode) => {
+        setIsSaving(true);
+        toast.info("💋 Beatriz está redactando un nuevo mensaje de seducción...");
+        
+        try {
+            const savedUrl = localStorage.getItem("beatriz_brain_url") || "http://localhost:3002";
+            const daysLeft = getDaysLeft(node.expires_at);
+            
+            const res = await fetch(`${savedUrl}/api/nodes/generate-pitch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    nodeId: node.id,
+                    businessName: node.name,
+                    adn: node.adn,
+                    daysLeft
+                })
+            });
+            
+            const data = await res.json();
+            if (data.success) {
+                toast.success("¡Mensaje de Seducción actualizado!");
+                setSelectedNode({ ...node, adn: data.newPitch }); // Actualizamos el ADN con el nuevo pitch
+                fetchNodes();
+            }
+        } catch (err) {
+            toast.error("Fallo al conectar con el Seductor.");
+        }
+        setIsSaving(false);
     };
 
     const getSalesPitch = (node: NeuralNode) => {
-        return `¡Hola! 🚀 He analizado el potencial de su negocio y Beatriz AI ha diseñado una propuesta de dominancia digital para ustedes. Vean su prototipo aquí: ${node.url} -- Nuestra Federación Neural puede automatizar su crecimiento y captar clientes en piloto automático. ¿Hablamos de cómo llevarlos al siguiente nivel? 💎🦾`;
+        const days = getDaysLeft(node.expires_at);
+        return `¡Hola! 🚀 He analizado el potencial de su negocio y Beatriz AI ha diseñado una propuesta de dominancia digital para ustedes. Vean su prototipo aquí: ${node.url} -- Le quedan solo ${days} días de su período de prueba exclusivo. Nuestra Federación Neural puede automatizar su crecimiento y captar clientes en piloto automático. ¿Hablamos de cómo llevarlos al siguiente nivel antes de que expire su acceso? 💎🦾`;
     };
 
     return (
@@ -381,14 +415,24 @@ export default function AdminNodesPage() {
                                             <p className="text-[10px] uppercase font-black text-neon-purple tracking-widest flex items-center gap-2">
                                                 <Trophy size={14} className="fill-neon-purple" /> Mensaje de Conquista
                                             </p>
-                                            <Button 
-                                                size="sm" 
-                                                variant="ghost" 
-                                                className="h-7 text-[9px] text-neon-purple uppercase font-bold hover:bg-neon-purple/10"
-                                                onClick={() => handleShareWhatsApp(selectedNode)}
-                                            >
-                                                <MessageSquare size={12} className="mr-1" /> Compartir Pitch
-                                            </Button>
+                                            <div className="flex gap-2">
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="ghost" 
+                                                    className="h-7 text-[9px] text-white/40 uppercase font-bold hover:bg-white/5"
+                                                    onClick={() => handleRegeneratePitch(selectedNode)}
+                                                >
+                                                    <Zap size={12} className="mr-1" /> Regenerar Seducción
+                                                </Button>
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="ghost" 
+                                                    className="h-7 text-[9px] text-neon-purple uppercase font-bold hover:bg-neon-purple/10"
+                                                    onClick={() => handleShareWhatsApp(selectedNode)}
+                                                >
+                                                    <MessageSquare size={12} className="mr-1" /> Compartir Pitch
+                                                </Button>
+                                            </div>
                                         </div>
                                         <div className="p-4 bg-neon-purple/5 border border-neon-purple/10 rounded-2xl text-[11px] text-white/70 leading-relaxed italic">
                                             &quot;{getSalesPitch(selectedNode)}&quot;
@@ -411,6 +455,39 @@ export default function AdminNodesPage() {
                                                 <Database className="text-white/10 h-8 w-8" />
                                                 <p className="text-[10px] text-white/30 uppercase font-bold italic text-center">
                                                     Sin datos OSINT profundos. <br /> Lance al Hunter para recolectar.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* ANÁLISIS DE COMPETITIVIDAD (BLUEPRINT) */}
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[10px] uppercase font-black text-neon-purple tracking-widest flex items-center gap-2">
+                                            <Trophy size={14} className="fill-neon-purple" /> Análisis de Competitividad Neural
+                                        </p>
+                                        {selectedNode.competitor_url && (
+                                            <Button 
+                                                size="sm" 
+                                                variant="ghost" 
+                                                className="h-7 text-[9px] text-neon-purple uppercase font-bold hover:bg-neon-purple/10"
+                                                onClick={() => window.open(selectedNode.competitor_url, '_blank')}
+                                            >
+                                                <ExternalLink size={12} className="mr-1" /> Ver Referencia Elite
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <div className="p-4 bg-neon-purple/5 border border-neon-purple/20 rounded-2xl">
+                                        {selectedNode.neural_blueprint ? (
+                                            <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap italic">
+                                                {selectedNode.neural_blueprint}
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center py-4 text-center space-y-2">
+                                                <Trophy className="text-white/10 h-8 w-8" />
+                                                <p className="text-[10px] text-white/30 uppercase font-bold italic text-center">
+                                                    Esperando Plan Maestro... <br /> El Hunter debe proponer la estructura.
                                                 </p>
                                             </div>
                                         )}
