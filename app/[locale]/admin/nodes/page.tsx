@@ -43,6 +43,7 @@ interface NeuralNode {
     competitor_url?: string;
     neural_blueprint?: string;
     expires_at?: string;
+    manual_notes?: string;
 }
 
 export default function AdminNodesPage() {
@@ -85,40 +86,16 @@ export default function AdminNodesPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabase as any)
             .from("nodes")
-            .update({ adn: selectedNode.adn })
+            .update({ 
+                adn: selectedNode.adn,
+                manual_notes: selectedNode.manual_notes 
+            })
             .eq("id", selectedNode.id);
 
         if (error) {
-            toast.error("Error al guardar ADN: " + error.message);
-            if (error.message.includes('column "adn" does not exist')) {
-                toast.error("⚠️ La columna 'adn' no existe en Supabase.");
-            }
+            toast.error("Error al guardar: " + error.message);
         } else {
-            toast.success("ADN Neural guardado. Iniciando Refactorización...");
-            
-            // 🚀 DISPARAR REFACTORIZACIÓN EN EL BACKEND
-            try {
-                const savedUrl = localStorage.getItem("beatriz_brain_url") || "http://localhost:3002";
-                const refactorRes = await fetch(`${savedUrl}/api/nodes/refactor`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true'
-                    },
-                    body: JSON.stringify({ nodeId: selectedNode.id })
-                });
-                
-                const refactorData = await refactorRes.json();
-                if (refactorData.success) {
-                    toast.success("¡Refactorización Completada! El Arquitecto ha actualizado el nodo.");
-                } else {
-                    toast.error("El Arquitecto falló: " + refactorData.message);
-                }
-            } catch (err) {
-                console.error("Error disparando refactor", err);
-                toast.error("No se pudo conectar con Beatriz para el refactor.");
-            }
-            
+            toast.success("Notas e Inteligencia guardadas con éxito.");
             fetchNodes();
         }
         setIsSaving(false);
@@ -527,8 +504,8 @@ export default function AdminNodesPage() {
                                     <textarea 
                                         className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs text-white placeholder:text-white/20 outline-none focus:border-neon-blue/50 transition-all resize-none custom-scrollbar"
                                         placeholder="Pega aquí reseñas, servicios, historia, promociones o cualquier detalle estratégico para entrenar al asesor..."
-                                        value={selectedNode.adn || ''}
-                                        onChange={(e) => setSelectedNode({...selectedNode, adn: e.target.value})}
+                                        value={selectedNode.manual_notes || ''}
+                                        onChange={(e) => setSelectedNode({...selectedNode, manual_notes: e.target.value})}
                                     />
                                     <div className="flex justify-end">
                                         <Button 
@@ -536,7 +513,7 @@ export default function AdminNodesPage() {
                                             disabled={isSaving}
                                             className="bg-neon-blue hover:bg-neon-blue/80 text-black font-black uppercase text-[10px] px-8 h-10 rounded-xl"
                                         >
-                                            {isSaving ? <Loader2 className="animate-spin" /> : "Actualizar ADN Neural"}
+                                            {isSaving ? <Loader2 className="animate-spin" /> : "Actualizar Notas e IA"}
                                         </Button>
                                     </div>
                                 </div>
