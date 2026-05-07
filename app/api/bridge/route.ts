@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     const { endpoint, ...data } = body;
 
     // La URL de tu Bridge de Beatriz
-    const BRIDGE_URL = "https://claudine-tristful-moly.ngrok-free.app";
+    const BRIDGE_URL = "https://claudine-tristful-moly.ngrok-free.dev";
 
     console.log(`🛰️ [BRIDGE-PROXY] Reenviando a: ${BRIDGE_URL}${endpoint}`);
 
