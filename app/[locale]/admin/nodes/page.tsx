@@ -30,6 +30,7 @@ interface NeuralNode {
     id: string;
     name: string;
     url: string;
+    refactor_url?: string; // 🧪 Nueva columna de laboratorio
     repo_url: string;
     plan: string;
     status: string;
@@ -59,21 +60,20 @@ export default function AdminNodesPage() {
         if (!supabase) return;
 
         console.log("🛰️ Hive Client: Solicitando nodos a la Federación...");
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase as any)
-            .from("nodes")
-            .select("*");
+        const { data, error } = await (supabase as any).from("nodes").select("*");
 
         if (error) {
-            console.error("❌ Error Hive:", error);
             toast.error("Error al cargar nodos: " + error.message);
         } else {
-            console.log("✅ Nodos recibidos de la Federación:", data?.length || 0);
             setNodes(data || []);
+            // Actualizar el nodo seleccionado si está abierto
+            if (selectedNode) {
+                const updated = data?.find((n: any) => n.id === selectedNode.id);
+                if (updated) setSelectedNode(updated);
+            }
         }
         setLoading(false);
-    }, [supabase]);
+    }, [supabase, selectedNode]);
 
     useEffect(() => {
         fetchNodes();
@@ -81,9 +81,7 @@ export default function AdminNodesPage() {
 
     const handleSaveADN = async () => {
         if (!selectedNode || !supabase) return;
-        
         setIsSaving(true);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabase as any)
             .from("nodes")
             .update({ 
@@ -92,9 +90,8 @@ export default function AdminNodesPage() {
             })
             .eq("id", selectedNode.id);
 
-        if (error) {
-            toast.error("Error al guardar: " + error.message);
-        } else {
+        if (error) toast.error("Error al guardar: " + error.message);
+        else {
             toast.success("Notas e Inteligencia guardadas con éxito.");
             fetchNodes();
         }
@@ -119,23 +116,24 @@ export default function AdminNodesPage() {
             }),
             {
                 loading: `🛰️ Hunter iniciando Apertura de Expediente para ${node.name.replace(/_/g, ' ')}...`,
-                success: (data: { drivePath: string }) => {
-                    fetchNodes(); // 🔄 REFRESCAR DATOS AUTOMÁTICAMENTE
-                    return `✅ Expediente creado en: ${data.drivePath}`;
+                success: () => {
+                    fetchNodes();
+                    return `✅ Expediente y ADN actualizados.`;
                 },
                 error: (err) => `❌ Error: ${err.message}`,
             }
         );
     };
 
-    const handleLaunchArchitect = (node: NeuralNode) => {
+    const handleLaunchArchitect = (node: NeuralNode, mode: "preview" | "prod" = "preview") => {
         toast.promise(
             fetch(`/api/bridge`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     endpoint: "/api/nodes/refactor",
-                    nodeId: node.id
+                    nodeId: node.id,
+                    mode: mode
                 })
             }).then(async (res) => {
                 const data = await res.json();
@@ -143,10 +141,35 @@ export default function AdminNodesPage() {
                 return data;
             }),
             {
-                loading: `🏗️ Arquitecto analizando ADN para refactorizar ${node.name.replace(/_/g, ' ')}...`,
+                loading: `🏗️ Arquitecto iniciando Refactorización (${mode.toUpperCase()}) para ${node.name}...`,
                 success: () => {
-                    fetchNodes(); // 🔄 REFRESCAR DATOS AUTOMÁTICAMENTE
-                    return '✅ Refactorización Neural iniciada con éxito';
+                    fetchNodes();
+                    return `✅ Misión iniciada en rama ${mode === 'preview' ? 'DEV' : 'MAIN'}`;
+                },
+                error: (err) => `❌ Error: ${err.message}`,
+            }
+        );
+    };
+
+    const handleApproveRefactor = (node: NeuralNode) => {
+        toast.promise(
+            fetch(`/api/bridge`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    endpoint: "/api/nodes/approve",
+                    nodeId: node.id
+                })
+            }).then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Fallo en la Fusión");
+                return data;
+            }),
+            {
+                loading: `🤝 Beatriz iniciando Fusión Maestra (Merge DEV -> MAIN) para ${node.name}...`,
+                success: () => {
+                    fetchNodes();
+                    return '✅ ¡Sitio aprobado y actualizado en PRODUCCIÓN!';
                 },
                 error: (err) => `❌ Error: ${err.message}`,
             }
@@ -169,11 +192,8 @@ export default function AdminNodesPage() {
     const handleRegeneratePitch = async (node: NeuralNode) => {
         setIsSaving(true);
         toast.info("💋 Beatriz está redactando un nuevo mensaje de seducción...");
-        
         try {
             const savedUrl = localStorage.getItem("beatriz_brain_url") || "http://localhost:3002";
-            const daysLeft = getDaysLeft(node.expires_at);
-            
             const res = await fetch(`${savedUrl}/api/nodes/generate-pitch`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -181,14 +201,12 @@ export default function AdminNodesPage() {
                     nodeId: node.id,
                     businessName: node.name,
                     adn: node.adn,
-                    daysLeft
+                    daysLeft: getDaysLeft(node.expires_at)
                 })
             });
-            
             const data = await res.json();
             if (data.success) {
                 toast.success("¡Mensaje de Seducción actualizado!");
-                setSelectedNode({ ...node, adn: data.newPitch }); // Actualizamos el ADN con el nuevo pitch
                 fetchNodes();
             }
         } catch {
@@ -235,7 +253,7 @@ export default function AdminNodesPage() {
                             onClick={() => setSelectedNode(node)}
                             className="cursor-pointer"
                         >
-                            <Card className="bg-white/5 border-white/10 hover:border-neon-blue/50 transition-all overflow-hidden group relative">
+                            <Card className={`bg-white/5 border-white/10 ${node.refactor_url ? 'border-neon-purple/50 shadow-[0_0_20px_rgba(191,0,255,0.1)]' : 'hover:border-neon-blue/50'} transition-all overflow-hidden group relative`}>
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                     <Share2 size={80} className="text-neon-blue" />
                                 </div>
@@ -245,8 +263,8 @@ export default function AdminNodesPage() {
                                             {node.plan}
                                         </Badge>
                                         <div className="flex items-center gap-2">
+                                            {node.refactor_url && <Zap size={14} className="text-neon-purple animate-pulse" />}
                                             {node.url && <Globe size={14} className="text-green-500" />}
-                                            {node.repo_url && <Github size={14} className="text-white/60" />}
                                         </div>
                                     </div>
                                     <CardTitle className="text-lg font-orbitron uppercase tracking-tighter mt-2 truncate">
@@ -257,8 +275,10 @@ export default function AdminNodesPage() {
                                     <p className="text-[10px] text-white/40 truncate mb-4">{node.url || "Sin URL de despliegue"}</p>
                                     <div className="flex items-center justify-between pt-4 border-t border-white/5">
                                         <div className="flex items-center gap-1">
-                                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                                            <span className="text-[9px] font-bold text-green-500 uppercase">Live</span>
+                                            <div className={`w-1.5 h-1.5 ${node.status === 'refactoring' ? 'bg-neon-purple' : 'bg-green-500'} rounded-full animate-pulse`} />
+                                            <span className={`text-[9px] font-bold ${node.status === 'refactoring' ? 'text-neon-purple' : 'text-green-500'} uppercase`}>
+                                                {node.status}
+                                            </span>
                                         </div>
                                         <span className="text-[10px] text-white/60 font-mono">ID: {node.id.slice(0, 8)}</span>
                                     </div>
@@ -266,13 +286,6 @@ export default function AdminNodesPage() {
                             </Card>
                         </motion.div>
                     ))}
-                </div>
-            )}
-
-            {nodes.length === 0 && !loading && (
-                <div className="text-center py-20 opacity-30">
-                    <Zap size={48} className="mx-auto mb-4 animate-pulse" />
-                    <p className="font-orbitron uppercase tracking-widest text-xs">No se detectaron nodos en la red</p>
                 </div>
             )}
 
@@ -319,8 +332,10 @@ export default function AdminNodesPage() {
                                     <div className="bg-white/5 p-3 rounded-xl border border-white/10 text-center">
                                         <p className="text-[8px] text-white/40 uppercase font-black mb-1">Estado</p>
                                         <div className="flex items-center justify-center gap-1">
-                                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                                            <span className="text-xs font-bold text-white uppercase italic">Live</span>
+                                            <div className={`w-1.5 h-1.5 ${selectedNode.status === 'live' ? 'bg-green-500' : 'bg-neon-purple'} rounded-full animate-pulse`} />
+                                            <span className={`text-xs font-bold ${selectedNode.status === 'live' ? 'text-white' : 'text-neon-purple'} uppercase italic`}>
+                                                {selectedNode.status}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="bg-white/5 p-3 rounded-xl border border-white/10 text-center col-span-2">
@@ -343,6 +358,30 @@ export default function AdminNodesPage() {
                                             <ExternalLink size={16} />
                                         </Button>
                                     </div>
+
+                                    {/* 🧪 LABORATORIO DE REFACCIÓN (DEV) */}
+                                    {selectedNode.refactor_url && (
+                                        <div className="p-4 bg-neon-purple/5 border border-neon-purple/40 rounded-2xl flex items-center justify-between group animate-in fade-in zoom-in duration-500">
+                                            <div className="flex items-center gap-3">
+                                                <Zap className="text-neon-purple h-5 w-5 animate-pulse" />
+                                                <div>
+                                                    <p className="text-[9px] uppercase font-black text-neon-purple">Refactorización Neural (Laboratorio DEV)</p>
+                                                    <p className="text-xs text-white truncate max-w-[300px]">{selectedNode.refactor_url}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button 
+                                                    className="bg-neon-purple hover:bg-neon-purple/80 text-white font-black uppercase text-[10px] px-4 h-8 rounded-lg"
+                                                    onClick={() => handleApproveRefactor(selectedNode)}
+                                                >
+                                                    Aprobar Merge
+                                                </Button>
+                                                <Button variant="ghost" size="icon" onClick={() => window.open(selectedNode.refactor_url, '_blank')}>
+                                                    <ExternalLink size={16} className="text-neon-purple" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-between group">
                                         <div className="flex items-center gap-3">
@@ -392,7 +431,7 @@ export default function AdminNodesPage() {
                                     </div>
                                 </div>
 
-                                {/* Mensaje de Conquista (Solo para planes FREE) */}
+                                {/* Mensaje de Conquista */}
                                 {selectedNode.plan?.toLowerCase() === 'free' && (
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
@@ -400,20 +439,10 @@ export default function AdminNodesPage() {
                                                 <Trophy size={14} className="fill-neon-purple" /> Mensaje de Conquista
                                             </p>
                                             <div className="flex gap-2">
-                                                <Button 
-                                                    size="sm" 
-                                                    variant="ghost" 
-                                                    className="h-7 text-[9px] text-white/40 uppercase font-bold hover:bg-white/5"
-                                                    onClick={() => handleRegeneratePitch(selectedNode)}
-                                                >
+                                                <Button size="sm" variant="ghost" className="h-7 text-[9px] text-white/40 uppercase font-bold" onClick={() => handleRegeneratePitch(selectedNode)}>
                                                     <Zap size={12} className="mr-1" /> Regenerar Seducción
                                                 </Button>
-                                                <Button 
-                                                    size="sm" 
-                                                    variant="ghost" 
-                                                    className="h-7 text-[9px] text-neon-purple uppercase font-bold hover:bg-neon-purple/10"
-                                                    onClick={() => handleShareWhatsApp(selectedNode)}
-                                                >
+                                                <Button size="sm" variant="ghost" className="h-7 text-[9px] text-neon-purple uppercase font-bold" onClick={() => handleShareWhatsApp(selectedNode)}>
                                                     <MessageSquare size={12} className="mr-1" /> Compartir Pitch
                                                 </Button>
                                             </div>
@@ -424,57 +453,15 @@ export default function AdminNodesPage() {
                                     </div>
                                 )}
 
-                                {/* INTELIGENCIA RECOPILADA (ADN ACTUAL) */}
+                                {/* INTELIGENCIA RECOPILADA (ADN) */}
                                 <div className="space-y-3">
                                     <p className="text-[10px] uppercase font-black text-neon-blue tracking-widest flex items-center gap-2">
                                         <Database size={14} className="fill-neon-blue" /> Inteligencia Recopilada (ADN)
                                     </p>
                                     <div className="p-4 bg-neon-blue/5 border border-neon-blue/10 rounded-2xl">
-                                        {selectedNode.adn ? (
-                                            <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap">
-                                                {selectedNode.adn}
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col items-center justify-center py-4 text-center space-y-2">
-                                                <Database className="text-white/10 h-8 w-8" />
-                                                <p className="text-[10px] text-white/30 uppercase font-bold italic text-center">
-                                                    Sin datos OSINT profundos. <br /> Lance al Hunter para recolectar.
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* ANÁLISIS DE COMPETITIVIDAD (BLUEPRINT) */}
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[10px] uppercase font-black text-neon-purple tracking-widest flex items-center gap-2">
-                                            <Trophy size={14} className="fill-neon-purple" /> Análisis de Competitividad Neural
-                                        </p>
-                                        {selectedNode.competitor_url && (
-                                            <Button 
-                                                size="sm" 
-                                                variant="ghost" 
-                                                className="h-7 text-[9px] text-neon-purple uppercase font-bold hover:bg-neon-purple/10"
-                                                onClick={() => window.open(selectedNode.competitor_url, '_blank')}
-                                            >
-                                                <ExternalLink size={12} className="mr-1" /> Ver Referencia Elite
-                                            </Button>
-                                        )}
-                                    </div>
-                                    <div className="p-4 bg-neon-purple/5 border border-neon-purple/20 rounded-2xl">
-                                        {selectedNode.neural_blueprint ? (
-                                            <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap italic">
-                                                {selectedNode.neural_blueprint}
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col items-center justify-center py-4 text-center space-y-2">
-                                                <Trophy className="text-white/10 h-8 w-8" />
-                                                <p className="text-[10px] text-white/30 uppercase font-bold italic text-center">
-                                                    Esperando Plan Maestro... <br /> El Hunter debe proponer la estructura.
-                                                </p>
-                                            </div>
-                                        )}
+                                        <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap">
+                                            {selectedNode.adn || "Sin datos OSINT profundos."}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -490,107 +477,27 @@ export default function AdminNodesPage() {
                                     <Button 
                                         variant="outline" 
                                         className="border-neon-purple/20 text-neon-purple text-[9px] uppercase font-black h-10 rounded-xl hover:bg-neon-purple/10 flex items-center justify-center gap-2"
-                                        onClick={() => handleLaunchArchitect(selectedNode)}
+                                        onClick={() => handleLaunchArchitect(selectedNode, "preview")}
                                     >
-                                        <Zap size={14} /> Regenerar Sitio
+                                        <Zap size={14} /> Refactorizar (DEV)
                                     </Button>
                                 </div>
 
-                                {/* ADN DEL NEGOCIO (ALIMENTAR IA) */}
+                                {/* ADN DEL NEGOCIO */}
                                 <div className="space-y-3">
                                     <p className="text-[10px] uppercase font-black text-white/40 tracking-widest flex items-center gap-2">
                                         <MessageSquare size={14} /> Alimentar IA (Notas Manuales)
                                     </p>
                                     <textarea 
                                         className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs text-white placeholder:text-white/20 outline-none focus:border-neon-blue/50 transition-all resize-none custom-scrollbar"
-                                        placeholder="Pega aquí reseñas, servicios, historia, promociones o cualquier detalle estratégico para entrenar al asesor..."
                                         value={selectedNode.manual_notes || ''}
                                         onChange={(e) => setSelectedNode({...selectedNode, manual_notes: e.target.value})}
                                     />
                                     <div className="flex justify-end">
-                                        <Button 
-                                            onClick={handleSaveADN}
-                                            disabled={isSaving}
-                                            className="bg-neon-blue hover:bg-neon-blue/80 text-black font-black uppercase text-[10px] px-8 h-10 rounded-xl"
-                                        >
+                                        <Button onClick={handleSaveADN} disabled={isSaving} className="bg-neon-blue text-black font-black uppercase text-[10px] px-8 h-10 rounded-xl">
                                             {isSaving ? <Loader2 className="animate-spin" /> : "Actualizar Notas e IA"}
                                         </Button>
                                     </div>
-                                </div>
-
-                                {/* Botones de Acción */}
-                                <div className="pt-4 flex gap-4">
-                                    <Button 
-                                        className="flex-1 bg-white text-black font-black uppercase text-[10px] h-12 rounded-xl group"
-                                        onClick={() => {
-                                            const query = selectedNode.address || selectedNode.name;
-                                            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-                                            window.open(mapUrl, '_blank');
-                                        }}
-                                    >
-                                        <MapPin size={16} className="mr-2 group-hover:scale-125 transition-transform" /> 
-                                        Ubicación Real
-                                    </Button>
-                                    <Button 
-                                        variant="outline" 
-                                        className="flex-1 border-white/10 text-[10px] uppercase font-black h-12 rounded-xl group hover:border-neon-blue"
-                                        onClick={() => {
-                                            const path = selectedNode.drive_path;
-                                            if (path) {
-                                                if (path.startsWith('http')) {
-                                                    window.open(path, '_blank');
-                                                } else {
-                                                    toast.info(
-                                                        <div className="space-y-4">
-                                                            {selectedNode.drive_path && (
-                                                                <div className="mt-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
-                                                                    <div className="flex items-center gap-3 mb-3">
-                                                                        <div className="p-2 rounded-lg bg-blue-500/20">
-                                                                            <Folder className="w-5 h-5 text-blue-400" />
-                                                                        </div>
-                                                                        <div>
-                                                                            <h4 className="text-sm font-semibold text-blue-100">Acceso a la Federación</h4>
-                                                                            <p className="text-xs text-blue-400/80">Sincronizado con Google Drive</p>
-                                                                        </div>
-                                                                    </div>
-                                                                    
-                                                                    <a 
-                                                                        href="https://drive.google.com/drive/folders/1_HEaRRbImiU2DAXNu3wdM2mwS6sLuK5X" 
-                                                                        target="_blank" 
-                                                                        rel="noopener noreferrer"
-                                                                        className="flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium transition-all shadow-lg shadow-blue-900/20 active:scale-95"
-                                                                    >
-                                                                        <ExternalLink className="w-4 h-4" />
-                                                                        ABRIR FEDERACIÓN EN DRIVE
-                                                                    </a>
-
-                                                                    <a 
-                                                                        href={`https://vercel.com/willy-devs-projects/neural-site-${selectedNode.name.toLowerCase().replace(/_/g, '-')}/deployments`}
-                                                                        target="_blank" 
-                                                                        rel="noopener noreferrer"
-                                                                        className="mt-2 flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-medium border border-zinc-700 transition-all active:scale-95"
-                                                                    >
-                                                                        <Cloud className="w-4 h-4 text-white" />
-                                                                        VER DESPLIEGUE EN VERCEL
-                                                                    </a>
-                                                                    
-                                                                    <p className="mt-3 text-[10px] text-center text-blue-400/50 font-mono break-all">
-                                                                        ID Local: {selectedNode.drive_path}
-                                                                    </p>
-                                                                </div>
-                                                            )}
-                                                        </div>,
-                                                        { duration: 6000 }
-                                                    );
-                                                }
-                                            } else {
-                                                toast.info("Expediente no vinculado. Lance al Hunter para crearlo.");
-                                            }
-                                        }}
-                                    >
-                                        <Camera size={16} className="mr-2 group-hover:scale-125 transition-transform" /> 
-                                        {selectedNode.drive_path ? "Expediente Multimedia" : "Sin Multimedia"}
-                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
@@ -599,19 +506,10 @@ export default function AdminNodesPage() {
             </AnimatePresence>
 
             <style jsx global>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(0, 163, 255, 0.3);
-                }
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0, 163, 255, 0.3); }
             `}</style>
         </div>
     );
