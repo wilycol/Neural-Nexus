@@ -346,36 +346,40 @@ export default function AdminNodesPage() {
                                 {/* Enlaces Industriales */}
                                 <div className="space-y-4">
                                     <div className="p-4 bg-neon-blue/5 border border-neon-blue/20 rounded-2xl flex items-center justify-between group">
-                                        <div className="flex items-center gap-3">
-                                            <Globe className="text-neon-blue h-5 w-5" />
-                                            <div>
-                                                <p className="text-[9px] uppercase font-black text-neon-blue">URL de Producción</p>
-                                                <p className="text-xs text-white truncate max-w-[300px]">{selectedNode.url || "Pendiente..."}</p>
+                                        <div className="flex-1 min-w-0 mr-2">
+                                            <div className="flex items-center gap-3">
+                                                <Globe className="text-neon-blue h-5 w-5 shrink-0" />
+                                                <div className="min-w-0">
+                                                    <p className="text-[9px] uppercase font-black text-neon-blue">URL de Producción</p>
+                                                    <p className="text-[11px] text-white break-all leading-tight">{selectedNode.url || "Pendiente..."}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="icon" onClick={() => window.open(selectedNode.url, '_blank')}>
+                                        <Button variant="ghost" size="icon" className="shrink-0" onClick={() => window.open(selectedNode.url, '_blank')}>
                                             <ExternalLink size={16} />
                                         </Button>
                                     </div>
 
                                     {/* 🧪 LABORATORIO DE REFACCIÓN (DEV) */}
                                     {selectedNode.refactor_url && (
-                                        <div className="p-4 bg-neon-purple/5 border border-neon-purple/40 rounded-2xl flex items-center justify-between group animate-in fade-in zoom-in duration-500">
-                                            <div className="flex items-center gap-3">
-                                                <Zap className="text-neon-purple h-5 w-5 animate-pulse" />
-                                                <div>
-                                                    <p className="text-[9px] uppercase font-black text-neon-purple">Refactorización Neural (Laboratorio DEV)</p>
-                                                    <p className="text-xs text-white truncate max-w-[300px]">{selectedNode.refactor_url}</p>
+                                        <div className="p-4 bg-neon-purple/5 border border-neon-purple/40 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 group animate-in fade-in zoom-in duration-500">
+                                            <div className="flex-1 min-w-0 w-full">
+                                                <div className="flex items-center gap-3">
+                                                    <Zap className="text-neon-purple h-5 w-5 shrink-0 animate-pulse" />
+                                                    <div className="min-w-0">
+                                                        <p className="text-[9px] uppercase font-black text-neon-purple">Refactorización Neural (Laboratorio DEV)</p>
+                                                        <p className="text-[11px] text-white break-all leading-tight">{selectedNode.refactor_url}</p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 w-full sm:w-auto shrink-0">
                                                 <Button 
-                                                    className="bg-neon-purple hover:bg-neon-purple/80 text-white font-black uppercase text-[10px] px-4 h-8 rounded-lg"
+                                                    className="flex-1 sm:flex-none bg-neon-purple hover:bg-neon-purple/80 text-white font-black uppercase text-[10px] px-4 h-8 rounded-lg"
                                                     onClick={() => handleApproveRefactor(selectedNode)}
                                                 >
                                                     Aprobar Merge
                                                 </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => window.open(selectedNode.refactor_url, '_blank')}>
+                                                <Button variant="ghost" size="icon" className="shrink-0" onClick={() => window.open(selectedNode.refactor_url, '_blank')}>
                                                     <ExternalLink size={16} className="text-neon-purple" />
                                                 </Button>
                                             </div>
@@ -383,14 +387,16 @@ export default function AdminNodesPage() {
                                     )}
 
                                     <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-between group">
-                                        <div className="flex items-center gap-3">
-                                            <Github className="text-white/40 h-5 w-5" />
-                                            <div>
-                                                <p className="text-[9px] uppercase font-black text-white/40">Repositorio GitHub</p>
-                                                <p className="text-xs text-white truncate max-w-[300px]">{selectedNode.repo_url || "Sin Repositorio"}</p>
+                                        <div className="flex-1 min-w-0 mr-2">
+                                            <div className="flex items-center gap-3">
+                                                <Github className="text-white/40 h-5 w-5 shrink-0" />
+                                                <div className="min-w-0">
+                                                    <p className="text-[9px] uppercase font-black text-white/40">Repositorio GitHub</p>
+                                                    <p className="text-[11px] text-white break-all leading-tight">{selectedNode.repo_url || "Sin Repositorio"}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="icon" onClick={() => window.open(selectedNode.repo_url, '_blank')}>
+                                        <Button variant="ghost" size="icon" className="shrink-0" onClick={() => window.open(selectedNode.repo_url, '_blank')}>
                                             <ExternalLink size={16} />
                                         </Button>
                                     </div>
