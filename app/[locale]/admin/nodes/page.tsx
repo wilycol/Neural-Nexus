@@ -120,52 +120,47 @@ export default function AdminNodesPage() {
     };
 
     const handleLaunchHunter = async (node: NeuralNode) => {
-        // La URL del Bridge de Beatriz (ajustar según tu ngrok o local)
-        const BRIDGE_URL = "https://claudine-tristful-moly.ngrok-free.app"; // Usando el de tu captura
-
         toast.promise(
-            fetch(`${BRIDGE_URL}/hunter/investigate`, {
+            fetch(`/api/bridge`, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "ngrok-skip-browser-warning": "true" // Saltar advertencia de ngrok
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    endpoint: "/hunter/investigate",
                     businessId: node.id,
                     nodeId: node.id,
                     name: node.name
                 })
             }).then(async (res) => {
-                if (!res.ok) throw new Error("Fallo en el Bridge");
-                return res.json();
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Fallo en el Bridge");
+                return data;
             }),
             {
                 loading: `🛰️ Hunter iniciando Apertura de Expediente para ${node.name.replace(/_/g, ' ')}...`,
                 success: (data: { drivePath: string }) => `✅ Expediente creado en: ${data.drivePath}`,
-                error: '❌ Error al contactar con el Bridge de Beatriz',
+                error: (err) => `❌ Error: ${err.message}`,
             }
         );
     };
 
     const handleLaunchArchitect = (node: NeuralNode) => {
-        const BRIDGE_URL = "https://claudine-tristful-moly.ngrok-free.app";
-
         toast.promise(
-            fetch(`${BRIDGE_URL}/api/nodes/refactor`, {
+            fetch(`/api/bridge`, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "ngrok-skip-browser-warning": "true"
-                },
-                body: JSON.stringify({ nodeId: node.id })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    endpoint: "/api/nodes/refactor",
+                    nodeId: node.id
+                })
             }).then(async (res) => {
-                if (!res.ok) throw new Error("Fallo en el Architect");
-                return res.json();
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Fallo en el Architect");
+                return data;
             }),
             {
                 loading: `🏗️ Arquitecto analizando ADN para refactorizar ${node.name.replace(/_/g, ' ')}...`,
                 success: '✅ Refactorización Neural iniciada con éxito',
-                error: '❌ Error al contactar con el Arquitecto de Beatriz',
+                error: (err) => `❌ Error: ${err.message}`,
             }
         );
     };
