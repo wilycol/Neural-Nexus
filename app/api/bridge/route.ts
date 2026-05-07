@@ -21,8 +21,9 @@ export async function POST(request: Request) {
 
         const result = await response.json();
         return NextResponse.json(result, { status: response.status });
-    } catch (error: any) {
-        console.error("❌ [BRIDGE-PROXY] Error:", error.message);
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+        console.error("❌ [BRIDGE-PROXY] Error:", errorMessage);
+        return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
     }
 }
