@@ -14,7 +14,8 @@ import {
     Trophy,
     MessageSquare,
     Instagram,
-    Facebook
+    Facebook,
+    Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,6 +43,7 @@ interface NeuralNode {
     neural_blueprint?: string;
     expires_at?: string;
     manual_notes?: string;
+    construction_level?: number;
 }
 
 export default function AdminNodesPage() {
@@ -49,6 +51,14 @@ export default function AdminNodesPage() {
     const [loading, setLoading] = useState(true);
     const [selectedNode, setSelectedNode] = useState<NeuralNode | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [targetLevel, setTargetLevel] = useState(0);
+
+    // 🧠 Sincronizar nivel al seleccionar nodo
+    useEffect(() => {
+        if (selectedNode) {
+            setTargetLevel(selectedNode.construction_level || 0);
+        }
+    }, [selectedNode?.id]); // Solo cuando cambia el nodo
 
     const supabase = getSupabaseHiveClient();
 
@@ -134,7 +144,8 @@ export default function AdminNodesPage() {
                 body: JSON.stringify({
                     endpoint: "/api/nodes/refactor",
                     nodeId: node.id,
-                    mode: mode
+                    mode: mode,
+                    targetLevel: targetLevel // 🚀 NIVEL ESTRATÉGICO SELECCIONADO
                 })
             }).then(async (res) => {
                 const data = await res.json();
@@ -475,6 +486,44 @@ export default function AdminNodesPage() {
                                             {selectedNode.adn || "Sin datos OSINT profundos."}
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* 🏗️ ORQUESTACIÓN POR NIVELES (SERIE X) */}
+                                <div className="space-y-4 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <p className="text-[10px] uppercase font-black text-white/40 tracking-widest flex items-center gap-2">
+                                            <Layers size={14} /> Pipeline de Construcción
+                                        </p>
+                                        <Badge className="bg-neon-blue/20 text-neon-blue border-neon-blue/30 text-[9px]">
+                                            Nivel Actual: {selectedNode.construction_level || 0}
+                                        </Badge>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between gap-2">
+                                        {[0, 1, 2, 3, 4, 5, 6].map((level) => (
+                                            <button
+                                                key={level}
+                                                onClick={() => setTargetLevel(level)}
+                                                className={`flex-1 h-10 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${
+                                                    targetLevel === level 
+                                                        ? (level === 0 ? 'bg-neon-blue/20 border-neon-blue shadow-[0_0_15px_rgba(0,163,255,0.3)]' : 'bg-neon-purple/20 border-neon-purple shadow-[0_0_15px_rgba(191,0,255,0.3)]')
+                                                        : 'bg-white/5 border-white/10 hover:border-white/30'
+                                                }`}
+                                            >
+                                                <span className={`text-xs font-black ${targetLevel === level ? 'text-white' : 'text-white/40'}`}>
+                                                    {level}
+                                                </span>
+                                                <span className="text-[6px] font-black uppercase tracking-tighter opacity-50">
+                                                    {level === 0 ? 'PLAN' : `LVL ${level}`}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="text-[9px] text-white/30 italic text-center">
+                                        {targetLevel === 0 
+                                            ? "Selecciona Nivel 0 para que el Arquitecto genere la Estrategia de Obra." 
+                                            : `El Arquitecto se enfocará exclusivamente en los objetivos del Nivel ${targetLevel}.`}
+                                    </p>
                                 </div>
 
                                 {/* OPERACIONES DE CAMPO (AGENTES) */}
