@@ -57,7 +57,7 @@ const NICHES = [
 ];
 
 export default function AdminHunterPage() {
-    const [backendUrl, setBackendUrl] = useState("http://localhost:3002");
+    const [backendUrl, setBackendUrl] = useState("https://claudine-tristful-moly.ngrok-free.dev");
     // 💋 Serie X Elite - Sincronización Dinámica Activa (v1.2)
     const [selectedNiche, setSelectedNiche] = useState(NICHES[0]);
     const [showConfig, setShowConfig] = useState(false);
@@ -73,7 +73,7 @@ export default function AdminHunterPage() {
     const supabase = getSupabaseHiveClient();
 
     useEffect(() => {
-        const savedUrl = localStorage.getItem("beatriz_brain_url");
+        const savedUrl = localStorage.getItem("beatriz_bridge_url");
         if (savedUrl) setBackendUrl(savedUrl);
     }, []);
 
@@ -351,7 +351,7 @@ export default function AdminHunterPage() {
                                     className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono"
                                 />
                                 <Button size="sm" onClick={() => { 
-                                    localStorage.setItem("beatriz_backend_url", backendUrl);
+                                    localStorage.setItem("beatriz_bridge_url", backendUrl);
                                     setShowConfig(false); 
                                     toast.success("Puente Sincronizado"); 
                                 }}>Guardar</Button>
