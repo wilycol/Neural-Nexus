@@ -44,6 +44,7 @@ interface Business {
     adn?: string;
     isNodeActive?: boolean;
     nodeUrl?: string;
+    nodeId?: string;
 }
 
 const NICHES = [
@@ -67,6 +68,7 @@ export default function AdminHunterPage() {
     const [isOnboarding, setIsOnboarding] = useState(false);
     const [telemetry, setTelemetry] = useState<string[]>([]);
     const [isApproved, setIsApproved] = useState(false);
+    const [isInvestigating, setIsInvestigating] = useState(false);
 
     const supabase = getSupabaseHiveClient();
 
@@ -171,26 +173,53 @@ export default function AdminHunterPage() {
 
     // 🚀 Fase 2: Investigación Profunda (Triple Misión)
     const investigateDeeply = async (biz: Business) => {
-        setIsScanning(true);
+        if (isInvestigating) return;
+        setIsInvestigating(true);
+        setIsApproved(false); // Reset approval while investigating
+        
         setTelemetry(prev => [`🔍 Activando Triple Misión para: ${biz.name}`, ...prev]);
-        setTelemetry(prev => [`🕵️ Hunter: Buscando activos digitales y fotos...`, ...prev]);
+        setTelemetry(prev => [`🕵️ Hunter: Iniciando OSINT profundo y extracción de activos...`, ...prev]);
         
         try {
-            // Simulamos la activación del búnker
-            await fetch(`${backendUrl}/hunter/logs`, {
-                method: 'GET',
-                headers: { 'ngrok-skip-browser-warning': 'true' }
+            const res = await fetch(`${backendUrl}/hunter/approve-candidate`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify({
+                    businessId: biz.id,
+                    name: biz.name,
+                    address: biz.address,
+                    phone: biz.phone,
+                    website: biz.website,
+                    rating: biz.rating,
+                    types: selectedNiche.types
+                })
             });
             
-            setTelemetry(prev => [`🏗️ Arquitecto: Preparando Blueprint para ${biz.name}...`, ...prev]);
-            setTelemetry(prev => [`💌 Seductor: Redactando misiva de conquista...`, ...prev]);
+            const data = await res.json();
             
-            setIsApproved(true);
-            toast.success("Triple Misión Iniciada: Hunter, Arquitecto y Seductor en posición.");
-        } catch {
-            toast.error("Error al conectar con el búnker para la investigación.");
+            if (data.success) {
+                setTelemetry(prev => [`✅ INTELIGENCIA COMPLETADA. ADN del cliente asegurado.`, ...prev]);
+                setTelemetry(prev => [`🏗️ Arquitecto: Blueprint listo para despliegue.`, ...prev]);
+                setTelemetry(prev => [`💌 Seductor: Misiva de conquista redactada.`, ...prev]);
+                
+                // Actualizar el negocio seleccionado con los nuevos datos (ID del nodo, etc)
+                const updatedBiz = { ...biz, status: 'investigating' as const, nodeId: data.nodeId };
+                setBusinesses(prev => prev.map(b => b.id === biz.id ? updatedBiz : b));
+                setSelectedBusiness(updatedBiz);
+                
+                setIsApproved(true);
+                toast.success("Investigación Finalizada: Hunter, Arquitecto y Seductor en posición.");
+            } else {
+                throw new Error(data.error || "Fallo en la investigación");
+            }
+        } catch (err: any) {
+            toast.error("Error en la cacería: " + err.message);
+            setTelemetry(prev => [`❌ FALLO DE MISIÓN: ${err.message}`, ...prev]);
         } finally {
-            setIsScanning(false);
+            setIsInvestigating(false);
         }
     };
 
@@ -200,40 +229,54 @@ export default function AdminHunterPage() {
         
         setIsOnboarding(true);
         setTelemetry(prev => [`🚀 INICIANDO DESPLIEGUE INDUSTRIAL: ${selectedBusiness.name}`, ...prev]);
-        setTelemetry(prev => [`🔨 Arquitecto: Clonando Plantilla FreeSmoke...`, ...prev]);
         
         try {
-            // Llamada REAL al búnker de Beatriz
-            const res = await fetch(`${backendUrl}/api/nodes/create`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify({
+            // Si tenemos nodeId (creado por el Hunter), usamos REFACTOR para inyectar ADN real
+            const endpoint = selectedBusiness.nodeId 
+                ? `${backendUrl}/api/nodes/refactor` 
+                : `${backendUrl}/api/nodes/create`;
+            
+            setTelemetry(prev => [`🔨 Arquitecto: ${selectedBusiness.nodeId ? 'Refactorizando con ADN Industrial...' : 'Clonando Plantilla Express...'}`, ...prev]);
+
+            const payload = selectedBusiness.nodeId 
+                ? { nodeId: selectedBusiness.nodeId, mode: 'preview' }
+                : {
                     name: selectedBusiness.name.replace(/\s+/g, '_'),
                     brandHtml: `<span>${selectedBusiness.name}</span>`,
                     color: "neon-blue",
                     plan: "premium",
                     clientEmail: selectedBusiness.phone || "portalneuralnexus@gmail.com"
-                })
+                };
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify(payload)
             });
 
             const data = await res.json();
             
             if (data.success) {
-                const url = data.url || `https://neural-hive.vercel.app/node/${selectedBusiness.id}`;
-                const pitch = `¡Hola ${selectedBusiness.name}! 🚀 He estado analizando su presencia en Google y veo un potencial enorme que no se está aprovechando. Beatriz AI ha diseñado este prototipo de Neural Site especialmente para ustedes: ${url} -- ¿Qué les parece si lo activamos para atraer más clientes esta misma semana? 💎🦾`;
+                const nodeName = data.nodeName || selectedBusiness.name.replace(/\s+/g, '_');
+                const url = `https://${nodeName.toLowerCase()}.neural-nodes.com`; // URL Industrial estandarizada
                 
                 setTelemetry(prev => [`✅ NODO VIVO: ${url}`, ...prev]);
                 setTelemetry(prev => [`📡 HIVE: Registro en Supabase completado.`, ...prev]);
                 
-                const updatedBiz = { ...selectedBusiness, status: 'completed' as const, missionUrl: url, pitch };
+                const updatedBiz = { 
+                    ...selectedBusiness, 
+                    status: 'completed' as const, 
+                    missionUrl: url,
+                    isNodeActive: true 
+                };
                 setBusinesses(prev => prev.map(b => b.id === selectedBusiness.id ? updatedBiz : b));
                 setSelectedBusiness(updatedBiz);
 
                 toast.success("¡Despliegue Exitoso!", {
-                    description: "El nodo está vivo y registrado en la Federación.",
+                    description: "Beatriz ha materializado el sitio en la Federación.",
                     duration: 5000
                 });
             } else {
@@ -596,7 +639,7 @@ export default function AdminHunterPage() {
                             </div>
                             
                             <div className="flex items-center gap-1.5 shrink-0">
-                                {/* Inteligencia Geográfica */}
+                                {/* 1. Detalle (Info) */}
                                 <Button 
                                     variant="outline" 
                                     size="icon"
@@ -607,7 +650,28 @@ export default function AdminHunterPage() {
                                     <Info size={14} />
                                 </Button>
 
-                                {/* Disparador del Arquitecto / Ver Nodo */}
+                                {/* 2. Hunter (Check) */}
+                                <Button 
+                                    size="icon"
+                                    className={`h-9 w-9 shrink-0 transition-all ${
+                                        isApproved 
+                                        ? 'bg-green-500 text-black shadow-[0_0_20px_rgba(34,197,94,0.5)]' 
+                                        : 'bg-white/5 border border-white/10 text-white/30'
+                                    }`}
+                                    onClick={() => {
+                                        if (isApproved) {
+                                            setIsApproved(false);
+                                        } else {
+                                            investigateDeeply(selectedBusiness);
+                                        }
+                                    }}
+                                    disabled={isInvestigating}
+                                    title="Activar Hunter (OSINT Profundo)"
+                                >
+                                    {isInvestigating ? <Loader2 className="animate-spin" /> : <CheckCircle2 size={16} />}
+                                </Button>
+
+                                {/* 3. Arquitecto (HardHat) */}
                                 <Button 
                                     className={`font-orbitron font-black text-[9px] uppercase tracking-tighter transition-all h-9 px-3 shrink-0 ${
                                         selectedBusiness.status === 'completed'
@@ -623,29 +687,11 @@ export default function AdminHunterPage() {
                                             launchPrototye();
                                         }
                                     }}
-                                    disabled={isOnboarding || (!isApproved && selectedBusiness.status !== 'completed')}
+                                    disabled={isOnboarding || isInvestigating || (!isApproved && selectedBusiness.status !== 'completed')}
+                                    title="Lanzar Arquitecto (Despliegue de Nodo)"
                                 >
                                     {isOnboarding ? <Loader2 className="animate-spin" /> : <HardHat size={12} className="mr-1.5" />} 
                                     {selectedBusiness.isNodeActive ? "Ver Nodo" : selectedBusiness.status === 'completed' ? "Ver Nodo" : isApproved ? "Arquitecto" : "Espera"}
-                                </Button>
-
-                                {/* Switch de Aprobación Industrial */}
-                                <Button 
-                                    size="icon"
-                                    className={`h-9 w-9 shrink-0 transition-all ${
-                                        isApproved 
-                                        ? 'bg-green-500 text-black shadow-[0_0_20px_rgba(34,197,94,0.5)]' 
-                                        : 'bg-white/5 border border-white/10 text-white/30'
-                                    }`}
-                                    onClick={() => {
-                                        if (isApproved) {
-                                            setIsApproved(false);
-                                        } else {
-                                            investigateDeeply(selectedBusiness);
-                                        }
-                                    }}
-                                >
-                                    {isScanning ? <Loader2 className="animate-spin" /> : <CheckCircle2 size={16} />}
                                 </Button>
 
                                 {/* Cerrar Selección */}
