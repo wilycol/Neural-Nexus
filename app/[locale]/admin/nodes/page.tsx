@@ -471,7 +471,7 @@ export default function AdminNodesPage() {
                                         <Database size={14} className="fill-neon-blue" /> Inteligencia Recopilada (ADN)
                                     </p>
                                     <div className="p-4 bg-neon-blue/5 border border-neon-blue/10 rounded-2xl">
-                                        <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap">
+                                        <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap break-all">
                                             {selectedNode.adn || "Sin datos OSINT profundos."}
                                         </div>
                                     </div>
