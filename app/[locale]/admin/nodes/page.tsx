@@ -67,7 +67,9 @@ export default function AdminNodesPage() {
             if (selectedNode) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const updated = data?.find((n: any) => n.id === selectedNode.id);
-                if (updated) setSelectedNode(updated);
+                if (updated) {
+                    setSelectedNode(prev => prev ? updated : null);
+                }
             }
         }
         setLoading(false);
@@ -292,12 +294,17 @@ export default function AdminNodesPage() {
             <AnimatePresence>
                 {selectedNode && (
                     <motion.div 
+                        key="modal-backdrop"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        onClick={() => setSelectedNode(null)}
                         className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[100] flex items-center justify-center p-4"
                     >
-                        <Card className="w-full max-w-2xl max-h-[90vh] bg-black border-neon-blue/40 shadow-[0_0_100px_rgba(0,163,255,0.15)] flex flex-col overflow-hidden relative">
+                        <Card 
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full max-w-2xl max-h-[90vh] bg-black border-neon-blue/40 shadow-[0_0_100px_rgba(0,163,255,0.15)] flex flex-col overflow-hidden relative"
+                        >
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-blue via-neon-purple to-neon-blue" />
                             
                             <CardHeader className="border-b border-white/5 shrink-0">
