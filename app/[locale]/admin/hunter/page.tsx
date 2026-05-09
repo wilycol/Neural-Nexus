@@ -215,9 +215,10 @@ export default function AdminHunterPage() {
             } else {
                 throw new Error(data.error || "Fallo en la investigación");
             }
-        } catch (err: any) {
-            toast.error("Error en la cacería: " + err.message);
-            setTelemetry(prev => [`❌ FALLO DE MISIÓN: ${err.message}`, ...prev]);
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : "Fallo desconocido";
+            toast.error("Error en la cacería: " + errorMessage);
+            setTelemetry(prev => [`❌ FALLO DE MISIÓN: ${errorMessage}`, ...prev]);
         } finally {
             setIsInvestigating(false);
         }
@@ -574,7 +575,7 @@ export default function AdminHunterPage() {
                                         className="w-full h-24 bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-white placeholder:text-white/20 outline-none focus:border-neon-blue/50 transition-all resize-none"
                                         placeholder="Pega aquí reseñas, servicios, historia o cualquier detalle estratégico..."
                                         value={selectedBusiness.adn || ''}
-                                        onChange={(e) => {
+                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                                             const newAdn = e.target.value;
                                             setBusinesses(prev => prev.map(b => 
                                                 b.id === selectedBusiness.id ? { ...b, adn: newAdn } : b
