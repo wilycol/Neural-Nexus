@@ -477,10 +477,20 @@ export default function AdminNodesPage() {
                                 )}
 
                                 {/* INTELIGENCIA RECOPILADA (ADN) */}
-                                <div className="space-y-3">
-                                    <p className="text-[10px] uppercase font-black text-neon-blue tracking-widest flex items-center gap-2">
-                                        <Database size={14} className="fill-neon-blue" /> Inteligencia Recopilada (ADN)
-                                    </p>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[10px] uppercase font-black text-neon-blue tracking-widest flex items-center gap-2">
+                                            <Database size={14} className="fill-neon-blue" /> Inteligencia Recopilada (ADN)
+                                        </p>
+                                        {selectedNode.findings_json?.address && (
+                                            <a 
+                                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedNode.findings_json.address)}`} 
+                                                target="_blank" 
+                                                className="flex items-center gap-1.5 px-3 py-1 bg-neon-blue/10 border border-neon-blue/30 rounded-lg hover:bg-neon-blue/20 transition-all text-[9px] font-black uppercase tracking-widest text-neon-blue"
+                                            >
+                                                <MapPin size={12} /> Google Maps
+                                            </a>
+                                        )}
+                                    </div>
                                     <div className="p-4 bg-neon-blue/5 border border-neon-blue/10 rounded-2xl">
                                         <div className="text-[11px] text-white/80 leading-relaxed whitespace-pre-wrap break-all">
                                             {selectedNode.adn || "Sin datos OSINT profundos."}
