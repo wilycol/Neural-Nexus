@@ -45,6 +45,7 @@ interface Business {
     isNodeActive?: boolean;
     nodeUrl?: string;
     nodeId?: string;
+    notInMaps?: boolean;
 }
 
 const NICHES = [
@@ -65,6 +66,15 @@ export default function AdminHunterPage() {
     const [isScanning, setIsScanning] = useState(false);
     const [businesses, setBusinesses] = useState<Business[]>([]);
     const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+    const [isManualMode, setIsManualMode] = useState(false);
+    const [manualEntry, setManualEntry] = useState({
+        name: "",
+        address: "",
+        phone: "",
+        niche: "general",
+        notInMaps: false,
+        adn: ""
+    });
     const [isOnboarding, setIsOnboarding] = useState(false);
     const [telemetry, setTelemetry] = useState<string[]>([]);
     const [isApproved, setIsApproved] = useState(false);
@@ -313,8 +323,11 @@ export default function AdminHunterPage() {
                     <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="text-white/40 hover:text-white"
-                        onClick={() => toast.info("Modo Manual: Sube fotos del local")}
+                        className={`transition-all ${isManualMode ? 'text-neon-purple animate-pulse' : 'text-white/40 hover:text-white'}`}
+                        onClick={() => {
+                            setIsManualMode(!isManualMode);
+                            toast.info(isManualMode ? "Radar normal activado" : "🧬 MODO HÉROE: Inyección Manual Activada");
+                        }}
                     >
                         <Camera size={20} />
                     </Button>
@@ -355,6 +368,97 @@ export default function AdminHunterPage() {
                                     setShowConfig(false); 
                                     toast.success("Puente Sincronizado"); 
                                 }}>Guardar</Button>
+                            </div>
+                        </Card>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* 🧬 MODO HÉROE: INYECCIÓN MANUAL */}
+            <AnimatePresence>
+                {isManualMode && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                    >
+                        <Card className="bg-neon-purple/5 border-neon-purple/20 backdrop-blur-md p-6 space-y-4 shadow-[0_0_30px_rgba(191,0,255,0.1)]">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2 bg-neon-purple/20 rounded-lg">
+                                    <Radar size={20} className="text-neon-purple animate-pulse" />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm font-black font-orbitron text-neon-purple uppercase tracking-widest">Inyección de Inteligencia Manual</h2>
+                                    <p className="text-[10px] text-white/40 uppercase tracking-tighter">Serie X • Modo Héroe Activado</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-[9px] uppercase font-bold text-white/40">Nombre del Negocio</label>
+                                    <input 
+                                        type="text" 
+                                        value={manualEntry.name}
+                                        onChange={(e) => setManualEntry({...manualEntry, name: e.target.value})}
+                                        placeholder="Ej: Heladería El Paraíso"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[9px] uppercase font-bold text-white/40">Dirección Física</label>
+                                    <input 
+                                        type="text" 
+                                        value={manualEntry.address}
+                                        onChange={(e) => setManualEntry({...manualEntry, address: e.target.value})}
+                                        placeholder="Ej: Calle 10 #5-20"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-[9px] uppercase font-bold text-white/40">ADN / Notas de Entrevista</label>
+                                <textarea 
+                                    value={manualEntry.adn}
+                                    onChange={(e) => setManualEntry({...manualEntry, adn: e.target.value})}
+                                    placeholder="¿Qué te dijo el dueño? ¿Qué sueña para su negocio?"
+                                    className="w-full h-20 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50 resize-none"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                                <div className="flex items-center gap-2">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={manualEntry.notInMaps}
+                                        onChange={(e) => setManualEntry({...manualEntry, notInMaps: e.target.checked})}
+                                        className="w-4 h-4 accent-neon-purple"
+                                    />
+                                    <span className="text-[10px] uppercase font-black text-white/60">¿No existe en Google Maps?</span>
+                                </div>
+                                <Button 
+                                    size="sm"
+                                    className="bg-neon-purple hover:bg-neon-purple/80 text-white font-black text-[10px] uppercase"
+                                    onClick={() => {
+                                        if(!manualEntry.name) return toast.error("El nombre es obligatorio");
+                                        const newBiz: Business = {
+                                            id: `manual_${Date.now()}`,
+                                            name: manualEntry.name,
+                                            address: manualEntry.address,
+                                            rating: 0,
+                                            opportunityScore: 100,
+                                            location: coords || { lat: 0, lng: 0 },
+                                            phone: manualEntry.phone,
+                                            status: 'detected',
+                                            adn: manualEntry.adn
+                                        };
+                                        setBusinesses([newBiz, ...businesses]);
+                                        setIsManualMode(false);
+                                        toast.success("Lead inyectado con éxito. ¡A por ellos!");
+                                    }}
+                                >
+                                    Fijar Objetivo
+                                </Button>
                             </div>
                         </Card>
                     </motion.div>
@@ -589,11 +693,14 @@ export default function AdminHunterPage() {
                                     <Button 
                                         className="flex-1 bg-neon-blue text-black font-black uppercase text-[10px]"
                                         onClick={() => {
-                                            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedBusiness.name)}&query_place_id=${selectedBusiness.id}`;
+                                            const query = encodeURIComponent(`${selectedBusiness.name} ${selectedBusiness.address}`);
+                                            const mapUrl = selectedBusiness.notInMaps 
+                                                ? `https://www.google.com/maps/search/?api=1&query=${query}`
+                                                : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedBusiness.name)}&query_place_id=${selectedBusiness.id}`;
                                             window.open(mapUrl, '_blank');
                                         }}
                                     >
-                                        Abrir en Google Maps
+                                        {selectedBusiness.notInMaps ? "Registrar en Google Maps" : "Abrir en Google Maps"}
                                     </Button>
                                     <Button 
                                         variant="outline" 

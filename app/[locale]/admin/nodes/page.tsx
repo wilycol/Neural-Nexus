@@ -44,6 +44,10 @@ interface NeuralNode {
     expires_at?: string;
     manual_notes?: string;
     construction_level?: number;
+    findings_json?: {
+        address?: string;
+        [key: string]: any;
+    };
 }
 
 export default function AdminNodesPage() {
