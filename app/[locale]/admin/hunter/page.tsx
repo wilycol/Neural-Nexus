@@ -63,6 +63,8 @@ export default function AdminHunterPage() {
     const [selectedNiche, setSelectedNiche] = useState(NICHES[0]);
     const [showConfig, setShowConfig] = useState(false);
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+    const [searchRadius, setSearchRadius] = useState(500); // Radio por defecto en metros
+    const [manualPivotCoords, setManualPivotCoords] = useState(""); // Para inyección remota
     const [isScanning, setIsScanning] = useState(false);
     const [businesses, setBusinesses] = useState<Business[]>([]);
     const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
@@ -131,8 +133,23 @@ export default function AdminHunterPage() {
 
     // 🛰️ Paso 2: Escanear Entorno
     const scanNearby = async () => {
-        if (!coords) {
-            toast.error("Primero activa el GPS");
+        let activeCoords = coords;
+
+        // Si hay pivote manual, intentar parsearlo
+        if (manualPivotCoords.trim()) {
+            const parts = manualPivotCoords.split(",").map(p => parseFloat(p.trim()));
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                activeCoords = { lat: parts[0], lng: parts[1] };
+                setCoords(activeCoords); // Sincronizar visualmente
+                setTelemetry(prev => [`🎯 Pivote Remoto detectado: ${parts[0]}, ${parts[1]}`, ...prev]);
+            } else {
+                toast.error("Formato de coordenadas manuales inválido (Lat, Lng)");
+                return;
+            }
+        }
+
+        if (!activeCoords) {
+            toast.error("Primero activa el GPS o inyecta un Pivote Remoto");
             return;
         }
 
@@ -141,6 +158,7 @@ export default function AdminHunterPage() {
         
         try {
             setTelemetry(prev => [`📡 Iniciando Cacería Quirúrgica (${selectedNiche.label})...`, ...prev]);
+            setTelemetry(prev => [`📏 Radio de Barrido: ${searchRadius}m`, ...prev]);
             
             if (!supabase) {
                 toast.error("Error de conexión con la Federación");
@@ -148,7 +166,7 @@ export default function AdminHunterPage() {
             }
 
             // Llamamos a nuestra nueva API en el backend de Beatriz
-            const res = await fetch(`${backendUrl}/hunter/nearby?lat=${coords.lat}&lng=${coords.lng}&types=${selectedNiche.types}`, {
+            const res = await fetch(`${backendUrl}/hunter/nearby?lat=${activeCoords.lat}&lng=${activeCoords.lng}&radius=${searchRadius}&types=${selectedNiche.types}`, {
                 headers: { "ngrok-skip-browser-warning": "true" }
             });
             const data = await res.json();
@@ -369,6 +387,34 @@ export default function AdminHunterPage() {
                                     toast.success("Puente Sincronizado"); 
                                 }}>Guardar</Button>
                             </div>
+
+                            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] uppercase font-mono text-white/50 block">Pivote Maestro (Manual Coords)</label>
+                                    <input 
+                                        type="text" 
+                                        value={manualPivotCoords}
+                                        onChange={(e) => setManualPivotCoords(e.target.value)}
+                                        placeholder="Ej: 7.9398, -72.4989"
+                                        className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-blue/50"
+                                    />
+                                    <p className="text-[8px] text-white/30 italic">Copia desde Google Maps para cacería remota.</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] uppercase font-mono text-white/50 block">Radio de Cacería (Metros)</label>
+                                    <select 
+                                        value={searchRadius}
+                                        onChange={(e) => setSearchRadius(parseInt(e.target.value))}
+                                        className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-blue/50"
+                                    >
+                                        <option value="250">250m (Precisión)</option>
+                                        <option value="500">500m (Estándar)</option>
+                                        <option value="1000">1km (Barrido)</option>
+                                        <option value="2000">2km (Exploración)</option>
+                                        <option value="5000">5km (Artillería)</option>
+                                    </select>
+                                </div>
+                            </div>
                         </Card>
                     </motion.div>
                 )}
@@ -472,8 +518,13 @@ export default function AdminHunterPage() {
                 </div>
                 
                 <CardHeader>
-                    <CardTitle className="text-sm font-orbitron uppercase tracking-widest flex items-center gap-2">
-                        <MapPin className="text-neon-blue" size={18} /> Radar de Oportunidades
+                    <CardTitle className="text-sm font-orbitron uppercase tracking-widest flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <MapPin className="text-neon-blue" size={18} /> Radar de Oportunidades
+                        </div>
+                        <Badge variant="outline" className="text-[9px] border-neon-blue/20 text-neon-blue">
+                            R: {searchRadius}m
+                        </Badge>
                     </CardTitle>
                     <CardDescription className="text-xs">
                         {coords ? `Coords: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}` : "GPS Desactivado"}
