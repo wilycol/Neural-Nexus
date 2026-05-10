@@ -477,6 +477,7 @@ export default function AdminNodesPage() {
                                 )}
 
                                 {/* INTELIGENCIA RECOPILADA (ADN) */}
+                                <div className="space-y-3">
                                     <div className="flex items-center justify-between">
                                         <p className="text-[10px] uppercase font-black text-neon-blue tracking-widest flex items-center gap-2">
                                             <Database size={14} className="fill-neon-blue" /> Inteligencia Recopilada (ADN)
