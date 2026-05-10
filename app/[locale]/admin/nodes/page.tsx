@@ -500,30 +500,56 @@ export default function AdminNodesPage() {
                                     </div>
                                     
                                     <div className="flex items-center justify-between gap-2">
-                                        {[0, 1, 2, 3, 4, 5, 6].map((level) => (
-                                            <button
-                                                key={level}
-                                                onClick={() => setTargetLevel(level)}
-                                                className={`flex-1 h-10 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${
-                                                    targetLevel === level 
-                                                        ? (level === 0 ? 'bg-neon-blue/20 border-neon-blue shadow-[0_0_15px_rgba(0,163,255,0.3)]' : 'bg-neon-purple/20 border-neon-purple shadow-[0_0_15px_rgba(191,0,255,0.3)]')
-                                                        : 'bg-white/5 border-white/10 hover:border-white/30'
-                                                }`}
-                                            >
-                                                <span className={`text-xs font-black ${targetLevel === level ? 'text-white' : 'text-white/40'}`}>
-                                                    {level}
-                                                </span>
-                                                <span className="text-[6px] font-black uppercase tracking-tighter opacity-50">
-                                                    {level === 0 ? 'PLAN' : `LVL ${level}`}
-                                                </span>
-                                            </button>
-                                        ))}
+                                        {[0, 1, 2, 3, 4, 5, 6].map((level) => {
+                                            const currentLevel = selectedNode.construction_level || 0;
+                                            const isCompleted = level < currentLevel;
+                                            const isCurrent = level === currentLevel;
+                                            const isNext = level === currentLevel + 1;
+                                            const isSelectable = isCurrent || isNext;
+                                            const isSelected = targetLevel === level;
+
+                                            return (
+                                                <button
+                                                    key={level}
+                                                    disabled={!isSelectable}
+                                                    onClick={() => setTargetLevel(level)}
+                                                    className={`flex-1 h-10 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 relative ${
+                                                        isSelected 
+                                                            ? 'bg-neon-purple/40 border-neon-purple shadow-[0_0_20px_rgba(191,0,255,0.4)] z-10 scale-105' 
+                                                            : isCompleted
+                                                                ? 'bg-green-500/10 border-green-500/30'
+                                                                : isNext
+                                                                    ? 'bg-white/10 border-white/20 hover:border-neon-blue/50'
+                                                                    : 'bg-white/5 border-white/5 opacity-20 cursor-not-allowed'
+                                                    }`}
+                                                >
+                                                    {isCompleted && (
+                                                        <div className="absolute -top-1 -right-1">
+                                                            <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)]" />
+                                                        </div>
+                                                    )}
+                                                    <span className={`text-xs font-black ${isSelected || isCompleted ? 'text-white' : 'text-white/40'}`}>
+                                                        {level}
+                                                    </span>
+                                                    <span className="text-[6px] font-black uppercase tracking-tighter opacity-50">
+                                                        {level === 0 ? 'PLAN' : `LVL ${level}`}
+                                                    </span>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
-                                    <p className="text-[9px] text-white/30 italic text-center">
-                                        {targetLevel === 0 
-                                            ? "Selecciona Nivel 0 para que el Arquitecto genere la Estrategia de Obra." 
-                                            : `El Arquitecto se enfocará exclusivamente en los objetivos del Nivel ${targetLevel}.`}
-                                    </p>
+                                    <div className="flex flex-col items-center gap-1">
+                                        <p className="text-[9px] text-white/30 italic text-center leading-tight">
+                                            {targetLevel === selectedNode.construction_level 
+                                                ? `🔄 Refactorización: El Arquitecto repetirá el Nivel ${targetLevel} para pulir el resultado anterior.` 
+                                                : targetLevel === (selectedNode.construction_level || 0) + 1
+                                                    ? `🚀 Expansión: El Arquitecto avanzará hacia los objetivos del Nivel ${targetLevel}.`
+                                                    : "Pipeline en espera de comando estratégico."}
+                                        </p>
+                                        <p className="text-[8px] font-bold text-neon-blue/50 uppercase tracking-[0.2em]">
+                                            {targetLevel > (selectedNode.construction_level || 0) ? "Modo: Construcción" : "Modo: Refactorización"}
+                                        </p>
+                                    </div>
                                 </div>
 
                                 {/* OPERACIONES DE CAMPO (AGENTES) */}
