@@ -46,7 +46,7 @@ interface NeuralNode {
     construction_level?: number;
     findings_json?: {
         address?: string;
-        [key: string]: any;
+        [key: string]: unknown;
     };
 }
 
@@ -62,6 +62,7 @@ export default function AdminNodesPage() {
         if (selectedNode) {
             setTargetLevel(selectedNode.construction_level || 0);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedNode?.id]); // Solo cuando cambia el nodo
 
     const supabase = getSupabaseHiveClient();
