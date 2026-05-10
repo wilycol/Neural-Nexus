@@ -22,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 interface NeuralNode {
@@ -56,6 +57,19 @@ export default function AdminNodesPage() {
     const [selectedNode, setSelectedNode] = useState<NeuralNode | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [targetLevel, setTargetLevel] = useState(0);
+
+    const searchParams = useSearchParams();
+    const nodeIdFromUrl = searchParams.get('nodeId');
+
+    // 🎯 Auto-selección por URL
+    useEffect(() => {
+        if (nodeIdFromUrl && nodes.length > 0) {
+            const targetNode = nodes.find(n => n.id === nodeIdFromUrl);
+            if (targetNode) {
+                setSelectedNode(targetNode);
+            }
+        }
+    }, [nodeIdFromUrl, nodes]);
 
     // 🧠 Sincronizar nivel al seleccionar nodo
     useEffect(() => {
@@ -596,7 +610,26 @@ export default function AdminNodesPage() {
                                         value={selectedNode.manual_notes || ''}
                                         onChange={(e) => setSelectedNode({...selectedNode, manual_notes: e.target.value})}
                                     />
-                                    <div className="flex justify-end">
+                                    <div className="flex justify-end gap-3">
+                                        {(() => {
+                                            let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedNode.name + " " + (selectedNode.address || ""))}`;
+                                            try {
+                                                const adn = JSON.parse(selectedNode.adn || "{}");
+                                                if (adn.location && adn.location.latitude) {
+                                                    mapUrl = `https://www.google.com/maps/search/?api=1&query=${adn.location.latitude},${adn.location.longitude}`;
+                                                }
+                                            } catch (e) { console.error("ADN Parse error", e); }
+                                            
+                                            return (
+                                                <Button 
+                                                    variant="outline"
+                                                    className="border-neon-blue/20 text-neon-blue font-black uppercase text-[10px] px-6 h-10 rounded-xl hover:bg-neon-blue/10 flex items-center gap-2"
+                                                    onClick={() => window.open(mapUrl, '_blank')}
+                                                >
+                                                    <MapPin size={14} /> Google Maps
+                                                </Button>
+                                            );
+                                        })()}
                                         <Button onClick={handleSaveADN} disabled={isSaving} className="bg-neon-blue text-black font-black uppercase text-[10px] px-8 h-10 rounded-xl">
                                             {isSaving ? <Loader2 className="animate-spin" /> : "Actualizar Notas e IA"}
                                         </Button>

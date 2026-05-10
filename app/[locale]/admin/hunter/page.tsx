@@ -222,7 +222,8 @@ export default function AdminHunterPage() {
                     phone: biz.phone,
                     website: biz.website,
                     rating: biz.rating,
-                    types: selectedNiche.types
+                    types: selectedNiche.types,
+                    location: biz.location // 🛰️ Enviamos las coordenadas detectadas
                 })
             });
             
@@ -840,7 +841,10 @@ export default function AdminHunterPage() {
                                         : 'bg-white/5 text-white/20 border border-white/5'
                                     }`}
                                     onClick={() => {
-                                        if (selectedBusiness.status === 'completed' && selectedBusiness.missionUrl) {
+                                        if (selectedBusiness.nodeId) {
+                                            // 🚀 EL PUENTE: Redirección directa al detalle del nodo en la Colmena
+                                            window.location.href = `/es/admin/nodes?nodeId=${selectedBusiness.nodeId}`;
+                                        } else if (selectedBusiness.status === 'completed' && selectedBusiness.missionUrl) {
                                             window.open(selectedBusiness.missionUrl, '_blank');
                                         } else {
                                             launchPrototye();
