@@ -39,8 +39,13 @@ export default function TemplateDemoPage() {
       {/* Mini Header / Toolbar */}
       <nav className="fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-md border-b border-white/5 z-50 px-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-white/60 hover:text-white">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Volver
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => router.back()} 
+                className="text-white/80 border-white/10 bg-white/5 hover:bg-white/10 rounded-full px-4 h-9 font-orbitron text-[10px] tracking-widest"
+            >
+                <ArrowLeft className="mr-2 h-3 w-3" /> VOLVER
             </Button>
             <div className="h-4 w-[1px] bg-white/10" />
             <div className="flex items-center gap-2">
@@ -55,7 +60,10 @@ export default function TemplateDemoPage() {
                 <Layout className="h-4 w-4 text-neon-blue" />
                 <MonitorCheck className="h-4 w-4 text-white/30" />
             </div>
-            <Button className="bg-neon-blue text-black hover:bg-neon-blue/90 font-orbitron text-[10px] tracking-widest rounded-full px-6">
+            <Button 
+                className="bg-neon-blue text-black hover:bg-neon-blue/90 font-orbitron text-[10px] tracking-widest rounded-full px-6"
+                onClick={() => router.push("/es/neural-sites#precios")}
+            >
                 LO QUIERO PARA MI NEGOCIO
             </Button>
         </div>
@@ -184,7 +192,11 @@ export default function TemplateDemoPage() {
             <p className="text-xl text-white/60 mb-12 font-light">
                 Activa tu **Neural Site** hoy mismo y deja que Beatriz AI tome el control total de tu contenido y crecimiento.
             </p>
-            <Button size="lg" className="h-20 px-16 rounded-full bg-white text-black font-orbitron font-black tracking-[0.2em] hover:scale-105 transition-all text-sm">
+            <Button 
+                size="lg" 
+                className="h-20 px-16 rounded-full bg-white text-black font-orbitron font-black tracking-[0.2em] hover:scale-105 transition-all text-sm"
+                onClick={() => router.push("/es/neural-sites#precios")}
+            >
                 ACTIVAR {template.name} AHORA
             </Button>
          </div>
