@@ -6,13 +6,9 @@ import { templates } from "@/lib/templates-data";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, 
-  ExternalLink, 
   Zap, 
-  CheckCircle2, 
   Layout, 
   Smartphone, 
-  Globe, 
-  MousePointer2,
   Clock,
   Tag
 } from "lucide-react";
