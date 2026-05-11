@@ -6,21 +6,31 @@ import { ArrowLeft, ArrowRight, ExternalLink, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Template {
+  id: string;
   name: string;
   niche: string;
   style: string;
   primaryColor: string;
   demoUrl?: string;
-  imageUrl?: string;
 }
 
 const TEMPLATES: Template[] = [
-  { name: "Luxe", niche: "Moda & Estética", style: "Minimalista", primaryColor: "#f472b6", demoUrl: "https://nodesecretosdemujer.vercel.app" },
-  { name: "Titan", niche: "Industria & Construcción", style: "Robusto", primaryColor: "#3b82f6" },
-  { name: "Nebula", niche: "Agencias IA & Futurismo", style: "Cyberpunk", primaryColor: "#f97316" },
-  { name: "Sage", niche: "Gastronomía & Gourmet", style: "Natural", primaryColor: "#84cc16" },
-  { name: "Summit", niche: "Gimnasios & Deporte", style: "Energético", primaryColor: "#facc15" },
-  { name: "Aura", niche: "Wellness & Spa", style: "Relajante", primaryColor: "#a78bfa" }
+  { id: "foundry", name: "FOUNDRY", niche: "Ferretería Industrial", style: "Robusto", primaryColor: "#FFB800" },
+  { id: "vitalis", name: "VITALIS", niche: "Farmacia & Salud", style: "Profesional", primaryColor: "#39FF14" },
+  { id: "torque", name: "TORQUE", niche: "Taller Mecánico", style: "Potente", primaryColor: "#FF6B35" },
+  { id: "prism", name: "PRISM", niche: "Clínica Dental", style: "Vanguardista", primaryColor: "#00F0FF" },
+  { id: "forge", name: "FORGE", niche: "Gimnasio / Crossfit", style: "Energético", primaryColor: "#FF2D55" },
+  { id: "ember", name: "EMBER", niche: "Restaurante Gourmet", style: "Premium", primaryColor: "#FFB800" },
+  { id: "brew", name: "BREW", niche: "Cafetería / Panadería", style: "Artesanal", primaryColor: "#FFB800" },
+  { id: "atelier", name: "ATELIER", niche: "Boutique de Moda", style: "Elegante", primaryColor: "#B829F7" },
+  { id: "haven", name: "HAVEN", niche: "Pet Shop / Veterinaria", style: "Confiable", primaryColor: "#39FF14" },
+  { id: "domain", name: "DOMAIN", niche: "Inmobiliaria", style: "Lujoso", primaryColor: "#00F0FF" },
+  { id: "citadel", name: "CITADEL", niche: "Bufete de Abogados", style: "Autoridad", primaryColor: "#B829F7" },
+  { id: "aura", name: "AURA", niche: "Spa / Masajes", style: "Relajante", primaryColor: "#B829F7" },
+  { id: "edge", name: "EDGE", niche: "Barbería / Salón", style: "Urbano", primaryColor: "#00F0FF" },
+  { id: "overclock", name: "OVERCLOCK", niche: "Electrónica / Gaming", style: "High-Tech", primaryColor: "#39FF14" },
+  { id: "horizon", name: "HORIZON", niche: "Agencia de Viajes", style: "Aventurero", primaryColor: "#00F0FF" },
+  { id: "apex", name: "APEX", niche: "Marca Personal", style: "Influyente", primaryColor: "#B829F7" }
 ];
 
 export const TemplateCarousel3D = () => {
@@ -37,7 +47,7 @@ export const TemplateCarousel3D = () => {
 
   useEffect(() => {
     if (!isAutoPlaying) return;
-    const interval = setInterval(next, 4000);
+    const interval = setInterval(next, 3500); // Un poco más rápido para mostrar los 16
     return () => clearInterval(interval);
   }, [isAutoPlaying, next]);
 
@@ -52,14 +62,14 @@ export const TemplateCarousel3D = () => {
 
   const variants = {
     center: { x: "0%", scale: 1, zIndex: 10, opacity: 1, rotateY: 0, filter: "blur(0px)" },
-    right: { x: "45%", scale: 0.8, zIndex: 5, opacity: 0.6, rotateY: -45, filter: "blur(4px)" },
-    left: { x: "-45%", scale: 0.8, zIndex: 5, opacity: 0.6, rotateY: 45, filter: "blur(4px)" },
-    hidden: { x: "0%", scale: 0.5, zIndex: 0, opacity: 0, filter: "blur(10px)" }
+    right: { x: "50%", scale: 0.75, zIndex: 5, opacity: 0.4, rotateY: -40, filter: "blur(6px)" },
+    left: { x: "-50%", scale: 0.75, zIndex: 5, opacity: 0.4, rotateY: 40, filter: "blur(6px)" },
+    hidden: { x: "0%", scale: 0.4, zIndex: 0, opacity: 0, filter: "blur(15px)" }
   };
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto py-20 px-4 overflow-hidden perspective-1000">
-      <div className="relative h-[450px] flex items-center justify-center">
+    <div className="relative w-full max-w-6xl mx-auto py-16 px-4 overflow-hidden perspective-1000">
+      <div className="relative h-[480px] flex items-center justify-center">
         <AnimatePresence initial={false}>
           {TEMPLATES.map((template, index) => {
             const pos = getPosition(index);
@@ -67,62 +77,73 @@ export const TemplateCarousel3D = () => {
 
             return (
               <motion.div
-                key={template.name}
+                key={template.id}
                 initial="hidden"
                 animate={pos}
                 exit="hidden"
                 variants={variants}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="absolute w-full max-w-[320px] md:max-w-[400px] h-full"
+                transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                className="absolute w-full max-w-[340px] md:max-w-[420px] h-full"
                 onMouseEnter={() => setIsAutoPlaying(false)}
                 onMouseLeave={() => setIsAutoPlaying(true)}
               >
-                <div className="relative w-full h-full rounded-[32px] overflow-hidden border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl group">
+                <div className="relative w-full h-full rounded-[40px] overflow-hidden border border-white/10 bg-black/40 backdrop-blur-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] group">
                   {/* Mock Browser UI */}
-                  <div className="absolute top-0 left-0 right-0 h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2 z-20">
-                    <div className="flex gap-1.5">
-                      <div className="w-2 h-2 rounded-full bg-red-500/50" />
-                      <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
-                      <div className="w-2 h-2 rounded-full bg-green-500/50" />
+                  <div className="absolute top-0 left-0 right-0 h-10 bg-white/5 border-b border-white/10 flex items-center px-6 gap-2 z-20">
+                    <div className="flex gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500/40" />
                     </div>
-                    <div className="flex-1 bg-white/5 rounded-full h-4 mx-4 border border-white/5" />
+                    <div className="flex-1 bg-white/5 rounded-full h-5 mx-6 border border-white/5 flex items-center px-3">
+                        <div className="text-[8px] font-mono text-white/20 tracking-tighter">https://neural-sites.ai/demo/{template.id}</div>
+                    </div>
                   </div>
 
-                  {/* Template Content Visual (Mock) */}
+                  {/* Template Visual Content */}
                   <div 
-                    className="absolute inset-0 pt-8 bg-cover bg-center"
+                    className="absolute inset-0 pt-10 flex flex-col items-center justify-center p-10 text-center"
                     style={{ 
-                      backgroundImage: `linear-gradient(to bottom, transparent, rgba(0,0,0,0.8)), url(${template.imageUrl || `/assets/templates/${template.name.toLowerCase()}.png`})`,
-                      backgroundColor: "#111"
+                      background: `radial-gradient(circle at center, ${template.primaryColor}15 0%, transparent 70%), #080808`
                     }}
                   >
-                    {!template.imageUrl && (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
-                            <Zap className="h-12 w-12 mb-4 animate-pulse" style={{ color: template.primaryColor }} />
-                            <h4 className="text-2xl font-orbitron font-bold mb-2 uppercase tracking-tighter" style={{ color: template.primaryColor }}>
-                                {template.name}
-                            </h4>
-                            <p className="text-white/40 text-xs uppercase tracking-widest">{template.niche}</p>
-                        </div>
-                    )}
+                    <motion.div
+                        animate={{ 
+                            scale: [1, 1.05, 1],
+                            opacity: [0.8, 1, 0.8]
+                        }}
+                        transition={{ duration: 4, repeat: Infinity }}
+                        className="mb-6 relative"
+                    >
+                        <div className="absolute inset-0 blur-2xl opacity-20" style={{ backgroundColor: template.primaryColor }} />
+                        <Zap className="h-16 w-16 relative z-10" style={{ color: template.primaryColor }} />
+                    </motion.div>
+                    
+                    <span className="text-[10px] font-orbitron tracking-[0.5em] text-white/30 mb-4 uppercase">Protocolo {template.style}</span>
+                    <h4 className="text-4xl font-orbitron font-black mb-4 tracking-tighter" style={{ color: template.primaryColor }}>
+                        {template.name}
+                    </h4>
+                    <div className="h-[1px] w-12 mb-6" style={{ backgroundColor: template.primaryColor }} />
+                    <p className="text-white/50 text-xs uppercase tracking-[0.2em] font-light leading-relaxed max-w-[200px]">
+                        Especializado para: <br/>
+                        <span className="text-white font-bold">{template.niche}</span>
+                    </p>
                   </div>
 
-                  {/* Info Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <span className="text-[10px] font-orbitron text-white/40 tracking-[0.3em] uppercase mb-1 block">Nicho Detectado</span>
-                        <h3 className="text-xl font-orbitron font-bold text-white uppercase">{template.niche}</h3>
-                      </div>
-                      <Button 
-                        size="icon" 
+                  {/* Hover Overlay Buttons */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center gap-4 z-30">
+                     <Button 
+                        className="bg-white text-black hover:bg-white/90 rounded-full font-orbitron text-[10px] tracking-widest px-8"
+                        onClick={() => window.open(`/es/neural-sites/demo/${template.id}`, "_blank")}
+                     >
+                        VER DEMO EN VIVO
+                     </Button>
+                     <Button 
                         variant="outline" 
-                        className="rounded-full border-white/10 bg-white/5 hover:bg-neon-blue/20 hover:border-neon-blue transition-all"
-                        onClick={() => template.demoUrl && window.open(template.demoUrl, "_blank")}
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
+                        className="border-white/20 text-white hover:bg-white/10 rounded-full font-orbitron text-[10px] tracking-widest px-8"
+                     >
+                        DETALLES TÉCNICOS
+                     </Button>
                   </div>
                 </div>
               </motion.div>
@@ -131,32 +152,43 @@ export const TemplateCarousel3D = () => {
         </AnimatePresence>
       </div>
 
-      {/* Navigation Controls */}
-      <div className="flex justify-center items-center gap-8 mt-12">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={prev}
-          className="rounded-full border-white/10 bg-white/5 hover:border-neon-blue text-white transition-all h-12 w-12"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex gap-2">
+      {/* Modern Navigation Controls */}
+      <div className="mt-16 flex flex-col items-center gap-8">
+        <div className="flex items-center gap-6">
+            <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={prev}
+                className="rounded-full border-white/5 bg-white/5 hover:border-white/20 text-white transition-all h-14 w-14 group"
+            >
+                <ArrowLeft className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
+            </Button>
+            
+            {/* Template Counter */}
+            <div className="font-orbitron text-[10px] text-white/40 tracking-[0.4em] uppercase bg-white/5 px-6 py-2 rounded-full border border-white/5">
+                Nicho {currentIndex + 1} <span className="text-white/20 mx-2">|</span> 16
+            </div>
+
+            <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={next}
+                className="rounded-full border-white/5 bg-white/5 hover:border-white/20 text-white transition-all h-14 w-14 group"
+            >
+                <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+            </Button>
+        </div>
+
+        {/* Dynamic Pagination Dots */}
+        <div className="flex gap-1.5 flex-wrap justify-center max-w-[300px]">
           {TEMPLATES.map((_, i) => (
-            <div 
+            <button 
               key={i} 
-              className={`h-1.5 rounded-full transition-all duration-500 ${i === currentIndex ? "w-8 bg-neon-blue shadow-[0_0_10px_rgba(0,163,255,0.8)]" : "w-2 bg-white/10"}`} 
+              onClick={() => setCurrentIndex(i)}
+              className={`h-1 rounded-full transition-all duration-500 ${i === currentIndex ? "w-6 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" : "w-1 bg-white/10 hover:bg-white/30"}`} 
             />
           ))}
         </div>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={next}
-          className="rounded-full border-white/10 bg-white/5 hover:border-neon-blue text-white transition-all h-12 w-12"
-        >
-          <ArrowRight className="h-5 w-5" />
-        </Button>
       </div>
     </div>
   );

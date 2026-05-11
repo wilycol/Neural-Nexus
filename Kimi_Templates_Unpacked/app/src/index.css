@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 2%;
+    --foreground: 0 0% 100%;
+    --card: 240 33% 4%;
+    --card-foreground: 0 0% 100%;
+    --popover: 240 33% 4%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 186 100% 50%;
+    --primary-foreground: 0 0% 2%;
+    --secondary: 240 33% 4%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 64%;
+    --accent: 276 93% 56%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 100% / 0.08;
+    --input: 0 0% 100% / 0.08;
+    --ring: 186 100% 50%;
+    --radius: 8px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #050505;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(0, 240, 255, 0.3);
+    color: #FFFFFF;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #050505;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #52525B;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00F0FF;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(10, 10, 15, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    border-color: rgba(0, 240, 255, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 240, 255, 0.08);
+  }
+
+  .neon-text-cyan {
+    color: #00F0FF;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+  }
+
+  .neon-text-purple {
+    color: #B829F7;
+    text-shadow: 0 0 20px rgba(184, 41, 247, 0.5);
+  }
+
+  .neon-text-green {
+    color: #39FF14;
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+  }
+
+  .neon-text-amber {
+    color: #FFB800;
+    text-shadow: 0 0 20px rgba(255, 184, 0, 0.5);
+  }
+
+  .grid-overlay {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .gradient-overlay-hero {
+    background: linear-gradient(180deg, rgba(5, 5, 5, 0.4) 0%, rgba(5, 5, 5, 0.85) 100%);
+  }
+
+  .neon-divider {
+    height: 1px;
+    width: 120px;
+    background: linear-gradient(90deg, transparent 0%, #00F0FF 50%, transparent 100%);
+  }
+
+  .neon-underline {
+    height: 2px;
+    width: 60px;
+    background: linear-gradient(90deg, #00F0FF, #B829F7);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
