@@ -24,6 +24,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { NeuralSitesPricing } from "@/components/neural-sites-pricing";
+import { TemplateCarousel3D } from "@/components/template-carousel-3d";
 
 const PLAN_IMAGES = [
   "/assets/plans/silver.png",
@@ -213,21 +214,12 @@ export default function NeuralSitesPage() {
           </div>
         </section>
 
-        {/* Casos de Uso Section */}
+        {/* Casos de Uso Section -> Carrusel 3D */}
         <section className="mb-28">
-          <h2 className="text-4xl font-orbitron font-bold text-center mb-16 uppercase italic tracking-widest">Creado para negocios reales</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { title: "PARA TIENDAS", desc: "Publica productos, ofertas y promociones automáticamente todos los días.", icon: Database },
-              { title: "PARA RESTAURANTES", desc: "Mantén tu menú y promociones activos sin contratar un creador de contenido.", icon: Factory },
-              { title: "PARA MARCAS PERSONALES", desc: "Mantente visible sin tener que crear contenido manualmente.", icon: Bot }
-            ].map((item, i) => (
-              <Card key={i} className="p-8 bg-white/5 border-white/10 rounded-3xl hover:border-neon-blue transition-colors">
-                <h3 className="text-neon-blue font-bold mb-4 font-orbitron">{item.title}</h3>
-                <p className="text-white/60">{item.desc}</p>
-              </Card>
-            ))}
-          </div>
+          <h2 className="text-4xl font-orbitron font-bold text-center mb-16 uppercase italic tracking-widest">
+            Modelos de negocio reales
+          </h2>
+          <TemplateCarousel3D />
         </section>
 
         {/* Galería de Complejidad (Templates) */}
