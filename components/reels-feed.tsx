@@ -349,7 +349,6 @@ export function ReelsFeed() {
     }
 
     const fetchReels = async () => {
-      const timestamp = new Date().toLocaleTimeString();
       lastUserId.current = user?.id;
 
       const controller = new AbortController();
@@ -389,7 +388,7 @@ export function ReelsFeed() {
     };
 
     fetchReels();
-  }, [authIsLoading, user?.id, authTimedOut]);
+  }, [authIsLoading, user?.id, authTimedOut, news.length]);
 
   useEffect(() => {
     if (deepLinkId && news.length > 0) {
@@ -440,7 +439,7 @@ export function ReelsFeed() {
       if (error) throw error;
       setNews(prev => prev.filter(item => item.id !== newsId));
       toast.success("Reel eliminado correctamente");
-    } catch (err) {
+    } catch {
       toast.error("No se pudo eliminar el reel");
     }
   };
