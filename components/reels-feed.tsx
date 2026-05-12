@@ -32,10 +32,12 @@ interface ReelItemProps {
   news: NewsItem;
   isActive: boolean;
   onDelete?: (id: string) => void;
+  onEnded?: () => void;
 }
 
-function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
+function ReelItem({ news, isActive, onDelete, onEnded }: ReelItemProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isBroken, setIsBroken] = useState(false);
   const { user, role } = useAuth();
@@ -64,17 +66,44 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
   };
 
   useEffect(() => {
-    if (isActive && videoRef.current) {
-      setIsPaused(false);
-      videoRef.current.play().catch(() => {
-        if (videoRef.current) {
-          videoRef.current.muted = true;
-          videoRef.current.play().catch(() => {});
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePlay = async () => {
+      try {
+        setIsPaused(false);
+        if (playPromiseRef.current) {
+          await playPromiseRef.current;
         }
-      });
-    } else if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
+        playPromiseRef.current = video.play();
+        await playPromiseRef.current;
+      } catch (err) {
+        if (err instanceof Error && err.name !== 'AbortError') {
+          console.warn("[Reels] Fallo en reproducción normal, reintentando mudo...");
+          video.muted = true;
+          video.play().catch(() => {});
+        }
+      } finally {
+        playPromiseRef.current = null;
+      }
+    };
+
+    const handlePause = async () => {
+      if (playPromiseRef.current) {
+        try {
+          await playPromiseRef.current;
+        } catch {
+          // Ignorar abortos
+        }
+      }
+      video.pause();
+      video.currentTime = 0;
+    };
+
+    if (isActive) {
+      handlePlay();
+    } else {
+      handlePause();
     }
   }, [isActive]);
 
@@ -82,9 +111,7 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
     return null;
   }
 
-
   const togglePlay = (e: React.MouseEvent) => {
-    // Evitar que el click en los botones dispare el toggle de pausa
     const target = e.target as HTMLElement;
     if (target.closest('button') || target.closest('[role="dialog"]') || target.closest('[data-sheet-content]')) return;
     
@@ -109,7 +136,6 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
     const previousLiked = isLiked;
     const previousCount = likesCount;
 
-    // Optimistic UI
     setIsLiked(!previousLiked);
     setLikesCount(prev => previousLiked ? Math.max(0, prev - 1) : prev + 1);
 
@@ -118,7 +144,6 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
       const res = await fetch(`/api/news/${news.id}/like`, { method });
       if (!res.ok) throw new Error();
     } catch {
-      // Rollback
       setIsLiked(previousLiked);
       setLikesCount(previousCount);
       toast.error("Error al procesar like");
@@ -138,7 +163,7 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
           url: url,
         });
       } catch {
-        // User cancelled or error
+        // Cancelled
       }
     } else {
       await navigator.clipboard.writeText(url);
@@ -164,13 +189,13 @@ function ReelItem({ news, isActive, onDelete }: ReelItemProps) {
         ref={videoRef}
         src={news.video_url}
         className="h-full w-full object-contain"
-        loop
         playsInline
         muted={!isActive}
         crossOrigin="anonymous"
         preload="auto"
         poster={news.cover_url || news.image_url}
         onError={reportBrokenLink}
+        onEnded={onEnded}
       />
       
       {isPaused && (
@@ -302,13 +327,10 @@ export function ReelsFeed() {
   const searchParams = useSearchParams();
   const deepLinkId = searchParams.get("id");
   
-  // Trackeamos el ID del usuario para saber si ha cambiado de Anónimo a Logueado
   const lastUserId = useRef<string | null | undefined>(undefined);
-
   const [authTimedOut, setAuthTimedOut] = useState(false);
 
   useEffect(() => {
-    // 1. Puente de Resiliencia: Si Auth tarda más de 1.5s, forzamos la carga
     const authBridgeTimeout = setTimeout(() => {
       if (authIsLoading) {
         console.warn("[Reels] ⚠️ Sincronización de Auth lenta. Saltando barrera.");
@@ -316,32 +338,23 @@ export function ReelsFeed() {
       }
     }, 1500);
 
-    // 1. Barrera Atómica: Esperamos a Auth, a menos que haya expirado el puente
     if (authIsLoading && !authTimedOut) {
-      console.log("[Reels] ⏳ Sincronizando con puente Neural Nexus...");
       return;
     }
     
     clearTimeout(authBridgeTimeout);
     
-    // 2. Si el usuario no ha cambiado y ya tenemos datos, no recargamos
-    // Esto evita que cambios en activeId (scroll) disparen re-fetches
     if (lastUserId.current === user?.id && news.length > 0) {
-      console.log("[Reels] ✅ Datos estables, omitiendo re-sync.");
       return;
     }
 
     const fetchReels = async () => {
       const timestamp = new Date().toLocaleTimeString();
-      const currentUser = user?.email || "Anónimo";
-      
-      console.log(`[Reels] [${timestamp}]🚀 Sincronización Molecular Iniciada: ${currentUser}`);
       lastUserId.current = user?.id;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-        console.error(`[Reels] [${timestamp}]❌ ERROR: Timeout de Red (10s)`);
         setLoading(false);
       }, 10000);
 
@@ -350,7 +363,6 @@ export function ReelsFeed() {
         const supabase = getSupabaseBrowserClient();
         if (!supabase) return;
 
-        console.log(`[Reels] [${timestamp}]📡 Consultando DB industrial...`);
         const { data, error } = await supabase
           .from("news")
           .select("*")
@@ -360,46 +372,30 @@ export function ReelsFeed() {
           .limit(20)
           .abortSignal(controller.signal);
         
-        if (error) {
-          console.error(`[Reels] [${timestamp}]😭 DB ERROR:`, error.message);
-          throw error;
-        }
+        if (error) throw error;
 
         if (data && data.length > 0) {
-          console.log(`[Reels] [${timestamp}]✨ Recibidos ${data.length} reels.`);
           setNews(data as NewsItem[]);
-          // Inicializamos el primer Reel si no hay ninguno activo
           setActiveId(data[0].id);
         } else {
-          console.log(`[Reels] [${timestamp}]ℹ️ No se encontraron reels.`);
           setNews([]);
         }
       } catch (err: unknown) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          console.error(`[Reels] [${timestamp}]🛑 Petición cancelada.`);
-        } else {
-          console.error(`[Reels] [${timestamp}]💥 Error crítico de sincronización:`, err);
-        }
+        console.error("[Reels] Error de sincronización:", err);
       } finally {
         clearTimeout(timeoutId);
         setLoading(false);
-        console.log(`[Reels] [${timestamp}]🏁 Sincronización Finalizada.`);
       }
     };
 
     fetchReels();
-    // NOTA: Eliminamos news.length y activeId de las dependencias para evitar bucles.
-    // Solo dependemos del estado de Auth, el ID del usuario y el timeout del puente.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authIsLoading, user?.id, authTimedOut]);
 
-  // Manejo de Deep Linking: Scroll al video si viene de una redirección
   useEffect(() => {
     if (deepLinkId && news.length > 0) {
       const targetReel = news.find(item => item.id === deepLinkId);
       if (targetReel) {
         setActiveId(deepLinkId);
-        // Pequeño delay para asegurar que el DOM está listo
         const timer = setTimeout(() => {
           const element = document.querySelector(`[data-news-id="${deepLinkId}"]`);
           if (element) {
@@ -445,8 +441,19 @@ export function ReelsFeed() {
       setNews(prev => prev.filter(item => item.id !== newsId));
       toast.success("Reel eliminado correctamente");
     } catch (err) {
-      console.error("Error al borrar reel:", err);
       toast.error("No se pudo eliminar el reel");
+    }
+  };
+
+  const handleNext = (currentIndex: number) => {
+    if (currentIndex < news.length - 1) {
+      const nextNews = news[currentIndex + 1];
+      setActiveId(nextNews.id);
+      
+      const nextElement = document.querySelector(`[data-news-id="${nextNews.id}"]`);
+      if (nextElement) {
+        nextElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
 
@@ -461,12 +468,11 @@ export function ReelsFeed() {
              <Loader2 className="h-6 w-6 text-neon-blue animate-spin" />
              <span className="font-orbitron tracking-widest text-sm uppercase">Sincronizando...</span>
            </div>
-           <p className="text-xs text-white/40">Conectando con la red Neural Nexus</p>
         </div>
       ) : news.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-white/40 p-8 text-center space-y-4">
            <Video className="h-12 w-12 opacity-20" />
-           <p className="max-w-[200px]">No hay reels disponibles en este momento.</p>
+           <p className="max-w-[200px]">No hay reels disponibles.</p>
         </div>
       ) : (
         news.map((item, index) => (
@@ -475,6 +481,7 @@ export function ReelsFeed() {
               news={item} 
               isActive={item.id === activeId} 
               onDelete={handleDelete}
+              onEnded={() => handleNext(index)}
             />
             {(index + 1) % 3 === 0 && (
               <div className="h-[calc(100vh-4rem)] w-full bg-zinc-950 flex items-center justify-center snap-start p-4">
