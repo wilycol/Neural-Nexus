@@ -638,6 +638,7 @@ export default function AdminNodesPage() {
                                         onChange={(e) => setSelectedNode({...selectedNode, manual_notes: e.target.value})}
                                     />
                                     <div className="flex justify-end gap-3">
+                                        {(() => {
                                             let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedNode.name + " " + (selectedNode.address || ""))}`;
                                             
                                             // Prioridad 1: Hallazgos del Hunter (OSINT)
