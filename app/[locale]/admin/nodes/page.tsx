@@ -652,7 +652,7 @@ export default function AdminNodesPage() {
                                                 if (adn.location && adn.location.latitude) {
                                                     mapUrl = `https://www.google.com/maps/search/?api=1&query=${adn.location.latitude},${adn.location.longitude}`;
                                                 }
-                                            } catch (e) { /* ignore */ }
+                                            } catch { /* ignore */ }
                                             
                                             return (
                                                 <Button 
