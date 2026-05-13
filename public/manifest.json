@@ -1,0 +1,21 @@
+{
+  "name": "Nexus Command",
+  "short_name": "NexusCmd",
+  "description": "Centro de Mando Neural Nexus - Beatriz AI",
+  "start_url": "/command.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "https://lkctxyoyajqrhaavnzrv.supabase.co/storage/v1/object/public/images/NeuralNexusMascot.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://lkctxyoyajqrhaavnzrv.supabase.co/storage/v1/object/public/images/NeuralNexusMascot.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
