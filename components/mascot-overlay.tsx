@@ -3,6 +3,8 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
 
+import Link from "next/link";
+
 type MascotOverlayProps = {
   src?: string;
   sizePx?: number;
@@ -15,6 +17,7 @@ export function MascotOverlay({
   className,
 }: MascotOverlayProps) {
   const pathname = usePathname();
+// ... (resto de hooks se mantienen igual)
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
@@ -141,13 +144,14 @@ export function MascotOverlay({
   if (pathname === "/reels" || pathname.includes("/admin/hunter")) return null;
 
   return (
-    <div
+    <Link
+      href="/command.html"
+      title="Nexus Command (Privado) 🛰️"
       className={[
-        "fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 pointer-events-none select-none",
+        "fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 select-none cursor-pointer hover:scale-110 active:scale-95 transition-all",
         className || "",
       ].join(" ")}
       style={styles}
-      aria-hidden="true"
     >
       <video
         ref={videoRef}
@@ -164,6 +168,6 @@ export function MascotOverlay({
         ref={canvasRef}
         className="w-full h-full rounded-2xl drop-shadow-[0_10px_25px_rgba(0,0,0,0.55)]"
       />
-    </div>
+    </Link>
   );
 }
