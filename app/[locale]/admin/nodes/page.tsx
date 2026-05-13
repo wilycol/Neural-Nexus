@@ -155,6 +155,33 @@ export default function AdminNodesPage() {
         );
     };
 
+    const handleLaunchFullMission = (node: NeuralNode) => {
+        toast.promise(
+            fetch(`/api/bridge`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    endpoint: "/api/nodes/auto-refactor",
+                    nodeId: node.id,
+                    startLevel: (node.construction_level || 0) + 1,
+                    endLevel: 6
+                })
+            }).then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Fallo en la Misión Automática");
+                return data;
+            }),
+            {
+                loading: `🚀 Misión Élite Iniciada: Beatriz construirá desde el Nivel ${(node.construction_level || 0) + 1} hasta el 6 para ${node.name}...`,
+                success: () => {
+                    fetchNodes();
+                    return `✅ Misión en curso en segundo plano.`;
+                },
+                error: (err) => `❌ Error: ${err.message}`,
+            }
+        );
+    };
+
     const handleLaunchArchitect = (node: NeuralNode, mode: "preview" | "prod" = "preview") => {
         toast.promise(
             fetch(`/api/bridge`, {
@@ -583,7 +610,7 @@ export default function AdminNodesPage() {
                                 </div>
 
                                 {/* OPERACIONES DE CAMPO (AGENTES) */}
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     <Button 
                                         variant="outline" 
                                         className="border-neon-blue/20 text-neon-blue text-[9px] uppercase font-black h-10 rounded-xl hover:bg-neon-blue/10 flex items-center justify-center gap-2"
@@ -596,7 +623,13 @@ export default function AdminNodesPage() {
                                         className="border-neon-purple/20 text-neon-purple text-[9px] uppercase font-black h-10 rounded-xl hover:bg-neon-purple/10 flex items-center justify-center gap-2"
                                         onClick={() => handleLaunchArchitect(selectedNode, "preview")}
                                     >
-                                        <Zap size={14} /> Refactorizar (DEV)
+                                        <Zap size={14} /> Refactorizar Nivel {targetLevel}
+                                    </Button>
+                                    <Button 
+                                        className="bg-gradient-to-r from-neon-blue to-neon-purple text-white text-[9px] uppercase font-black h-10 rounded-xl shadow-[0_0_15px_rgba(0,163,255,0.3)] hover:shadow-[0_0_25px_rgba(0,163,255,0.5)] transition-all flex items-center justify-center gap-2"
+                                        onClick={() => handleLaunchFullMission(selectedNode)}
+                                    >
+                                        <Trophy size={14} /> Misión Full Élite (1-6)
                                     </Button>
                                 </div>
 
