@@ -81,8 +81,8 @@ export default function AdminNodesPage() {
 
     const supabase = getSupabaseHiveClient();
 
-    const fetchNodes = useCallback(async () => {
-        setLoading(true);
+    const fetchNodes = useCallback(async (isSilent = false) => {
+        if (!isSilent) setLoading(true);
         if (!supabase) return;
 
         console.log("🛰️ Hive Client: Solicitando nodos a la Federación...");
@@ -93,16 +93,10 @@ export default function AdminNodesPage() {
             toast.error("Error al cargar nodos: " + error.message);
         } else {
             setNodes(data || []);
-            if (selectedNode) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const updated = data?.find((n: any) => n.id === selectedNode.id);
-                if (updated) {
-                    setSelectedNode(prev => prev ? updated : null);
-                }
-            }
+            // IMPORTANTE: NO actualizar selectedNode aquí si el usuario está editando
         }
-        setLoading(false);
-    }, [supabase, selectedNode]);
+        if (!isSilent) setLoading(false);
+    }, [supabase]);
 
     useEffect(() => {
         fetchNodes();
@@ -644,14 +638,20 @@ export default function AdminNodesPage() {
                                         onChange={(e) => setSelectedNode({...selectedNode, manual_notes: e.target.value})}
                                     />
                                     <div className="flex justify-end gap-3">
-                                        {(() => {
                                             let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedNode.name + " " + (selectedNode.address || ""))}`;
+                                            
+                                            // Prioridad 1: Hallazgos del Hunter (OSINT)
+                                            if (selectedNode.findings_json?.address) {
+                                                mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedNode.findings_json.address)}`;
+                                            }
+                                            
+                                            // Prioridad 2: Coordenadas ADN si existen
                                             try {
                                                 const adn = JSON.parse(selectedNode.adn || "{}");
                                                 if (adn.location && adn.location.latitude) {
                                                     mapUrl = `https://www.google.com/maps/search/?api=1&query=${adn.location.latitude},${adn.location.longitude}`;
                                                 }
-                                            } catch (e) { console.error("ADN Parse error", e); }
+                                            } catch (e) { /* ignore */ }
                                             
                                             return (
                                                 <Button 
