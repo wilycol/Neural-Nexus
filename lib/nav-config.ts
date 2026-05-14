@@ -16,6 +16,7 @@ import {
   Code2,
   Presentation,
   Zap,
+  Trash2,
 } from "lucide-react";
 
 export const primaryMenuItems = [
@@ -45,4 +46,5 @@ export const legalMenuItems = [
   { href: "/legal/terminos", label: "Términos", icon: Scale },
   { href: "/legal/privacidad", label: "Privacidad", icon: Shield },
   { href: "/legal/cookies", label: "Cookies", icon: Cookie },
+  { href: "/legal/eliminacion-de-datos", label: "Eliminar Datos", icon: Trash2 },
 ];
