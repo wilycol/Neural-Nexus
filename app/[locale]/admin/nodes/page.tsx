@@ -15,7 +15,9 @@ import {
     MessageSquare,
     Instagram,
     Facebook,
-    Layers
+    Layers,
+    Camera,
+    Video
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -632,6 +634,65 @@ export default function AdminNodesPage() {
                                     <p className="text-[10px] uppercase font-black text-white/40 tracking-widest flex items-center gap-2">
                                         <MessageSquare size={14} /> Alimentar IA (Notas Manuales)
                                     </p>
+                                    
+                                    {/* 📸 CARGA MULTIMEDIA INDUSTRIAL (SERIE X) */}
+                                    <div className="p-4 bg-neon-blue/10 border border-neon-blue/30 rounded-2xl space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-[10px] uppercase font-black text-neon-blue">Carga Multimedia Real</p>
+                                                <p className="text-[9px] text-white/40 uppercase tracking-tighter">Fotos y Videos para el ADN del Negocio</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <input 
+                                                    type="file" 
+                                                    id="multimedia-upload" 
+                                                    className="hidden" 
+                                                    accept="image/*,video/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file || !selectedNode) return;
+                                                        
+                                                        setIsSaving(true);
+                                                        const formData = new FormData();
+                                                        formData.append('file', file);
+                                                        formData.append('nodeName', selectedNode.name);
+                                                        formData.append('type', file.type.startsWith('video') ? 'video' : 'image');
+                                                        
+                                                        toast.info(`📸 Subiendo ${file.name} a la Federación...`);
+                                                        
+                                                        try {
+                                                            const brainUrl = localStorage.getItem("beatriz_brain_url") || "http://localhost:3002";
+                                                            const res = await fetch(`${brainUrl}/api/nodes/upload-asset`, {
+                                                                method: 'POST',
+                                                                body: formData
+                                                            });
+                                                            const data = await res.json();
+                                                            if (data.success) {
+                                                                toast.success("✅ Activo guardado en la Bóveda.");
+                                                            } else {
+                                                                toast.error("❌ Fallo en la subida: " + data.message);
+                                                            }
+                                                        } catch {
+                                                            toast.error("❌ Error de conexión con el Backend.");
+                                                        } finally {
+                                                            setIsSaving(false);
+                                                        }
+                                                    }}
+                                                />
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline" 
+                                                    className="border-neon-blue/30 text-neon-blue h-9 rounded-lg gap-2 text-[10px] font-black uppercase"
+                                                    onClick={() => document.getElementById('multimedia-upload')?.click()}
+                                                    disabled={isSaving}
+                                                >
+                                                    {isSaving ? <Loader2 className="animate-spin h-3 w-3" /> : <Camera className="h-3 w-3" />}
+                                                    Cargar Fotos / Video
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <textarea 
                                         className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs text-white placeholder:text-white/20 outline-none focus:border-neon-blue/50 transition-all resize-none custom-scrollbar"
                                         value={selectedNode.manual_notes || ''}
