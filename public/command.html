@@ -83,6 +83,9 @@
                 <div class="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl">
                     <p class="text-[10px] text-orange-400 leading-tight">⚠️ IMPORTANTE: Sin la URL de ngrok (Bridge URL), el Fénix no recibirá tus mensajes.</p>
                 </div>
+                <div class="text-center opacity-20 text-[8px] font-mono mt-4">
+                    Neural Nexus Command v2.5 - Iron Wing
+                </div>
                 <button onclick="saveConfig()"
                     class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
                     CONECTAR SISTEMA
@@ -149,10 +152,11 @@
 
     <script>
         let sb = null;
+        let tableName = 'mensajes';
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
         localStorage.setItem('nexus_uid', uid);
 
-        function initSupabase() {
+        async function initSupabase() {
             const url = localStorage.getItem('nexus_sb_url');
             const key = localStorage.getItem('nexus_sb_key');
 
@@ -163,6 +167,13 @@
 
             try {
                 sb = supabase.createClient(url, key);
+                
+                // Detectar tabla correcta
+                const { error } = await sb.from('mensajes').select('count').limit(1);
+                if (error) {
+                    tableName = 'messages';
+                    console.log("Using fallback table: messages");
+                }
                 document.getElementById('setup-modal').classList.add('hidden');
                 if (sb) {
                     const bridge = localStorage.getItem('nexus_bridge_url');
@@ -196,11 +207,13 @@
         }
 
         async function loadMessages() {
-            const { data } = await sb.from('mensajes').select('*').order('created_at').limit(30);
-            if (data) {
-                document.getElementById('chat-flow').innerHTML = '';
-                data.forEach(renderMsg);
-            }
+            try {
+                let { data, error } = await sb.from(tableName).select('*').order('created_at').limit(50);
+                if (data) {
+                    document.getElementById('chat-flow').innerHTML = '';
+                    data.forEach(renderMsg);
+                }
+            } catch (e) { console.error("Load Error:", e); }
         }
 
         function renderMsg(m) {
@@ -234,7 +247,7 @@
 
         async function push(type, content) {
             if (!sb) return;
-            await sb.from('mensajes').insert([{ type, content, sender_id: uid }]);
+            await sb.from(tableName).insert([{ type, content, sender_id: uid }]);
             
             // --- SYNC TO BEATRIZ NUCLEUS ---
             const bridgeUrl = localStorage.getItem('nexus_bridge_url');
@@ -296,7 +309,7 @@
         };
 
         function subscribe() {
-            sb.channel('mensajes').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, p => renderMsg(p.new)).subscribe();
+            sb.channel(tableName).on('postgres_changes', { event: 'INSERT', schema: 'public', table: tableName }, p => renderMsg(p.new)).subscribe();
             
             // Poll for Beatriz Outbox
             setInterval(async () => {
