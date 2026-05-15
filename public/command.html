@@ -155,7 +155,7 @@
         let sb = null;
         let tableName = 'messages';
         let pendingImage = null;
-        const renderedIds = new Set();
+        const messageMap = new Map(); // Mapa maestro de estado (v3.6)
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
         localStorage.setItem('nexus_uid', uid);
 
@@ -203,34 +203,27 @@
             document.getElementById('setup-modal').classList.toggle('hidden');
         }
 
-        let lastChatHash = "";
-
         async function loadMessages(force = false) {
             try {
                 if (force) document.getElementById('loader').classList.remove('hidden');
                 
+                // Pedimos 50 para asegurar que no nos falte nada reciente (v3.6)
                 let { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(15);
+                    .limit(50);
                 
                 if (data && data.length > 0) {
-                    const sorted = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    let changed = false;
+                    data.forEach(m => {
+                        if (!messageMap.has(m.id)) {
+                            messageMap.set(m.id, m);
+                            changed = true;
+                        }
+                    });
                     
-                    // Generamos un hash simple para detectar cambios y evitar parpadeos
-                    const currentHash = JSON.stringify(sorted.map(m => m.id + m.content));
-                    if (currentHash === lastChatHash && !force) return;
-                    lastChatHash = currentHash;
-
-                    const chat = document.getElementById('chat-flow');
-                    const wasAtBottom = chat.scrollHeight - chat.scrollTop <= chat.clientHeight + 100;
-                    
-                    chat.innerHTML = '';
-                    renderedIds.clear(); 
-                    sorted.forEach(renderMsg);
-                    
-                    if (wasAtBottom || force) {
-                        chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+                    if (changed || force) {
+                        renderAll();
                     }
                 }
             } catch (e) { 
@@ -240,11 +233,30 @@
             }
         }
 
-        function renderMsg(m) {
-            if (!m.id) m.id = `temp_${Date.now()}_${Math.random()}`;
-            if (renderedIds.has(m.id)) return;
-            renderedIds.add(m.id);
+        function renderAll() {
+            const chat = document.getElementById('chat-flow');
+            const wasAtBottom = chat.scrollHeight - chat.scrollTop <= chat.clientHeight + 100;
+            
+            chat.innerHTML = '';
+            // Ordenar por fecha REAL (v3.6)
+            const sorted = Array.from(messageMap.values())
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            
+            // Renderizar los últimos 20 para limpieza visual
+            sorted.slice(-20).forEach(renderMsgInternal);
+            
+            if (wasAtBottom) {
+                chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+            }
+        }
 
+        function renderMsg(m) {
+            if (!m.id) m.id = `temp_${Date.now()}`;
+            messageMap.set(m.id, m);
+            renderAll();
+        }
+
+        function renderMsgInternal(m) {
             const isAI = m.sender_id === 'BEATRIZ_AI';
             const isMe = m.sender_id === uid || (!isAI && m.sender_id.startsWith('usr_'));
             
