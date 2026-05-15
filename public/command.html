@@ -202,10 +202,16 @@
 
         async function loadMessages() {
             try {
-                let { data, error } = await sb.from(tableName).select('*').order('created_at').limit(50);
+                // Cargar solo los últimos 10 mensajes para mayor limpieza (v3.1)
+                let { data, error } = await sb.from(tableName)
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
                 if (data) {
                     document.getElementById('chat-flow').innerHTML = '';
-                    data.forEach(renderMsg);
+                    // Revertir para mostrar en orden cronológico (el más nuevo abajo)
+                    data.reverse().forEach(renderMsg);
                 }
             } catch (e) { console.error("Load Error:", e); }
         }
@@ -218,27 +224,25 @@
             div.className = `flex w-full mb-4 ${isMe ? 'justify-end' : 'justify-start'} message-in`;
 
             let content = '';
-            if (m.type === 'text') {
-                if (m.content.startsWith('[VOICE] ')) {
-                    const url = m.content.substring(8);
-                    content = `
-                        <div class="flex items-center gap-3 py-1">
-                            <button onclick="playVoice(this, '${url}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
-                            <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
-                        </div>`;
-                } else if (m.content.startsWith('[IMAGE] ')) {
-                    const url = m.content.substring(8);
-                    content = `<img src="${url}" class="rounded-lg max-w-full border border-white/5 shadow-2xl">`;
-                } else {
-                    content = `<p class="text-sm leading-relaxed">${m.content}</p>`;
-                }
+            const raw = m.content || '';
+            
+            // --- DETECCIÓN INDUSTRIAL DE MEDIOS (v3.1) ---
+            const isAudioUrl = raw.match(/\.(mp3|wav|webm|ogg)(\?.*)?$/i);
+            const isImageUrl = raw.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i);
+            
+            if (m.type === 'voice' || raw.startsWith('[VOICE] ') || isAudioUrl) {
+                const url = raw.startsWith('[VOICE] ') ? raw.substring(8) : raw;
+                content = `
+                    <div class="flex items-center gap-3 py-1">
+                        <button onclick="playVoice(this, '${url}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5 transition-transform active:scale-90"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
+                        <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
+                    </div>`;
+            } else if (m.type === 'image' || raw.startsWith('[IMAGE] ') || isImageUrl) {
+                const url = raw.startsWith('[IMAGE] ') ? raw.substring(8) : raw;
+                content = `<img src="${url}" class="rounded-lg max-w-full border border-white/5 shadow-2xl hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.open('${url}')">`;
+            } else {
+                content = `<p class="text-sm leading-relaxed">${raw}</p>`;
             }
-            else if (m.type === 'image') content = `<img src="${m.content}" class="rounded-lg max-w-full border border-white/5 shadow-2xl">`;
-            else if (m.type === 'voice') content = `
-                <div class="flex items-center gap-3 py-1">
-                    <button onclick="playVoice(this, '${m.content}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
-                    <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
-                </div>`;
 
             div.innerHTML = `
                 <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-lg ${isAI ? 'bg-slate-800 border border-indigo-500/30 text-indigo-50 rounded-bl-none' :
