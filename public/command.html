@@ -111,7 +111,7 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="loadMessages()" class="p-2 bg-indigo-600/20 text-indigo-400 rounded-lg"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+            <button onclick="loadMessages(true)" class="p-2 bg-indigo-600/20 text-indigo-400 rounded-lg active:scale-90 transition-transform"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
             <button onclick="toggleSetup()" class="p-2 bg-white/5 rounded-lg text-slate-400"><i data-lucide="settings" class="w-4 h-4"></i></button>
         </div>
     </header>
@@ -203,33 +203,41 @@
             document.getElementById('setup-modal').classList.toggle('hidden');
         }
 
-        async function loadMessages() {
+        async function loadMessages(force = false) {
             try {
-                console.log("🔄 [Supabase] Sincronizando historial industrial...");
-                document.getElementById('loader').classList.remove('hidden');
+                if (force) {
+                    document.getElementById('loader').classList.remove('hidden');
+                    document.getElementById('chat-flow').innerHTML = '';
+                    renderedIds.clear();
+                }
                 
-                // UUIDs no son secuenciales. OBLIGATORIO usar created_at. (v3.3.1)
                 let { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(50);
+                    .limit(20);
                 
                 if (data && data.length > 0) {
-                    console.log(`✅ [Supabase] ${data.length} mensajes recuperados.`);
-                    const chat = document.getElementById('chat-flow');
-                    chat.innerHTML = '';
-                    
-                    // Ordenamos cronológicamente para la vista (el más viejo arriba)
+                    // Ordenamos cronológicamente (el más viejo arriba)
                     const sorted = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    
+                    const chat = document.getElementById('chat-flow');
+                    const wasAtBottom = chat.scrollHeight - chat.scrollTop <= chat.clientHeight + 100;
+
                     sorted.forEach(renderMsg);
                     
-                    // Auto-scroll al fondo
-                    chat.scrollTop = chat.scrollHeight;
-                } else {
-                    console.error("❌ No se recuperaron mensajes. Tabla vacía o error de RLS.", error);
+                    // Poda Industrial: Mantener solo los últimos 20 en el DOM
+                    while (chat.children.length > 20) {
+                        const firstMsg = chat.firstChild;
+                        // Opcional: eliminar del Set si queremos permitir que se vuelva a cargar
+                        chat.removeChild(firstMsg);
+                    }
+
+                    if (wasAtBottom || force) {
+                        chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+                    }
                 }
             } catch (e) { 
-                console.error("❌ Exception en loadMessages:", e);
+                console.error("❌ Sync Error:", e);
             } finally {
                 document.getElementById('loader').classList.add('hidden');
             }
@@ -241,18 +249,18 @@
             renderedIds.add(m.id);
 
             const isAI = m.sender_id === 'BEATRIZ_AI';
-            // Reconocimiento de identidad: Cualquier 'usr_' o el UID actual es Wily (Derecha)
             const isMe = m.sender_id === uid || (!isAI && m.sender_id.startsWith('usr_'));
             
             const chat = document.getElementById('chat-flow');
             const div = document.createElement('div');
-            // Alineación industrial: Beatriz Izquierda (start), Wily Derecha (end)
             div.className = `flex w-full mb-4 ${isMe ? 'justify-end' : 'justify-start'} message-in`;
+
+            const date = new Date(m.created_at || new Date());
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             let content = '';
             const raw = m.content || '';
             
-            // --- DETECCIÓN INDUSTRIAL DE MEDIOS (v3.1) ---
             const isAudioUrl = raw.match(/\.(mp3|wav|webm|ogg)(\?.*)?$/i);
             const isImageUrl = raw.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i);
             
@@ -265,24 +273,20 @@
                     </div>`;
             } else if (m.type === 'image' || raw.startsWith('[IMAGE] ') || isImageUrl) {
                 const url = raw.startsWith('[IMAGE] ') ? raw.substring(8) : raw;
-                content = `<img src="${url}" class="rounded-lg max-w-full border border-white/5 shadow-2xl hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.open('${url}')">`;
+                content = `<img src="${url}" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight">`;
             } else {
                 content = `<p class="text-sm leading-relaxed">${raw}</p>`;
             }
 
             div.innerHTML = `
-                <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-lg ${isAI ? 'bg-slate-800 border border-indigo-500/30 text-indigo-50 rounded-bl-none' :
-                    isMe ? 'bg-indigo-600 text-white rounded-br-none shadow-indigo-600/20' :
-                        'bg-slate-700 text-white rounded-bl-none'
-                }">
-                    ${isAI ? '<div class="text-[8px] font-bold text-indigo-400 mb-1 tracking-widest uppercase">Beatriz AI</div>' : ''}
+                <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-xl ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'glass text-slate-200 border border-white/5 rounded-tl-none'}">
+                    ${isAI ? '<div class="text-[8px] font-black uppercase tracking-widest text-indigo-400 mb-1">Beatriz AI</div>' : ''}
                     ${content}
+                    <div class="text-[7px] opacity-30 mt-1 ${isMe ? 'text-right' : 'text-left'}">${timeStr}</div>
                 </div>`;
             chat.appendChild(div);
             lucide.createIcons();
-            chat.scrollTop = chat.scrollHeight;
 
-            // --- NOTIFICACIÓN INDUSTRIAL (v3.2) ---
             if (isAI && !isMe) {
                 notifyBeatriz(raw);
             }
