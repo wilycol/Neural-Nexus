@@ -317,7 +317,7 @@
                 content = `
                     <div class="flex items-center gap-3 py-1">
                         <button onclick="playVoice(this, '${url}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5 transition-transform active:scale-90"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
-                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-widest text-center">Neural Nexus Command v3.9 - Neural Voice</p>
+                        <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
                     </div>`;
             } else if (m.type === 'image' || raw.startsWith('[IMAGE] ') || isImageUrl) {
                 const url = raw.startsWith('[IMAGE] ') ? raw.substring(8) : raw;
@@ -333,11 +333,7 @@
                     <div class="text-[7px] opacity-30 mt-1 ${isMe ? 'text-right' : 'text-left'}">${timeStr}</div>
                 </div>`;
             chat.appendChild(div);
-            lucide.createIcons();
-
-            if (isAI && !isMe) {
-                notifyBeatriz(raw);
-            }
+            if (window.lucide) lucide.createIcons();
         }
 
         function notifyBeatriz(text) {
