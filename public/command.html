@@ -202,24 +202,26 @@
 
         async function loadMessages() {
             try {
-                console.log("🔄 [Supabase] Sincronizando historial neural...");
-                // Cargamos los más recientes primero para obtener la "punta" del chat
+                console.log("🔄 [Supabase] Sincronizando historial...");
+                // Traemos los últimos 50 para garantizar que no se pierda ninguno por delay de timestamp
                 let { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(20);
+                    .limit(50);
                 
                 if (error) throw error;
                 
                 if (data) {
                     document.getElementById('chat-flow').innerHTML = '';
-                    // Invertimos para que el flujo sea natural (pasado arriba, presente abajo)
-                    data.reverse().forEach(renderMsg);
+                    // Mostramos solo los últimos 10 o 15 para mantener la limpieza que pidió Wily
+                    const displayCount = 15;
+                    const latestMessages = data.slice(0, displayCount).reverse();
+                    
+                    latestMessages.forEach(renderMsg);
+                    console.log(`✅ [Supabase] ${latestMessages.length} mensajes cargados.`);
                 }
             } catch (e) { 
                 console.error("❌ Load Error:", e);
-                const { data } = await sb.from(tableName).select('*').limit(10);
-                if (data) data.forEach(renderMsg);
             }
         }
 
@@ -369,9 +371,21 @@
         };
 
         function subscribe() {
-            sb.channel(tableName).on('postgres_changes', { event: 'INSERT', schema: 'public', table: tableName }, p => renderMsg(p.new)).subscribe();
+            if (!sb) return;
+            // Suscripción Realtime (v3.2.3) con reconexión automática
+            const channel = sb.channel(tableName)
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: tableName }, p => {
+                    console.log("🔔 [Realtime] Nuevo mensaje detectado:", p.new);
+                    renderMsg(p.new);
+                })
+                .subscribe(status => {
+                    console.log("📡 [Realtime] Estado:", status);
+                    if (status === 'SUBSCRIBED') {
+                        document.getElementById('status-dot').classList.add('animate-pulse');
+                    }
+                });
             
-            // Poll for Beatriz Outbox
+            // Poll for Beatriz Outbox (Fallback para cuando el puente local no inserta en Supabase)
             setInterval(async () => {
                 const bridgeUrl = localStorage.getItem('nexus_bridge_url');
                 if (!bridgeUrl) return;
