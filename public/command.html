@@ -132,8 +132,8 @@
                     class="w-full bg-transparent border-none focus:ring-0 text-sm text-white px-2 py-1 min-h-[40px] max-h-32 resize-none"
                     rows="1"></textarea>
                 <div class="flex items-center justify-between px-1">
-                    <button onclick="document.getElementById('img-up').click()"
-                        class="p-2 text-slate-500 hover:text-white transition-colors"><i data-lucide="image"
+                    <button id="img-label" onclick="document.getElementById('img-up').click()"
+                        class="p-2 text-slate-500 hover:text-white transition-colors rounded-lg"><i data-lucide="image"
                             class="w-5 h-5"></i></button>
                     <input type="file" id="img-up" class="hidden" accept="image/*">
                 </div>
@@ -152,6 +152,7 @@
     <script>
         let sb = null;
         let tableName = 'messages';
+        let pendingImage = null;
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
         localStorage.setItem('nexus_uid', uid);
 
@@ -268,12 +269,31 @@
 
         document.getElementById('send-btn').onclick = () => {
             const v = document.getElementById('input-msg').value.trim();
-            if (v) { push('text', v); document.getElementById('input-msg').value = ''; }
+            if (v || pendingImage) {
+                let finalMsg = v;
+                if (pendingImage) {
+                    finalMsg = v ? `${v} [IMAGE] ${pendingImage}` : `[IMAGE] ${pendingImage}`;
+                    // En Supabase lo guardamos como texto combinado para que sea un solo bloque
+                    push('text', finalMsg);
+                } else {
+                    push('text', v);
+                }
+                
+                document.getElementById('input-msg').value = '';
+                pendingImage = null;
+                document.getElementById('img-label').classList.remove('text-indigo-500', 'bg-indigo-500/20');
+            }
         };
 
         document.getElementById('img-up').onchange = async (e) => {
+            if (!e.target.files[0]) return;
             const url = await upload(e.target.files[0]);
-            if (url) push('image', url);
+            if (url) {
+                pendingImage = url;
+                // Feedback visual de imagen cargada
+                document.getElementById('img-label').classList.add('text-indigo-500', 'bg-indigo-500/20');
+                console.log("📸 Imagen lista para enviar:", url);
+            }
         };
 
         let rec, chunks = [];
