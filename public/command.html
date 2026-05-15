@@ -152,7 +152,7 @@
 
     <script>
         let sb = null;
-        let tableName = 'mensajes';
+        let tableName = 'messages';
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
         localStorage.setItem('nexus_uid', uid);
 
@@ -168,12 +168,6 @@
             try {
                 sb = supabase.createClient(url, key);
                 
-                // Detectar tabla correcta
-                const { error } = await sb.from('mensajes').select('count').limit(1);
-                if (error) {
-                    tableName = 'messages';
-                    console.log("Using fallback table: messages");
-                }
                 document.getElementById('setup-modal').classList.add('hidden');
                 if (sb) {
                     const bridge = localStorage.getItem('nexus_bridge_url');
@@ -266,9 +260,9 @@
         async function upload(file) {
             document.getElementById('loader').classList.remove('hidden');
             const name = `nexus_${Date.now()}.${file.name?.split('.').pop() || 'webm'}`;
-            const { data, error } = await sb.storage.from('images').upload(name, file);
+            const { data, error } = await sb.storage.from('messages-images').upload(name, file);
             if (error) { document.getElementById('loader').classList.add('hidden'); return null; }
-            const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(name);
+            const { data: { publicUrl } } = sb.storage.from('messages-images').getPublicUrl(name);
             document.getElementById('loader').classList.add('hidden');
             return publicUrl;
         }
