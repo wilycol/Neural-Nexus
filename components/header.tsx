@@ -126,14 +126,13 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                         <Heart className="h-4 w-4 fill-neon-purple" />
                         Hablar con Beatriz 💋
                       </Link>
-                      <Link
+                      <a
                         href="/command.html"
-                        onClick={closeMenu}
                         className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md bg-orange-500/10 text-orange-500 border border-orange-500/20 hover:bg-orange-500/20 transition-colors mt-2"
                       >
                         <Zap className="h-4 w-4 fill-orange-500" />
                         Nexus Command (Privado) 🛰️
-                      </Link>
+                      </a>
                       <button
                         onClick={async () => {
                           const supabase = getSupabaseBrowserClient();
