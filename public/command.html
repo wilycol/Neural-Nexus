@@ -59,7 +59,7 @@
     </style>
 </head>
 
-<body class="text-slate-200 h-[100dvh] flex flex-col overflow-hidden font-sans">
+<body class="flex flex-col h-[100dvh] bg-slate-950 overflow-hidden text-slate-100">
 
     <!-- Modal de Configuración (Solo se muestra si faltan credenciales) -->
     <div id="setup-modal" class="hidden fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-6">
@@ -79,7 +79,10 @@
                 <input type="password" id="set-key" placeholder="Anon Public Key"
                     class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm focus:border-indigo-500 outline-none transition-all">
                 <input type="text" id="set-bridge" placeholder="Beatriz Bridge URL (ngrok)"
-                    class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm focus:border-orange-500 outline-none transition-all">
+                    class="w-full bg-slate-900 border-2 border-orange-500/50 rounded-xl p-4 text-sm focus:border-orange-500 outline-none transition-all placeholder:text-orange-300/50">
+                <div class="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+                    <p class="text-[10px] text-orange-400 leading-tight">⚠️ IMPORTANTE: Sin la URL de ngrok (Bridge URL), el Fénix no recibirá tus mensajes.</p>
+                </div>
                 <button onclick="saveConfig()"
                     class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
                     CONECTAR SISTEMA
@@ -119,7 +122,7 @@
         <span class="text-[10px] font-bold uppercase tracking-tighter">Sincronizando...</span>
     </div>
 
-    <footer class="p-4 bg-slate-900 border-t border-white/5 pb-16 sm:pb-4">
+    <footer class="p-4 bg-slate-900 border-t border-white/5 pb-[max(4rem,env(safe-area-inset-bottom))] sm:pb-4">
         <div class="flex items-end gap-2 max-w-lg mx-auto">
             <div
                 class="flex-1 bg-slate-800/50 rounded-2xl border border-white/5 p-2 focus-within:border-indigo-500/40 transition-all">
@@ -161,10 +164,14 @@
             try {
                 sb = supabase.createClient(url, key);
                 document.getElementById('setup-modal').classList.add('hidden');
-                document.getElementById('status-dot').classList.replace('bg-slate-500', 'bg-emerald-500');
-                document.getElementById('status-text').innerText = "Beatriz Link Active";
-                loadMessages();
-                subscribe();
+                if (sb) {
+                    const bridge = localStorage.getItem('nexus_bridge_url');
+                    document.getElementById('status-dot').className = bridge ? 'w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'w-1.5 h-1.5 rounded-full bg-orange-500';
+                    document.getElementById('status-text').innerText = bridge ? 'Beatriz Link Active' : 'Supabase Only (No Bridge)';
+                    document.getElementById('status-text').className = bridge ? 'text-[9px] text-emerald-400 font-mono uppercase' : 'text-[9px] text-orange-400 font-mono uppercase';
+                    loadMessages();
+                    subscribe();
+                }
             } catch (e) {
                 console.error(e);
                 alert("Error de conexión. Verifica la URL.");
@@ -189,7 +196,7 @@
         }
 
         async function loadMessages() {
-            const { data } = await sb.from('messages').select('*').order('created_at').limit(30);
+            const { data } = await sb.from('mensajes').select('*').order('created_at').limit(30);
             if (data) {
                 document.getElementById('chat-flow').innerHTML = '';
                 data.forEach(renderMsg);
@@ -227,7 +234,7 @@
 
         async function push(type, content) {
             if (!sb) return;
-            await sb.from('messages').insert([{ type, content, sender_id: uid }]);
+            await sb.from('mensajes').insert([{ type, content, sender_id: uid }]);
             
             // --- SYNC TO BEATRIZ NUCLEUS ---
             const bridgeUrl = localStorage.getItem('nexus_bridge_url');
@@ -289,7 +296,7 @@
         };
 
         function subscribe() {
-            sb.channel('messages').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, p => renderMsg(p.new)).subscribe();
+            sb.channel('mensajes').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, p => renderMsg(p.new)).subscribe();
             
             // Poll for Beatriz Outbox
             setInterval(async () => {
