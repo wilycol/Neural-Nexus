@@ -204,34 +204,28 @@
 
         async function loadMessages() {
             try {
-                console.log("🔄 [Supabase] Iniciando recuperación de emergencia...");
+                console.log("🔄 [Supabase] Sincronizando historial industrial...");
                 document.getElementById('loader').classList.remove('hidden');
                 
-                // Estrategia 1: Intentar por ID (más preciso)
-                let { data, error } = await sb.from(tableName).select('*').order('id', { ascending: false }).limit(50);
+                // UUIDs no son secuenciales. OBLIGATORIO usar created_at. (v3.3.1)
+                let { data, error } = await sb.from(tableName)
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
                 
-                // Estrategia 2: Si falla o viene vacío, intentar por created_at
-                if (error || !data || data.length === 0) {
-                    console.warn("⚠️ Fallo por ID, intentando por created_at...");
-                    const res = await sb.from(tableName).select('*').order('created_at', { ascending: false }).limit(50);
-                    data = res.data;
-                    error = res.error;
-                }
-
                 if (data && data.length > 0) {
-                    console.log(`✅ [Supabase] ${data.length} mensajes encontrados.`);
-                    document.getElementById('chat-flow').innerHTML = '';
+                    console.log(`✅ [Supabase] ${data.length} mensajes recuperados.`);
+                    const chat = document.getElementById('chat-flow');
+                    chat.innerHTML = '';
                     
-                    // Ordenar cronológicamente para la vista (el más viejo arriba)
-                    // Usamos ID como desempate si la fecha es igual
-                    data.sort((a, b) => {
-                        if (a.created_at !== b.created_at) return new Date(a.created_at) - new Date(b.created_at);
-                        return (a.id || 0) - (b.id || 0);
-                    });
-
-                    data.forEach(renderMsg);
+                    // Ordenamos cronológicamente para la vista (el más viejo arriba)
+                    const sorted = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    sorted.forEach(renderMsg);
+                    
+                    // Auto-scroll al fondo
+                    chat.scrollTop = chat.scrollHeight;
                 } else {
-                    console.error("❌ No se recuperaron mensajes o tabla vacía.", error);
+                    console.error("❌ No se recuperaron mensajes. Tabla vacía o error de RLS.", error);
                 }
             } catch (e) { 
                 console.error("❌ Exception en loadMessages:", e);
