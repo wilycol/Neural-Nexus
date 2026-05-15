@@ -100,7 +100,7 @@
                     <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-xs font-bold tracking-widest text-white uppercase">Nexus Command <span class="text-[10px] text-indigo-400">v4.2</span></h1>
+                    <h1 class="text-xs font-bold tracking-widest text-white uppercase">Nexus Command <span class="text-[10px] text-indigo-400">v4.3</span></h1>
                     <div class="flex items-center gap-1.5">
                         <div id="status-dot" class="w-2 h-2 bg-gray-500 rounded-full"></div>
                         <span id="status-text" class="text-[10px] text-gray-400 font-medium uppercase">Desconectado</span>
@@ -307,30 +307,54 @@
             const date = new Date(m.created_at || new Date());
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+            let raw = m.content || '';
             let content = '';
-            const raw = m.content || '';
-            
-            const isAudioUrl = raw.match(/\.(mp3|wav|webm|ogg)(\?.*)?$/i);
-            const isImageUrl = raw.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i);
-            
-            if (m.type === 'voice' || raw.startsWith('[VOICE] ') || isAudioUrl) {
-                const url = raw.startsWith('[VOICE] ') ? raw.substring(8) : raw;
-                content = `
-                    <div class="flex items-center gap-3 py-1">
-                        <button onclick="playVoice(this, '${url}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5 transition-transform active:scale-90"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
-                        <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
+
+            // Parser Robusto v4.3 (Soporta texto + tags)
+            let parsed = raw;
+            let hasMedia = false;
+
+            // 1. Detectar Imágenes [IMAGE] URL
+            parsed = parsed.replace(/\[IMAGE\]\s*(https?:\/\/\S+)/gi, (match, url) => {
+                hasMedia = true;
+                return `<div class="my-2"><img src="${url}" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5" onerror="this.src='https://placehold.co/400x300?text=Error+Carga+Imagen'" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight"></div>`;
+            });
+
+            // 2. Detectar Voces [VOICE] URL
+            parsed = parsed.replace(/\[VOICE\]\s*(https?:\/\/\S+)/gi, (match, url) => {
+                hasMedia = true;
+                return `
+                    <div class="flex items-center gap-3 py-1 my-2 bg-black/20 p-2 rounded-xl border border-white/5">
+                        <button onclick="playVoice(this, '${url}')" class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center shadow-lg transition-transform active:scale-90"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
+                        <div class="text-[10px] font-mono opacity-60 uppercase tracking-widest">Nota de Voz</div>
                     </div>`;
-            } else if (m.type === 'image' || raw.startsWith('[IMAGE] ') || isImageUrl) {
-                const url = raw.startsWith('[IMAGE] ') ? raw.substring(8) : raw;
-                content = `<img src="${url}" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight">`;
+            });
+
+            // 3. Fallback para Mensajes Puros (Media sin tags)
+            if (!hasMedia) {
+                const isAudioUrl = raw.match(/\.(mp3|wav|webm|ogg)(\?.*)?$/i);
+                const isImageUrl = raw.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i);
+
+                if (m.type === 'voice' || isAudioUrl) {
+                    parsed = `
+                        <div class="flex items-center gap-3 py-1">
+                            <button onclick="playVoice(this, '${raw}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5 transition-transform active:scale-90"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
+                            <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
+                        </div>`;
+                } else if (m.type === 'image' || isImageUrl) {
+                    parsed = `<img src="${raw}" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight">`;
+                } else {
+                    parsed = `<p class="text-sm leading-relaxed">${raw}</p>`;
+                }
             } else {
-                content = `<p class="text-sm leading-relaxed">${raw}</p>`;
+                // Si ya fue parseado pero queda texto suelto, lo envolvemos
+                parsed = `<div class="text-sm leading-relaxed">${parsed}</div>`;
             }
 
             div.innerHTML = `
                 <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-xl ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'glass text-slate-200 border border-white/5 rounded-tl-none'}">
                     ${isAI ? '<div class="text-[8px] font-black uppercase tracking-widest text-indigo-400 mb-1">Beatriz AI</div>' : ''}
-                    ${content}
+                    ${parsed}
                     <div class="text-[7px] opacity-30 mt-1 ${isMe ? 'text-right' : 'text-left'}">${timeStr}</div>
                 </div>`;
             chat.appendChild(div);
