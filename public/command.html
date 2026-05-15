@@ -155,6 +155,7 @@
         let sb = null;
         let tableName = 'messages';
         let pendingImage = null;
+        const renderedIds = new Set();
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
         localStorage.setItem('nexus_uid', uid);
 
@@ -235,6 +236,10 @@
         }
 
         function renderMsg(m) {
+            if (!m.id) m.id = `temp_${Date.now()}_${Math.random()}`;
+            if (renderedIds.has(m.id)) return;
+            renderedIds.add(m.id);
+
             const isAI = m.sender_id === 'BEATRIZ_AI';
             // Reconocimiento de identidad: Cualquier 'usr_' o el UID actual es Wily (Derecha)
             const isMe = m.sender_id === uid || (!isAI && m.sender_id.startsWith('usr_'));
@@ -381,56 +386,33 @@
 
         function subscribe() {
             if (!sb) return;
-            // Suscripción Realtime (v3.2.3) con reconexión automática
-            const channel = sb.channel(tableName)
+            sb.channel(tableName)
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: tableName }, p => {
-                    console.log("🔔 [Realtime] Nuevo mensaje detectado:", p.new);
                     renderMsg(p.new);
                 })
-                .subscribe(status => {
-                    console.log("📡 [Realtime] Estado:", status);
-                    if (status === 'SUBSCRIBED') {
-                        document.getElementById('status-dot').classList.add('animate-pulse');
-                    }
-                });
+                .subscribe();
             
-            // Poll for Beatriz Outbox (Fallback para cuando el puente local no inserta en Supabase)
+            setInterval(() => loadMessages(), 15000);
+
             setInterval(async () => {
                 const bridgeUrl = localStorage.getItem('nexus_bridge_url');
                 if (!bridgeUrl) return;
                 try {
-                    const res = await fetch(`${bridgeUrl}/chat/outbox`);
-                    if (!res.ok) throw new Error("Status " + res.status);
+                    const res = await fetch(`${bridgeUrl}/chat/outbox?limit=5`);
                     const data = await res.json();
-                    
-                    if (data.success && data.messages) {
-                        data.messages.forEach(msg => {
-                            // Usar un set de IDs en localStorage para no repetir
-                            const msgId = btoa(msg).substring(0, 16);
-                            const seen = JSON.parse(localStorage.getItem('nexus_seen_msgs') || '[]');
-                            
-                            if (!seen.includes(msgId)) {
-                                let type = 'text';
-                                let content = msg;
-
-                                if (msg.startsWith('[VOICE] ')) {
-                                    type = 'voice';
-                                    content = msg.substring(8);
-                                } else if (msg.startsWith('[IMAGE] ')) {
-                                    type = 'image';
-                                    content = msg.substring(8);
-                                }
-
-                                renderMsg({ sender_id: 'BEATRIZ_AI', type, content });
-                                seen.push(msgId);
-                                localStorage.setItem('nexus_seen_msgs', JSON.stringify(seen.slice(-50)));
-                            }
+                    if (data && Array.isArray(data)) {
+                        data.forEach(m => {
+                            renderMsg({
+                                id: m.id || `out_${m.timestamp}_${m.content.substring(0,10)}`,
+                                content: m.content,
+                                sender_id: 'BEATRIZ_AI',
+                                created_at: m.timestamp || new Date().toISOString(),
+                                type: 'text'
+                            });
                         });
                     }
-                } catch (e) {
-                    console.warn("Outbox Poll Error:", e);
-                }
-            }, 5000);
+                } catch (e) {}
+            }, 3000);
         }
 
         window.onload = () => {
