@@ -266,9 +266,9 @@
         async function upload(file) {
             document.getElementById('loader').classList.remove('hidden');
             const name = `nexus_${Date.now()}.${file.name?.split('.').pop() || 'webm'}`;
-            const { data, error } = await sb.storage.from('nexus-assets').upload(name, file);
+            const { data, error } = await sb.storage.from('images').upload(name, file);
             if (error) { document.getElementById('loader').classList.add('hidden'); return null; }
-            const { data: { publicUrl } } = sb.storage.from('nexus-assets').getPublicUrl(name);
+            const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(name);
             document.getElementById('loader').classList.add('hidden');
             return publicUrl;
         }
