@@ -317,17 +317,25 @@
                 if (!bridgeUrl) return;
                 try {
                     const res = await fetch(`${bridgeUrl}/chat/outbox`);
+                    if (!res.ok) throw new Error("Status " + res.status);
                     const data = await res.json();
+                    
                     if (data.success && data.messages) {
                         data.messages.forEach(msg => {
-                            // Solo renderizar si no está ya en el chat (simple check)
-                            const exists = Array.from(document.querySelectorAll('.text-sm')).some(p => p.innerText === msg);
-                            if (!exists) {
+                            // Usar un set de IDs en localStorage para no repetir
+                            const msgId = btoa(msg).substring(0, 16);
+                            const seen = JSON.parse(localStorage.getItem('nexus_seen_msgs') || '[]');
+                            
+                            if (!seen.includes(msgId)) {
                                 renderMsg({ sender_id: 'BEATRIZ_AI', type: 'text', content: msg });
+                                seen.push(msgId);
+                                localStorage.setItem('nexus_seen_msgs', JSON.stringify(seen.slice(-50)));
                             }
                         });
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.warn("Outbox Poll Error:", e);
+                }
             }, 5000);
         }
 
