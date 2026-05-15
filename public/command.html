@@ -202,35 +202,35 @@
 
         async function loadMessages() {
             try {
-                console.log("🔄 [Supabase] Cargando últimos 10 mensajes...");
-                // Aseguramos que cargamos los 10 más recientes por fecha de creación
+                console.log("🔄 [Supabase] Sincronizando historial neural...");
+                // Cargamos los más recientes primero para obtener la "punta" del chat
                 let { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(10);
+                    .limit(20);
                 
                 if (error) throw error;
                 
                 if (data) {
-                    console.log(`✅ [Supabase] ${data.length} mensajes recuperados.`);
                     document.getElementById('chat-flow').innerHTML = '';
-                    // Invertimos para que el más nuevo esté abajo en la pantalla
-                    const sortedData = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                    sortedData.forEach(renderMsg);
+                    // Invertimos para que el flujo sea natural (pasado arriba, presente abajo)
+                    data.reverse().forEach(renderMsg);
                 }
             } catch (e) { 
                 console.error("❌ Load Error:", e);
-                // Si falla por limit/order, intentamos carga simple
                 const { data } = await sb.from(tableName).select('*').limit(10);
                 if (data) data.forEach(renderMsg);
             }
         }
 
         function renderMsg(m) {
-            const isMe = m.sender_id === uid;
             const isAI = m.sender_id === 'BEATRIZ_AI';
+            // Reconocimiento de identidad: Cualquier 'usr_' o el UID actual es Wily (Derecha)
+            const isMe = m.sender_id === uid || (!isAI && m.sender_id.startsWith('usr_'));
+            
             const chat = document.getElementById('chat-flow');
             const div = document.createElement('div');
+            // Alineación industrial: Beatriz Izquierda (start), Wily Derecha (end)
             div.className = `flex w-full mb-4 ${isMe ? 'justify-end' : 'justify-start'} message-in`;
 
             let content = '';
