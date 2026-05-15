@@ -93,26 +93,28 @@
         </div>
     </div>
 
-    <header class="glass p-4 border-b border-white/5 flex items-center justify-between sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-            <a href="/" class="p-2 bg-white/5 rounded-lg text-slate-400 hover:text-white transition-colors">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            </a>
-            <div
-                class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                <i data-lucide="cpu" class="text-white w-5 h-5"></i>
-            </div>
-            <div>
-                <h1 class="text-xs font-black tracking-widest text-white uppercase">Nexus Command</h1>
-                <div class="flex items-center gap-1.5">
-                    <span id="status-dot" class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                    <span id="status-text" class="text-[9px] text-slate-400 font-mono uppercase">Offline</span>
+    <header class="glass p-4 border-b border-white/5 sticky top-0 z-50">
+        <div class="flex items-center space-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xs font-bold tracking-widest text-white uppercase">Nexus Command <span class="text-[10px] text-indigo-400">v3.8</span></h1>
+                    <div class="flex items-center gap-1.5">
+                        <div id="status-dot" class="w-2 h-2 bg-gray-500 rounded-full"></div>
+                        <span id="status-text" class="text-[10px] text-gray-400 font-medium uppercase">Desconectado</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="flex items-center gap-2">
-            <button onclick="loadMessages(true)" class="p-2 bg-indigo-600/20 text-indigo-400 rounded-lg active:scale-90 transition-transform"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
-            <button onclick="toggleSetup()" class="p-2 bg-white/5 rounded-lg text-slate-400"><i data-lucide="settings" class="w-4 h-4"></i></button>
+            <div class="flex gap-2">
+                <button onclick="loadMessages(true)" class="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleSetup()" class="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -175,9 +177,9 @@
                 document.getElementById('setup-modal').classList.add('hidden');
                 if (sb) {
                     const bridge = localStorage.getItem('nexus_bridge_url');
-                    document.getElementById('status-dot').className = bridge ? 'w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'w-1.5 h-1.5 rounded-full bg-orange-500';
+                    document.getElementById('status-dot').className = bridge ? 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'w-2 h-2 rounded-full bg-orange-500';
                     document.getElementById('status-text').innerText = bridge ? 'Beatriz Link Active' : 'Supabase Only (No Bridge)';
-                    document.getElementById('status-text').className = bridge ? 'text-[9px] text-emerald-400 font-mono uppercase' : 'text-[9px] text-orange-400 font-mono uppercase';
+                    document.getElementById('status-text').className = bridge ? 'text-[10px] text-emerald-400 font-medium uppercase' : 'text-[10px] text-orange-400 font-medium uppercase';
                     loadMessages();
                     subscribe();
                 }
@@ -216,15 +218,18 @@
 
         async function loadMessages(force = false) {
             try {
+                if (!sb) return;
                 if (force) document.getElementById('loader').classList.remove('hidden');
                 
-                // Pedimos 50 para asegurar que no nos falte nada reciente (v3.6)
-                let { data, error } = await sb.from(tableName)
+                console.log("🔄 Sincronizando...");
+                const { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
                     .limit(50);
                 
-                if (data && data.length > 0) {
+                if (error) throw error;
+
+                if (data) {
                     let changed = false;
                     let lastNewMsg = null;
 
@@ -237,8 +242,8 @@
                     });
                     
                     if (changed || force) {
+                        console.log(`✅ ${data.length} mensajes procesados.`);
                         renderAll();
-                        // Disparar notificación si es de Beatriz y no es carga inicial
                         if (lastNewMsg && !force && notificationsEnabled) {
                             new Notification("Beatriz AI 💋", {
                                 body: lastNewMsg.type === 'text' ? lastNewMsg.content : "Te envió un archivo...",
@@ -249,6 +254,7 @@
                 }
             } catch (e) { 
                 console.error("❌ Sync Error:", e);
+                document.getElementById('status-text').innerText = "ERROR SYNC";
             } finally {
                 document.getElementById('loader').classList.add('hidden');
             }
@@ -426,7 +432,9 @@
                 })
                 .subscribe();
             
-            setInterval(() => loadMessages(), 15000);
+            setInterval(() => {
+                if (sb) loadMessages();
+            }, 5000);
 
             setInterval(async () => {
                 const bridgeUrl = localStorage.getItem('nexus_bridge_url');
