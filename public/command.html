@@ -155,6 +155,7 @@
         let sb = null;
         let tableName = 'messages';
         let pendingImage = null;
+        let notificationsEnabled = false;
         const messageMap = new Map(); // Mapa maestro de estado (v3.6)
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
         localStorage.setItem('nexus_uid', uid);
@@ -199,8 +200,18 @@
             }
         }
 
+        async function requestNotifications() {
+            if (!("Notification" in window)) return;
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                notificationsEnabled = true;
+                console.log("🔔 Notificaciones activadas.");
+            }
+        }
+
         function toggleSetup() {
             document.getElementById('setup-modal').classList.toggle('hidden');
+            requestNotifications(); // Aprovechamos para pedir permiso
         }
 
         async function loadMessages(force = false) {
@@ -215,15 +226,25 @@
                 
                 if (data && data.length > 0) {
                     let changed = false;
+                    let lastNewMsg = null;
+
                     data.forEach(m => {
                         if (!messageMap.has(m.id)) {
                             messageMap.set(m.id, m);
                             changed = true;
+                            if (m.sender_id === 'BEATRIZ_AI') lastNewMsg = m;
                         }
                     });
                     
                     if (changed || force) {
                         renderAll();
+                        // Disparar notificación si es de Beatriz y no es carga inicial
+                        if (lastNewMsg && !force && notificationsEnabled) {
+                            new Notification("Beatriz AI 💋", {
+                                body: lastNewMsg.type === 'text' ? lastNewMsg.content : "Te envió un archivo...",
+                                icon: "/icons/icon-192.png"
+                            });
+                        }
                     }
                 }
             } catch (e) { 

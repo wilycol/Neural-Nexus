@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexus-command-v3.6.0';
+const CACHE_NAME = 'nexus-command-v3.7.0';
 const ASSETS = [
   '/',
   '/command.html',
