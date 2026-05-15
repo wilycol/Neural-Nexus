@@ -255,6 +255,25 @@
             chat.appendChild(div);
             lucide.createIcons();
             chat.scrollTop = chat.scrollHeight;
+
+            // --- NOTIFICACIÓN INDUSTRIAL (v3.2) ---
+            if (isAI && !isMe) {
+                notifyBeatriz(raw);
+            }
+        }
+
+        function notifyBeatriz(text) {
+            if (Notification.permission === 'granted') {
+                const cleanText = text.replace(/\[VOICE\]|\[IMAGE\]/g, "Adjunto multimedia");
+                const n = new Notification("Beatriz AI 💋", {
+                    body: cleanText.substring(0, 100) + (cleanText.length > 100 ? "..." : ""),
+                    icon: "https://neural-nexus-inky.vercel.app/icons/icon-192.png",
+                    badge: "https://neural-nexus-inky.vercel.app/icons/icon-192.png"
+                });
+                // Sonido de notificación industrial
+                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+                audio.play().catch(e => console.warn("Sound blocked by browser policy"));
+            }
         }
 
         async function push(type, content) {
@@ -384,6 +403,13 @@
         window.onload = () => {
             lucide.createIcons();
             initSupabase();
+            
+            // Solicitar permisos de notificación (v3.2)
+            if ("Notification" in window) {
+                Notification.requestPermission().then(p => {
+                    console.log("🔔 Permiso de notificación:", p);
+                });
+            }
         };
     </script>
 </body>
