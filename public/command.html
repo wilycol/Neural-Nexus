@@ -218,12 +218,26 @@
             div.className = `flex w-full mb-4 ${isMe ? 'justify-end' : 'justify-start'} message-in`;
 
             let content = '';
-            if (m.type === 'text') content = `<p class="text-sm">${m.content}</p>`;
-            else if (m.type === 'image') content = `<img src="${m.content}" class="rounded-lg max-w-full border border-white/5">`;
+            if (m.type === 'text') {
+                if (m.content.startsWith('[VOICE] ')) {
+                    const url = m.content.substring(8);
+                    content = `
+                        <div class="flex items-center gap-3 py-1">
+                            <button onclick="playVoice(this, '${url}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
+                            <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
+                        </div>`;
+                } else if (m.content.startsWith('[IMAGE] ')) {
+                    const url = m.content.substring(8);
+                    content = `<img src="${url}" class="rounded-lg max-w-full border border-white/5 shadow-2xl">`;
+                } else {
+                    content = `<p class="text-sm leading-relaxed">${m.content}</p>`;
+                }
+            }
+            else if (m.type === 'image') content = `<img src="${m.content}" class="rounded-lg max-w-full border border-white/5 shadow-2xl">`;
             else if (m.type === 'voice') content = `
                 <div class="flex items-center gap-3 py-1">
-                    <button onclick="playVoice(this, '${m.content}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
-                    <div class="text-[10px] font-mono opacity-50 uppercase">Audio Mensaje</div>
+                    <button onclick="playVoice(this, '${m.content}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
+                    <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
                 </div>`;
 
             div.innerHTML = `
@@ -340,7 +354,18 @@
                             const seen = JSON.parse(localStorage.getItem('nexus_seen_msgs') || '[]');
                             
                             if (!seen.includes(msgId)) {
-                                renderMsg({ sender_id: 'BEATRIZ_AI', type: 'text', content: msg });
+                                let type = 'text';
+                                let content = msg;
+
+                                if (msg.startsWith('[VOICE] ')) {
+                                    type = 'voice';
+                                    content = msg.substring(8);
+                                } else if (msg.startsWith('[IMAGE] ')) {
+                                    type = 'image';
+                                    content = msg.substring(8);
+                                }
+
+                                renderMsg({ sender_id: 'BEATRIZ_AI', type, content });
                                 seen.push(msgId);
                                 localStorage.setItem('nexus_seen_msgs', JSON.stringify(seen.slice(-50)));
                             }
