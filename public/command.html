@@ -203,35 +203,32 @@
             document.getElementById('setup-modal').classList.toggle('hidden');
         }
 
+        let lastChatHash = "";
+
         async function loadMessages(force = false) {
             try {
-                if (force) {
-                    document.getElementById('loader').classList.remove('hidden');
-                    document.getElementById('chat-flow').innerHTML = '';
-                    renderedIds.clear();
-                }
+                if (force) document.getElementById('loader').classList.remove('hidden');
                 
                 let { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(20);
+                    .limit(15);
                 
                 if (data && data.length > 0) {
-                    // Ordenamos cronológicamente (el más viejo arriba)
                     const sorted = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
                     
+                    // Generamos un hash simple para detectar cambios y evitar parpadeos
+                    const currentHash = JSON.stringify(sorted.map(m => m.id + m.content));
+                    if (currentHash === lastChatHash && !force) return;
+                    lastChatHash = currentHash;
+
                     const chat = document.getElementById('chat-flow');
                     const wasAtBottom = chat.scrollHeight - chat.scrollTop <= chat.clientHeight + 100;
-
+                    
+                    chat.innerHTML = '';
+                    renderedIds.clear(); 
                     sorted.forEach(renderMsg);
                     
-                    // Poda Industrial: Mantener solo los últimos 20 en el DOM
-                    while (chat.children.length > 20) {
-                        const firstMsg = chat.firstChild;
-                        // Opcional: eliminar del Set si queremos permitir que se vuelva a cargar
-                        chat.removeChild(firstMsg);
-                    }
-
                     if (wasAtBottom || force) {
                         chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
                     }
