@@ -83,7 +83,7 @@
                     <p class="text-[10px] text-orange-400 leading-tight">⚠️ IMPORTANTE: Sin la URL de ngrok (Bridge URL), el Fénix no recibirá tus mensajes.</p>
                 </div>
                 <div class="text-center opacity-20 text-[8px] font-mono mt-4">
-                    Neural Nexus Command v3.2 - Neural Voice
+                    Neural Nexus Command v4.0 - Neural Voice
                 </div>
                 <button onclick="saveConfig()"
                     class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
@@ -100,7 +100,7 @@
                     <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-xs font-bold tracking-widest text-white uppercase">Nexus Command <span class="text-[10px] text-indigo-400">v3.8</span></h1>
+                    <h1 class="text-xs font-bold tracking-widest text-white uppercase">Nexus Command <span class="text-[10px] text-indigo-400">v4.0</span></h1>
                     <div class="flex items-center gap-1.5">
                         <div id="status-dot" class="w-2 h-2 bg-gray-500 rounded-full"></div>
                         <span id="status-text" class="text-[10px] text-gray-400 font-medium uppercase">Desconectado</span>
@@ -116,6 +116,7 @@
                 </button>
             </div>
         </div>
+        <div id="debug-log" class="mt-2 text-[8px] font-mono text-indigo-300/50 truncate">Nexus Ready...</div>
     </header>
 
     <main id="chat-flow" class="flex-1 overflow-y-auto p-4 space-y-4 hide-scrollbar">
@@ -185,6 +186,7 @@
                 }
             } catch (e) {
                 console.error(e);
+                logDebug("Error: " + e.message);
                 alert("Error de conexión. Verifica la URL.");
                 toggleSetup();
             }
@@ -216,45 +218,55 @@
             requestNotifications(); // Aprovechamos para pedir permiso
         }
 
+        function logDebug(msg) {
+            const el = document.getElementById('debug-log');
+            if (el) el.innerText = msg;
+            console.log(msg);
+        }
+
         async function loadMessages(force = false) {
             try {
                 if (!sb) return;
                 if (force) document.getElementById('loader').classList.remove('hidden');
                 
-                console.log("🔄 Sincronizando...");
+                logDebug("🔄 Fetching...");
                 const { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
                     .limit(50);
                 
-                if (error) throw error;
+                if (error) {
+                    logDebug(`❌ SB Error: ${error.message}`);
+                    document.getElementById('status-text').innerText = "ERROR RLS/AUTH";
+                    document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]";
+                    return;
+                }
 
                 if (data) {
-                    let changed = false;
-                    let lastNewMsg = null;
-
+                    logDebug(`📥 Sync: ${data.length} msgs.`);
+                    let hasNew = false;
                     data.forEach(m => {
                         if (!messageMap.has(m.id)) {
                             messageMap.set(m.id, m);
-                            changed = true;
-                            if (m.sender_id === 'BEATRIZ_AI') lastNewMsg = m;
+                            hasNew = true;
                         }
                     });
                     
-                    if (changed || force) {
-                        console.log(`✅ ${data.length} mensajes procesados.`);
+                    if (hasNew || force) {
                         renderAll();
-                        if (lastNewMsg && !force && notificationsEnabled) {
-                            new Notification("Beatriz AI 💋", {
-                                body: lastNewMsg.type === 'text' ? lastNewMsg.content : "Te envió un archivo...",
-                                icon: "/icons/icon-192.png"
-                            });
+                        // Notificación si el más reciente es de Beatriz y no es carga forzada
+                        const latest = data[0];
+                        if (latest && latest.sender_id === 'BEATRIZ_AI' && !force && notificationsEnabled) {
+                            // Solo notificar si el ID es nuevo para nosotros
+                            if (!window.lastNotifiedId || window.lastNotifiedId !== latest.id) {
+                                window.lastNotifiedId = latest.id;
+                                notifyBeatriz(latest.content);
+                            }
                         }
                     }
                 }
             } catch (e) { 
-                console.error("❌ Sync Error:", e);
-                document.getElementById('status-text').innerText = "ERROR SYNC";
+                logDebug(`❌ Critical: ${e.message}`);
             } finally {
                 document.getElementById('loader').classList.add('hidden');
             }
@@ -305,7 +317,7 @@
                 content = `
                     <div class="flex items-center gap-3 py-1">
                         <button onclick="playVoice(this, '${url}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shadow-inner shadow-white/5 transition-transform active:scale-90"><i data-lucide="play" class="w-4 h-4 text-white"></i></button>
-                        <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-widest text-center">Neural Nexus Command v3.9 - Neural Voice</p>
                     </div>`;
             } else if (m.type === 'image' || raw.startsWith('[IMAGE] ') || isImageUrl) {
                 const url = raw.startsWith('[IMAGE] ') ? raw.substring(8) : raw;
