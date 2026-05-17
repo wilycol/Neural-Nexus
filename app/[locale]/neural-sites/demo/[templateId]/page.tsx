@@ -10,7 +10,8 @@ import {
   Layout, 
   Smartphone, 
   Clock,
-  Tag
+  Tag,
+  MapPin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -98,6 +99,14 @@ export default function TemplateDemoPage() {
                     <Button variant="outline" size="lg" className="h-16 px-10 rounded-full border-white/10 text-white font-orbitron tracking-widest text-sm hover:bg-white/5">
                         {template.secondaryCTA}
                     </Button>
+                    <Button 
+                        variant="outline" 
+                        size="lg" 
+                        className="h-16 px-10 rounded-full border-emerald-500/20 text-emerald-400 font-orbitron tracking-widest text-sm hover:bg-emerald-500/10 flex items-center gap-2"
+                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(template.niche + ' ' + template.name)}`, '_blank')}
+                    >
+                        <MapPin className="h-4 w-4" /> GPS: CÓMO LLEGAR
+                    </Button>
                 </div>
             </motion.div>
 
@@ -152,9 +161,14 @@ export default function TemplateDemoPage() {
         <div className="container mx-auto max-w-6xl">
             <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-20">
                 <div className="max-w-2xl">
-                    <Badge className="bg-neon-blue/10 text-neon-blue border-neon-blue/20 mb-4 font-orbitron tracking-widest text-[10px]">NEURAL_FEED_PRO</Badge>
-                    <h2 className="text-4xl md:text-5xl font-orbitron font-bold italic uppercase">Contenido Autogenerado</h2>
-                    <p className="text-white/50 mt-4 leading-relaxed italic uppercase tracking-widest text-xs">Beatriz AI mantiene tu sitio vivo publicando artículos como estos diariamente.</p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 font-orbitron tracking-widest text-[9px]">BEATRIZ_FACTORY_V5.0</Badge>
+                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-orbitron tracking-widest text-[9px]">ADN_NEURAL_CONECTADO</Badge>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-orbitron font-bold italic uppercase">Feed Autónomo de Noticias</h2>
+                    <p className="text-white/50 mt-4 leading-relaxed italic uppercase tracking-widest text-xs">
+                        Nuestra IA Beatriz conecta con el ADN de tu negocio y auto-genera contenido inteligente y noticias sobre tus productos diariamente.
+                    </p>
                 </div>
                 <Button variant="outline" className="border-white/10 text-white rounded-full px-8 h-12 font-orbitron text-[10px] tracking-widest">
                     CONFIGURAR ALGORITMO
