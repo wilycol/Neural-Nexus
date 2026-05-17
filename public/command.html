@@ -364,11 +364,33 @@
         function notifyBeatriz(text) {
             if (Notification.permission === 'granted') {
                 const cleanText = text.replace(/\[VOICE\]|\[IMAGE\]/g, "Adjunto multimedia");
-                const n = new Notification("Beatriz AI 💋", {
-                    body: cleanText.substring(0, 100) + (cleanText.length > 100 ? "..." : ""),
-                    icon: "https://neural-nexus-inky.vercel.app/icons/icon-192.png",
-                    badge: "https://neural-nexus-inky.vercel.app/icons/icon-192.png"
-                });
+                
+                // 🔔 Uso del Service Worker para notificaciones nativas y persistentes (background Xiaomi Fix)
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.showNotification("Beatriz AI 💋", {
+                            body: cleanText.substring(0, 100) + (cleanText.length > 100 ? "..." : ""),
+                            icon: "https://neural-nexus-inky.vercel.app/icons/icon-192.png",
+                            badge: "https://neural-nexus-inky.vercel.app/icons/icon-192.png",
+                            vibrate: [200, 100, 200],
+                            tag: 'beatriz-msg',
+                            renotify: true,
+                            data: { url: window.location.href }
+                        });
+                    }).catch(err => {
+                        console.warn("Fallback a notificación clásica:", err);
+                        new Notification("Beatriz AI 💋", {
+                            body: cleanText.substring(0, 100) + (cleanText.length > 100 ? "..." : ""),
+                            icon: "https://neural-nexus-inky.vercel.app/icons/icon-192.png"
+                        });
+                    });
+                } else {
+                    new Notification("Beatriz AI 💋", {
+                        body: cleanText.substring(0, 100) + (cleanText.length > 100 ? "..." : ""),
+                        icon: "https://neural-nexus-inky.vercel.app/icons/icon-192.png"
+                    });
+                }
+
                 // Sonido de notificación industrial
                 const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
                 audio.play().catch(e => console.warn("Sound blocked by browser policy"));
