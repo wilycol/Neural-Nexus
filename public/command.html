@@ -10,9 +10,69 @@
     <link rel="manifest" href="/manifest.json">
     <title>Nexus Command</title>
     <script>
+        // Función global premium de Web Push & VAPID (FCM)
+        async function configureWebPush(registration) {
+            try {
+                const bridgeUrl = localStorage.getItem('nexus_bridge_url');
+                if (!bridgeUrl) {
+                    console.log("⚠️ No bridge URL configured, skipping push subscription.");
+                    return;
+                }
+
+                // Clave Pública VAPID Industrial de Beatriz
+                const VAPID_PUBLIC_KEY = "BPwt_tyYwJ5VmMTqFuC3_9NrE2EQYZ3PgfLMT9oQvMHO32qchJrkR6lkeqd8L7SRkUcXaZfVGlFT8zmLm6tbyFA";
+                
+                const urlBase64ToUint8Array = (base64String) => {
+                    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                    const base64 = (base64String + padding)
+                        .replace(/\-/g, '+')
+                        .replace(/_/g, '/');
+                    const rawData = window.atob(base64);
+                    const outputArray = new Uint8Array(rawData.length);
+                    for (let i = 0; i < rawData.length; ++i) {
+                        outputArray[i] = rawData.charCodeAt(i);
+                    }
+                    return outputArray;
+                };
+
+                const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+                console.log("🚀 Suscribiendo al PushManager nativo de FCM...");
+                
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: convertedKey
+                });
+
+                console.log("✅ Suscripción Web Push generada:", subscription);
+
+                // Enviar la suscripción al servidor local de Beatriz vía ngrok
+                const uid = localStorage.getItem('nexus_uid') || 'usr_pwa';
+                const response = await fetch(`${bridgeUrl}/api/notifications/subscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subscription, uid })
+                });
+                
+                const resData = await response.json();
+                console.log("💾 Servidor local de Beatriz respondió:", resData);
+            } catch (err) {
+                console.error("❌ Error en configureWebPush:", err);
+            }
+        }
+
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js');
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log("Service Worker registrado con éxito.");
+                    
+                    // Si ya tenemos permisos de notificación, gatillamos la suscripción push inmediatamente
+                    if (Notification.permission === 'granted') {
+                        configureWebPush(registration);
+                    }
+                } catch (err) {
+                    console.error("Error al registrar Service Worker:", err);
+                }
             });
         }
     </script>
@@ -220,6 +280,16 @@
             if (permission === "granted") {
                 notificationsEnabled = true;
                 console.log("🔔 Notificaciones activadas.");
+                
+                // Gatillar suscripción de Web Push inmediatamente
+                if ('serviceWorker' in navigator) {
+                    try {
+                        const reg = await navigator.serviceWorker.ready;
+                        await configureWebPush(reg);
+                    } catch (e) {
+                        console.error("❌ Error al autogatillar Web Push en requestNotifications:", e);
+                    }
+                }
             }
         }
 
