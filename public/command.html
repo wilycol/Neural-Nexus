@@ -271,6 +271,7 @@
                 localStorage.setItem('nexus_sb_key', key);
                 if (bridge) localStorage.setItem('nexus_bridge_url', bridge);
                 initSupabase();
+                requestNotifications(); // Gatillar permisos e inscripción Web Push al guardar credenciales
             }
         }
 
