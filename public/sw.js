@@ -1,10 +1,11 @@
-const CACHE_NAME = 'nexus-command-v4.5.0';
+const CACHE_NAME = 'nexus-command-v4.6.0';
 const ASSETS = [
   '/',
-  '/command.html?v=4.5.0',
+  '/command.html?v=4.6.0',
   '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/brand.png',
+  '/favicon.ico',
+  '/saludo_rico.mp3',
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/lucide@latest'
 ];
@@ -38,9 +39,10 @@ self.addEventListener('push', (e) => {
   
   const options = {
     body: data.body,
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
-    vibrate: [200, 100, 200],
+    icon: '/brand.png',
+    badge: '/brand.png',
+    vibrate: [300, 100, 400, 100, 300], // Patrón de vibración industrial premium (Fénix Wings)
+    sound: '/saludo_rico.mp3', // Sonido personalizado premium de Beatriz
     data: { url: data.url || '/command.html' }
   };
   
