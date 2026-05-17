@@ -162,7 +162,7 @@
                 <div>
                     <h1 class="text-xs font-bold tracking-widest text-white uppercase flex items-center gap-1.5">
                         Nexus Command 
-                        <span id="app-version-badge" class="px-1.5 py-0.5 text-[8px] font-black bg-indigo-500/20 text-indigo-400 rounded-md border border-indigo-500/10">v4.4</span>
+                        <span id="app-version-badge" class="px-1.5 py-0.5 text-[8px] font-black bg-indigo-500/20 text-indigo-400 rounded-md border border-indigo-500/10">v4.9</span>
                     </h1>
                     <div class="flex items-center gap-1.5">
                         <div id="status-dot" class="w-2 h-2 bg-gray-500 rounded-full"></div>
@@ -438,7 +438,7 @@
             
             const chat = document.getElementById('chat-flow');
             const div = document.createElement('div');
-            div.className = `flex w-full mb-4 ${isMe ? 'justify-end' : 'justify-start'} message-in`;
+            div.className = `flex w-full mb-2 ${isMe ? 'justify-end' : 'justify-start'} message-in`;
 
             const date = new Date(m.created_at || new Date());
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -488,7 +488,7 @@
             }
 
             div.innerHTML = `
-                <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-xl break-words [word-break:break-word] whitespace-pre-wrap overflow-hidden ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'glass text-slate-200 border border-white/5 rounded-tl-none'}">
+                <div class="max-w-[85%] px-4 py-1.5 rounded-2xl shadow-xl break-words [word-break:break-word] whitespace-pre-wrap overflow-hidden ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'glass text-slate-200 border border-white/5 rounded-tl-none'}">
                     ${isAI ? '<div class="text-[8px] font-black uppercase tracking-widest text-indigo-400 mb-1">Beatriz AI</div>' : ''}
                     ${parsed}
                     <div class="text-[7px] opacity-30 mt-1 ${isMe ? 'text-right' : 'text-left'}">${timeStr}</div>
