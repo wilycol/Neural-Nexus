@@ -166,7 +166,8 @@
         let sb = null;
         let tableName = 'messages';
         let pendingImage = null;
-        let notificationsEnabled = false;
+        // Autodetectar permisos de notificaciones al cargar (Xiaomi Fix)
+        let notificationsEnabled = ("Notification" in window) && Notification.permission === "granted";
         let currentAudio = null; // Para evitar superposición de voces
         const messageMap = new Map(); // Mapa maestro de estado (v3.6)
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
@@ -255,6 +256,15 @@
             }, 800);
         }
 
+        function triggerNotificationIfNew(m) {
+            if (m && m.sender_id === 'BEATRIZ_AI' && notificationsEnabled) {
+                if (!window.lastNotifiedId || window.lastNotifiedId !== m.id) {
+                    window.lastNotifiedId = m.id;
+                    notifyBeatriz(m.content);
+                }
+            }
+        }
+
         async function loadMessages(force = false) {
             try {
                 if (!sb) return;
@@ -272,7 +282,7 @@
                     document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]";
                     return;
                 }
-
+ 
                 if (data) {
                     logDebug(`📥 Sync: ${data.length} msgs.`);
                     let hasNew = false;
@@ -285,14 +295,9 @@
                     
                     if (hasNew || force) {
                         renderAll();
-                        // Notificación si el más reciente es de Beatriz y no es carga forzada
                         const latest = data[0];
-                        if (latest && latest.sender_id === 'BEATRIZ_AI' && !force && notificationsEnabled) {
-                            // Solo notificar si el ID es nuevo para nosotros
-                            if (!window.lastNotifiedId || window.lastNotifiedId !== latest.id) {
-                                window.lastNotifiedId = latest.id;
-                                notifyBeatriz(latest.content);
-                            }
+                        if (!force) {
+                            triggerNotificationIfNew(latest);
                         }
                     }
                 }
@@ -302,7 +307,7 @@
                 document.getElementById('loader').classList.add('hidden');
             }
         }
-
+ 
         function renderAll() {
             const chat = document.getElementById('chat-flow');
             const wasAtBottom = chat.scrollHeight - chat.scrollTop <= chat.clientHeight + 100;
@@ -319,11 +324,16 @@
                 chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
             }
         }
-
+ 
         function renderMsg(m) {
             if (!m.id) m.id = `temp_${Date.now()}`;
+            const isNew = !messageMap.has(m.id);
             messageMap.set(m.id, m);
             renderAll();
+            
+            if (isNew) {
+                triggerNotificationIfNew(m);
+            }
         }
 
         function renderMsgInternal(m) {
@@ -570,10 +580,11 @@
             lucide.createIcons();
             initSupabase();
             
-            // Solicitar permisos de notificación (v3.2)
+            // Solicitar permisos de notificación y activar estado en caliente (v4.4)
             if ("Notification" in window) {
                 Notification.requestPermission().then(p => {
-                    console.log("🔔 Permiso de notificación:", p);
+                    notificationsEnabled = (p === 'granted');
+                    console.log("🔔 Permiso de notificación al cargar:", p, "Enabled:", notificationsEnabled);
                 });
             }
         };
