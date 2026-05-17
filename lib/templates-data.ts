@@ -36,6 +36,7 @@ export interface TemplateData {
   servicesTitle: string;
   services: ServiceCard[];
   articles: Article[];
+  isClassic?: boolean;
 }
 
 export const templates: TemplateData[] = [
@@ -427,11 +428,384 @@ export const templates: TemplateData[] = [
       { icon: Mic, title: 'Conferencias', description: 'Keynotes sobre emprendimiento, liderazgo y transformación digital. Disponible para eventos corporativos y universidades.' },
     ],
     articles: [
-      { title: 'Como Monetizar tu Marca Personal en 2025', category: 'Negocios', readTime: '7 min' },
-      { title: 'Habitos Atomicos que Cambiaran tu Productividad', category: 'Productividad', readTime: '5 min' },
       { title: 'El Futuro del Marketing con IA: Oportunidades y Riesgos', category: 'Tecnologia', readTime: '6 min' },
     ],
   },
+  {
+    id: 'luxe',
+    name: 'LUXE',
+    niche: 'Moda, Joyería & Estética',
+    badge: '// SERIE CLASSIC ELITE',
+    accentColor: 'pink',
+    accentHex: '#f472b6',
+    heroImage: '/hero/luxe.jpg',
+    heroTitle: 'Elegancia Atemporal. Estilo Exclusivo.',
+    heroSubtitle: 'Diseños de vanguardia para marcas de moda, alta joyería y servicios de estética premium. Refinamiento en cada detalle para clientes sofisticados.',
+    primaryCTA: 'AGENDAR CITA',
+    secondaryCTA: 'VER COLECCIÓN',
+    servicesTitle: 'Nuestra Experiencia',
+    services: [
+      { icon: Crown, title: 'Alta Costura', description: 'Prendas a medida diseñadas por artistas de moda internacionales. Materiales exclusivos y confección perfecta.' },
+      { icon: Sparkles, title: 'Joyería Fina', description: 'Piezas únicas con metales preciosos y gemas seleccionadas a mano. Certificado de autenticidad.' },
+      { icon: HeartPulse, title: 'Estética Premium', description: 'Tratamientos de rejuvenecimiento y cuidado personal con tecnología de punta en un ambiente relajante.' }
+    ],
+    articles: [
+      { title: 'Tendencias de Alta Costura para la Temporada 2026', category: 'Estilo', readTime: '5 min' },
+      { title: 'Cómo Elegir Joyas que Resalten tu Estilo Personal', category: 'Joyería', readTime: '4 min' },
+      { title: 'El Arte del Cuidado de la Piel: Rutinas de Lujo', category: 'Belleza', readTime: '6 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'titan',
+    name: 'TITAN',
+    niche: 'Industria, Logística & Licores',
+    badge: '// SERIE CLASSIC ROBUSTA',
+    accentColor: 'blue',
+    accentHex: '#3b82f6',
+    heroImage: '/hero/titan.jpg',
+    heroTitle: 'Infraestructura Robusta. Fuerza Industrial.',
+    heroSubtitle: 'Soluciones corporativas de gran escala en logística, transporte, construcción pesada y distribución de marcas premium con trazabilidad total.',
+    primaryCTA: 'VER PROYECTOS',
+    secondaryCTA: 'COTIZAR SERVICIO',
+    servicesTitle: 'Capacidad de Operación',
+    services: [
+      { icon: Hammer, title: 'Manufactura Pesada', description: 'Procesos industriales certificados ISO 9001 para garantizar calidad estructural y durabilidad.' },
+      { icon: Briefcase, title: 'Logística Inteligente', description: 'Distribución automatizada con monitoreo de flotas en tiempo real en más de 50 rutas nacionales.' },
+      { icon: TrendingUp, title: 'Distribución Premium', description: 'Suministro a gran escala de insumos industriales y bebidas de alta gama con control de temperatura.' }
+    ],
+    articles: [
+      { title: 'Optimización de Cadenas de Suministro en la Era Digital', category: 'Logística', readTime: '7 min' },
+      { title: 'Nuevos Estándares de Seguridad Industrial en 2026', category: 'Seguridad', readTime: '5 min' },
+      { title: 'Distribución Mayorista: Claves para el Éxito Comercial', category: 'Distribución', readTime: '6 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'aura-classic',
+    name: 'AURA CLASSIC',
+    niche: 'Wellness, Yoga & Meditación',
+    badge: '// SERIE CLASSIC ETÉREA',
+    accentColor: 'purple',
+    accentHex: '#a78bfa',
+    heroImage: '/hero/aura.jpg',
+    heroTitle: 'Paz Interior. Armonía Total.',
+    heroSubtitle: 'Espacios diseñados para reconectar cuerpo, mente y espíritu a través del yoga, meditación y terapias naturales para una vida equilibrada.',
+    primaryCTA: 'COMPRAR PAQUETE',
+    secondaryCTA: 'VER RITUALES',
+    servicesTitle: 'Terapias y Programas',
+    services: [
+      { icon: Flower2, title: 'Yoga Dinámico', description: 'Clases guiadas por maestros expertos para todos los niveles. Mejora flexibilidad, fuerza y control mental.' },
+      { icon: Leaf, title: 'Meditación Zen', description: 'Sesiones semanales de respiración y mindfulness para reducir el estrés diario y aumentar el enfoque.' },
+      { icon: Hand, title: 'Masajes Holísticos', description: 'Tratamientos corporales relajantes que combinan aceites orgánicos y técnicas ancestrales.' }
+    ],
+    articles: [
+      { title: '5 Posturas de Yoga para Comenzar el Día sin Estrés', category: 'Yoga', readTime: '5 min' },
+      { title: 'Beneficios de la Meditación Guiada en el Trabajo', category: 'Mindfulness', readTime: '6 min' },
+      { title: 'Guía Completa sobre Terapias de Relajación Natural', category: 'Wellness', readTime: '7 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'forge-classic',
+    name: 'FORGE CLASSIC',
+    niche: 'Software, DevTools & SaaS',
+    badge: '// SERIE CLASSIC TECNOLÓGICA',
+    accentColor: 'green',
+    accentHex: '#10b981',
+    heroImage: '/hero/forge-classic.jpg',
+    heroTitle: 'Código de Alto Rendimiento.',
+    heroSubtitle: 'Desarrollo a medida de plataformas web, aplicaciones móviles seguras e integraciones de inteligencia artificial para automatizar tus operaciones.',
+    primaryCTA: 'VER PROYECTOS',
+    secondaryCTA: 'HABLAR CON EXPERTO',
+    servicesTitle: 'Líneas de Desarrollo',
+    services: [
+      { icon: Cpu, title: 'Desarrollo Web & App', description: 'Soluciones escalables creadas con React, Node.js y Next.js. Código limpio y optimizado para SEO.' },
+      { icon: Settings, title: 'Integraciones de IA', description: 'Conexión nativa de APIs inteligentes (LLMs, RAG) para automatizar la atención a clientes y procesos.' },
+      { icon: Activity, title: 'Arquitectura Cloud', description: 'Despliegue e infraestructura en AWS y Google Cloud con redundancia total y máxima velocidad.' }
+    ],
+    articles: [
+      { title: 'Por qué Next.js es el Framework Líder para Startups', category: 'SaaS', readTime: '6 min' },
+      { title: 'Cómo Integrar Inteligencia Artificial en tu Backend', category: 'Tech', readTime: '8 min' },
+      { title: 'Guía Práctica para la Seguridad de Datos en la Nube', category: 'Cloud', readTime: '5 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'nebula',
+    name: 'NEBULA',
+    niche: 'Agencias IA & Nightlife',
+    badge: '// SERIE CLASSIC NEÓN',
+    accentColor: 'orange',
+    accentHex: '#f97316',
+    heroImage: '/hero/nebula.jpg',
+    heroTitle: 'Experiencia Inmersiva. Cyberpunk.',
+    heroSubtitle: 'Orquestamos experiencias futuristas para marcas de entretenimiento, discotecas exclusivas y agencias de inteligencia artificial con impacto visual neón.',
+    primaryCTA: 'VER PORTAFOLIO',
+    secondaryCTA: 'RESERVAR VIP',
+    servicesTitle: 'Experiencias de Impacto',
+    services: [
+      { icon: Sparkles, title: 'Agencia de Diseño IA', description: 'Creación de campañas visuales disruptivas y prompts cinematográficos para marcas que lideran la nueva era.' },
+      { icon: Wine, title: 'Club de Entretenimiento', description: 'Eventos inmersivos, DJs internacionales y sistemas de sonido de última generación en el corazón de la ciudad.' },
+      { icon: Zap, title: 'Estanco Neón', description: 'Venta y distribución de bebidas importadas y experiencias exclusivas listas para el consumo premium.' }
+    ],
+    articles: [
+      { title: 'El Futuro del Entretenimiento Nocturno Inmersivo', category: 'Tendencias', readTime: '6 min' },
+      { title: 'Diseño Cyberpunk: De la Ciencia Ficción a las Marcas', category: 'Estilo', readTime: '5 min' },
+      { title: 'Cómo la IA está Cambiando las Campañas de Marketing', category: 'Tecnología', readTime: '6 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'sage',
+    name: 'SAGE',
+    niche: 'Gastronomía & Café Orgánico',
+    badge: '// SERIE CLASSIC ACEDERA',
+    accentColor: 'green',
+    accentHex: '#84cc16',
+    heroImage: '/hero/sage.jpg',
+    heroTitle: 'Ingredientes Orgánicos. Cocina con Alma.',
+    heroSubtitle: 'Gastronomía saludable inspirada en la naturaleza. Platos gourmet elaborados con insumos locales, orgánicos y libres de químicos.',
+    primaryCTA: 'VER MENÚ',
+    secondaryCTA: 'HACER PEDIDO',
+    servicesTitle: 'Servicios Gourmet',
+    services: [
+      { icon: UtensilsCrossed, title: 'Restaurante Saludable', description: 'Menú de temporada con opciones veganas, vegetarianas y libres de gluten diseñadas por nutriólogos.' },
+      { icon: Coffee, title: 'Café de Especialidad', description: 'Granos orgánicos tostados a fuego lento por baristas galardonados. Sabor puro y notas florales.' },
+      { icon: Leaf, title: 'Mercado Orgánico', description: 'Venta directa de frutas, verduras y productos artesanales de agricultores locales comprometidos.' }
+    ],
+    articles: [
+      { title: 'Beneficios de Consumir Alimentos Locales y de Temporada', category: 'Orgánico', readTime: '5 min' },
+      { title: 'La Guía Definitiva del Café de Especialidad', category: 'Café', readTime: '6 min' },
+      { title: 'Recetas Saludables y Rápidas para toda la Semana', category: 'Cocina', readTime: '4 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'apex-classic',
+    name: 'APEX CLASSIC',
+    niche: 'Finanzas, Real Estate & Legal',
+    badge: '// SERIE CLASSIC CORPORATIVA',
+    accentColor: 'slate',
+    accentHex: '#1e293b',
+    heroImage: '/hero/apex-classic.jpg',
+    heroTitle: 'Asesoría Estratégica. Consultoría.',
+    heroSubtitle: 'Consultores de negocios especializados en derecho corporativo, inversiones inmobiliarias de alto rendimiento y estructuración financiera internacional.',
+    primaryCTA: 'VER SERVICIOS',
+    secondaryCTA: 'HABLAR CON ASESOR',
+    servicesTitle: 'Consultoría Estratégica',
+    services: [
+      { icon: Briefcase, title: 'Estructura Corporativa', description: 'Constitución de empresas, contratos comerciales internacionales y blindaje legal integral.' },
+      { icon: TrendingUp, title: 'Inversión Inmobiliaria', description: 'Análisis de plusvalía y estructuración de fondos de inversión en bienes raíces de lujo.' },
+      { icon: Calculator, title: 'Consultoría Financiera', description: 'Planificación de recursos fiscales, fusiones y adquisiciones estratégicas con auditoría E2E.' }
+    ],
+    articles: [
+      { title: 'Cómo Estructurar una Startup para Atraer Inversionistas', category: 'Finanzas', readTime: '7 min' },
+      { title: 'Tendencias del Mercado Inmobiliario Corporativo 2026', category: 'Real Estate', readTime: '6 min' },
+      { title: 'Protección Patrimonial: Estrategias Legales Clave', category: 'Corporativo', readTime: '5 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'nova',
+    name: 'NOVA',
+    niche: 'E-commerce & Smart Gadgets',
+    badge: '// SERIE CLASSIC COMERCIAL',
+    accentColor: 'red',
+    accentHex: '#ef4444',
+    heroImage: '/hero/nova.jpg',
+    heroTitle: 'Tecnología al Límite. Ventas.',
+    heroSubtitle: 'La tienda de gadgets tecnológicos y artículos inteligentes más avanzada. Envío exprés a todo el país y garantía total de satisfacción en cada compra.',
+    primaryCTA: 'COMPRAR AHORA',
+    secondaryCTA: 'VER OFERTAS',
+    servicesTitle: 'Línea de Productos',
+    services: [
+      { icon: Cpu, title: 'Gadgets Inteligentes', description: 'Relojes, audífonos, domótica y accesorios de última tecnología de las mejores marcas globales.' },
+      { icon: Gamepad2, title: 'Hardware Gaming', description: 'Componentes para PC, tarjetas gráficas, procesadores y periféricos optimizados para competencia.' },
+      { icon: ShieldPlus, title: 'Garantía Nova', description: 'Todos nuestros productos cuentan con garantía de cambio inmediato por 12 meses.' }
+    ],
+    articles: [
+      { title: 'Los Gadgets que no te Pueden Faltar en 2026', category: 'Gadgets', readTime: '5 min' },
+      { title: 'Cómo Armar una PC Gaming con Presupuesto Inteligente', category: 'Gaming', readTime: '6 min' },
+      { title: 'Domótica en el Hogar: Convierte tu Casa en una Smart Home', category: 'Domótica', readTime: '4 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'orbit',
+    name: 'ORBIT',
+    niche: 'Educación & Academias Online',
+    badge: '// SERIE CLASSIC EDUCATIVA',
+    accentColor: 'cyan',
+    accentHex: '#06b6d4',
+    heroImage: '/hero/orbit.jpg',
+    heroTitle: 'Educación sin Límites. Crecimiento.',
+    heroSubtitle: 'Plataforma de educación online con cursos prácticos, certificaciones oficiales y mentores expertos para impulsar tu carrera en la economía digital.',
+    primaryCTA: 'EXPLORAR CURSOS',
+    secondaryCTA: 'VER PLANES',
+    servicesTitle: 'Nuestra Oferta',
+    services: [
+      { icon: BookOpen, title: 'Cursos Prácticos', description: 'Formación acelerada en marketing digital, diseño, programación, ventas y liderazgo.' },
+      { icon: Users, title: 'Mentoría en Vivo', description: 'Sesiones semanales con instructores certificados para resolver dudas y revisar proyectos reales.' },
+      { icon: ShieldPlus, title: 'Certificación Oficial', description: 'Acredita tus conocimientos con diplomas digitales válidos en la industria tecnológica.' }
+    ],
+    articles: [
+      { title: 'Habilidades Más Demandadas por las Empresas en 2026', category: 'Carrera', readTime: '6 min' },
+      { title: 'Cómo Mantener el Foco Estudiando de Forma Online', category: 'Tips', readTime: '5 min' },
+      { title: 'Estrategias de Aprendizaje Acelerado para Adultos', category: 'Estudio', readTime: '7 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'prism-classic',
+    name: 'PRISM CLASSIC',
+    niche: 'Fotografía & Arte Visual',
+    badge: '// SERIE CLASSIC VISUAL',
+    accentColor: 'pink',
+    accentHex: '#ec4899',
+    heroImage: '/hero/prism-classic.jpg',
+    heroTitle: 'Capturando Momentos. Arte.',
+    heroSubtitle: 'Estudio fotográfico profesional especializado en retratos editoriales, bodas de lujo, comerciales de televisión y cobertura de eventos exclusivos.',
+    primaryCTA: 'VER PORTAFOLIO',
+    secondaryCTA: 'COTIZAR ESTUDIO',
+    servicesTitle: 'Nuestros Servicios',
+    services: [
+      { icon: Palette, title: 'Fotografía Editorial', description: 'Sesiones de estudio personalizadas para modelos, marcas de ropa y retratos corporativos.' },
+      { icon: Gamepad2, title: 'Producción de Video', description: 'Grabación y edición en formato 4K para comerciales de televisión, redes sociales y videoclips.' },
+      { icon: Crown, title: 'Bodas & Eventos', description: 'Cobertura artística y documental completa de momentos especiales con equipo de alta gama.' }
+    ],
+    articles: [
+      { title: 'Cómo Prepararte para tu Primera Sesión de Fotos Profesional', category: 'Fotografía', readTime: '5 min' },
+      { title: 'Tendencias en Fotografía Editorial y de Moda 2026', category: 'Moda', readTime: '6 min' },
+      { title: 'Consejos de Composición para Principiantes', category: 'Arte', readTime: '4 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'summit',
+    name: 'SUMMIT',
+    niche: 'Deportes, Gimnasio & Aventura',
+    badge: '// SERIE CLASSIC ENERGÉTICA',
+    accentColor: 'yellow',
+    accentHex: '#facc15',
+    heroImage: '/hero/summit.jpg',
+    heroTitle: 'Supera tus Límites. Alcanza la Cima.',
+    heroSubtitle: 'Programas deportivos de alto rendimiento, entrenamientos al aire libre, CrossFit extremo y preparación física especializada para atletas competitivos.',
+    primaryCTA: 'CLASE GRATIS',
+    secondaryCTA: 'VER PROGRAMAS',
+    servicesTitle: 'Programas de Élite',
+    services: [
+      { icon: Dumbbell, title: 'Entrenamiento de Fuerza', description: 'Musculación y acondicionamiento general guiado por atletas de nivel nacional.' },
+      { icon: Activity, title: 'CrossFit Extremo', description: 'Clases intensas y WODs desafiantes que llevarán tu condición cardiovascular al siguiente nivel.' },
+      { icon: UserCheck, title: 'Coaching Deportivo', description: 'Monitoreo nutricional, planes de recuperación muscular y psicología del deporte.' }
+    ],
+    articles: [
+      { title: '5 Suplementos Esenciales para Mejorar el Rendimiento Físico', category: 'Deporte', readTime: '5 min' },
+      { title: 'Cómo Evitar Lesiones Comunes al Entrenar Fuerza', category: 'Seguridad', readTime: '6 min' },
+      { title: 'La Importancia del Descanso en el Crecimiento Muscular', category: 'Recuperación', readTime: '5 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'muse',
+    name: 'MUSE',
+    niche: 'Escritura & Periodismo de Opinión',
+    badge: '// SERIE CLASSIC EDITORIAL',
+    accentColor: 'gray',
+    accentHex: '#4b5563',
+    heroImage: '/hero/muse.jpg',
+    heroTitle: 'Palabras que Inspiran. Historias.',
+    heroSubtitle: 'Un espacio dedicado a la literatura contemporánea, el periodismo de investigación de calidad y la reflexión sobre la cultura contemporánea y la sociedad.',
+    primaryCTA: 'LEER BLOG',
+    secondaryCTA: 'SUSCRIBIRSE',
+    servicesTitle: 'Secciones Editoriales',
+    services: [
+      { icon: FileText, title: 'Periodismo Crítico', description: 'Investigaciones profundas sobre temas sociales, económicos y culturales de actualidad.' },
+      { icon: Palette, title: 'Reseñas de Arte', description: 'Análisis de libros, exposiciones, cine y teatro en una redacción cuidada y rigurosa.' },
+      { icon: Users, title: 'Comunidad Literaria', description: 'Encuentros literarios, talleres de escritura creativa y foros de discusión mensual.' }
+    ],
+    articles: [
+      { title: 'El Renacimiento del Periodismo de Investigación en Internet', category: 'Cultura', readTime: '7 min' },
+      { title: 'Cómo Desarrollar el Hábito de la Escritura Diaria', category: 'Creación', readTime: '5 min' },
+      { title: 'Los Mejores Libros de Ficción de la Primera Mitad del Año', category: 'Libros', readTime: '6 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'vero',
+    name: 'VERO',
+    niche: 'Servicios, Reparaciones & Oficios',
+    badge: '// SERIE CLASSIC PRÁCTICA',
+    accentColor: 'amber',
+    accentHex: '#fbbf24',
+    heroImage: '/hero/vero.jpg',
+    heroTitle: 'Soluciones del Hogar. Confianza.',
+    heroSubtitle: 'Servicio técnico integral de plomería, electricidad, pintura y reparaciones generales para hogares, oficinas y locales comerciales con garantía total.',
+    primaryCTA: 'SOLICITAR TÉCNICO',
+    secondaryCTA: 'VER COSTOS',
+    servicesTitle: 'Servicios Integrales',
+    services: [
+      { icon: Settings, title: 'Electricidad General', description: 'Instalación de iluminación, reparación de cortos, cableado estructurado y tableros eléctricos.' },
+      { icon: Droplet, title: 'Plomería Profesional', description: 'Detección de fugas de agua, reparación de bombas, lavado de cisternas e instalaciones sanitarias.' },
+      { icon: Hammer, title: 'Pintura & Acabados', description: 'Aplicación de pintura vinílica e impermeabilizantes de alta duración en fachadas e interiores.' }
+    ],
+    articles: [
+      { title: 'Cómo Detectar Fugas de Agua Invisibles en Casa', category: 'Hogar', readTime: '5 min' },
+      { title: 'Mantenimiento Eléctrico Preventivo para Negocios', category: 'Seguridad', readTime: '6 min' },
+      { title: 'Guía para Impermeabilizar tu Techo antes de Lluvias', category: 'Técnica', readTime: '5 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'haven-classic',
+    name: 'HAVEN CLASSIC',
+    niche: 'Arquitectura & Interiorismo',
+    badge: '// SERIE CLASSIC GEOMÉTRICA',
+    accentColor: 'amber',
+    accentHex: '#78350f',
+    heroImage: '/hero/haven-classic.jpg',
+    heroTitle: 'Espacios Exclusivos. Interiorismo.',
+    heroSubtitle: 'Diseño arquitectónico contemporáneo, interiorismo residencial de lujo y remodelación de espacios comerciales con un enfoque funcional y estético.',
+    primaryCTA: 'VER PROYECTOS',
+    secondaryCTA: 'COTIZAR DISEÑO',
+    servicesTitle: 'Líneas de Diseño',
+    services: [
+      { icon: Home, title: 'Diseño Residencial', description: 'Planificación y construcción de casas personalizadas que combinan ecología y elegancia.' },
+      { icon: Palette, title: 'Interiorismo Comercial', description: 'Decoración y optimización de espacios en restaurantes, oficinas y boutiques exclusivas.' },
+      { icon: Settings, title: 'Remodelación Integral', description: 'Transformación completa de baños, cocinas y áreas comunes con materiales de lujo.' }
+    ],
+    articles: [
+      { title: 'Tendencias en Interiorismo Sostenible para el 2026', category: 'Diseño', readTime: '6 min' },
+      { title: 'Cómo Aprovechar al Máximo la Luz Natural en Casa', category: 'Arquitectura', readTime: '5 min' },
+      { title: 'Claves del Diseño Minimalista para Espacios Pequeños', category: 'Interior', readTime: '5 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'edison',
+    name: 'EDISON',
+    niche: 'Ciencia, Innovación & Energía',
+    badge: '// SERIE CLASSIC VISIONARIA',
+    accentColor: 'blue',
+    accentHex: '#2563eb',
+    heroImage: '/hero/edison.jpg',
+    heroTitle: 'Energías Renovables. Innovación.',
+    heroSubtitle: 'Soluciones de ingeniería en energía solar, automatización industrial, desarrollo de prototipos científicos y consultoría para proyectos de impacto ecológico.',
+    primaryCTA: 'VER SOLUCIONES',
+    secondaryCTA: 'COTIZAR PROYECTO',
+    servicesTitle: 'Áreas de Ingeniería',
+    services: [
+      { icon: Zap, title: 'Solar Fotovoltaica', description: 'Instalación de paneles solares residenciales e industriales para reducir tu recibo de luz hasta un 98%.' },
+      { icon: Cpu, title: 'Automatización IoT', description: 'Sensores e instrumentación a medida para el control remoto de procesos industriales en tiempo real.' },
+      { icon: Briefcase, title: 'Consultoría Ecológica', description: 'Auditorías de huella de carbono y diseño de estrategias de transición energética sostenible.' }
+    ],
+    articles: [
+      { title: 'El Futuro de la Energía Solar en América Latina', category: 'Energía', readTime: '6 min' },
+      { title: 'Cómo el Internet de las Cosas (IoT) Optimiza Fábricas', category: 'IoT', readTime: '5 min' },
+      { title: 'Estrategias de Sostenibilidad y Ahorro para Empresas', category: 'Sostenible', readTime: '6 min' }
+    ],
+    isClassic: true
+  }
 ];
 
 export function getTemplateById(id: string): TemplateData | undefined {
