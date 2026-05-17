@@ -274,7 +274,7 @@
                 const { data, error } = await sb.from(tableName)
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(50);
+                    .limit(10);
                 
                 if (error) {
                     logDebug(`❌ SB Error: ${error.message}`);
@@ -317,8 +317,8 @@
             const sorted = Array.from(messageMap.values())
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
             
-            // Renderizar los últimos 20 para limpieza visual
-            sorted.slice(-20).forEach(renderMsgInternal);
+            // Renderizar los últimos 10 para limpieza visual premium (v4.5)
+            sorted.slice(-10).forEach(renderMsgInternal);
             
             if (wasAtBottom) {
                 chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
@@ -384,15 +384,15 @@
                 } else if (m.type === 'image' || isImageUrl) {
                     parsed = `<img src="${raw}" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight">`;
                 } else {
-                    parsed = `<p class="text-sm leading-relaxed">${raw}</p>`;
+                    parsed = `<p class="text-sm leading-relaxed break-words [word-break:break-word] whitespace-pre-wrap overflow-hidden">${raw}</p>`;
                 }
             } else {
                 // Si ya fue parseado pero queda texto suelto, lo envolvemos
-                parsed = `<div class="text-sm leading-relaxed">${parsed}</div>`;
+                parsed = `<div class="text-sm leading-relaxed break-words [word-break:break-word] whitespace-pre-wrap overflow-hidden">${parsed}</div>`;
             }
 
             div.innerHTML = `
-                <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-xl ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'glass text-slate-200 border border-white/5 rounded-tl-none'}">
+                <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-xl break-words [word-break:break-word] whitespace-pre-wrap overflow-hidden ${isMe ? 'bg-indigo-600 text-white rounded-tr-none' : 'glass text-slate-200 border border-white/5 rounded-tl-none'}">
                     ${isAI ? '<div class="text-[8px] font-black uppercase tracking-widest text-indigo-400 mb-1">Beatriz AI</div>' : ''}
                     ${parsed}
                     <div class="text-[7px] opacity-30 mt-1 ${isMe ? 'text-right' : 'text-left'}">${timeStr}</div>
