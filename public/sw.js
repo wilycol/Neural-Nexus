@@ -1,7 +1,7 @@
-const CACHE_NAME = 'nexus-command-v4.6.0';
+const CACHE_NAME = 'nexus-command-v4.7.0';
 const ASSETS = [
   '/',
-  '/command.html?v=4.6.0',
+  '/command.html?v=4.7.0',
   '/manifest.json',
   '/brand.png',
   '/favicon.ico',
@@ -43,6 +43,9 @@ self.addEventListener('push', (e) => {
     badge: '/brand.png',
     vibrate: [300, 100, 400, 100, 300], // Patrón de vibración industrial premium (Fénix Wings)
     sound: '/saludo_rico.mp3', // Sonido personalizado premium de Beatriz
+    tag: 'beatriz-message', // Identificador de canal único
+    renotify: true, // Forzar alerta visual/sonora en actualizaciones
+    requireInteraction: true, // Mantener el banner visible hasta interacción del usuario
     data: { url: data.url || '/command.html' }
   };
   
