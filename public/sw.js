@@ -1,7 +1,7 @@
-const CACHE_NAME = 'nexus-command-v4.7.0';
+const CACHE_NAME = 'nexus-command-v4.8.0';
 const ASSETS = [
   '/',
-  '/command.html?v=4.7.0',
+  '/command.html?v=4.8.0',
   '/manifest.json',
   '/brand.png',
   '/favicon.ico',
@@ -11,7 +11,18 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(async (c) => {
+      // Bucle tolerante a fallos para asegurar la instalación incluso con assets faltantes temporales
+      for (const asset of ASSETS) {
+        try {
+          await c.add(asset);
+        } catch (err) {
+          console.warn(`⚠️ [SW] No se pudo precachear el asset: ${asset}`, err);
+        }
+      }
+    })
+  );
   self.skipWaiting();
 });
 
@@ -37,12 +48,15 @@ self.addEventListener('push', (e) => {
     }
   }
   
+  // Resolución de URL absoluta para evitar fallos de renderizado en WebAPKs de Android/Xiaomi
+  const absoluteIcon = self.location.origin + '/brand.png';
+  
   const options = {
     body: data.body,
-    icon: '/brand.png',
-    badge: '/brand.png',
+    icon: absoluteIcon,
+    badge: absoluteIcon,
     vibrate: [300, 100, 400, 100, 300], // Patrón de vibración industrial premium (Fénix Wings)
-    sound: '/saludo_rico.mp3', // Sonido personalizado premium de Beatriz
+    sound: self.location.origin + '/saludo_rico.mp3', // Sonido personalizado premium de Beatriz
     tag: 'beatriz-message', // Identificador de canal único
     renotify: true, // Forzar alerta visual/sonora en actualizaciones
     requireInteraction: true, // Mantener el banner visible hasta interacción del usuario
