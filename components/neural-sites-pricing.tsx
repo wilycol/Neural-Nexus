@@ -47,17 +47,17 @@ export function NeuralSitesPricing() {
       priceUSD: '$15',
       priceCOP: '$60.000',
       image: '/assets/plans/silver.png',
-      features: ['1 Noticia/día', 'SEO Básico', 'Telemetría'],
+      features: ['Web Viva (Auto-Publisher)', 'Google Maps y GBP de Regalo', 'Posicionamiento Local SEO', 'Soporte Técnico 24/7'],
       color: 'border-slate-400/30',
       glow: 'shadow-[0_0_20px_rgba(148,163,184,0.2)]'
     },
     {
       id: 'gold',
       name: t('plans.gold'),
-      priceUSD: '$38',
-      priceCOP: '$152.000',
+      priceUSD: '$30',
+      priceCOP: '$120.000',
       image: '/assets/plans/gold.png',
-      features: ['3 Noticias/día', 'Multimedia IA', 'Mejoramiento Estadístico'],
+      features: ['Todo lo de Silver', 'Autopublicación en Redes (Fénix)', 'Sindicación Instagram/Facebook', 'Métricas Estadísticas'],
       color: 'border-amber-400/50',
       glow: 'shadow-[0_0_30px_rgba(251,191,36,0.3)]',
       popular: true
@@ -68,7 +68,7 @@ export function NeuralSitesPricing() {
       priceUSD: '$79',
       priceCOP: '$316.000',
       image: '/assets/plans/platinum.png',
-      features: ['Ilimitado', 'Video Semanal', 'Gestión Social Full'],
+      features: ['Todo lo de Gold', 'Asesor de Ventas WhatsApp IA', 'Cierre de Ventas Autónomo 24/7', 'Infraestructura Dedicada'],
       color: 'border-purple-400/50',
       glow: 'shadow-[0_0_40px_rgba(168,85,247,0.4)]'
     }
