@@ -28,9 +28,14 @@ export function Logo({ className = "", size = 40, showText = true }: LogoProps) 
       
       {showText && (
         <div className="flex flex-col">
-          <span className="font-orbitron text-xl font-bold gradient-text tracking-wider">
-            NEURAL
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-[9px] px-1.5 py-0.5 rounded border border-neon-blue/30 text-neon-blue bg-neon-blue/5 leading-none font-bold tracking-tighter">
+              PNN
+            </span>
+            <span className="font-orbitron text-xl font-bold gradient-text tracking-wider">
+              NEURAL
+            </span>
+          </div>
           <span className="font-orbitron text-sm font-medium text-muted-foreground tracking-[0.3em]">
             NEXUS
           </span>

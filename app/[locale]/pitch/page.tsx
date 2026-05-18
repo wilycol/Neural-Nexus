@@ -32,7 +32,10 @@ import {
   ExternalLink, 
   Coins, 
   Terminal,
-  ChevronRight
+  ChevronRight,
+  Facebook,
+  Instagram,
+  Phone
 } from "lucide-react";
 
 const PITCH_CONTENT = {
@@ -307,6 +310,59 @@ export default function PitchPage() {
                 </div>
               </DialogContent>
             </Dialog>
+          </div>
+
+          {/* Presencia & Contacto Oficial */}
+          <div className="max-w-2xl mx-auto mb-12">
+            <p className="font-orbitron text-[10px] tracking-widest text-muted-foreground uppercase mb-4 text-center">
+              Contacto Oficial & Canales de la Federación
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <a 
+                href="https://wa.me/573229067026" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-3 p-4 rounded-xl border border-green-500/20 bg-green-500/5 hover:bg-green-500/10 transition-all group"
+              >
+                <div className="p-2 rounded-lg bg-green-500/10 text-green-500 group-hover:scale-110 transition-transform">
+                  <Phone className="h-5 w-5" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-orbitron text-xs font-bold text-white">WhatsApp</h4>
+                  <p className="text-[9px] text-green-500 font-mono">+57 322 9067026</p>
+                </div>
+              </a>
+              
+              <a 
+                href="https://instagram.com/neuralnexus.ai" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-3 p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-all group"
+              >
+                <div className="p-2 rounded-lg bg-pink-500/10 text-pink-500 group-hover:scale-110 transition-transform">
+                  <Instagram className="h-5 w-5" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-orbitron text-xs font-bold text-white">Instagram</h4>
+                  <p className="text-[9px] text-pink-500 font-mono">@neuralnexus.ai</p>
+                </div>
+              </a>
+
+              <a 
+                href="https://facebook.com/people/Neural-Nexus/61568018819586/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-3 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 transition-all group"
+              >
+                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
+                  <Facebook className="h-5 w-5" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-orbitron text-xs font-bold text-white">Facebook</h4>
+                  <p className="text-[9px] text-blue-500 font-mono">Neural Nexus</p>
+                </div>
+              </a>
+            </div>
           </div>
 
           {/* Monetización - Motores */}

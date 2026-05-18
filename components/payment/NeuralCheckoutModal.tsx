@@ -19,6 +19,8 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useParams } from "next/navigation";
+
 
 interface NeuralCheckoutModalProps {
   isOpen: boolean;
@@ -44,6 +46,8 @@ const PAYMENT_LINKS = {
 type SetupLevel = 'low' | 'mid-low' | 'middle' | 'mid-high' | 'high';
 
 export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutModalProps) {
+  const params = useParams();
+  const locale = params?.locale || "es";
   const t = useTranslations('NeuralSites.checkout');
   const [selectedMethod, setSelectedMethod] = useState<'wompi' | 'binance' | null>(null);
   const [paymentType, setPaymentType] = useState<'monthly' | 'setup'>('monthly');
@@ -248,7 +252,46 @@ export function NeuralCheckoutModal({ isOpen, onClose, planId }: NeuralCheckoutM
 
         <div className="p-6 pt-0 min-h-[460px] flex flex-col relative z-10">
           <AnimatePresence mode="wait">
-            {isBypassSuccess ? (
+            {!userId ? (
+              <motion.div
+                key="login-required"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex-1 flex flex-col items-center justify-center text-center space-y-6 p-4"
+              >
+                <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                  <Sparkles className="w-8 h-8 text-red-500 animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-orbitron font-black text-white uppercase tracking-wider">
+                    CONEXIÓN NEURAL REQUERIDA
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
+                    Para sembrar tu sitio inteligente y vincular tus coordenadas de pago, debes pertenecer a la Colmena de la Federación Neural Nexus.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                  <Button
+                    className="w-full h-11 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-orbitron font-bold uppercase tracking-wider rounded-xl shadow-[0_0_15px_rgba(0,163,255,0.3)] hover:scale-105 active:scale-95 transition-all"
+                    onClick={() => {
+                      window.location.href = `/${locale}/registro?redirect=/${locale}/neural-sites`;
+                    }}
+                  >
+                    Registrarme en la Colmena
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full h-11 border border-primary/20 hover:bg-primary/5 hover:border-primary/40 font-orbitron font-bold uppercase tracking-wider rounded-xl transition-all"
+                    onClick={() => {
+                      window.location.href = `/${locale}/login?redirect=/${locale}/neural-sites`;
+                    }}
+                  >
+                    Iniciar Sesión
+                  </Button>
+                </div>
+              </motion.div>
+            ) : isBypassSuccess ? (
               <motion.div
                 key="bypass-success"
                 initial={{ opacity: 0, scale: 0.9 }}

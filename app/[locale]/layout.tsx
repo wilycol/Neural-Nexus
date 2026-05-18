@@ -18,8 +18,12 @@ import { Metadata } from "next";
 import { CookieConsent } from "@/components/cookie-consent";
 
 export const metadata: Metadata = {
-  title: "Neural Nexus",
-  description: "Portal inteligente de contenido automatizado enfocado en IA, robótica y tecnología emergente",
+  title: "Neural Nexus | El Portal de Inteligencia Artificial y Sitios Autónomos",
+  description: "Descubre Neural Nexus: el portal líder en noticias de IA, robótica, tecnología emergente y la federación de sitios web autónomos Neural Sites. Creamos nodos web auto-gestionables para tu negocio.",
+  keywords: ["Neural Nexus", "Inteligencia Artificial", "Sitios Web Inteligentes", "Sitios Autónomos", "Neural Sites", "Robótica", "Tecnología Emergente", "Wily Col", "Beatriz AI"],
+  verification: {
+    google: "REEMPLAZAR_CON_TU_CODIGO_DE_GOOGLE_SEARCH_CONSOLE"
+  }
 };
 
 export default async function RootLayout({

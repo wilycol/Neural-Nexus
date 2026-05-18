@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { NewsFeed } from "@/components/news-feed";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp, ArrowRight } from "lucide-react";
+import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp, ArrowRight, Facebook, Instagram, Phone } from "lucide-react";
 import Link from "next/link";
 import { AICollaborators } from "@/components/ai-collaborators";
 import {
@@ -437,12 +437,58 @@ function NewsletterCard() {
 
 function AboutCard() {
   return (
-    <div className="rounded-lg border p-4 bg-card/20 backdrop-blur-sm border-neon-blue/10">
-      <h3 className="font-semibold mb-2 font-orbitron text-xs uppercase tracking-widest text-neon-blue">Sobre Neural Nexus</h3>
-      <p className="text-sm text-muted-foreground mb-4">
-        Portal automatizado de contenido. Usamos inteligencia artificial para resumir, analizar y curar contenido del
-        ecosistema IA.
-      </p>
+    <div className="rounded-lg border p-4 bg-card/20 backdrop-blur-sm border-neon-blue/10 space-y-4">
+      <div>
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="font-mono text-[8px] px-1 py-0.5 rounded border border-neon-blue/40 text-neon-blue bg-neon-blue/5 leading-none font-bold">
+            PNN
+          </span>
+          <h3 className="font-semibold font-orbitron text-xs uppercase tracking-widest text-neon-blue">Sobre Neural Nexus</h3>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Portal automatizado de contenido. Usamos inteligencia artificial para resumir, analizar y curar contenido del
+          ecosistema IA.
+        </p>
+      </div>
+
+      <div className="border-t border-neon-blue/10 pt-3">
+        <p className="text-[9px] text-muted-foreground uppercase font-orbitron tracking-wider mb-2">
+          Presencia & Contacto Oficial
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          <a
+            href="https://wa.me/573229067026"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center p-2 rounded-lg border border-green-500/20 bg-green-500/5 hover:bg-green-500/10 transition-all group"
+            title="WhatsApp Business"
+          >
+            <Phone className="h-4 w-4 text-green-500 group-hover:scale-110 transition-transform" />
+            <span className="text-[8px] mt-1 font-mono text-green-500">WhatsApp</span>
+          </a>
+          <a
+            href="https://instagram.com/neuralnexus.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center p-2 rounded-lg border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-all group"
+            title="Instagram"
+          >
+            <Instagram className="h-4 w-4 text-pink-500 group-hover:scale-110 transition-transform" />
+            <span className="text-[8px] mt-1 font-mono text-pink-500">Instagram</span>
+          </a>
+          <a
+            href="https://facebook.com/people/Neural-Nexus/61568018819586/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center p-2 rounded-lg border border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 transition-all group"
+            title="Facebook"
+          >
+            <Facebook className="h-4 w-4 text-blue-500 group-hover:scale-110 transition-transform" />
+            <span className="text-[8px] mt-1 font-mono text-blue-500">Facebook</span>
+          </a>
+        </div>
+      </div>
+
       <Button variant="outline" size="sm" className="w-full border-neon-blue/20 hover:bg-neon-blue/10 font-orbitron text-[10px] tracking-tighter" asChild>
         <Link href="/pitch">
           CONOCER MÁS <ArrowRight className="ml-2 h-3 w-3" />
