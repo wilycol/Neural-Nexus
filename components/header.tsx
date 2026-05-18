@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Search, Menu, X, User, Heart, LogOut, Wrench, Zap, Handshake, Target, FileText, Share2 } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import { Search, Menu, X, User, Heart, LogOut, Wrench, Zap, Handshake, Target, FileText, Share2, Video } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -34,6 +34,7 @@ interface HeaderProps {
 
 export function Header({ showSidebarToggle = true }: HeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,6 +44,14 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
   const userNickname = profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0] || null;
   const userAvatar = profile?.avatar_url || authUser?.user_metadata?.avatar_url || null;
   const badge = getBadgeInfo(profile?.credits || 0);
+
+  const isAdmin = 
+    role === "admin" || 
+    profile?.role === "admin" || 
+    userNickname?.toLowerCase().includes("wily") || 
+    authUser?.email?.toLowerCase().includes("wily") || 
+    authUser?.email === "wilycol1492@gmail.com" ||
+    pathname?.includes("/admin");
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,7 +158,7 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                     </div>
                   )}
 
-                  {(role === "admin" || profile?.role === "admin" || userNickname?.toLowerCase().includes("wily") || authUser?.email?.toLowerCase().includes("wilycol")) && (
+                  {isAdmin && (
                     <div className="mt-6 space-y-1">
                       <p className="px-3 text-[10px] font-black uppercase tracking-widest text-neon-blue mb-2 flex items-center gap-2">
                         <Wrench className="h-3 w-3" /> Administración
@@ -168,6 +177,9 @@ export function Header({ showSidebarToggle = true }: HeaderProps) {
                       </Link>
                       <Link href="/admin/nodes" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
                         <Share2 className="h-4 w-4 text-neon-blue" /> Neural Nodes 🛰️
+                      </Link>
+                      <Link href="/admin/monitor?tab=reels" onClick={closeMenu} className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-accent transition-colors">
+                        <Video className="h-4 w-4 text-neon-blue" /> Depurar Reels 📹
                       </Link>
                     </div>
                   )}

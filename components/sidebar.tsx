@@ -41,7 +41,15 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
-  const { user: authUser, profile, isLoggedIn: authIsLoggedIn, isPremium: authIsPremium } = useAuth();
+  const { user: authUser, profile, isLoggedIn: authIsLoggedIn, isPremium: authIsPremium, role } = useAuth();
+  
+  const isAdmin = 
+    role === "admin" || 
+    profile?.role === "admin" || 
+    (profile?.nickname || authUser?.user_metadata?.nickname || authUser?.email?.split("@")[0])?.toLowerCase().includes("wily") || 
+    authUser?.email?.toLowerCase().includes("wily") || 
+    authUser?.email === "wilycol1492@gmail.com" ||
+    pathname?.includes("/admin");
 
   const isLoggedIn = manualIsLoggedIn !== undefined ? manualIsLoggedIn : authIsLoggedIn;
   
@@ -193,7 +201,7 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
         </div>
 
         {/* Administración (Solo para Admins y el Jefe) */}
-        {(profile?.role === "admin" || authUser?.email === "wilycol1492@gmail.com") && (
+        {isAdmin && (
           <div className="mt-6">
             <p className="px-3 text-xs font-semibold text-neon-blue uppercase tracking-wider mb-2 flex items-center gap-2">
               <Wrench className="h-3 w-3" />

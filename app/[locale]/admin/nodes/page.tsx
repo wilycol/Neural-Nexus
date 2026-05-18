@@ -23,8 +23,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
+import { useAuth } from "@/hooks/use-auth";
 
 interface NeuralNode {
     id: string;
@@ -53,6 +54,8 @@ interface NeuralNode {
 }
 
 export default function AdminNodesPage() {
+    const { user, role, isLoading: authLoading } = useAuth();
+    const router = useRouter();
     const [nodes, setNodes] = useState<NeuralNode[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedNode, setSelectedNode] = useState<NeuralNode | null>(null);
@@ -61,6 +64,16 @@ export default function AdminNodesPage() {
 
     const searchParams = useSearchParams();
     const nodeIdFromUrl = searchParams.get('nodeId');
+
+    // 🛡️ Proteger la página contra intrusos
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/login?redirect=/admin/nodes");
+        }
+        if (!authLoading && user && role !== "admin" && !user.email?.toLowerCase().includes("wily")) {
+            router.push("/");
+        }
+    }, [user, role, authLoading, router]);
 
     // 🎯 Auto-selección por URL
     useEffect(() => {
@@ -100,8 +113,10 @@ export default function AdminNodesPage() {
     }, [supabase]);
 
     useEffect(() => {
-        fetchNodes();
-    }, [fetchNodes]);
+        if (user && (role === "admin" || user.email?.toLowerCase().includes("wily"))) {
+            fetchNodes();
+        }
+    }, [fetchNodes, user, role]);
 
     const handleSaveADN = async () => {
         if (!selectedNode || !supabase) return;
@@ -272,6 +287,17 @@ export default function AdminNodesPage() {
         const days = getDaysLeft(node.expires_at);
         return `¡Hola! 🚀 He analizado el potencial de su negocio y Beatriz AI ha diseñado una propuesta de dominancia digital para ustedes. Vean su prototipo aquí: ${node.url} -- Le quedan solo ${days} días de su período de prueba exclusivo. Nuestra Federación Neural puede automatizar su crecimiento y captar clientes en piloto automático. ¿Hablamos de cómo llevarlos al siguiente nivel antes de que expire su acceso? 💎🦾`;
     };
+
+    if (authLoading || (loading && !nodes.length)) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
+                <Loader2 className="h-10 w-10 text-neon-blue animate-spin mb-4 animate-pulse-slow" />
+                <p className="text-zinc-500 font-orbitron text-xs tracking-[0.3em] uppercase animate-pulse">
+                    Sincronizando Frecuencias de Nodos Serie X...
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background text-white p-4 pb-20 space-y-6">
