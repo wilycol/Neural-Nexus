@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Cpu, Zap, Box, Workflow, Sparkles, Building2, Smartphone } from 'lucide-react';
+import { Cpu, Zap, Box, Workflow, Sparkles, Building2, Smartphone, Triangle } from 'lucide-react';
 import { PartnershipModal } from './partnership-modal';
 
 const collaborators = [
   { name: 'Nexus Command', icon: Smartphone, color: 'text-orange-500', url: '/command.html' },
   { name: 'Google Antigravity', icon: Workflow, color: 'text-red-500', url: 'https://deepmind.google/' },
+  { name: 'Vercel', icon: Triangle, color: 'text-white', url: 'https://vercel.com' },
   { name: 'OpenAI', icon: Sparkles, color: 'text-green-500', url: 'https://openai.com' },
   { name: 'NVIDIA', icon: Zap, color: 'text-[#76B900]', url: 'https://www.nvidia.com/en-us/ai/' },
   { name: 'Magic Hour', icon: Zap, color: 'text-purple-500', url: 'https://magichour.ai' },
