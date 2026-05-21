@@ -172,6 +172,7 @@ export default function AdminHunterPage() {
         setIsSavingSearch(true);
         try {
             const label = `${preferentialQuery} (${preferentialResults.length} resultados)`;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { error } = await (supabase as any).from('hunter_search_history').insert([{
                 query: preferentialQuery,
                 label,
@@ -195,6 +196,7 @@ export default function AdminHunterPage() {
         if (!supabase) return;
         setIsLoadingHistory(true);
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { data, error } = await (supabase as any)
                 .from('hunter_search_history')
                 .select('id, query, label, total, created_at, places')
