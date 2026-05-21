@@ -20,7 +20,13 @@ import {
     Globe,
     Phone,
     ExternalLink,
-    X
+    X,
+    Search,
+    History,
+    Star,
+    Download,
+    BookMarked,
+    ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +52,24 @@ interface Business {
     nodeUrl?: string;
     nodeId?: string;
     notInMaps?: boolean;
+}
+
+interface PlaceResult {
+    id: string;
+    name: string;
+    address: string;
+    rating: number;
+    city: string;
+    location: { latitude: number; longitude: number };
+}
+
+interface SearchHistory {
+    id: string;
+    query: string;
+    label: string;
+    total: number;
+    places: PlaceResult[];
+    created_at: string;
 }
 
 const NICHES = [
@@ -82,7 +106,122 @@ export default function AdminHunterPage() {
     const [isApproved, setIsApproved] = useState(false);
     const [isInvestigating, setIsInvestigating] = useState(false);
 
+    // 🔍 Búsqueda Preferencial — Estados
+    const [showPreferentialSearch, setShowPreferentialSearch] = useState(false);
+    const [showPivotHistory, setShowPivotHistory] = useState(false);
+    const [preferentialQuery, setPreferentialQuery] = useState("");
+    const [preferentialLimit, setPreferentialLimit] = useState(50);
+    const [preferentialResults, setPreferentialResults] = useState<PlaceResult[]>([]);
+    const [isSearchingPreferential, setIsSearchingPreferential] = useState(false);
+    const [preferentialError, setPreferentialError] = useState("");
+    const [searchHistory, setSearchHistory] = useState<SearchHistory[]>([]);
+    const [isSavingSearch, setIsSavingSearch] = useState(false);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+    const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
+    const [historyFilter, setHistoryFilter] = useState("");
+
     const supabase = getSupabaseHiveClient();
+
+    // 🔍 Función: Búsqueda Preferencial
+    const runPreferentialSearch = async () => {
+        if (!preferentialQuery.trim() || preferentialQuery.trim().length < 3) {
+            setPreferentialError("El prompt debe tener al menos 3 caracteres.");
+            return;
+        }
+        setIsSearchingPreferential(true);
+        setPreferentialResults([]);
+        setPreferentialError("");
+        try {
+            const res = await fetch(`${backendUrl}/hunter/preferential-search`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                body: JSON.stringify({ query: preferentialQuery, limit: preferentialLimit })
+            });
+            const data = await res.json();
+            if (data.success && data.places) {
+                setPreferentialResults(data.places);
+            } else {
+                setPreferentialError(data.error || "No se encontraron resultados.");
+            }
+        } catch {
+            setPreferentialError("Error de conexión con el Hunter.");
+        } finally {
+            setIsSearchingPreferential(false);
+        }
+    };
+
+    // 📍 Función: Inyectar Pivote desde resultado preferencial
+    const injectPivotFromPlace = (place: PlaceResult) => {
+        if (!place.location?.latitude || !place.location?.longitude) {
+            toast.error("Este lugar no tiene coordenadas válidas.");
+            return;
+        }
+        const lat = place.location.latitude;
+        const lng = place.location.longitude;
+        const coordStr = `${lat}, ${lng}`;
+        setManualPivotCoords(coordStr);
+        setCoords({ lat, lng });
+        setShowPreferentialSearch(false);
+        setShowPivotHistory(false);
+        toast.success(`📍 Pivote fijado: ${place.name}`, { description: `${lat.toFixed(4)}, ${lng.toFixed(4)}` });
+    };
+
+    // 💾 Función: Guardar búsqueda en Supabase Hive
+    const saveSearchToHistory = async () => {
+        if (!supabase || preferentialResults.length === 0) return;
+        setIsSavingSearch(true);
+        try {
+            const label = `${preferentialQuery} (${preferentialResults.length} resultados)`;
+            const { error } = await (supabase as any).from('hunter_search_history').insert([{
+                query: preferentialQuery,
+                label,
+                total: preferentialResults.length,
+                places: preferentialResults
+            }]);
+            if (error) throw new Error(error.message);
+            toast.success("💾 Búsqueda guardada en el Historial de la Federación");
+            // Refrescar historial si está abierto
+            if (showPivotHistory) loadSearchHistory();
+        } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : "Error desconocido";
+            toast.error("Error guardando en Historial: " + msg);
+        } finally {
+            setIsSavingSearch(false);
+        }
+    };
+
+    // 📋 Función: Cargar historial desde Supabase Hive
+    const loadSearchHistory = useCallback(async () => {
+        if (!supabase) return;
+        setIsLoadingHistory(true);
+        try {
+            const { data, error } = await (supabase as any)
+                .from('hunter_search_history')
+                .select('id, query, label, total, created_at, places')
+                .order('created_at', { ascending: false })
+                .limit(20);
+            if (error) throw new Error(error.message);
+            setSearchHistory(data || []);
+        } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : "Error";
+            toast.error("Error cargando historial: " + msg);
+        } finally {
+            setIsLoadingHistory(false);
+        }
+    }, [supabase]);
+
+    // 📥 Función: Descargar JSON
+    const downloadResultsAsJson = () => {
+        if (preferentialResults.length === 0) return;
+        const payload = { success: true, query: preferentialQuery, total: preferentialResults.length, places: preferentialResults };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `hunter_${preferentialQuery.replace(/\s+/g, '_').slice(0, 30)}_${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     useEffect(() => {
         const savedUrl = localStorage.getItem("beatriz_bridge_url");
@@ -322,6 +461,7 @@ export default function AdminHunterPage() {
     };
 
     return (
+        <>
         <div className="min-h-screen bg-background text-white p-4 pb-44 space-y-6">
             {/* Header Industrial */}
             <div className="flex items-center justify-between mb-8">
@@ -400,6 +540,13 @@ export default function AdminHunterPage() {
                                         className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-blue/50"
                                     />
                                     <p className="text-[8px] text-white/30 italic">Copia desde Google Maps para cacería remota.</p>
+                                    <button
+                                        id="btn-historial-pivote"
+                                        onClick={() => { setShowPivotHistory(true); loadSearchHistory(); }}
+                                        className="w-full flex items-center gap-2 px-2 py-1.5 rounded border border-neon-blue/20 text-neon-blue/60 hover:bg-neon-blue/10 hover:text-neon-blue transition-all text-[9px] font-mono uppercase tracking-widest mt-1"
+                                    >
+                                        <History size={11} /> Ver Historial de Búsquedas
+                                    </button>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] uppercase font-mono text-white/50 block">Radio de Cacería (Metros)</label>
@@ -553,6 +700,17 @@ export default function AdminHunterPage() {
                             ))}
                         </div>
                     </div>
+
+                    {/* 🔍 Búsqueda Preferencial — Botón siempre visible */}
+                    <button
+                        id="btn-busqueda-preferencial"
+                        onClick={() => setShowPreferentialSearch(true)}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-neon-blue/40 text-neon-blue/70 hover:bg-neon-blue/10 hover:border-neon-blue/70 hover:text-neon-blue transition-all font-orbitron text-[10px] uppercase tracking-widest"
+                    >
+                        <Search size={13} />
+                        Búsqueda Preferencial
+                        <span className="ml-auto text-[8px] text-neon-blue/40 font-mono normal-case">Hunter Mode</span>
+                    </button>
 
                     <div className="flex gap-3">
                         <Button 
@@ -873,5 +1031,284 @@ export default function AdminHunterPage() {
             </AnimatePresence>
 
         </div>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* 🔍 MODAL: BÚSQUEDA PREFERENCIAL                               */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        <AnimatePresence>
+            {showPreferentialSearch && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black/85 backdrop-blur-md z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4"
+                >
+                    <motion.div
+                        initial={{ y: 60, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 60, opacity: 0 }}
+                        className="w-full sm:max-w-lg max-h-[92vh] bg-[#070B14] border border-neon-blue/30 sm:rounded-2xl rounded-t-2xl shadow-[0_0_60px_rgba(0,163,255,0.15)] flex flex-col overflow-hidden"
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-white/5 shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-neon-blue/15 rounded-lg">
+                                    <Search size={16} className="text-neon-blue" />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm font-black font-orbitron text-neon-blue uppercase tracking-widest">Búsqueda Preferencial</h2>
+                                    <p className="text-[9px] text-white/40 uppercase tracking-tighter">Hunter Serie X Elite • Colombia</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setShowPreferentialSearch(false)} className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/5 transition-all">
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        {/* Search Controls */}
+                        <div className="p-4 space-y-3 border-b border-white/5 shrink-0">
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] uppercase font-bold text-white/40 tracking-widest">¿Qué buscar?</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        id="preferential-query-input"
+                                        type="text"
+                                        value={preferentialQuery}
+                                        onChange={(e) => setPreferentialQuery(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && runPreferentialSearch()}
+                                        placeholder="Ej: 100 mejores ferreterías en Colombia"
+                                        className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono outline-none focus:border-neon-blue/50 transition-all text-white placeholder:text-white/20"
+                                        autoFocus
+                                    />
+                                    <select
+                                        value={preferentialLimit}
+                                        onChange={(e) => setPreferentialLimit(parseInt(e.target.value))}
+                                        className="bg-black/40 border border-white/10 rounded-lg px-2 py-2 text-xs font-mono outline-none focus:border-neon-blue/50 text-white"
+                                    >
+                                        <option value={10}>10</option>
+                                        <option value={25}>25</option>
+                                        <option value={50}>50</option>
+                                        <option value={100}>100</option>
+                                    </select>
+                                </div>
+                                {preferentialError && (
+                                    <p className="text-[10px] text-red-400 font-mono">{preferentialError}</p>
+                                )}
+                            </div>
+                            <button
+                                id="btn-lanzar-hunter"
+                                onClick={runPreferentialSearch}
+                                disabled={isSearchingPreferential}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-neon-blue hover:bg-neon-blue/80 disabled:opacity-50 text-black font-orbitron font-black text-[10px] uppercase tracking-widest shadow-[0_0_20px_rgba(0,163,255,0.3)] transition-all"
+                            >
+                                {isSearchingPreferential ? (
+                                    <><Loader2 size={13} className="animate-spin" /> Buscando en 5 ciudades...</>
+                                ) : (
+                                    <><Search size={13} /> Lanzar Hunter</>  
+                                )}
+                            </button>
+                        </div>
+
+                        {/* Results */}
+                        <div className="flex-1 overflow-y-auto">
+                            {preferentialResults.length > 0 ? (
+                                <>
+                                    <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#070B14]/90 backdrop-blur-sm">
+                                        <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest">
+                                            {preferentialResults.length} resultados • Ordenados por rating ↓
+                                        </span>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={downloadResultsAsJson}
+                                                className="flex items-center gap-1 px-2 py-1 rounded border border-white/10 text-white/40 hover:text-white hover:border-white/30 text-[8px] font-mono transition-all"
+                                                title="Descargar JSON"
+                                            >
+                                                <Download size={10} /> JSON
+                                            </button>
+                                            <button
+                                                onClick={saveSearchToHistory}
+                                                disabled={isSavingSearch}
+                                                className="flex items-center gap-1 px-2 py-1 rounded border border-neon-blue/30 text-neon-blue/70 hover:bg-neon-blue/10 hover:text-neon-blue text-[8px] font-mono transition-all disabled:opacity-50"
+                                                title="Guardar en Historial Federación"
+                                            >
+                                                {isSavingSearch ? <Loader2 size={10} className="animate-spin" /> : <BookMarked size={10} />}
+                                                {isSavingSearch ? "Guardando..." : "Guardar"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="divide-y divide-white/5">
+                                        {preferentialResults.map((place, idx) => (
+                                            <div key={place.id} className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all group">
+                                                <span className="text-[9px] font-mono text-white/20 w-5 shrink-0 text-right">{idx + 1}</span>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-bold text-white truncate">{place.name}</p>
+                                                    <p className="text-[9px] text-white/40 truncate">{place.address}</p>
+                                                </div>
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                    <div className="flex items-center gap-1">
+                                                        <Star size={9} className="text-amber-400 fill-amber-400" />
+                                                        <span className="text-[10px] font-mono text-amber-400">{place.rating || 'N/A'}</span>
+                                                    </div>
+                                                    <span className="text-[8px] text-white/30 font-mono hidden sm:block">{place.city}</span>
+                                                    <button
+                                                        onClick={() => injectPivotFromPlace(place)}
+                                                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-neon-blue/10 border border-neon-blue/30 text-neon-blue text-[8px] font-orbitron uppercase hover:bg-neon-blue/20 transition-all opacity-0 group-hover:opacity-100"
+                                                        title="Usar como Pivote Maestro"
+                                                    >
+                                                        <MapPin size={9} /> Pivote
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : !isSearchingPreferential ? (
+                                <div className="py-16 text-center space-y-3 opacity-30">
+                                    <Search size={36} className="mx-auto" />
+                                    <p className="text-[10px] uppercase tracking-widest font-orbitron">Escribe un prompt y lanza el Hunter</p>
+                                    <p className="text-[9px] text-white/40">Ej: &quot;ferreterías&quot;, &quot;mueblerías&quot;, &quot;venta de vehículos&quot;</p>
+                                </div>
+                            ) : (
+                                <div className="py-16 text-center space-y-3">
+                                    <Loader2 size={36} className="mx-auto animate-spin text-neon-blue" />
+                                    <p className="text-[10px] uppercase tracking-widest font-orbitron text-neon-blue">Cazando en 5 ciudades...</p>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* 📋 MODAL: HISTORIAL DE BÚSQUEDAS (SELECTOR DE PIVOTE)          */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        <AnimatePresence>
+            {showPivotHistory && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black/85 backdrop-blur-md z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4"
+                >
+                    <motion.div
+                        initial={{ y: 60, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 60, opacity: 0 }}
+                        className="w-full sm:max-w-lg max-h-[92vh] bg-[#070B14] border border-neon-blue/20 sm:rounded-2xl rounded-t-2xl shadow-[0_0_60px_rgba(0,163,255,0.1)] flex flex-col overflow-hidden"
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-white/5 shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-neon-blue/10 rounded-lg">
+                                    <History size={16} className="text-neon-blue/80" />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm font-black font-orbitron text-white uppercase tracking-widest">Historial de Búsquedas</h2>
+                                    <p className="text-[9px] text-white/40 uppercase tracking-tighter">Federación Hive • Selecciona un Pivote</p>
+                                </div>
+                            </div>
+                            <button onClick={() => { setShowPivotHistory(false); setExpandedHistoryId(null); }} className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/5 transition-all">
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        {/* Search filter */}
+                        <div className="px-4 py-2.5 border-b border-white/5 shrink-0">
+                            <input
+                                type="text"
+                                value={historyFilter}
+                                onChange={(e) => setHistoryFilter(e.target.value)}
+                                placeholder="Filtrar búsquedas..."
+                                className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono outline-none focus:border-neon-blue/40 text-white placeholder:text-white/20"
+                            />
+                        </div>
+
+                        {/* History List */}
+                        <div className="flex-1 overflow-y-auto">
+                            {isLoadingHistory ? (
+                                <div className="py-16 text-center">
+                                    <Loader2 size={28} className="mx-auto animate-spin text-neon-blue/60" />
+                                    <p className="text-[10px] text-white/30 mt-3 font-mono">Cargando desde la Federación...</p>
+                                </div>
+                            ) : searchHistory.length === 0 ? (
+                                <div className="py-16 text-center space-y-3 opacity-30">
+                                    <History size={36} className="mx-auto" />
+                                    <p className="text-[10px] uppercase tracking-widest font-orbitron">Sin búsquedas guardadas</p>
+                                    <p className="text-[9px] text-white/40">Usa la Búsqueda Preferencial y guarda los resultados</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-white/5">
+                                    {searchHistory
+                                        .filter(h => historyFilter === '' || h.query.toLowerCase().includes(historyFilter.toLowerCase()))
+                                        .map((history) => (
+                                        <div key={history.id}>
+                                            {/* History Item Header */}
+                                            <button
+                                                onClick={() => setExpandedHistoryId(expandedHistoryId === history.id ? null : history.id)}
+                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all text-left"
+                                            >
+                                                <BookMarked size={13} className="text-neon-blue/50 shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-bold text-white truncate">{history.query}</p>
+                                                    <p className="text-[9px] text-white/30 font-mono">
+                                                        {history.total} lugares • {new Date(history.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                    </p>
+                                                </div>
+                                                <ChevronRight
+                                                    size={14}
+                                                    className={`text-white/30 shrink-0 transition-transform ${expandedHistoryId === history.id ? 'rotate-90' : ''}`}
+                                                />
+                                            </button>
+
+                                            {/* Expanded: places list */}
+                                            <AnimatePresence>
+                                                {expandedHistoryId === history.id && (
+                                                    <motion.div
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: 'auto', opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        className="overflow-hidden bg-black/30"
+                                                    >
+                                                        <div className="divide-y divide-white/5 max-h-64 overflow-y-auto">
+                                                            {(history.places || []).map((place: PlaceResult) => (
+                                                                <div key={place.id} className="flex items-center gap-3 px-6 py-2.5 hover:bg-neon-blue/5 group transition-all">
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-[11px] font-semibold text-white truncate">{place.name}</p>
+                                                                        <p className="text-[9px] text-white/30 truncate">{place.city} • ⭐ {place.rating || 'N/A'}</p>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => injectPivotFromPlace(place)}
+                                                                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-neon-blue/10 border border-neon-blue/30 text-neon-blue text-[8px] font-orbitron uppercase hover:bg-neon-blue/25 transition-all opacity-0 group-hover:opacity-100 shrink-0"
+                                                                    >
+                                                                        <MapPin size={9} /> Pivote
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-3 border-t border-white/5 shrink-0">
+                            <button
+                                onClick={() => { setShowPivotHistory(false); setShowPreferentialSearch(true); }}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-dashed border-neon-blue/30 text-neon-blue/60 hover:bg-neon-blue/10 hover:text-neon-blue transition-all text-[9px] font-orbitron uppercase tracking-widest"
+                            >
+                                <Search size={11} /> Nueva Búsqueda Preferencial
+                            </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
+        </>
     );
 }
