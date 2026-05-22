@@ -139,7 +139,7 @@ export function SalesAdvisorWidget() {
                                         </div>
                                         <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed
                                             ${msg.role === 'user'
-                                                ? 'bg-primary text-white rounded-br-none'
+                                                ? 'bg-neon-blue text-black font-medium rounded-br-none'
                                                 : 'bg-white/5 border border-white/10 text-gray-200 rounded-bl-none whitespace-pre-wrap'}`}>
                                             {msg.text}
                                         </div>
