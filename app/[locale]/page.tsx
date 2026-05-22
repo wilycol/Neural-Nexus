@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { NewsFeed } from "@/components/news-feed";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp, ArrowRight, Facebook, Instagram, Phone } from "lucide-react";
+import { Sparkles, Flame, Newspaper, Users, BarChart, Zap, TrendingUp, ArrowRight, Facebook, Instagram, Phone, Youtube } from "lucide-react";
 import Link from "next/link";
 import { AICollaborators } from "@/components/ai-collaborators";
 import {
@@ -455,7 +455,7 @@ function AboutCard() {
         <p className="text-[9px] text-muted-foreground uppercase font-orbitron tracking-wider mb-2">
           Presencia & Contacto Oficial
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <a
             href="https://wa.me/573229067026"
             target="_blank"
@@ -485,6 +485,16 @@ function AboutCard() {
           >
             <Facebook className="h-4 w-4 text-blue-500 group-hover:scale-110 transition-transform" />
             <span className="text-[8px] mt-1 font-mono text-blue-500">Facebook</span>
+          </a>
+          <a
+            href="https://www.youtube.com/@PNNPortalNeuralNexus"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center p-2 rounded-lg border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-all group"
+            title="YouTube"
+          >
+            <Youtube className="h-4 w-4 text-red-500 group-hover:scale-110 transition-transform" />
+            <span className="text-[8px] mt-1 font-mono text-red-500">YouTube</span>
           </a>
         </div>
       </div>

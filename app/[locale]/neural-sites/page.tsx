@@ -20,7 +20,8 @@ import {
   MonitorCheck,
   Facebook,
   Instagram,
-  Phone
+  Phone,
+  Youtube
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -485,7 +486,7 @@ export default function NeuralSitesPage() {
             <p className="font-orbitron text-[10px] tracking-widest text-muted-foreground uppercase mb-6 text-center">
               Contacto Oficial & Canales de la Federación Neural Nexus
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <a 
                 href="https://wa.me/573229067026" 
                 target="_blank" 
@@ -528,6 +529,21 @@ export default function NeuralSitesPage() {
                 <div className="text-left">
                   <h4 className="font-orbitron text-xs font-bold text-white">Facebook</h4>
                   <p className="text-[9px] text-blue-500 font-mono">Neural Nexus</p>
+                </div>
+              </a>
+
+              <a 
+                href="https://www.youtube.com/@PNNPortalNeuralNexus" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-3 p-4 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-all group"
+              >
+                <div className="p-2 rounded-lg bg-red-500/10 text-red-500 group-hover:scale-110 transition-transform">
+                  <Youtube className="h-5 w-5" />
+                </div>
+                <div className="text-left">
+                  <h4 className="font-orbitron text-xs font-bold text-white">YouTube</h4>
+                  <p className="text-[9px] text-red-500 font-mono">PNN Oficial</p>
                 </div>
               </a>
             </div>
