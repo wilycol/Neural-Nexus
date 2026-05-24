@@ -33,7 +33,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 interface Business {
     id: string;
@@ -115,12 +114,9 @@ export default function AdminHunterPage() {
     const [isSearchingPreferential, setIsSearchingPreferential] = useState(false);
     const [preferentialError, setPreferentialError] = useState("");
     const [searchHistory, setSearchHistory] = useState<SearchHistory[]>([]);
-    const [isSavingSearch, setIsSavingSearch] = useState(false);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
     const [historyFilter, setHistoryFilter] = useState("");
-
-    const supabase = getSupabaseHiveClient();
 
     // 🔍 Función: Búsqueda Preferencial
     const runPreferentialSearch = async () => {
@@ -140,6 +136,11 @@ export default function AdminHunterPage() {
             const data = await res.json();
             if (data.success && data.places) {
                 setPreferentialResults(data.places);
+                if (data.cached) {
+                    toast.success(`⚡ Cargado desde Caché (${data.places.length} resultados)`);
+                } else {
+                    toast.success(`🔍 Búsqueda completada (${data.places.length} resultados)`);
+                }
             } else {
                 setPreferentialError(data.error || "No se encontraron resultados.");
             }
@@ -166,51 +167,27 @@ export default function AdminHunterPage() {
         toast.success(`📍 Pivote fijado: ${place.name}`, { description: `${lat.toFixed(4)}, ${lng.toFixed(4)}` });
     };
 
-    // 💾 Función: Guardar búsqueda en Supabase Hive
-    const saveSearchToHistory = async () => {
-        if (!supabase || preferentialResults.length === 0) return;
-        setIsSavingSearch(true);
-        try {
-            const label = `${preferentialQuery} (${preferentialResults.length} resultados)`;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error } = await (supabase as any).from('hunter_search_history').insert([{
-                query: preferentialQuery,
-                label,
-                total: preferentialResults.length,
-                places: preferentialResults
-            }]);
-            if (error) throw new Error(error.message);
-            toast.success("💾 Búsqueda guardada en el Historial de la Federación");
-            // Refrescar historial si está abierto
-            if (showPivotHistory) loadSearchHistory();
-        } catch (e: unknown) {
-            const msg = e instanceof Error ? e.message : "Error desconocido";
-            toast.error("Error guardando en Historial: " + msg);
-        } finally {
-            setIsSavingSearch(false);
-        }
-    };
-
-    // 📋 Función: Cargar historial desde Supabase Hive
+    // 📋 Función: Cargar historial desde el Backend (Memoria Local)
     const loadSearchHistory = useCallback(async () => {
-        if (!supabase) return;
         setIsLoadingHistory(true);
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data, error } = await (supabase as any)
-                .from('hunter_search_history')
-                .select('id, query, label, total, created_at, places')
-                .order('created_at', { ascending: false })
-                .limit(20);
-            if (error) throw new Error(error.message);
-            setSearchHistory(data || []);
+            const res = await fetch(`${backendUrl}/hunter/history`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+            const data = await res.json();
+            if (data.success && data.history) {
+                setSearchHistory(data.history);
+            } else {
+                setSearchHistory([]);
+            }
         } catch (e: unknown) {
             const msg = e instanceof Error ? e.message : "Error";
-            toast.error("Error cargando historial: " + msg);
+            toast.error("Error cargando historial de búsqueda: " + msg);
+            setSearchHistory([]);
         } finally {
             setIsLoadingHistory(false);
         }
-    }, [supabase]);
+    }, [backendUrl]);
 
     // 📥 Función: Descargar JSON
     const downloadResultsAsJson = () => {
@@ -1142,15 +1119,6 @@ export default function AdminHunterPage() {
                                                 title="Descargar JSON"
                                             >
                                                 <Download size={10} /> JSON
-                                            </button>
-                                            <button
-                                                onClick={saveSearchToHistory}
-                                                disabled={isSavingSearch}
-                                                className="flex items-center gap-1 px-2 py-1 rounded border border-neon-blue/30 text-neon-blue/70 hover:bg-neon-blue/10 hover:text-neon-blue text-[8px] font-mono transition-all disabled:opacity-50"
-                                                title="Guardar en Historial Federación"
-                                            >
-                                                {isSavingSearch ? <Loader2 size={10} className="animate-spin" /> : <BookMarked size={10} />}
-                                                {isSavingSearch ? "Guardando..." : "Guardar"}
                                             </button>
                                         </div>
                                     </div>
