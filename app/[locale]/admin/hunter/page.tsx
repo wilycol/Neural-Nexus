@@ -827,9 +827,25 @@ export default function AdminHunterPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
                                         <p className="text-[9px] uppercase text-white/30 font-bold">Estado Digital</p>
-                                        <div className="flex items-center gap-2 text-xs">
-                                            {selectedBusiness.website ? <Globe size={14} className="text-green-500" /> : <Globe size={14} className="text-red-500" />}
-                                            <span>{selectedBusiness.website ? "Sitio Web Detectado" : "Sin Presencia Web"}</span>
+                                        <div className="flex flex-col gap-1 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                {selectedBusiness.website ? <Globe size={14} className="text-green-500" /> : <Globe size={14} className="text-red-500" />}
+                                                {selectedBusiness.website ? (
+                                                    <a href={selectedBusiness.website} target="_blank" rel="noopener noreferrer" className="text-neon-blue hover:underline font-mono truncate max-w-[200px]">
+                                                        {selectedBusiness.website}
+                                                    </a>
+                                                ) : (
+                                                    <span>Sin Presencia Web</span>
+                                                )}
+                                            </div>
+                                            {selectedBusiness.website && (
+                                                <div className="mt-2 p-2 bg-neon-purple/10 border border-neon-purple/30 rounded-lg">
+                                                    <p className="text-[9px] uppercase text-neon-purple font-black mb-1">🎯 Oportunidad de Inyección Neural</p>
+                                                    <p className="text-[10px] text-white/80 leading-tight">
+                                                        Este sitio web estático puede ser absorbido y convertido en una web inteligente por Beatriz AI. Ideal para ofrecer el Plan Gold/Platinum y unirlo a la Federación.
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="space-y-1">
