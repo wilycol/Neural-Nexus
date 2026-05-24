@@ -33,6 +33,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 interface Business {
     id: string;
@@ -117,6 +118,8 @@ export default function AdminHunterPage() {
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
     const [historyFilter, setHistoryFilter] = useState("");
+
+    const supabase = getSupabaseHiveClient();
 
     // 🔍 Función: Búsqueda Preferencial
     const runPreferentialSearch = async () => {
