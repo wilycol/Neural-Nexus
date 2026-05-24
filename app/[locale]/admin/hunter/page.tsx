@@ -61,6 +61,8 @@ interface PlaceResult {
     rating: number;
     city: string;
     location: { latitude: number; longitude: number };
+    phone?: string;
+    website?: string;
 }
 
 interface SearchHistory {
@@ -1138,6 +1140,12 @@ export default function AdminHunterPage() {
                                                         <Star size={9} className="text-amber-400 fill-amber-400" />
                                                         <span className="text-[10px] font-mono text-amber-400">{place.rating || 'N/A'}</span>
                                                     </div>
+                                                    {(place.phone || place.website) && (
+                                                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-green-500/10 border border-green-500/30 text-green-400" title="Contacto verificado">
+                                                            {place.phone && <Phone size={8} />}
+                                                            {place.website && <Globe size={8} />}
+                                                        </div>
+                                                    )}
                                                     <span className="text-[8px] text-white/30 font-mono hidden sm:block">{place.city}</span>
                                                     <button
                                                         onClick={() => injectPivotFromPlace(place)}
