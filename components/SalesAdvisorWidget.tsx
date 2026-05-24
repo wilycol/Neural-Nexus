@@ -139,8 +139,8 @@ export function SalesAdvisorWidget() {
                                         </div>
                                         <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed
                                             ${msg.role === 'user'
-                                                ? 'bg-neon-blue text-black font-medium rounded-br-none'
-                                                : 'bg-white/5 border border-white/10 text-gray-200 rounded-bl-none whitespace-pre-wrap'}`}>
+                                                ? 'bg-blue-600 text-white font-medium border border-blue-500 rounded-br-none'
+                                                : 'bg-white/10 border border-white/20 text-white rounded-bl-none whitespace-pre-wrap'}`}>
                                             {msg.text}
                                         </div>
                                     </div>
