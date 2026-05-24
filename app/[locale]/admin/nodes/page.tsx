@@ -118,6 +118,30 @@ export default function AdminNodesPage() {
         }
     }, [fetchNodes, user, role]);
 
+    // 🔄 Auto-polling si algún nodo está construyéndose
+    useEffect(() => {
+        const isBuilding = nodes.some(n => n.status === 'building');
+        let interval: NodeJS.Timeout;
+        if (isBuilding) {
+            interval = setInterval(() => {
+                fetchNodes(true);
+            }, 5000);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [nodes, fetchNodes]);
+
+    // 🔄 Sincronizar selectedNode si cambia en background
+    useEffect(() => {
+        if (selectedNode) {
+            const updatedNode = nodes.find(n => n.id === selectedNode.id);
+            if (updatedNode && updatedNode.construction_level !== selectedNode.construction_level) {
+                setSelectedNode(prev => prev ? { ...prev, construction_level: updatedNode.construction_level, status: updatedNode.status } : null);
+            }
+        }
+    }, [nodes, selectedNode?.id]);
+
     const handleSaveADN = async () => {
         if (!selectedNode || !supabase) return;
         setIsSaving(true);
