@@ -136,7 +136,7 @@ export default function AdminNodesPage() {
     useEffect(() => {
         if (selectedNode) {
             const updatedNode = nodes.find(n => n.id === selectedNode.id);
-            if (updatedNode && updatedNode.construction_level !== selectedNode.construction_level) {
+            if (updatedNode && (updatedNode.construction_level !== selectedNode.construction_level || updatedNode.status !== selectedNode.status)) {
                 setSelectedNode(prev => prev ? { ...prev, construction_level: updatedNode.construction_level, status: updatedNode.status } : null);
             }
         }
@@ -614,33 +614,50 @@ export default function AdminNodesPage() {
                                     <div className="flex items-center justify-between gap-2">
                                         {[0, 1, 2, 3, 4, 5, 6].map((level) => {
                                             const currentLevel = selectedNode.construction_level || 0;
-                                            const isCompleted = level < currentLevel;
-                                            const isCurrent = level === currentLevel;
+                                            const isCompleted = level <= currentLevel;
                                             const isNext = level === currentLevel + 1;
-                                            const isSelectable = isCurrent || isNext;
+                                            
+                                            // Si está construyendo, el 'Next' está en progreso (animado)
+                                            const isBuilding = selectedNode.status === 'building' || selectedNode.status === 'refactoring' || selectedNode.status === 'healing';
+                                            // Si estamos en nivel 0 y está construyendo, y no hay next? 
+                                            // Asumimos que "isInProgress" es isNext && isBuilding.
+                                            const isInProgress = isNext && isBuilding;
+                                            
+                                            const isSelectable = isCompleted || isNext;
                                             const isSelected = targetLevel === level;
+                                            
+                                            // Determinar background
+                                            let btnClass = 'bg-white/5 border-white/5 opacity-20 cursor-not-allowed';
+                                            if (isInProgress) {
+                                                btnClass = selectedNode.status === 'healing' 
+                                                    ? 'bg-orange-500/20 border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)] animate-pulse'
+                                                    : 'bg-neon-purple/20 border-neon-purple/50 shadow-[0_0_15px_rgba(191,0,255,0.3)] animate-pulse';
+                                            } else if (isSelected && !isBuilding) {
+                                                btnClass = 'bg-neon-purple/40 border-neon-purple shadow-[0_0_20px_rgba(191,0,255,0.4)] z-10 scale-105';
+                                            } else if (isCompleted) {
+                                                btnClass = 'bg-green-500/10 border-green-500/30';
+                                            } else if (isNext && !isBuilding) {
+                                                btnClass = 'bg-white/10 border-white/20 hover:border-neon-blue/50 cursor-pointer';
+                                            }
 
                                             return (
                                                 <button
                                                     key={level}
-                                                    disabled={!isSelectable}
+                                                    disabled={!isSelectable || isBuilding}
                                                     onClick={() => setTargetLevel(level)}
-                                                    className={`flex-1 h-10 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 relative ${
-                                                        isSelected 
-                                                            ? 'bg-neon-purple/40 border-neon-purple shadow-[0_0_20px_rgba(191,0,255,0.4)] z-10 scale-105' 
-                                                            : isCompleted
-                                                                ? 'bg-green-500/10 border-green-500/30'
-                                                                : isNext
-                                                                    ? 'bg-white/10 border-white/20 hover:border-neon-blue/50'
-                                                                    : 'bg-white/5 border-white/5 opacity-20 cursor-not-allowed'
-                                                    }`}
+                                                    className={`flex-1 h-10 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 relative ${btnClass}`}
                                                 >
-                                                    {isCompleted && (
+                                                    {isCompleted && !isInProgress && (
                                                         <div className="absolute -top-1 -right-1">
                                                             <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)]" />
                                                         </div>
                                                     )}
-                                                    <span className={`text-xs font-black ${isSelected || isCompleted ? 'text-white' : 'text-white/40'}`}>
+                                                    {isInProgress && (
+                                                        <div className="absolute -top-1 -right-1">
+                                                            <div className={`w-2 h-2 rounded-full shadow-[0_0_5px_rgba(191,0,255,0.8)] animate-bounce ${selectedNode.status === 'healing' ? 'bg-orange-500' : 'bg-neon-purple'}`} />
+                                                        </div>
+                                                    )}
+                                                    <span className={`text-xs font-black ${isSelected || isCompleted || isInProgress ? 'text-white' : 'text-white/40'}`}>
                                                         {level}
                                                     </span>
                                                     <span className="text-[6px] font-black uppercase tracking-tighter opacity-50">
