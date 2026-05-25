@@ -378,9 +378,19 @@ export default function AdminNodesPage() {
                                     <p className="text-[10px] text-white/40 truncate mb-4">{node.url || "Sin URL de despliegue"}</p>
                                     <div className="flex items-center justify-between pt-4 border-t border-white/5">
                                         <div className="flex items-center gap-1">
-                                            <div className={`w-1.5 h-1.5 ${node.status === 'refactoring' ? 'bg-neon-purple' : 'bg-green-500'} rounded-full animate-pulse`} />
-                                            <span className={`text-[9px] font-bold ${node.status === 'refactoring' ? 'text-neon-purple' : 'text-green-500'} uppercase`}>
-                                                {node.status}
+                                            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                                                node.status === 'refactoring' || node.status === 'building' ? 'bg-neon-purple' :
+                                                node.status === 'healing' ? 'bg-orange-500' :
+                                                node.status === 'waiting_for_antigravity' || node.status === 'error' ? 'bg-red-500' :
+                                                'bg-green-500'
+                                            }`} />
+                                            <span className={`text-[9px] font-bold uppercase ${
+                                                node.status === 'refactoring' || node.status === 'building' ? 'text-neon-purple' :
+                                                node.status === 'healing' ? 'text-orange-500' :
+                                                node.status === 'waiting_for_antigravity' || node.status === 'error' ? 'text-red-500' :
+                                                'text-green-500'
+                                            }`}>
+                                                {node.status === 'waiting_for_antigravity' ? 'ESPERANDO RESCATE' : node.status}
                                             </span>
                                         </div>
                                         <span className="text-[10px] text-white/60 font-mono">ID: {node.id.slice(0, 8)}</span>
