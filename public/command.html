@@ -122,10 +122,10 @@
 <body class="flex flex-col h-[100dvh] bg-slate-950 overflow-hidden text-slate-100">
 
     <!-- Modal de Imagen -->
-    <div id="image-modal" class="hidden fixed inset-0 z-[110] bg-black/90 flex flex-col items-center justify-center p-2 backdrop-blur-sm" onclick="this.classList.add('hidden')">
-        <button class="absolute top-4 right-4 p-2 bg-white/10 rounded-full text-white" onclick="document.getElementById('image-modal').classList.add('hidden'); event.stopPropagation();"><i data-lucide="x" class="w-6 h-6"></i></button>
+    <div id="image-modal" class="hidden fixed inset-0 z-[110] bg-black/90 flex flex-col items-center justify-center p-2 backdrop-blur-sm">
+        <button class="absolute top-4 right-4 p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors" onclick="document.getElementById('image-modal').classList.add('hidden'); event.stopPropagation();"><i data-lucide="x" class="w-6 h-6"></i></button>
         <img id="image-modal-content" src="" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl transition-transform duration-300">
-        <div class="absolute bottom-6 text-white/50 text-[10px] tracking-widest uppercase bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">Pellizca para zoom o haz clic fuera para cerrar</div>
+        <div class="absolute bottom-6 text-white/50 text-[10px] tracking-widest uppercase bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">Usa la X para cerrar</div>
     </div>
 
     <!-- Modal de Configuración (Solo se muestra si faltan credenciales) -->    <div id="setup-modal" class="hidden fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
@@ -363,19 +363,20 @@
  
                 if (data) {
                     logDebug(`📥 Sync: ${data.length} msgs.`);
-                    let hasNew = false;
+                    const newlyArrived = data.filter(m => !messageMap.has(m.id));
+                    const hasNew = newlyArrived.length > 0;
+                    
                     data.forEach(m => {
                         if (!messageMap.has(m.id)) {
                             messageMap.set(m.id, m);
-                            hasNew = true;
                         }
                     });
                     
                     if (hasNew || force) {
                         renderAll();
-                        const latest = data[0];
-                        if (!force) {
-                            triggerNotificationIfNew(latest);
+                        if (!force && newlyArrived.length > 0) {
+                            const latestNew = newlyArrived.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+                            triggerNotificationIfNew(latestNew);
                         }
                     }
                 }
