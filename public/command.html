@@ -121,7 +121,14 @@
 
 <body class="flex flex-col h-[100dvh] bg-slate-950 overflow-hidden text-slate-100">
 
-    <!-- Modal de Configuración (Solo se muestra si faltan credenciales) -->    <div id="setup-modal" class="hidden fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
+    <!-- Modal de Imagen -->
+    <div id="image-modal" class="hidden fixed inset-0 z-[110] bg-black/90 flex flex-col items-center justify-center p-2 backdrop-blur-sm" onclick="this.classList.add('hidden')">
+        <button class="absolute top-4 right-4 p-2 bg-white/10 rounded-full text-white" onclick="document.getElementById('image-modal').classList.add('hidden'); event.stopPropagation();"><i data-lucide="x" class="w-6 h-6"></i></button>
+        <img id="image-modal-content" src="" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl transition-transform duration-300">
+        <div class="absolute bottom-6 text-white/50 text-[10px] tracking-widest uppercase bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">Pellizca para zoom o haz clic fuera para cerrar</div>
+    </div>
+
+    <!-- Modal de Configuración (Solo se muestra si faltan credenciales) -->    <div id="setup-modal" class="hidden fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
         <div class="w-full max-w-sm space-y-6 max-h-[90dvh] overflow-y-auto px-2">
             <div class="text-center pt-4">
                 <div
@@ -453,7 +460,7 @@
             // 1. Detectar Imágenes [IMAGE] URL
             parsed = parsed.replace(/\[IMAGE\]\s*(https?:\/\/\S+)/gi, (match, url) => {
                 hasMedia = true;
-                return `<div class="my-2"><img src="${url}" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5" onerror="this.src='https://placehold.co/400x300?text=Error+Carga+Imagen'" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight"></div>`;
+                return `<div class="my-2"><img src="${url}" onclick="openImage('${url}')" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5 cursor-pointer hover:opacity-80 transition-opacity" onerror="this.src='https://placehold.co/400x300?text=Error+Carga+Imagen'" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight"></div>`;
             });
 
             // 2. Detectar Voces [VOICE] URL
@@ -478,7 +485,7 @@
                             <div class="text-[10px] font-mono opacity-50 uppercase tracking-widest">Nota de Voz</div>
                         </div>`;
                 } else if (m.type === 'image' || isImageUrl) {
-                    parsed = `<img src="${raw}" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight">`;
+                    parsed = `<img src="${raw}" onclick="openImage('${raw}')" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5 cursor-pointer hover:opacity-80 transition-opacity" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight">`;
                 } else {
                     parsed = `<p class="text-sm leading-relaxed break-words [word-break:break-word] whitespace-pre-wrap overflow-hidden">${formatMessageContent(raw)}</p>`;
                 }
@@ -495,6 +502,11 @@
                 </div>`;
             chat.appendChild(div);
             if (window.lucide) lucide.createIcons();
+        }
+
+        function openImage(url) {
+            document.getElementById('image-modal-content').src = url;
+            document.getElementById('image-modal').classList.remove('hidden');
         }
 
         function notifyBeatriz(text) {
