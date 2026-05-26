@@ -143,24 +143,37 @@ export default function AdminNodesPage() {
     }, [nodes, selectedNode?.id]);
 
     const handleSaveADN = async () => {
-        if (!selectedNode || !supabase) return;
+        if (!selectedNode) return;
         setIsSaving(true);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabase as any)
-            .from("nodes")
-            .update({ 
-                adn: selectedNode.adn,
-                manual_notes: selectedNode.manual_notes 
-            })
-            .eq("id", selectedNode.id);
+        const notes = selectedNode.manual_notes || "";
 
-        if (error) toast.error("Error al guardar: " + error.message);
-        else {
-            toast.success("Notas e Inteligencia guardadas con éxito.");
-            fetchNodes();
+        try {
+            const brainUrl = localStorage.getItem("beatriz_brain_url") || "http://localhost:3002";
+            const res = await fetch(`${brainUrl}/api/nodes/update-adn-from-notes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nodeId: selectedNode.id, notes })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const extracted = data.extracted || {};
+                const detectedItems = Object.keys(extracted)
+                    .map(k => k === "whatsapp_number" ? "📱 WhatsApp" : k === "instagram_url" ? "📸 Instagram" : "📘 Facebook")
+                    .join(", ");
+                toast.success(detectedItems 
+                    ? `✅ ADN actualizado. Detectado: ${detectedItems}` 
+                    : "✅ Notas guardadas en el ADN."
+                );
+                fetchNodes();
+            } else {
+                toast.error("❌ Error al procesar notas: " + data.message);
+            }
+        } catch {
+            toast.error("❌ Error de conexión con el Backend.");
         }
         setIsSaving(false);
     };
+
 
     const handleLaunchHunter = async (node: NeuralNode) => {
         toast.promise(
