@@ -550,7 +550,8 @@
             if (!sb) return;
             await sb.from(tableName).insert([{ type, content, sender_id: uid }]);
             
-            // --- SYNC TO BEATRIZ NUCLEUS ---
+            // --- SYNC TO BEATRIZ NUCLEUS (Cloud LLM - Desactivado para forzar PC Remote) ---
+            /*
             const bridgeUrl = localStorage.getItem('nexus_bridge_url');
             if (bridgeUrl) {
                 try {
@@ -562,6 +563,7 @@
                     });
                 } catch (e) { console.error("Bridge Sync Error:", e); }
             }
+            */
         }
 
         async function upload(file) {
@@ -623,12 +625,15 @@
             }
         };
 
+        let currentBtn = null;
         window.playVoice = (btn, url) => {
             // Si ya hay algo sonando y no es este mismo audio, lo detenemos
             if (currentAudio && currentAudio.src !== url) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
-                // Intentamos encontrar el botón anterior para resetear su icono si fuera necesario (opcional)
+                if (currentBtn) {
+                    currentBtn.innerHTML = '<i data-lucide="play" class="w-4 h-4 text-white"></i>';
+                }
             }
 
             if (currentAudio && currentAudio.src === url) {
@@ -641,15 +646,18 @@
                 }
             } else {
                 currentAudio = new Audio(url);
+                currentBtn = btn;
                 currentAudio.play();
                 btn.innerHTML = '<i data-lucide="pause" class="w-4 h-4 text-white"></i>';
                 
                 currentAudio.onended = () => {
                     btn.innerHTML = '<i data-lucide="play" class="w-4 h-4 text-white"></i>';
+                    if (window.lucide) lucide.createIcons();
                     currentAudio = null;
+                    currentBtn = null;
                 };
             }
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         };
 
         function subscribe() {
