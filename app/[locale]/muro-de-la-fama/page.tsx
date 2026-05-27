@@ -28,7 +28,8 @@ export default function MuroDeLaFamaPage() {
     useEffect(() => {
         const fetchTestimonios = async () => {
             if (!supabase) return;
-            const { data, error } = await (supabase as unknown as { from: (t: string) => any })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data, error } = await (supabase as any)
                 .from("testimonios_federacion")
                 .select("*")
                 .order("is_featured", { ascending: false })
