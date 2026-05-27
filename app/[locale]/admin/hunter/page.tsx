@@ -804,11 +804,11 @@ export default function AdminHunterPage() {
                                 });
                                 const data = await res.json();
                                 if (data.success) {
-                                    toast.success(`Campaña Finalizada: ${data.details?.filter((d:any)=>d.success).length} entregados de ${data.total_audience}.`);
+                                    toast.success(`Campaña Finalizada: ${data.details?.filter((d: { success: boolean }) => d.success).length} entregados de ${data.total_audience}.`);
                                 } else {
                                     toast.error(data.error || "Fallo en la campaña.");
                                 }
-                            } catch(e) {
+                            } catch {
                                 toast.error("Error conectando con el Seductor.");
                             }
                         }}
