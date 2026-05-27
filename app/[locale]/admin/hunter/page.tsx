@@ -120,6 +120,8 @@ export default function AdminHunterPage() {
     const [isApproved, setIsApproved] = useState(false);
     const [isInvestigating, setIsInvestigating] = useState(false);
     const [selectedForSeduction, setSelectedForSeduction] = useState<Set<string>>(new Set());
+    const [metaTemplates, setMetaTemplates] = useState<{name: string, language: string}[]>([]);
+    const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
 
     // 🔍 Búsqueda Preferencial — Estados
     const [showPreferentialSearch, setShowPreferentialSearch] = useState(false);
@@ -136,6 +138,28 @@ export default function AdminHunterPage() {
     const [historyFilter, setHistoryFilter] = useState("");
 
     const supabase = getSupabaseHiveClient();
+
+    // 📡 Función: Cargar Plantillas Aprobadas de Meta
+    const fetchMetaTemplates = useCallback(async () => {
+        setIsLoadingTemplates(true);
+        try {
+            const res = await fetch(`${backendUrl}/api/channel/templates`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
+            const data = await res.json();
+            if (data.success && data.templates) {
+                setMetaTemplates(data.templates);
+            }
+        } catch (e) {
+            console.error("Error fetching templates:", e);
+        } finally {
+            setIsLoadingTemplates(false);
+        }
+    }, [backendUrl]);
+
+    useEffect(() => {
+        fetchMetaTemplates();
+    }, [fetchMetaTemplates]);
 
     // 🔍 Función: Búsqueda Preferencial
     const runPreferentialSearch = async () => {
@@ -794,14 +818,28 @@ export default function AdminHunterPage() {
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-[10px] uppercase font-mono text-white/50 block">Nombre de Plantilla (Meta)</label>
-                            <input 
-                                type="text" 
-                                id="diffusion-template"
-                                defaultValue="hello_world"
-                                placeholder="Ej: pionero_invitation_v1"
-                                className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50"
-                            />
+                            <label className="text-[10px] uppercase font-mono text-white/50 block flex justify-between items-center">
+                                <span>Nombre de Plantilla (Meta)</span>
+                                {isLoadingTemplates && <Loader2 size={10} className="animate-spin text-neon-purple" />}
+                            </label>
+                            {metaTemplates.length > 0 ? (
+                                <select 
+                                    id="diffusion-template"
+                                    className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50 text-white"
+                                >
+                                    {metaTemplates.map(t => (
+                                        <option key={t.name} value={t.name}>{t.name} ({t.language})</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <input 
+                                    type="text" 
+                                    id="diffusion-template"
+                                    defaultValue="hello_world"
+                                    placeholder="Ej: pionero_invitation_v1"
+                                    className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50 text-white"
+                                />
+                            )}
                         </div>
                     </div>
                     <Button 
