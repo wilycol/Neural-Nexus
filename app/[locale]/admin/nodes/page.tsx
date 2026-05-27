@@ -140,7 +140,7 @@ export default function AdminNodesPage() {
                 setSelectedNode(prev => prev ? { ...prev, construction_level: updatedNode.construction_level, status: updatedNode.status } : null);
             }
         }
-    }, [nodes, selectedNode?.id]);
+    }, [nodes, selectedNode]);
 
     const handleSaveADN = async () => {
         if (!selectedNode) return;

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 import { Loader2, Star, Play, Award, Sparkles, Quote, Trophy } from "lucide-react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,7 +28,7 @@ export default function MuroDeLaFamaPage() {
     useEffect(() => {
         const fetchTestimonios = async () => {
             if (!supabase) return;
-            const { data, error } = await (supabase as any)
+            const { data, error } = await (supabase as unknown as { from: (t: string) => any })
                 .from("testimonios_federacion")
                 .select("*")
                 .order("is_featured", { ascending: false })
@@ -122,10 +123,12 @@ export default function MuroDeLaFamaPage() {
                                             {playingVideoId !== testimonio.id && (
                                                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition-all">
                                                     {testimonio.thumbnail_url && (
-                                                        <img 
+                                                        <Image 
                                                             src={testimonio.thumbnail_url} 
-                                                            alt={testimonio.business_name} 
-                                                            className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
+                                                            alt={testimonio.business_name}
+                                                            fill
+                                                            className="object-cover opacity-60 mix-blend-overlay"
+                                                            unoptimized
                                                         />
                                                     )}
                                                     <div className="w-16 h-16 rounded-full bg-neon-purple/80 flex items-center justify-center text-white shadow-[0_0_30px_rgba(191,0,255,0.6)] group-hover:scale-110 transition-transform backdrop-blur-sm">
@@ -172,7 +175,7 @@ export default function MuroDeLaFamaPage() {
                                                 <div className="mt-4 pt-4 border-t border-white/10 flex-grow relative">
                                                     <Quote className="absolute top-2 left-0 text-white/5 w-8 h-8 -z-10" />
                                                     <p className="text-sm text-white/70 italic leading-relaxed line-clamp-4">
-                                                        "{testimonio.testimonial_text}"
+                                                        &quot;{testimonio.testimonial_text}&quot;
                                                     </p>
                                                 </div>
                                             )}
