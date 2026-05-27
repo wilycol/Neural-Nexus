@@ -17,6 +17,7 @@ import {
   Presentation,
   Zap,
   Trash2,
+  Trophy,
 } from "lucide-react";
 
 export const primaryMenuItems = [
@@ -32,6 +33,7 @@ export const primaryMenuItems = [
 ];
 
 export const destacadosItems = [
+  { href: "/muro-de-la-fama", label: "Muro de la Fama", icon: Trophy, color: "text-amber-500" },
   { href: "/top5", label: "Top 5 del Día", icon: Sparkles, color: "text-neon-blue" },
   { href: "/pitch", label: "Pitch Técnico", icon: Presentation, color: "text-neon-purple" },
   { href: "/neural-sites", label: "Neural Sites SaaS", icon: Zap, color: "text-neon-blue" },
