@@ -20,6 +20,7 @@ import {
     Globe,
     Phone,
     ExternalLink,
+    Check,
     X,
     Search,
     History,
@@ -83,6 +84,17 @@ const NICHES = [
     { id: 'beauty', label: 'Estética/Gym', icon: Sparkles, types: 'beauty_salon,gym' },
 ];
 
+const PIVOTES_ESTRATEGICOS = [
+    { id: 'custom', label: 'Búsqueda Personalizada (Escribe abajo)' },
+    { id: 'odontologia', label: 'Odontología Estética y Diseño de Sonrisa' },
+    { id: 'restaurantes', label: 'Restaurantes de Lujo / Alta Cocina' },
+    { id: 'inmobiliarias', label: 'Agencias Inmobiliarias Boutique' },
+    { id: 'spas_autos', label: 'Spas Automotrices / Car Detailing' },
+    { id: 'medicina_estetica', label: 'Clínicas de Medicina Estética' },
+    { id: 'fitness_premium', label: 'Gimnasios Premium y CrossFit' },
+    { id: 'hoteles_boutique', label: 'Hoteles Boutique y Glamping' }
+];
+
 export default function AdminHunterPage() {
     const [backendUrl, setBackendUrl] = useState("https://claudine-tristful-moly.ngrok-free.dev");
     // 💋 Serie X Elite - Sincronización Dinámica Activa (v1.2)
@@ -107,12 +119,14 @@ export default function AdminHunterPage() {
     const [telemetry, setTelemetry] = useState<string[]>([]);
     const [isApproved, setIsApproved] = useState(false);
     const [isInvestigating, setIsInvestigating] = useState(false);
+    const [selectedForSeduction, setSelectedForSeduction] = useState<Set<string>>(new Set());
 
     // 🔍 Búsqueda Preferencial — Estados
     const [showPreferentialSearch, setShowPreferentialSearch] = useState(false);
     const [showPivotHistory, setShowPivotHistory] = useState(false);
     const [preferentialQuery, setPreferentialQuery] = useState("");
     const [preferentialLimit, setPreferentialLimit] = useState(50);
+    const [selectedStrategicPivot, setSelectedStrategicPivot] = useState("custom");
     const [preferentialResults, setPreferentialResults] = useState<PlaceResult[]>([]);
     const [isSearchingPreferential, setIsSearchingPreferential] = useState(false);
     const [preferentialError, setPreferentialError] = useState("");
@@ -760,17 +774,24 @@ export default function AdminHunterPage() {
                 <CardContent className="space-y-4 relative z-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                            <label className="text-[10px] uppercase font-mono text-white/50 block">Volumen de Disparo (Leads)</label>
-                            <select 
-                                className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50"
-                                defaultValue="10"
-                                id="diffusion-limit"
-                            >
-                                <option value="10">10 Prospectos (Prueba Táctica)</option>
-                                <option value="50">50 Prospectos (Ataque Medio)</option>
-                                <option value="100">100 Prospectos (Asalto 100 Nodos)</option>
-                                <option value="1000">1000 Prospectos (Masivo)</option>
-                            </select>
+                            <label className="text-[10px] uppercase font-mono text-white/50 block flex justify-between">
+                                <span>Prospectos Seleccionados</span>
+                                <button 
+                                    className="text-neon-purple hover:text-white underline"
+                                    onClick={() => {
+                                        if (selectedForSeduction.size === businesses.length && businesses.length > 0) {
+                                            setSelectedForSeduction(new Set());
+                                        } else {
+                                            setSelectedForSeduction(new Set(businesses.map(b => b.id)));
+                                        }
+                                    }}
+                                >
+                                    Seleccionar Todos
+                                </button>
+                            </label>
+                            <div className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono text-neon-purple">
+                                {selectedForSeduction.size} prospectos listos para cacería
+                            </div>
                         </div>
                         <div className="space-y-1">
                             <label className="text-[10px] uppercase font-mono text-white/50 block">Nombre de Plantilla (Meta)</label>
@@ -786,7 +807,10 @@ export default function AdminHunterPage() {
                     <Button 
                         className="w-full bg-neon-purple hover:bg-neon-purple/80 text-white font-orbitron text-[10px] shadow-[0_0_15px_rgba(191,0,255,0.4)]"
                         onClick={async () => {
-                            const limit = (document.getElementById('diffusion-limit') as HTMLSelectElement).value;
+                            if (selectedForSeduction.size === 0) {
+                                toast.error("Selecciona al menos un prospecto para la campaña.");
+                                return;
+                            }
                             const template = (document.getElementById('diffusion-template') as HTMLInputElement).value;
                             
                             if (!template) {
@@ -794,13 +818,17 @@ export default function AdminHunterPage() {
                                 return;
                             }
                             
-                            toast.info(`Iniciando asalto del Seductor: ${limit} leads con plantilla '${template}'...`);
+                            toast.info(`Iniciando asalto del Seductor: ${selectedForSeduction.size} leads con plantilla '${template}'...`);
                             
                             try {
+                                const selectedBusinessesData = businesses.filter(b => selectedForSeduction.has(b.id));
                                 const res = await fetch(`${backendUrl}/api/channel/publish`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-                                    body: JSON.stringify({ templateName: template, limit: parseInt(limit) })
+                                    body: JSON.stringify({ 
+                                        templateName: template, 
+                                        businesses: selectedBusinessesData 
+                                    })
                                 });
                                 const data = await res.json();
                                 if (data.success) {
@@ -836,8 +864,20 @@ export default function AdminHunterPage() {
                             >
                                 <CardContent className="p-4">
                                     <div className="flex justify-between items-start">
-                                        <div className="flex gap-3">
-                                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+                                        <div className="flex gap-3 items-center">
+                                            <div 
+                                                className={`w-5 h-5 rounded border flex items-center justify-center cursor-pointer transition-all shrink-0 ${selectedForSeduction.has(biz.id) ? 'bg-neon-purple border-neon-purple' : 'border-white/20 hover:border-white/50'}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const next = new Set(selectedForSeduction);
+                                                    if (next.has(biz.id)) next.delete(biz.id);
+                                                    else next.add(biz.id);
+                                                    setSelectedForSeduction(next);
+                                                }}
+                                            >
+                                                {selectedForSeduction.has(biz.id) && <Check size={12} className="text-white" />}
+                                            </div>
+                                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
                                                 <Store size={20} className="text-white/60" />
                                             </div>
                                             <div>
@@ -1150,7 +1190,26 @@ export default function AdminHunterPage() {
                         {/* Search Controls */}
                         <div className="p-4 space-y-3 border-b border-white/5 shrink-0">
                             <div className="space-y-1.5">
-                                <label className="text-[9px] uppercase font-bold text-white/40 tracking-widest">¿Qué buscar?</label>
+                                <label className="text-[9px] uppercase font-bold text-white/40 tracking-widest">Pivote Estratégico (Nichos Rentables)</label>
+                                <select 
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono outline-none focus:border-neon-blue/50 text-white mb-2"
+                                    value={selectedStrategicPivot}
+                                    onChange={(e) => {
+                                        setSelectedStrategicPivot(e.target.value);
+                                        const pivot = PIVOTES_ESTRATEGICOS.find(p => p.id === e.target.value);
+                                        if (pivot && pivot.id !== 'custom') {
+                                            setPreferentialQuery(`Mejores ${pivot.label.toLowerCase()} en Colombia`);
+                                        } else {
+                                            setPreferentialQuery("");
+                                        }
+                                    }}
+                                >
+                                    {PIVOTES_ESTRATEGICOS.map(p => (
+                                        <option key={p.id} value={p.id}>{p.label}</option>
+                                    ))}
+                                </select>
+                                
+                                <label className="text-[9px] uppercase font-bold text-white/40 tracking-widest mt-2 block">Prompt de Búsqueda Libre</label>
                                 <div className="flex gap-2">
                                     <input
                                         id="preferential-query-input"
