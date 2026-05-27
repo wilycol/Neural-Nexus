@@ -737,6 +737,88 @@ export default function AdminHunterPage() {
                 </CardContent>
             </Card>
 
+            {/* Panel del Canal de Difusión (Seductor) */}
+            <Card className="bg-black/40 border-neon-purple/20 backdrop-blur-md overflow-hidden relative">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                    <Phone size={120} className="text-neon-purple" />
+                </div>
+                
+                <CardHeader>
+                    <CardTitle className="text-sm font-orbitron uppercase tracking-widest flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Phone className="text-neon-purple" size={18} /> Canal de Difusión (El Seductor)
+                        </div>
+                        <Badge variant="outline" className="text-[9px] border-neon-purple/20 text-neon-purple animate-pulse">
+                            READY TO FIRE
+                        </Badge>
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                        Lanza campañas de WhatsApp a prospectos P1 listos para contactar.
+                    </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="space-y-4 relative z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] uppercase font-mono text-white/50 block">Volumen de Disparo (Leads)</label>
+                            <select 
+                                className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50"
+                                defaultValue="10"
+                                id="diffusion-limit"
+                            >
+                                <option value="10">10 Prospectos (Prueba Táctica)</option>
+                                <option value="50">50 Prospectos (Ataque Medio)</option>
+                                <option value="100">100 Prospectos (Asalto 100 Nodos)</option>
+                                <option value="1000">1000 Prospectos (Masivo)</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] uppercase font-mono text-white/50 block">Nombre de Plantilla (Meta)</label>
+                            <input 
+                                type="text" 
+                                id="diffusion-template"
+                                defaultValue="hello_world"
+                                placeholder="Ej: pionero_invitation_v1"
+                                className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50"
+                            />
+                        </div>
+                    </div>
+                    <Button 
+                        className="w-full bg-neon-purple hover:bg-neon-purple/80 text-white font-orbitron text-[10px] shadow-[0_0_15px_rgba(191,0,255,0.4)]"
+                        onClick={async () => {
+                            const limit = (document.getElementById('diffusion-limit') as HTMLSelectElement).value;
+                            const template = (document.getElementById('diffusion-template') as HTMLInputElement).value;
+                            
+                            if (!template) {
+                                toast.error("Debes ingresar el nombre de la plantilla aprobada por Meta.");
+                                return;
+                            }
+                            
+                            toast.info(`Iniciando asalto del Seductor: ${limit} leads con plantilla '${template}'...`);
+                            
+                            try {
+                                const res = await fetch(`${backendUrl}/api/channel/publish`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                                    body: JSON.stringify({ templateName: template, limit: parseInt(limit) })
+                                });
+                                const data = await res.json();
+                                if (data.success) {
+                                    toast.success(`Campaña Finalizada: ${data.details?.filter((d:any)=>d.success).length} entregados de ${data.total_audience}.`);
+                                } else {
+                                    toast.error(data.error || "Fallo en la campaña.");
+                                }
+                            } catch(e) {
+                                toast.error("Error conectando con el Seductor.");
+                            }
+                        }}
+                    >
+                        <Sparkles size={14} className="mr-2" />
+                        Disparar Campaña (WhatsApp Cloud)
+                    </Button>
+                </CardContent>
+            </Card>
+
             {/* Lista de Resultados */}
             <div className="space-y-4">
                 <AnimatePresence mode="popLayout">
