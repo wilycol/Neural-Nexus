@@ -120,7 +120,7 @@ export default function AdminHunterPage() {
     const [isApproved, setIsApproved] = useState(false);
     const [isInvestigating, setIsInvestigating] = useState(false);
     const [selectedForSeduction, setSelectedForSeduction] = useState<Set<string>>(new Set());
-    const [metaTemplates, setMetaTemplates] = useState<{name: string, language: string}[]>([]);
+    const [metaTemplates, setMetaTemplates] = useState<{name: string, language: string, status: string}[]>([]);
     const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
 
     // 🔍 Búsqueda Preferencial — Estados
@@ -828,7 +828,9 @@ export default function AdminHunterPage() {
                                     className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple/50 text-white"
                                 >
                                     {metaTemplates.map(t => (
-                                        <option key={t.name} value={t.name}>{t.name} ({t.language})</option>
+                                        <option key={t.name} value={t.name}>
+                                            {t.name} ({t.language}) - {t.status === 'APPROVED' ? '✅ Aprobada' : t.status === 'PENDING' ? '⏳ En revisión' : `⚠️ ${t.status}`}
+                                        </option>
                                     ))}
                                 </select>
                             ) : (
