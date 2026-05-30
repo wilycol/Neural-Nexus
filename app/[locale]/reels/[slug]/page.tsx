@@ -43,7 +43,7 @@ export async function generateMetadata(
       title: news.title,
       description: news.summary || "Mira este reel en Neural Nexus.",
       images: imageUrl ? [imageUrl] : [],
-      players: news.video_url ? [news.video_url] : [],
+      players: news.video_url ? [{ playerUrl: news.video_url, streamUrl: news.video_url, width: 720, height: 1280 }] : [],
     },
   };
 }
