@@ -152,7 +152,7 @@ function ReelItem({ news, isActive, onDelete, onEnded }: ReelItemProps) {
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/news/${news.slug}`;
+    const url = `${window.location.origin}/reels/${news.slug}`;
     const text = `🔥 ${news.title}\n\nVía Neural Nexus - Portal de noticias IA`;
 
     if (navigator.share) {
