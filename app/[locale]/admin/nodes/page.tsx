@@ -48,6 +48,7 @@ interface NeuralNode {
     expires_at?: string;
     manual_notes?: string;
     construction_level?: number;
+    approved_level?: number;
     findings_json?: {
         address?: string;
         [key: string]: unknown;
@@ -543,7 +544,7 @@ export default function AdminNodesPage() {
                                                     className="flex-1 sm:flex-none bg-neon-purple hover:bg-neon-purple/80 text-white font-black uppercase text-[10px] px-4 h-8 rounded-lg"
                                                     onClick={() => handleApproveRefactor(selectedNode)}
                                                 >
-                                                    Aprobar Merge
+                                                    Aprobar Nivel {(selectedNode.approved_level || 1) + 1}
                                                 </Button>
                                                 <Button variant="ghost" size="icon" className="shrink-0" onClick={() => window.open(selectedNode.refactor_url, '_blank')}>
                                                     <ExternalLink size={16} className="text-neon-purple" />
@@ -653,9 +654,14 @@ export default function AdminNodesPage() {
                                         <p className="text-[10px] uppercase font-black text-white/40 tracking-widest flex items-center gap-2">
                                             <Layers size={14} /> Pipeline de Construcción
                                         </p>
-                                        <Badge className="bg-neon-blue/20 text-neon-blue border-neon-blue/30 text-[9px]">
-                                            Nivel Actual: {selectedNode.construction_level || 0}
-                                        </Badge>
+                                        <div className="flex gap-2">
+                                            <Badge className="bg-green-500/20 text-green-500 border-green-500/30 text-[9px]">
+                                                Producción: Lvl {selectedNode.approved_level || 1}
+                                            </Badge>
+                                            <Badge className="bg-neon-blue/20 text-neon-blue border-neon-blue/30 text-[9px]">
+                                                Máx Construido: Lvl {selectedNode.construction_level || 0}
+                                            </Badge>
+                                        </div>
                                     </div>
                                     
                                     <div className="flex items-center justify-between gap-2">
