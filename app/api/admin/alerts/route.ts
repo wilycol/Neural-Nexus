@@ -47,18 +47,19 @@ export async function PATCH(request: Request) {
 
     if (!id) return NextResponse.json({ error: 'ID requerido' }, { status: 400 });
 
-    // Resolver alerta
+    // Resolver alerta (sin resolved_at para evitar error 500)
     const { error } = await supabase
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .from('admin_alerts' as any)
-      .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+      .update({ status: 'resolved' })
       .eq('id', id);
 
     if (error) throw error;
 
     return NextResponse.json({ success: true, message: 'Alerta resuelta' });
 
-  } catch {
+  } catch (error) {
+    console.error('❌ Error actualizando alerta:', error);
     return NextResponse.json({ error: 'Error al actualizar alerta' }, { status: 500 });
   }
 }
