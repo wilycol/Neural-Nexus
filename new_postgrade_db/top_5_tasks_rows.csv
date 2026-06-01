@@ -1,0 +1,521 @@
+id,news_id,video_prompt,status,video_url,priority,created_at,processed_at,finished_at,error_details
+016c4d61-6a93-4f0d-8ef8-18b51fbaaa51,934c832c-f1f0-4600-b6ac-cd42211fc333,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Payroll startup Remote mejora eficiencia con IA
+              RESUMEN: La startup de servicios de nómina Remote alcanza $300 millones en ARR gracias a un aumento del 50% en la rentabilidad por empleado con la adopción de IA.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-28 00:44:27.506081+00,,,
+049939b8-94e1-471e-9681-90207ef92e14,f3c4d667-e567-45d5-9dd2-12b2934ff601,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Mejora en Modelos de Fundación con AWS
+              RESUMEN: Hugging Face anuncia la integración de AWS para la formación e inferencia de modelos de fundación. Esto permite una mayor escalabilidad y eficiencia en el entrenamiento y uso de estos modelos.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:59:03.635146+00,,,
+04b233b0-7e12-449a-ae36-0fd94decfa17,dcf8547d-7dc4-46c0-a3ed-411fd7f35ada,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Avances en Generación de Texto a Velocidad de Luz con Nemotron-Labs
+              RESUMEN: Nemotron-Labs presenta un modelo de difusión de lenguaje que logra generar texto a una velocidad cercana a la de la luz. Este avance podría revolucionar la generación de contenido automatizado.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-23 00:43:35.17699+00,,,
+05704b79-9ed8-4f34-924c-0b7237a024a2,50b91efc-86d6-424f-828f-678e63339286,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Spotify y Universal Music permiten canciones AI generadas por fans
+              RESUMEN: Spotify y Universal Music Group colaboran para permitir a sus usuarios crear canciones y remixes con IA, con una participación de los artistas en las ganancias.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-22 00:08:08.307463+00,,,
+07eacf1d-b430-452f-b5b7-9596d99f04d9,0681d855-bce6-44e5-813b-d9e042a327ea,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Mejora de la Inteligencia Artificial en Robot Video Generation
+              RESUMEN: NVIDIA Cosmos Predict 2.5 se mejora con LoRA/DoRA para generar videos en robots. La actualización busca mejorar la precisión y eficiencia en la generación de contenido visual.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-19 00:56:26.24896+00,,,
+0914a64b-30d4-404c-a1ef-6aa04ce82225,3099ab57-ca85-4443-b065-d7f3039cd8a1,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI redefine su estrategia de productos
+              RESUMEN: Greg Brockman asume el cargo de estrategia de productos en OpenAI, mientras se combina ChatGPT y Codex.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-17 00:48:39.398735+00,,,
+099e3e81-473c-45ab-8c85-f189d4fadd86,61fef9f7-7a4f-4cea-a48e-41a0eac7c9f7,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Reachy Mini: Robotica con Inteligencia Artificial en Local
+              RESUMEN: Reachy Mini, un robot con IA, ahora opera de forma local sin necesidad de conexión a Internet. Este avance permite una mayor autonomía y privacidad.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-28 00:44:40.679906+00,,,
+0c861926-650f-491e-96b2-839c155de5ff,f58e029d-065d-42c9-9fb1-9ea574f93d17,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI Resuelve Problema de Distancia Unitaria en Geometría Discreta
+              RESUMEN: Un modelo de OpenAI ha resuelto el problema de la distancia unitaria, un enigma de 80 años en geometría discreta, demostrando el potencial de la IA en matemáticas.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-21 00:56:08.782388+00,,,
+0cd47fa3-2c86-42fe-b3be-bc9a873a67d0,dc795585-4af2-40cd-8348-d302427bf3b1,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Mejoras en ChatGPT para conversaciones sensibles
+              RESUMEN: OpenAI implementa actualizaciones para mejorar la conciencia de contexto en conversaciones delicadas, detectando riesgos y respondiendo con mayor seguridad.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-15 00:47:43.798141+00,,,
+0cfdecb4-8318-4fea-9f3e-00fa30b4cfda,b022030a-e0a5-4de4-a8e4-bbca3bb2d0dd,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Chatbots de IA divulgan números de teléfono reales de usuarios
+              RESUMEN: Usuarios reportan que sus números de teléfono personales fueron expuestos por Google AI. No hay una forma fácil de prevenir esto.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-14 00:49:03.717373+00,,,
+0d5f6a73-fea4-4a09-b347-f39af5bb6071,df5338a0-2337-4d71-b096-ed57691bb318,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Boston Children's Hospital utiliza IA para diagnosticar enfermedades raras
+              RESUMEN: Boston Children's Hospital utiliza tecnología de OpenAI para mejorar la atención médica y diagnosticar más de 40 casos de enfermedades raras. La tecnología reduce la carga operativa y mejora la atención al paciente.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-30 00:44:31.604192+00,,,
+0e36b639-2697-4925-925e-61599b137d85,49031ae4-59e2-409b-b884-1e0a5b324a8e,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Anthropic alcanza $965 mil millones de valoración previa a su IPO
+              RESUMEN: La startup de IA Anthropic cierra una ronda de financiamiento de $65 mil millones, lo que la acerca a una valuación de $1 billón antes de su IPO
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-29 00:44:25.888486+00,,,
+0e62f09b-383a-4369-b576-990f5ebcda8f,fe7251c9-eae9-4b9b-9cdd-b04870d64afb,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: El economista Nobel Acemoglu analiza tendencias en Inteligencia Artificial
+              RESUMEN: Daron Acemoglu, Nobel en economía, analiza papel de la IA en Silicon Valley. Publicó un artículo que cuestionó a Big Tech.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-14 00:49:16.341176+00,,,
+10d2aa11-5575-4d24-9fa3-2d9bdcab1a97,5d8fbe90-7fe0-4883-ac6f-e58ce67043d2,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: PaddleOCR 3.5: Avances en Reconocimiento Óptico de Caracteres con Transformadores
+              RESUMEN: PaddleOCR 3.5 ha sido lanzado con un backend basado en transformadores, mejorando la precisión en tareas de OCR y análisis de documentos.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-19 00:56:31.988659+00,,,
+10f04c24-a96f-49ab-be13-fffaaae76b7e,b97ff9fc-8cd2-431f-b8e9-8293303984ea,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Google Rediseña la Búsqueda con IA
+              RESUMEN: Google anuncia un nuevo diseño de la barra de búsqueda con capacidad para texto, imágenes, PDFs y más. La empresa busca mejorar la experiencia de búsqueda con IA.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-20 00:56:29.173633+00,,,
+17f2714f-5071-4a4a-b280-8d115663b108,e16b30c8-4d6f-4a88-974e-5e634ec2caaf,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Avances en Batching Continuo: Sincronía Asincrónica
+              RESUMEN: Hugging Face presenta un avance en batching continuo que aprovecha la asincronía para mejorar el rendimiento. Este enfoque permite procesar datos de manera más eficiente.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-15 00:48:16.449301+00,,,
+2165a10e-62ea-4ae3-a1fa-547a98ce071f,983e80e6-3699-4c69-981d-4732e8089e10,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: ArXiv prohíbe a autores que usen IA de manera descuidada
+              RESUMEN: La plataforma de investigación ArXiv implementa medidas para prevenir el uso irresponsable de modelos de lenguaje grande en publicaciones científicas.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-17 00:48:38.815569+00,,,
+2280f95d-f18f-4027-a1aa-be3ae3369bee,cb4081c6-6dde-4809-bcb3-6f42a02c583c,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: NVIDIA y OpenAI colaboran en Codex para impulsar la IA
+              RESUMEN: NVIDIA y OpenAI utilizan Codex con GPT-5.5 para desarrollar sistemas de producción y experimentos de investigación
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-13 00:58:20.851098+00,,,
+22e7b547-2c4b-4360-ad4f-d69e363ca756,7549c9bc-cbaf-4d8f-927c-777c90711e0a,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Codex: Automatización de Impuestos con Inteligencia Artificial
+              RESUMEN: OpenAI, Thrive y Crete crean un agente de impuestos autodidacta con Codex, automatizando declaraciones, mejorando precisión y acelerando flujo de trabajo.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-28 00:44:28.864153+00,,,
+242693d3-6390-4258-a17e-32827b22cc33,f522f043-8158-4d81-a79b-bad9c4f21e9b,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La realidad detrás de la histeria sobre empleos por AI
+              RESUMEN: La llegada de la IA no significa el fin de los empleos de knowledge workers. Algunas empresas tecnológicas han anunciado recientemente despidos, pero no es un indicio de lo que sucederá en el futuro.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-27 00:41:09.167274+00,,,
+242a34d1-0832-4ccd-a654-fe8bf8743bb8,0c44b943-0d99-481e-b966-844aea96f9de,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Anthropic adquiere herramientas de desarrollo de Stainless, utilizadas por OpenAI y Google
+              RESUMEN: La startup Stainless, conocida por automatizar la creación de SDKs, ha sido adquirida por Anthropic. Las herramientas de Stainless se utilizan en empresas como OpenAI, Google y Cloudflare.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-19 00:56:09.191294+00,,,
+25f782a3-a8da-4dae-b48e-cf75410ff77e,c7b69acb-6e60-4260-8518-2f3e0fb597c1,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Google lanza iconos de bola de disco para Pixel
+              RESUMEN: Google permite personalizar la pantalla de inicio de Pixel con iconos de bola de disco. Esta característica se puede activar en la configuración de Pixel.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-23 00:43:26.912962+00,,,
+25f7d4da-6f20-46c8-bed2-a82f840ef41a,2b159aa9-0b92-4398-88d6-1bceab5c75ea,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Elon Musk pierde demanda contra OpenAI por estatuto de prescripción
+              RESUMEN: Elon Musk perdió una demanda contra OpenAI debido a que presentó sus reclamos fuera del plazo legal. La sentencia es un golpe importante para el empresario.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-20 00:56:05.740656+00,,,
+2865ddc2-cbbe-49ab-aed5-b042775208fa,4537e156-fe78-4b36-89d4-298510f32f92,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Gmail Incorpora Búsqueda de Voz para Buscar Correo Electrónico
+              RESUMEN: Google ha expandido la inteligencia artificial en Gmail con una búsqueda de voz conversacional, permitiendo a los usuarios preguntar a Gemini para encontrar detalles de correo electrónico enterrados.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-20 00:56:04.091998+00,,,
+29b041db-623b-465b-adfd-2264b15899c0,f8fe7e80-91f5-4538-a7e4-5421350299c5,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Anthropic prevé su primer cuatrimestre rentable
+              RESUMEN: La empresa de IA Anthropic espera duplicar su ingreso en el segundo trimestre, alcanzando los $10.9 mil millones. Esta noticia destaca la creciente importancia de la IA en la industria tecnológica.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-21 00:56:07.317982+00,,,
+31fed21d-4204-494f-9025-ac73ff382da2,7515cf48-2df8-41de-9e0d-8c8683cb2520,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Terminología de Inteligencia Artificial: Harness, Scaffold y Agentes
+              RESUMEN: Hugging Face analiza los términos clave en Inteligencia Artificial: Harness, Scaffold y Agentes. Entérate de su importancia.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-26 00:51:55.78495+00,,,
+3374fae9-d4cb-40d6-b2da-cba6cb2a9ff7,a6151ce6-739b-477b-9255-ada6debaccb0,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: xAI enfrenta críticas por uso de turbinas de gas en su centro de datos
+              RESUMEN: La compañía xAI, fundada por Elon Musk, utiliza turbinas de gas móviles como plantas de energía en su centro de datos Colossus 2 en Mississippi. Esto ha generado una demanda judicial.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-14 00:48:59.19644+00,,,
+378cba74-8ef7-4b52-965e-c5264e39dba1,75113635-2cc6-46fe-9422-9b0cf6d53137,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Elon Musk pierde demanda contra OpenAI
+              RESUMEN: Elon Musk perdió su demanda contra Sam Altman y OpenAI después de que un jurado californiano dictaminó que sus demandas habían sido presentadas demasiado tarde.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-19 00:56:09.680568+00,,,
+37ee8a4c-e6e8-48a7-ab08-c642e8db2485,865fba03-d88c-4240-8af8-f8bdc254f090,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI Lanza Rosalind Biodefense para Fortalecer la Resiliencia Social
+              RESUMEN: OpenAI lanzó Rosalind Biodefense, un acceso ampliado a GPT-Rosalind para desarrolladores y socios del gobierno de EE. UU. en biodefensa, salud pública y preparación de pandemias.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-30 00:44:47.998668+00,,,
+3c39e4eb-f5b6-4e1c-9fcf-67e8c851ad82,059203f9-f715-478c-bc6c-72847e6596e2,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Cisco y OpenAI revolucionan el desarrollo de software empresarial con Codex
+              RESUMEN: Cisco y OpenAI colaboran en Codex para acelerar el desarrollo de software AI-nativo, mejorar la seguridad y automatizar la resolución de defectos.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-28 00:44:28.165962+00,,,
+3ce82cb3-52fb-4145-a98a-669d0f5e572c,a8baa8cd-033b-4433-b2ed-1afa277bfd18,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: El caso Musk vs. Altman: ¿qué decidirá el jurado?
+              RESUMEN: El caso Musk vs. Altman es el juicio tecnológico más importante del año. Se discutirá la responsabilidad de los líderes de la industria de la IA.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-15 00:47:39.439271+00,,,
+41574d4b-15f2-45a9-a0c9-35d9a0d75e6a,5405132d-f162-42da-8c09-801ba0910a96,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: DuckDuckGo registra aumento de 30% en descargas tras rechazo a Google's AI Search
+              RESUMEN: DuckDuckGo experimenta un aumento de 30% en descargas tras la implementación de agentes de búsqueda AI por parte de Google. Los usuarios buscan una alternativa a la búsqueda tradicional.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-27 00:40:57.638983+00,,,
+45512ec6-ed1c-40e5-ba85-0da613255e47,53b3933f-bc84-4d00-bdd1-7341848186ba,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Amazon y Snowflake firman un acuerdo de $6B para chips de CPU para IA
+              RESUMEN: Snowflake y Amazon firman un acuerdo de cinco años por $6B para la adquisición de chips de CPU para uso en inteligencia artificial. Esto pone a Nvidia en alerta.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-28 00:44:26.884691+00,,,
+4ca73321-a396-4bab-9047-bf4fe54068a6,d70db418-f73f-4b3d-994a-bec01f2e0f48,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La soberanía de datos en la era de los sistemas autónomos
+              RESUMEN: Empresas deben reconsiderar la gestión de sus datos en la implementación de IA generativa. La falta de control sobre la gobernanza de los sistemas utilizados puede comprometer la privacidad y seguridad de la información.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-15 00:48:00.834128+00,,,
+4cae11ce-16cf-4f73-b8b4-7d11568b8d45,1a30346d-00f0-4da1-bd29-c602f585bded,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Gafas Inteligentes para la Guerra: Una Colaboración entre Anduril y Meta
+              RESUMEN: Anduril y Meta desarrollan gafas de realidad aumentada para el ejército, con funcionalidades como control de drones mediante seguimiento ocular y comandos de voz.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-19 00:56:20.491098+00,,,
+4d69aaac-5bdb-48e6-bc8f-8a4be4002883,41a7ab78-f03a-4edc-879c-665c751aad19,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Codex acelerará el desarrollo de software AI-native en Asia
+              RESUMEN: Sea Limited despliega Codex en equipos de ingeniería para impulsar el desarrollo de software AI-native en Asia. OpenAI Blog informa sobre la implementación.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:41.069561+00,,,
+5381ebb8-7500-4545-a118-deaa50dd853c,0c591435-88b2-4b3d-bbd9-9dcbaf0878be,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Clouted: Plataforma para hacer que los videos cortos se vuelvan virales
+              RESUMEN: Clouted, una startup de clipping de video, obtuvo $7 millones en ronda de semilla liderada por Slow Ventures. La plataforma busca automatizar el proceso de creación de contenido viral.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-21 00:56:08.217189+00,,,
+5f6377ed-afc7-4e1b-8996-ccb30da8044c,880e8193-39fa-43e4-85fa-36552bcf0361,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Google I/O: Expectativas para la Conferencia de Desarrolladores
+              RESUMEN: Google I/O comienza mañana, y la empresa busca recuperar terreno en la carrera de modelos de fundación. ¿Qué novedades se esperan en la conferencia?
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-19 00:56:10.880856+00,,,
+604291f2-7373-4458-a5ab-da17a1ae0f0a,8114fff2-3897-4cdc-8b2c-9328b1b7c69a,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La red internet se reconfigura para máquinas
+              RESUMEN: AWS, Cloudflare y otros proveedores de servicios en la nube están rediseñando la infraestructura para adaptarse a la creciente cantidad de tráfico generado por agentes de IA en producción.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-29 00:44:24.744324+00,,,
+6089a245-1742-4e68-8ca3-054ab5cbc203,f5aed3c5-7bee-45ec-b3dc-a4efa086c797,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI y Malta unen fuerzas para expandir acceso a ChatGPT Plus
+              RESUMEN: OpenAI y el gobierno de Malta colaboran para ofrecer acceso a ChatGPT Plus y capacitación en habilidades de AI práctica y uso responsable.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-17 00:48:39.873721+00,,,
+6105b2b7-c0c2-4324-b8c9-7ee53ccf9c92,d2f0b39e-c6fe-45aa-bc93-1fdea1d50bf6,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI y medios brasileños unen fuerzas en contenido para ChatGPT
+              RESUMEN: OpenAI se asocia con Grupo Folha y Grupo UOL para ofrecer noticias brasileñas confiables en ChatGPT, con atribución y transparencia.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-27 00:41:00.510146+00,,,
+61bc8e81-1f2a-4cfe-86ce-ce2feaf1358b,2c0fd190-d460-4866-854e-85b734ec7f26,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Resurrección de voces de pilotos fallecidos mediante IA
+              RESUMEN: La tecnología de IA se utiliza para reconstruir grabaciones de pilotos fallecidos a partir de espectrogramas de imágenes de cockpit. Esto ha llevado a la NTSB a bloquear temporalmente su sistema de docket.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-23 00:43:26.261274+00,,,
+64d2125d-c2a0-4bd5-8abd-c762931c0bc4,6a29b56d-2759-4bd6-baca-1e26f2b6bee5,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Avanzan Procedimientos de Origen para un Ecosistema de IA más Seguro
+              RESUMEN: OpenAI lanza Content Credentials, SynthID y una herramienta de verificación para identificar y confiar en medios generados por IA.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-20 00:56:05.096825+00,,,
+66a7236d-bf21-477c-a745-d9b0d502fb05,3f84bd31-31b5-4b56-8cd8-e62189c156fe,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La importancia de centrar la innovación en el cliente en la IA
+              RESUMEN: Las empresas deben priorizar las necesidades del cliente para crear soluciones integrales en la IA. Según McKinsey, solo un tercio del valor esperado de las inversiones digitales se captura.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:58:59.475665+00,,,
+66e38f3a-ed6b-4170-9038-d6618e317dbe,7b819a18-e542-4d84-ba7c-3691e36c9495,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Anthropic presenta Code with Claude: el futuro de la codificación
+              RESUMEN: Anthropic organiza un evento en Londres para desarrolladores, presentando Code with Claude, una plataforma que muestra el futuro de la codificación. El evento coincide con Google I/O.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-22 00:08:18.444804+00,,,
+6992f485-e771-490f-ac5f-d8506849fd2a,a26e5099-065c-41f2-a307-1baf0653d331,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Asana adquiere StackAI para mejorar herramientas de flujo de trabajo con IA
+              RESUMEN: Asana incorporará a StackAI en su suite de herramientas de flujo de trabajo con IA. Esta adquisición busca mejorar la automatización de tareas y procesos.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-29 00:44:25.339221+00,,,
+6b25d736-d3c2-455d-9f17-55fea84e5d66,4c8e7e5f-1edf-4e31-9cd6-b014882e8249,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Despidos en SpaceXAI tras fusión con Elon Musk
+              RESUMEN: Más de 50 empleados han dejado SpaceXAI desde febrero, generando inquietudes sobre agotamiento laboral, cambios en la dirección y posible pérdida de incentivos por liquidez.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-15 00:47:39.910244+00,,,
+6bb275b3-2615-433b-822d-94abc32b014b,5c54643d-27e0-4cef-8694-4fecd7c53a2c,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Braintrust Utiliza Codex para Convertir Solicitudes de Clientes en Código
+              RESUMEN: Braintrust, una empresa de consultoría de tecnología, utiliza Codex con GPT-5.5 para acelerar experimentos y codificación. Esta herramienta permite a los ingenieros convertir solicitudes de clientes en código de manera más eficiente.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-30 00:44:35.371472+00,,,
+6e7c3e40-1510-4a69-95ab-afbfc76ab561,50bf04c2-d4b7-474d-904d-c27c07bed80e,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Duda sobre la confiabilidad en el juicio de OpenAI
+              RESUMEN: El juicio entre Elon Musk y OpenAI destaca la confiabilidad de Sam Altman como CEO. La cuestión de la confianza es crucial en el desarrollo de la IA.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-18 00:42:59.483732+00,,,
+6e7f7cf5-c169-4177-bf62-3bdd0ed36813,12be50d9-69b5-4dcb-b4b5-ac463d929312,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Databricks Incorpora GPT-5.5 a Flujos de Trabajo de Agentes Empresariales
+              RESUMEN: Databricks utiliza GPT-5.5 para flujos de trabajo de agentes empresariales, superando el estado del arte en OfficeQA Pro.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:40.60089+00,,,
+6f0df8c1-cd10-43cd-82fc-ca1f104b9180,3875856d-4788-455a-99b8-1cdb2265fcdb,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Google y otros navegando por la seguridad de la IA en tiempo real
+              RESUMEN: Google y otros actores tecnológicos enfrentan desafíos en la seguridad de la Inteligencia Artificial en tiempo real. Esta transición requiere adaptación y mejora continua.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-25 00:36:08.162261+00,,,
+6f86165d-b9e7-45e2-bb6f-47e63db84d6b,1ab5cbd5-aacb-4fff-8ba8-0aa3f3b52f41,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI Codex llega a dispositivos móviles
+              RESUMEN: OpenAI anuncia la llegada de Codex a dispositivos móviles, ofreciendo mayor flexibilidad en la gestión de flujos de trabajo.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-15 00:47:40.46903+00,,,
+709fe6d0-1652-48c5-871d-20f5e933966b,f36d70a9-49a7-45a0-aeec-90a8098be4d9,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Frontier Models Fallos en Tareas de IT Empresarial
+              RESUMEN: Los modelos de vanguardia de ITBench-AA obtienen resultados por debajo del 50% en tareas empresariales. Una evaluación de IBM y Artificial Analysis revela debilidades en la agencia de IT.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-28 00:44:36.450038+00,,,
+7278ae36-5d00-42fa-b6ad-aa7d64f9c016,c769f818-6e38-473a-907e-cdc772e87664,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Alternativas a Google: Nuevas opciones de búsqueda
+              RESUMEN: Google cambia su enfoque con la incorporación de IA, pero ¿qué opciones hay para los usuarios que no lo prefieren? Descubre 6 buscadores alternativos.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-22 00:08:08.936518+00,,,
+7335cd2d-0f7b-432d-aa5c-89ad0b8c9b86,178841b7-3912-4df9-a8ce-0e8ad44dd9e5,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La evolución de la narrativa en la era de la IA
+              RESUMEN: La narrativa es fundamental para la humanidad, y la tecnología ha estado presente en su evolución desde la prehistoria hasta la actualidad. La era de la IA está cambiando el panorama de la narrativa.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-22 00:08:14.429534+00,,,
+7552311b-3960-4d33-826d-5ddfe00f4899,9f0c27e6-caf1-4811-82f2-9679cf07692b,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: SandboxAQ utiliza Claude para descubrimiento de fármacos sin necesidad de experiencia en informática
+              RESUMEN: SandboxAQ aplica modelos de descubrimiento de fármacos en Claude, facilitando acceso a tecnología sin requerir experiencia en informática.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-19 00:56:08.593899+00,,,
+781f000d-7081-4535-ad1a-13ab642f5f57,e96cfe07-81a3-4813-bd91-6302c46375c3,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Nvidia busca dominar el mercado de CPUs para agentes de IA
+              RESUMEN: Jensen Huang, CEO de Nvidia, prevé un mercado de $200 mil millones para CPUs para agentes de IA. La empresa busca aprovechar esta oportunidad en el campo de la inteligencia artificial.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-21 00:56:06.576852+00,,,
+789a0035-fe30-4478-95bf-25ca2c42124a,33db15b2-a07b-41ae-9337-aeb9734cb68a,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: ChatGPT de OpenAI se lanza para finanzas personales con conexión a cuentas bancarias
+              RESUMEN: OpenAI lanza ChatGPT para finanzas personales, permitiendo a los usuarios conectar sus cuentas bancarias y visualizar un dashboard de su rendimiento y gastos.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:39.561333+00,,,
+792d1a1e-6291-488b-95ea-ee4301dbab19,dd817a6d-a60d-4315-b651-1e8c35772908,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Startup india: entrenamiento de robots con datos reales
+              RESUMEN: Human Archive paga a trabajadores de gig economy en India para recopilar datos de entrenamiento para robots y AI. Los datos se recopilan con cámaras y sensores en ropa especial.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-27 00:40:59.037362+00,,,
+7a740039-e101-4782-bbbd-648eaf667842,1cc72595-003d-4827-a75c-d7b91bc709ae,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Terminología AI: Harness, Scaffold y Agent
+              RESUMEN: La noticia analiza los términos 'Harness', 'Scaffold' y 'AI Agent' en el contexto de la inteligencia artificial. Se explora su significado y aplicación en la industria.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-27 00:41:19.534763+00,,,
+7b19f22e-3b17-43fc-b1da-ac9a6147bf2a,e52659aa-c1e2-4ced-8b6c-38d2fe26f26b,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Listen Labs recibe $69M para escalar entrevistas de cliente con IA
+              RESUMEN: La startup Listen Labs ha recibido $69M en financiamiento para escalar sus entrevistas de cliente con IA, después de un anuncio viral en una pizarra en San Francisco.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-13 00:59:33.939212+00,,,
+7be7048a-44f9-4c1c-9712-9dbd4ece3234,86c8b496-2de5-4968-a46f-e65c47272cdf,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: AdventHealth aplica IA en la atención médica con OpenAI
+              RESUMEN: AdventHealth utiliza ChatGPT para simplificar flujos de trabajo y reducir carga administrativa en la atención médica.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-22 00:08:10.092248+00,,,
+7cb9c862-3c42-4196-8b34-77f737be175f,9d2be9c0-bba8-429d-98b4-f4a6f3e08f7a,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Amazon lanza Bee, un wearable con tecnología de IA que suscita inquietud
+              RESUMEN: Amazon presenta Bee, un wearable que combina conveniencia y preocupación por la privacidad gracias a la tecnología de IA. La experiencia es única y despierta sentimientos contradictorios.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-25 00:36:08.73974+00,,,
+7df35fb8-0881-4402-bdf5-dd880a9be665,43f17fc9-7d8d-4214-8b8c-9506bc535a4e,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Codex en Operaciones de Negocios: Mejora la Eficiencia
+              RESUMEN: Codex ayuda a equipos de operaciones de negocios a crear informes y actualizaciones estratégicas con datos reales. Aumenta la eficiencia y toma de decisiones.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-17 00:48:42.925781+00,,,
+85bde43f-f2c7-4d99-98d3-ee8e88164685,740e38ad-d39d-47e9-ada5-fdf745283b8c,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Warp Incorpora GPT-5.5 para Desarrollo de Código Abierto
+              RESUMEN: Warp utiliza GPT-5.5 y modelos de OpenAI para coordinar agentes de codificación en flujos de trabajo de desarrollo local, en la nube y abierto. Un paso hacia la colaboración en código abierto.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-28 00:44:29.573057+00,,,
+8642a95d-fc33-4438-b06b-36dd891acb22,9cc25885-b077-4b59-8aa1-04c47b2ddb5a,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Riesgos de la sobreconfianza en la Inteligencia Artificial
+              RESUMEN: Empresas que sobrestiman la capacidad de la IA para reemplazar empleos pueden estar cometiendo un error crítico, según Aaron Levie. La sobreconfianza en la IA puede tener consecuencias negativas.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-30 00:44:30.879139+00,,,
+89fa5c9a-efb8-4600-942b-afc0d73f436b,aaf7ffc8-9b29-4d0e-9ddf-f9d55b05ea27,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Musk vs. Altman: Credibilidad en el Juicio de IA
+              RESUMEN: Elon Musk y Sam Altman se enfrentan en un juicio sobre credibilidad, con acusaciones de mentiras y intereses personales.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:41.591404+00,,,
+8bf5c728-8cfc-4793-a6c1-1f095e4d928d,4a2fa123-0a7c-4144-8490-87b9b11eba2b,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Avances en Inteligencia Artificial: Mixture of Experts para Modularidad Emergente
+              RESUMEN: El equipo de EMO presenta un método de preentrenamiento para mejorar la modularidad en modelos de IA. Este enfoque combina expertos para lograr resultados más precisos.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:59:08.229453+00,,,
+8e7ed163-9a0a-4a60-9718-260d3135ced7,c6896339-1fec-4365-96b8-2ed59c23f565,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Ettin Reranker Family: Avances en Inteligencia Artificial
+              RESUMEN: Hugging Face presenta la familia Ettin Reranker, una innovación en IA para mejorar el rendimiento de modelos de lenguaje.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-20 00:56:26.532736+00,,,
+8effa5d4-8c28-4e45-946e-0bbafe010a62,95760923-e8cc-4695-b292-33e190c6a1a5,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La Iglesia Católica aborda la ética de la Inteligencia Artificial
+              RESUMEN: La encíclica 'Magnifica Humanitas' de la Iglesia Católica destaca la importancia de la ética en la IA y su impacto en la sociedad.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-30 00:44:48.449973+00,,,
+8f1a2e20-630b-41f4-bd07-413296a0fb29,17e28fdf-ac19-4478-8f83-f0241053a399,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Granite Embedding Multilingual R2: Avance en Multilingüismo con Contexto
+              RESUMEN: Hugging Face lanza Granite Embedding Multilingual R2, un modelo de embeddings multilingüe con contexto que supera la calidad de recuperación de sub-100M
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-15 00:48:11.672813+00,,,
+9001ba61-758c-4882-86e3-7b5584787bcc,32ea6e9b-ae61-4f09-a839-1960527b62fa,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI y Dell unen fuerzas para implementar Codex en entornos empresariales
+              RESUMEN: OpenAI y Dell colaboran para traer Codex a entornos empresariales híbridos y en la nube, permitiendo a las empresas implementar agentes de codificación AI de manera segura.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-19 00:56:10.316567+00,,,
+90477dd6-dde2-431d-bc53-863755f20107,2eddc32a-f1e2-477b-9218-22db81178e20,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Medicare implementa modelo de pago basado en IA
+              RESUMEN: Medicare lanza un modelo de pago que aprovecha la IA para mejorar la atención médica, pero la industria tecnológica apenas comienza a comprender sus implicaciones.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-13 00:58:14.648465+00,,,
+954046d0-5c3e-4ba5-9c36-a470cb906b7f,fad595ba-a0db-4e33-ac27-9726be71048d,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La AI: una fiebre de oro con desigualdades
+              RESUMEN: La industria tecnológica no está exenta de críticas sobre el boom de la inteligencia artificial. La brecha entre los que ganan y pierden en esta fiebre de oro es cada vez más evidente.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-17 00:48:38.251371+00,,,
+95516993-6588-4c48-9824-6b3f9e27d5c4,8f7fbe0d-0a10-4d15-adf6-939427474ce5,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La AI en la educación: un futuro incierto
+              RESUMEN: La incorporación de la IA en los discursos de graduación puede no ser la mejor opción para motivar a los estudiantes. La futura sociedad podría estar marcada por la automatización y la inteligencia artificial.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-18 00:43:00.045051+00,,,
+968eab02-0fa1-4b72-a30d-9a1d69b60803,e9d927cb-4c6d-4a27-8aaa-e7f0c1746718,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Guía Básica de Profiling en PyTorch con torch.profiler
+              RESUMEN: Hugging Face Blog publica una guía para principiantes sobre el uso de torch.profiler en PyTorch. Se explora la herramienta para analizar y optimizar modelos de aprendizaje automático.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-30 00:44:53.388458+00,,,
+96f9c3fe-09de-4130-9bb0-a73628fd8692,f03678f8-c22c-4308-a028-4ba4be6d8082,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Apple revierte Siri con eliminación automática de chats
+              RESUMEN: Apple está trabajando en una nueva versión de Siri con un enfoque en privacidad, incluyendo la eliminación automática de chats. Esta medida busca proteger la privacidad de los usuarios.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-18 00:42:58.483033+00,,,
+974372e8-e9a0-43f1-8954-484670b928d4,57c77692-c9ff-44fe-93c4-50f077722b9a,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: El futuro de la Inteligencia Artificial en la empresa
+              RESUMEN: La adopción de agentes de IA en empresas enfrenta un desafío: la falta de preparación en personas, procesos y flujos de trabajo. Solo 24% de las organizaciones están listas para ser agentes.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-27 00:41:01.506869+00,,,
+99f59261-204f-477f-b124-9178ecd825d1,e6010246-87fa-407a-8519-4cc94f5a5b16,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI reconocida como líder en agentes de codificación empresarial
+              RESUMEN: OpenAI es nombrada líder en el Magic Quadrant de Gartner para agentes de codificación empresarial de IA, con Codex reconocida por su innovación y despliegue a gran escala.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-23 00:43:28.145938+00,,,
+9e207fe9-266a-4d60-bae4-d0057464119b,359b6314-d2e5-48a7-b12e-0916a66737eb,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: SoftBank invierte €75 mil millones en centros de datos franceses
+              RESUMEN: SoftBank planea invertir hasta €75 mil millones en la construcción de centros de datos en Francia, con una capacidad adicional de hasta 5 GW.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-31 00:40:52.341645+00,,,
+9e47fd2b-3a43-47de-a6f7-0a126d607bd8,567474ba-ff01-4dc6-ab87-4470ceb6ca91,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Claude Code vs Goose: Alternativa Gratuita a la Inteligencia Artificial de Código
+              RESUMEN: Goose, un agente de IA desarrollado por Block, ofrece funcionalidades similares a Claude Code sin suscripciones ni limitaciones de uso.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-13 00:59:24.180285+00,,,
+9ea9b0f7-3848-4ea0-9db8-6768c36a12bc,d108530c-60d5-4df6-bde5-852f2b81ddeb,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Sandbox Seguro para Codex en Windows
+              RESUMEN: OpenAI crea un entorno seguro para Codex en Windows con acceso controlado a archivos y restricciones de red, permitiendo agentes de codificación seguros y eficientes.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-14 00:49:00.220381+00,,,
+a214b1c2-a76f-4294-b44a-e2c7d80fc583,7a616971-f002-46d2-9d86-c989f57983b6,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Glosario de Términos de IA: Entendiendo la Jerga
+              RESUMEN: La revolución de la IA ha llevado a un aumento en términos y jerga. Descubre aquí una guía para entender algunos de los términos más importantes.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-30 00:44:30.095134+00,,,
+a4e13933-51b8-4d01-9d60-2903c951b7c6,49d224d5-678a-40b6-b6ba-e807b45f4c4f,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: El futuro de la IA: anticipación de necesidades
+              RESUMEN: Anthropic's Cat Wu predice que la próxima gran innovación en IA será la proactividad, anticipando necesidades antes de que se conozcan.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-14 00:48:59.674634+00,,,
+a9b8d3aa-1c4b-44f4-bba4-3b949e283e1d,2bbed0d7-8ac0-4865-b32e-77bc7c5a9d30,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Musk consideró ceder OpenAI a sus hijos, según testimonio de Altman
+              RESUMEN: El cofundador de OpenAI, Sam Altman, reveló que Elon Musk consideró ceder el control de la empresa a sus hijos, lo que generó preocupación por la seguridad y el control de la inteligencia artificial avanzada.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:58:15.150493+00,,,
+a9c84704-32cd-4a3f-affc-0df500f3d8e0,ddbadcc7-11a6-42ae-96cd-c99d8822e199,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Codex en Finanzas: Automatización de Informes y Planificación
+              RESUMEN: La herramienta Codex de OpenAI ayuda a equipos de finanzas a automatizar la creación de informes, modelos y escenarios de planificación a partir de datos reales.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:58:16.105842+00,,,
+aafea52b-56fc-4b28-a743-6032381a7639,ae2e7ffd-64a1-49a7-a7c2-0db0af230189,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Nobel de Economía destaca importancia de la IA
+              RESUMEN: Daron Acemoglu, Nobel de Economía, analiza tres tendencias en Inteligencia Artificial. Su investigación critica a la industria tecnológica.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:58:46.548894+00,,,
+ac963082-878a-4bdf-9b1b-45f8f1e11178,3dad04a4-c85e-4017-81cb-d5d668e378a2,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Virgin Atlantic mejora su aplicación móvil con Codex
+              RESUMEN: Virgin Atlantic utiliza Codex para lanzar su aplicación móvil renovada con éxito, alcanzando una cobertura de pruebas unitarias casi total y cero defectos de prioridad 1.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-23 00:43:31.85893+00,,,
+ad873c6c-cade-4c55-9a28-8ff8c09c86f2,8636681f-e5b5-4d02-98ba-8b09e9b83b5e,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Ventas de AI: VCs y fundadores inflan métricas de ARR
+              RESUMEN: Algunas startups de AI estiran métricas de ingresos tradicionales para mostrar progreso público. Inversores están al tanto.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-23 00:43:27.565166+00,,,
+af094280-1f29-497e-85b2-cb1cd1b3a222,0743c69a-fd70-4a5b-bec1-b8f23cc8d9ec,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Notion lanza plataforma de desarrollo para agentes de IA
+              RESUMEN: Notion introduce una plataforma de desarrollo que permite conectar agentes de IA, fuentes de datos externas y código personalizado en su espacio de trabajo.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-14 00:48:58.059606+00,,,
+b545da1c-af3c-4e72-8642-97fb99c7283f,f53a6de5-125b-4ca1-b314-5f79f4d61028,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Github Copilot cambia a token-based billing: ¿qué significa para los desarrolladores?
+              RESUMEN: Github Copilot introduce un nuevo modelo de facturación basado en tokens, generando inquietud entre los desarrolladores. La medida busca equilibrar la facturación con el uso del servicio.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-31 00:40:53.264063+00,,,
+b58cbb3d-106a-42ec-b19d-06d9da6ba0c2,77237680-bc8c-4f9d-8f22-9688d0ad013b,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Ferrari utiliza Inteligencia Artificial de IBM para crear superfanáticos de F1
+              RESUMEN: Scuderia Ferrari y IBM colaboran para crear una experiencia de fanáticos innovadora en F1. Utilizan Inteligencia Artificial para personalizar la experiencia de los fanáticos.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-24 00:43:25.731941+00,,,
+b58cde41-2b18-4751-8dd3-98d19f04a83f,6e9a7145-2ea5-432b-ae1c-dd76798e4c88,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI Presenta Marco de Gobierno para la IA: Cumpliendo con Regulaciones EU y California
+              RESUMEN: OpenAI lanza el marco de gobierno 'Frontier' para garantizar la seguridad y el riesgo en la IA, alineándose con las regulaciones emergentes de la UE y California.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-29 00:44:29.664+00,,,
+b5f78da1-693f-4537-9df6-e3001853361e,6316da89-7a7d-4085-8b05-182bcf7b879b,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Mejora en modelos de IA con OlmoEarth v1.1
+              RESUMEN: Hugging Face lanza actualización de OlmoEarth, una familia de modelos más eficientes para tareas de procesamiento de lenguaje natural.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-20 00:56:14.2685+00,,,
+b8bfd7df-7e85-4eca-898f-7652f32262c8,0264a709-f9b0-41bb-9530-04835e02af57,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Mejoras en el Modelo de Lenguaje vLLM: Correctitud antes que Correcciones
+              RESUMEN: El modelo de lenguaje vLLM ha sido actualizado de V0 a V1, enfocándose en la correctitud antes que en las correcciones en aprendizaje por refuerzo.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:59:19.952144+00,,,
+ba2633c9-8825-4074-9b94-ed424749bd27,ca11c787-f444-4ae4-81d5-9c85a6e42d82,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Google se declara contendiente en diseño de IA en IO 2026
+              RESUMEN: Google anuncia su entrada en el diseño de inteligencia artificial con su nueva plataforma, accesible para todos, desde profesores hasta pequeños empresarios.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-20 00:56:03.188681+00,,,
+bc909d16-c538-4e09-90b5-2e3cfed74e42,366e8919-86c7-46ca-b0ae-9199773f89c8,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Codex acelera revisiones de código en Ramp
+              RESUMEN: Los ingenieros de Ramp utilizan Codex con GPT-5.5 para revisar código y enviar mejoras, obteniendo retroalimentación en minutos en lugar de horas.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-21 00:56:09.28621+00,,,
+c06a81e4-b646-4fe7-a845-c87d9f7d0548,e2c62535-e485-4269-936e-896f539b7e80,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: ¿Puede la IA aprender a comprender el mundo?
+              RESUMEN: Empresas de IA buscan crear sistemas que superen las limitaciones de los LLMs. Se discute sobre modelos mundiales en la tecnología de IA.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-22 00:08:13.994291+00,,,
+c27c4a8c-911c-47af-80d3-74e62b77c9cd,858fd3b3-5212-4cf6-819c-8d66bed2f7e9,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Guía para Profiling en PyTorch con torch.profiler
+              RESUMEN: Hugging Face ofrece una guía para principiantes sobre cómo utilizar torch.profiler en PyTorch para mejorar el rendimiento de modelos de aprendizaje automático.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-31 00:40:55.061063+00,,,
+c2a48f54-f2ad-4225-9aac-827e2607de74,f62144b8-1806-4a89-ac4d-a0ed180afc48,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Meta Desarrolla un Pendiente con Inteligencia Artificial
+              RESUMEN: Meta está trabajando en un dispositivo con tecnología AI, según informes. Este hardware podría revolucionar la industria de la IA.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-31 00:40:54.224435+00,,,
+c3e6265f-313d-4d51-bcc3-1b8ff6de83ec,b1d0043c-fc8d-421a-9069-544b04c82abe,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Lake Tahoe enfrenta subidas de precios energéticos impulsadas por la IA
+              RESUMEN: La popular zona de vacaciones de Silicon Valley, Lake Tahoe, se enfrenta a mayores costos energéticos debido al aumento de la demanda impulsada por la inteligencia artificial.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:39.08573+00,,,
+c6c466f0-aabf-4b2a-939f-fa09a0fc9ded,b2ee2356-90e0-4d43-8d02-88ad39262a00,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Aprendizaje Automático con Parámetros: Lecciones de Parameter Golf
+              RESUMEN: Parameter Golf unió a 1.000+ participantes y 2.000+ contribuciones para explorar la investigación de aprendizaje automático asistida por IA bajo restricciones estrictas.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-13 00:58:33.567819+00,,,
+c7150c17-a731-466e-81a2-1cc1aaf3cf75,8c514a45-8ba3-4686-b11e-a9aa29565d01,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI Avanza en Educación con Nuevas Alianzas y Herramientas
+              RESUMEN: OpenAI expande su programa Education for Countries con nuevas alianzas, capacitación para maestros y herramientas para mejorar resultados educativos globales.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-21 00:56:09.866757+00,,,
+cc5ddc45-194b-424a-977a-a52aa4e146ee,fe05e464-393e-4180-80e3-1ac984c32674,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Endava Implementa Codex para Organizaciones Agentes
+              RESUMEN: Endava utiliza Codex para acelerar la entrega de software y reducir el análisis de requisitos de semanas a horas. Descubre cómo.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-29 00:44:26.694847+00,,,
+cdb84c61-f17c-48ac-8be1-7994df7c387b,9cb9eba2-b8e2-432d-8813-70f8fbca1b80,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La IA en la creación de dramas chinos: una máquina de contenido
+              RESUMEN: La creación de dramas chinos cortos se ha convertido en una máquina de contenido gracias a la IA. Las historias se generan de manera automática, fusionando elementos de ficción y realidad.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:46.146417+00,,,
+cebed395-943e-4b53-b0c9-f4ca5799a06b,af320ecb-7ee9-4ae5-bdc2-993766640bb5,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Ranking de Agentes Abiertos: Avances en Inteligencia Artificial
+              RESUMEN: El líderboard de agentes abiertos de Hugging Face muestra los últimos avances en IA. Los agentes abiertos son modelos de lenguaje que pueden ser entrenados y adaptados a diferentes tareas.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-19 00:56:36.622982+00,,,
+cfa13e99-54e3-4698-94ff-ed3f9afe98d2,926ae1da-6e24-479e-a5b1-4a26f8dbda45,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Musk vs. Altman: Un juicio clave en Inteligencia Artificial
+              RESUMEN: Elon Musk pierde su demanda contra OpenAI, acusando a Sam Altman y Greg Brockman de engaño sobre el estatus sin fines de lucro de la empresa. Un análisis detallado del juicio.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-21 00:56:15.531643+00,,,
+cfe7850d-bb81-4549-b616-20a4603ef431,adf589f3-cc36-43df-ac4b-0cb06ede3a6c,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: AI en la Finanza: Una Revolución Silenciosa
+              RESUMEN: La implementación de tecnologías de IA en departamentos financieros desafía la tradición de precisión y control. Los empleados ya están utilizando IA, mientras que la liderazgo busca imponer estructura y estrategia.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:59:00.055239+00,,,
+d018ae4f-e3a9-4975-bb7b-93b40fe5f2c8,f6e93103-01c8-4c60-ac41-8ca7b7628224,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: El juicio de OpenAI concluye: ¿Puedemos confiar en los líderes de la IA?
+              RESUMEN: El juicio entre Musk y Altman finalizó, resaltando la importancia de la confianza en los líderes de la inteligencia artificial. Mientras tanto, SpaceX se prepara para una posible IPO histórica.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:37.794078+00,,,
+d032e54b-37ab-4adc-a0fd-93d9237f6cb2,101727ba-6968-4ba4-b3e0-9ea60a389b2b,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La peligrosidad de los deepfakes en la era digital
+              RESUMEN: Un caso de deepfake porn muestra la capacidad de la IA para crear contenido falso y dañino. La víctima, Jennifer, descubrió que su imagen había sido utilizada en videos de pornografía falsos.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-15 00:48:01.38158+00,,,
+d0d81529-cb98-4f02-8b42-d2569dda7eef,bcf011a4-cdca-4f65-94b8-e61ab9beb689,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La transición hacia la ciencia impulsada por IA en Google I/O
+              RESUMEN: Demis Hassabis pronostica el inicio de la era de la singularidad en la conferencia Google I/O. La IA podría superar rápidamente la inteligencia humana y transformar el mundo.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-23 00:43:32.579078+00,,,
+d1a56fdb-980b-422a-8c44-b6a1b3169772,054c2ce2-c38b-476f-bcd5-50daa9cd3d09,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: ChatGPT: Nueva Experiencia de Finanzas Personales
+              RESUMEN: OpenAI lanza una experiencia de finanzas personales en ChatGPT para usuarios Pro en EE.UU. con conexiones seguras y análisis AI
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-16 00:48:39.985485+00,,,
+d1e2c640-42ac-4334-b770-53231a79ba2e,3179a1fe-0b9e-4d60-80ae-a0e11eb25392,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Trump Retrasa Orden Ejecutiva de Seguridad para Modelos de IA
+              RESUMEN: El presidente Trump retrasó la firma de una orden ejecutiva que requeriría revisiones de seguridad previas a la liberación de modelos de IA. La razón fue la insatisfacción con el lenguaje utilizado.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-22 00:08:09.573493+00,,,
+d445a966-8620-4d2c-9674-655a4e3357ad,daa70a10-4b1f-4bb7-809e-27647aa688b9,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Avanzando en la IA: Delta Weight Sync en TRL
+              RESUMEN: Hugging Face presenta una innovadora técnica para sincronizar delta weights en TRL, permitiendo el envío de un trillon de parámetros.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-28 00:44:45.598218+00,,,
+d5ef270a-c589-41c5-84c6-643f61958985,62f84a4d-61cb-4f57-b2f4-38c7014f4557,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: ClickUp reemplaza empleados con agentes de IA: el futuro del trabajo
+              RESUMEN: La startup ClickUp reemplaza a cientos de empleados con agentes de inteligencia artificial, marcando un cambio en el futuro del trabajo.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-26 00:51:51.80208+00,,,
+d664cac5-8e21-4c51-89e9-b6b674db0798,77d5a5c5-aee2-4c1f-ab78-09f2ce11eb30,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Anthropic advierte a inversores sobre plataformas secundarias
+              RESUMEN: La empresa Anthropic advierte a inversores sobre la venta de acciones a través de plataformas secundarias, declarando que estas operaciones no serán reconocidas.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-13 00:58:15.649014+00,,,
+d8c590d2-7716-44db-9132-0af13b1051f8,d42f7662-3d95-443e-8439-1a0d8353a130,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Codex en cualquier lugar: trabajo remoto con ChatGPT
+              RESUMEN: OpenAI lanza la aplicación móvil ChatGPT para trabajar con Codex desde cualquier dispositivo y entorno remoto. Realiza tareas de codificación en tiempo real.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-15 00:47:41.241349+00,,,
+e645665f-ec19-403c-bffb-1db08b0f20a5,9452a1ea-1240-4dc8-b6ed-a4fe0de53f46,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Google lanza agentes de IA para búsqueda proactiva
+              RESUMEN: Google introduce agentes de información de IA que monitorean temas en segundo plano y alertan a los usuarios sobre actualizaciones y cambios.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-20 00:56:04.575889+00,,,
+e80eeac9-85d0-4760-a4ab-f6407b0e8916,d1ea6616-2836-4418-90d3-2c8c721d3538,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La especialización supera la escala en la adquisición de inteligencia artificial
+              RESUMEN: La mayoría de las decisiones de adquisición de IA se centran en la escala, pero la especialización es una variable estratégica clave.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-23 00:43:40.859249+00,,,
+e821f54a-b6ea-437e-bdad-e036da86aa12,b949e82d-d072-4ba8-b9a3-7f7d2a52a4ac,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: El papel de la IA en la encíclica del Papa: un análisis crítico
+              RESUMEN: La encíclica del Papa Leo XIV utiliza la IA como lente para diagnosticar problemas antiguos como el poder concentrado y la erosión de la democracia.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-26 00:51:52.719429+00,,,
+e931552d-0614-4c00-9a1c-f6f61ac91e22,c2f53220-d7ef-4684-a45c-8997bee97fb2,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: La clase de 2026 rechaza el papel de la IA en la sociedad
+              RESUMEN: La clase de 2026 rechaza la idea de que la IA debe ser moldeada por ellos mismos, según palabras del ex CEO de Google Eric Schmidt.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-29 00:44:30.751477+00,,,
+eb733f94-5e29-4b61-9a92-cc1af33c00b5,f3b2cd69-55de-488c-a80a-f4a739ca9a9f,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: El impacto oculto de la IA en la economía laboral
+              RESUMEN: La introducción de la IA puede estar debilitando la primera rama de la carrera, según un informe de MIT Technology Review.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-27 00:41:09.972762+00,,,
+ebab9ee9-8eea-47ea-a9f5-bdb0e64b5977,4f55d9fc-e65e-447d-9940-6ea115631087,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenAI y medios brasileños unen fuerzas en contenido para ChatGPT
+              RESUMEN: OpenAI anuncia unión con Grupo Folha y Grupo UOL para ofrecer noticias brasileñas confiables en ChatGPT, con atribución y transparencia.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-26 00:51:54.04517+00,,,
+efa70bb7-7034-48a7-aeef-b3cec8f53311,b0f543f8-41fd-4636-90c5-36c0fce4401d,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Último plazo para aplicar a Startup Battlefield 200
+              RESUMEN: La fecha límite para aplicar o nominar a Startup Battlefield 200 es el 27 de mayo. Obtén acceso a VC, visibilidad global, cobertura en TechCrunch y $100,000.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-26 00:51:53.289739+00,,,
+f010bd09-a779-4690-a1cb-44b8ad9bdfcb,9bf8da09-49ba-4699-9b03-d3b4104c6cd0,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Sandbox Seguro para Codex en Windows: Avances en Inteligencia Artificial
+              RESUMEN: OpenAI desarrolló un sandbox seguro para Codex en Windows, permitiendo agentes de codificación seguros y eficientes con acceso de archivo controlado y restricciones de red.
+              ESTILO: Informativo Neural Nexus.",pending,,90,2026-05-15 00:47:44.220978+00,,,
+f3666ced-0d45-4736-b0b4-f2eaf833f718,ab15b513-6fd0-41a3-98ae-1fb05bad4ef4,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Google's AI falla en ortografía: un error de aprendizaje
+              RESUMEN: Google's modelo de IA no puede escribir correctamente el nombre de la empresa, ni otros términos. Un error sorprendente en la inteligencia artificial.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-28 00:44:26.077609+00,,,
+f797ef68-f540-413c-818f-3d4013f31075,333abb82-87af-4812-8a20-5a2400e64dae,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: OpenRouter duplica su valoración en un año con $1.3B
+              RESUMEN: OpenRouter ha recaudado $113 millones en una Serie B liderada por CapitalG, demostrando el crecimiento de la tecnología de múltiples modelos de IA.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-27 00:40:58.371788+00,,,
+f96339e9-6b45-4a4d-aacc-896fcd6c41ba,dd0ca2d4-e3aa-451c-85fd-09ba64992523,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Elon Musk Abandona la Energía Solar en Tierra
+              RESUMEN: Elon Musk se enfoca en gas natural y centros de datos orbitales, abandonando su promesa de una economía solar-electrica. xAI y SpaceX cambian de estrategia.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-24 00:43:26.214598+00,,,
+fdd150fc-1c71-4442-98ee-93f551872518,3e4706ce-2683-407b-bc26-8724398d34a9,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Código automatizado: el riesgo de confiar en la IA
+              RESUMEN: Los programadores están utilizando AI para escribir código más rápido, pero la calidad del código puede ser inferior, advierten los investigadores.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-30 00:44:29.485102+00,,,
+fe8d1592-1d57-4bf2-800c-4d939c7d5242,06e0ea5c-ac0e-4e04-bceb-8588e5674cbf,"Analiza esta noticia y crea un video cortado en 3 escenas de impacto.
+              TÍTULO: Agentic AI en servicios financieros: Preparación de datos clave
+              RESUMEN: La implementación de agentic AI en servicios financieros depende más de la preparación de datos que de la sofisticación del sistema. La regulación y la respuesta a eventos en tiempo real son factores clave.
+              ESTILO: Informativo Neural Nexus.",pending,,80,2026-05-15 00:47:48.737797+00,,,

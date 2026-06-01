@@ -1,0 +1,4 @@
+id,motor_id,step_id,is_completed,admin_id,updated_at
+a1b5c247-f6a2-44ff-b651-a1a88026d95d,donations,2,true,70f06657-ca6c-41c3-abd1-301de84ea41c,2026-04-20 19:29:57.146418+00
+b9e04209-0e66-4285-ae42-9f6c417b5136,donations,1,true,70f06657-ca6c-41c3-abd1-301de84ea41c,2026-04-20 19:29:54.463081+00
+ba5cd5c2-86cf-4f8e-a188-bd82d98f7f18,donations,3,true,70f06657-ca6c-41c3-abd1-301de84ea41c,2026-04-20 19:30:01.924398+00

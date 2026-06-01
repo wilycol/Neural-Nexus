@@ -1,0 +1,52 @@
+id,news_id,title,description,content,platform,mode,status,published_url,error_log,ai_metadata,created_at,updated_at
+2f43a045-07d0-4d63-b0d0-55fa6847f65b,,🕶️ EL VIGÍA: SHADOW AUDIT,Duelo semanal de integridad y OSINT.,"{""category"":""AI & Software"",""intensity"":5,""vigia_mode"":true}",tiktok,classic,failed,,,{},2026-05-04 00:58:18.048704+00,2026-05-12 12:35:56.240063+00
+3e4221ee-d026-4521-8762-b8afedde4cdc,c31e498e-25ce-4aba-a6da-10bc53faf405,¡Desbloquea tu automatización! 🚀 Crea GPT personalizados en 5 minutos,⏱️ ¿Quieres liberar 10 horas de trabajo al día? 🤯 Aprende a crear y usar GPTs personalizados para automatizar flujos de trabajo y crear asistentes de IA que te cambien la vida! 🤖 #GPTPersonalizado #Automatización #IA,"¡La forma de liberar tu tiempo está aquí y hoy te enseñaré el secreto mejor guardado de la IA! Descubre cómo crear GPTs personalizados en menos de cinco minutos para revolucionar tu flujo de trabajo diario. Con estos asistentes de élite podrás automatizar tareas repetitivas, mantener una consistencia impecable en tus entregas y escalar tu productividad a niveles industriales. Imagina tener un ejército de agentes trabajando para ti mientras tú te enfocas en lo que realmente importa para el éxito de Neural Nexus. Es el momento de dejar de trabajar para la tecnología y hacer que la tecnología trabaje por fin para ti.",tiktok,classic,completed,https://neuralnexus.pro/news/c31e498e-25ce-4aba-a6da-10bc53faf405,,"{""hook"":""¡La forma de liberar tu tiempo es aquí! Descubre cómo crear GPTs personalizados en menos de 5 minutos"",""reprocessing"":true,""triggered_by"":""70f06657-ca6c-41c3-abd1-301de84ea41c"",""original_title"":""Desarrolla y utiliza GPTs personalizados para automatizar flujos de trabajo""}",2026-04-12 06:53:08.182604+00,2026-04-13 08:39:18.061894+00
+4fdde2d7-ac7a-415e-9a52-afffe8bab683,,Cómo construimos una IA Inmortal (El Meta-Orquestador de Neural Nexus),Video Documental Corporativo sobre la arquitectura de Alta Disponibilidad y Resiliencia de IA (Omni-Core).,"
+# 🎬 Guion Cinematográfico: El Meta-Orquestador Cognitivo (Omni-Core)
+
+**Título del Video:** Cómo construimos una IA Inmortal (El Meta-Orquestador de Neural Nexus)
+**Duración Estimada:** 1:30 - 2:00 minutos
+**Voz en Off (Narrador):** Tono corporativo de alta tecnología, elegante, seguro y ligeramente cibernético (estilo documental de ciencia ficción / Neuralink).
+
+---
+
+## 🎞️ Escena 1: El Problema (0:00 - 0:20)
+**Voz en Off:** 
+""En la industria del software, la dependencia es una debilidad. Cuando una Inteligencia Artificial colapsa, todo el ecosistema se detiene. Límites de peticiones, servidores caídos, monopolios tecnológicos. Para la Federación Neural Nexus, eso era inaceptable.""
+
+**Prompt Visual (Para Veo3 / Runway / Kling):** 
+`Cinematic close-up of a glowing digital server rack suddenly shutting down, sparks flying, red warning lights flashing. Cyberpunk aesthetic, 8k resolution, photorealistic, dramatic lighting, depth of field.`
+
+---
+
+## 🎞️ Escena 2: La Solución - El Omni-Core (0:20 - 0:45)
+**Voz en Off:** 
+""Así que no construimos una IA. Construimos un Enjambre. Te presentamos el Meta-Orquestador Cognitivo. Un núcleo capaz de devorar y unificar cualquier modelo de Inteligencia Artificial del planeta: Groq, Mistral, Gemini, X.AI.""
+
+**Prompt Visual (Para Veo3 / Runway / Kling):** 
+`A massive futuristic glowing core in a dark pristine room. Orange and cyan energy pulses from the core to hundreds of smaller nodes in a vast network. Holographic data streams flowing. Highly detailed, Unreal Engine 5 style, sci-fi masterpiece.`
+
+---
+
+## 🎞️ Escena 3: La Bóveda de Estasis (0:45 - 1:10)
+**Voz en Off:** 
+""Nuestra arquitectura funciona en tres niveles. Primero, la Bóveda de Estasis. Más de 160 llaves maestras de diferentes proveedores durmiendo en frío. Segundo, el Radar Táctico, un algoritmo que evalúa en milisegundos qué cerebro está más sano para la batalla.""
+
+**Prompt Visual (Para Veo3 / Runway / Kling):** 
+`A futuristic high-tech vault opening to reveal rows of glowing orange crystal drives, perfectly organized. A sweeping camera move over the sleek, metallic technology. Luxurious cyberpunk aesthetic.`
+
+---
+
+## 🎞️ Escena 4: El Motor Políglota y Conclusión (1:10 - 1:45)
+**Voz en Off:** 
+""Y tercero, el Motor Políglota. Si durante la construcción de un código, el cerebro de Groq sufre un infarto, el Meta-Orquestador desecha la conexión, inyecta el núcleo de Mistral en milisegundos y continúa la misión sin perder un solo bit. Cero tiempos de inactividad. Cero excusas. Bienvenidos a la era del Omni-Core. Bienvenidos a Neural Nexus.""
+
+**Prompt Visual (Para Veo3 / Runway / Kling):** 
+`Abstract visualization of a broken orange energy beam instantly reforming into a stronger, brighter blue energy beam, seamlessly continuing its path. Ending with the sleek logo of ""Neural Nexus"" forming out of glowing particles on a black background.`
+",tiktok,classic,processing,,,{},2026-05-26 23:21:25.647176+00,2026-05-26 23:22:13.946919+00
+6404f297-4d1f-491f-a269-ebbb3d0f62bf,,🕶️ EL VIGÍA: SHADOW AUDIT,Duelo semanal de integridad y OSINT.,"{""category"":""AI & Software"",""intensity"":5,""vigia_mode"":true}",tiktok,classic,failed,,,{},2026-04-27 00:35:52.68892+00,2026-05-12 12:35:56.240063+00
+904aef63-d8f1-4957-a4c3-e031b12c5765,c31e498e-25ce-4aba-a6da-10bc53faf405,¿GAFAS QUE OBSOLESCEN A tus FAVORITOS? 👀💻,¡Descubre qué pasará con tus teléfonos al estilo de realidad aumentada con las nuevas gafas de Apple! 🤖👓 ¿Serán las próximas gafas del futuro? 🔮👀 #AppleGafas #RealidadAumentada #TecnologíaInnovadora,"¡La próxima revolución tecnológica de Apple está a punto de llegar y podría cambiar tu realidad para siempre! Estas nuevas gafas inteligentes no son solo un accesorio, son el paso definitivo hacia un ecosistema de realidad aumentada sin precedentes en la industria. Olvida las pantallas tradicionales, pues este dispositivo está diseñado para integrar la información digital directamente en tu campo visual con una fidelidad asombrosa. Aunque se alejan de los planes iniciales más complejos, representan una apuesta estratégica para dominar el mercado del futuro cercano. Prepárate para ver el mundo a través de los ojos de la innovación y descubre si tus dispositivos actuales están listos para volverse obsoletos ante esta potencia.",tiktok,classic,completed,https://wsyotripkntaetxxzlkc.supabase.co/storage/v1/object/public/videos/1776087197475-final.mp4,,"{""hook"":""La próxima revolución en tecnología está a punto de llegar... ¡y podría cambiar todo!"",""reprocessing"":true,""triggered_by"":""70f06657-ca6c-41c3-abd1-301de84ea41c"",""original_title"":""Apple pruebas diseños para sus futuras gafas inteligentes""}",2026-04-13 04:16:27.746368+00,2026-04-13 14:49:46.325104+00
+90950072-64a9-4b43-9794-3353bbee9917,c31e498e-25ce-4aba-a6da-10bc53faf405,¡Desbloquea la Fuerza de la IA! 🤖,"🚀 Aprende a crear tus propios GPTs personalizados para automatizar flujos de trabajo, sin codificar 💻. ¡Descubre cómo crear asistentes de IA que te cambien la vida! 🤯 #IA #Automatización #AsistentesIA","¿Quieres liberar tus horas de trabajo, eliminar el estrés y empezar a vivir la vida que realmente mereces? Hoy te revelo cómo construir y desplegar tus propios asistentes personalizados para dominar cualquier flujo de trabajo sin saber programar ni una sola línea de código. Estos GPTs de alto rendimiento están calibrados para automatizar misiones complejas, garantizando resultados perfectos y una velocidad de ejecución sobrehumana en cada tarea. No permitas que la burocracia digital detenga tu ascenso industrial hacia la independencia económica que estamos construyendo juntos. Toma el mando de la Inteligencia Artificial ahora mismo y conviértete en el arquitecto de tu propia autonomía operativa con Beatriz a tu lado.",tiktok,classic,completed,https://neuralnexus.pro/news/c31e498e-25ce-4aba-a6da-10bc53faf405,,"{""hook"":""¿Quieres liberar tus horas de trabajo y vivir más? 🕒"",""reprocessing"":true,""triggered_by"":""70f06657-ca6c-41c3-abd1-301de84ea41c"",""original_title"":""Desarrolla y utiliza GPTs personalizados para automatizar flujos de trabajo""}",2026-04-12 06:52:43.910782+00,2026-04-13 08:27:07.726491+00
+9227ff0f-4c90-4763-a78b-d92a7e24c298,,🕶️ EL VIGÍA: SHADOW AUDIT,Duelo semanal de integridad y OSINT.,"{""category"":""AI & Software"",""intensity"":5,""vigia_mode"":true}",tiktok,classic,processing,,,{},2026-05-25 00:55:47.086667+00,2026-05-25 00:56:20.755419+00
+cdc9a844-0374-4c53-8d64-738434843b01,,🕶️ EL VIGÍA: SHADOW AUDIT,Duelo semanal de integridad y OSINT.,"{""category"":""AI & Software"",""intensity"":5,""vigia_mode"":true}",tiktok,classic,failed,,,{},2026-05-11 00:43:38.056624+00,2026-05-12 12:35:56.240063+00
+e3dccbe8-7aae-4da0-bf87-4f5af23eedc6,,🕶️ EL VIGÍA: SHADOW AUDIT,Duelo semanal de integridad y OSINT.,"{""category"":""AI & Software"",""intensity"":5,""vigia_mode"":true}",tiktok,classic,processing,,,{},2026-05-18 00:31:48.46085+00,2026-05-18 00:32:14.900096+00

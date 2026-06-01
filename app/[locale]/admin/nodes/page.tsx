@@ -16,7 +16,8 @@ import {
     Instagram,
     Facebook,
     Layers,
-    Camera
+    Camera,
+    Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,7 +102,7 @@ export default function AdminNodesPage() {
 
         console.log("🛰️ Hive Client: Solicitando nodos a la Federación...");
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase as any).from("nodes").select("*");
+        const { data, error } = await (supabase as any).from("nodes").select("*").order("created_at", { ascending: false });
 
         if (error) {
             toast.error("Error al cargar nodos: " + error.message);
@@ -288,6 +289,34 @@ export default function AdminNodesPage() {
         window.open(url, '_blank');
     };
 
+    const handleDeleteNode = (node: NeuralNode) => {
+        if (!confirm(`⚠️ ¿ESTÁS SEGURO? Vas a eliminar a ${node.name} de la Federación y de Vercel. Esta acción es irreversible.`)) return;
+
+        toast.promise(
+            fetch(`/api/bridge`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    endpoint: "/api/nodes/delete",
+                    nodeId: node.id
+                })
+            }).then(async (res) => {
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.message || data.error || "Fallo al eliminar nodo");
+                return data;
+            }),
+            {
+                loading: `🗑️ Eliminando nodo ${node.name.replace(/_/g, ' ')} de la Federación...`,
+                success: () => {
+                    setSelectedNode(null);
+                    fetchNodes();
+                    return `✅ Nodo eliminado correctamente.`;
+                },
+                error: (err) => `❌ Error: ${err.message}`,
+            }
+        );
+    };
+
     const getDaysLeft = (dateStr?: string) => {
         if (!dateStr) return 0;
         const diff = new Date(dateStr).getTime() - new Date().getTime();
@@ -447,9 +476,14 @@ export default function AdminNodesPage() {
                                             </CardDescription>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" size="icon" className="hover:bg-white/5" onClick={() => setSelectedNode(null)}>
-                                        <X size={20} />
-                                    </Button>
+                                    <div className="flex items-center gap-2">
+                                        <Button variant="ghost" size="icon" className="hover:bg-red-500/20 text-red-500 transition-colors" onClick={() => handleDeleteNode(selectedNode)}>
+                                            <Trash2 size={20} />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="hover:bg-white/5" onClick={() => setSelectedNode(null)}>
+                                            <X size={20} />
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardHeader>
 

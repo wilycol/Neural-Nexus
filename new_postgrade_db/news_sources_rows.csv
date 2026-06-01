@@ -1,0 +1,9 @@
+id,name,rss_url,category,is_active,priority,last_fetch_at,fetch_count,created_at
+04cbcb82-428f-4ef0-a1d8-22c83934503d,TechCrunch AI,https://techcrunch.com/category/artificial-intelligence/feed/,Inteligencia Artificial,true,10,,0,2026-04-03 11:01:08.915636+00
+0c22802e-6a0e-4ed2-9d2d-ebefa5e5b046,Google AI Blog,https://ai.googleblog.com/feeds/posts/default,Software,true,7,,0,2026-04-03 11:01:08.915636+00
+31570c99-c16f-44f5-8bb9-bd37b04a9612,Wired AI,https://www.wired.com/tag/artificial-intelligence/rss,Inteligencia Artificial,true,9,,0,2026-04-03 11:01:08.915636+00
+6313f78b-277f-4320-9329-297e579db12d,OpenAI Blog,https://openai.com/blog/rss.xml,Software,true,10,,0,2026-04-03 11:01:08.915636+00
+9d9b33b9-6706-4352-b032-73ec07ed9a30,VentureBeat AI,https://venturebeat.com/category/ai/feed/,Inteligencia Artificial,true,7,,0,2026-04-03 11:01:08.915636+00
+e430ef5a-e451-4046-80b3-83c2184e6c95,Hugging Face Blog,https://huggingface.co/blog/feed.xml,Software,true,8,,0,2026-04-03 11:01:08.915636+00
+f7e8d358-dfb8-4694-9329-edd8cfc873f5,Anthropic,https://www.anthropic.com/blog/rss.xml,Software,true,9,,0,2026-04-03 11:01:08.915636+00
+ff1132a6-6d3d-4a41-bcec-1e05b84015a6,MIT Technology Review,https://www.technologyreview.com/topic/artificial-intelligence/feed,Futuro y Tendencias,true,8,,0,2026-04-03 11:01:08.915636+00
