@@ -122,10 +122,10 @@
 <body class="flex flex-col h-[100dvh] bg-slate-950 overflow-hidden text-slate-100">
 
     <!-- Modal de Imagen -->
-    <div id="image-modal" class="hidden fixed inset-0 z-[110] bg-black/90 flex flex-col items-center justify-center p-2 backdrop-blur-sm">
-        <button class="absolute top-4 right-4 p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors" onclick="document.getElementById('image-modal').classList.add('hidden'); event.stopPropagation();"><i data-lucide="x" class="w-6 h-6"></i></button>
-        <img id="image-modal-content" src="" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl transition-transform duration-300">
-        <div class="absolute bottom-6 text-white/50 text-[10px] tracking-widest uppercase bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">Usa la X para cerrar</div>
+    <div id="image-modal" class="hidden fixed inset-0 z-[110] bg-black/90 flex flex-col items-center justify-center p-0 backdrop-blur-sm overflow-hidden touch-none">
+        <button class="absolute top-4 right-4 p-2 z-10 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors" onclick="closeImageModal(); event.stopPropagation();"><i data-lucide="x" class="w-6 h-6"></i></button>
+        <img id="image-modal-content" src="" class="max-w-full max-h-full object-contain shadow-2xl transition-transform duration-75 origin-center">
+        <div class="absolute bottom-6 z-10 text-white/50 text-[10px] tracking-widest uppercase bg-black/50 px-4 py-2 rounded-full backdrop-blur-md pointer-events-none">Pellizca para Zoom</div>
     </div>
 
     <!-- Modal de Configuración (Solo se muestra si faltan credenciales) -->    <div id="setup-modal" class="hidden fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
@@ -692,6 +692,60 @@
                 } catch (e) {}
             }, 3000);
         }
+
+        // --- Lógica de Pinch to Zoom ---
+        let currentZoom = 1;
+        let startDistance = 0;
+        let initialZoom = 1;
+        let imgPanX = 0, imgPanY = 0, initialPanX = 0, initialPanY = 0;
+
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('image-modal-content');
+
+        modal.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                startDistance = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                initialZoom = currentZoom;
+            } else if (e.touches.length === 1 && currentZoom > 1) {
+                initialPanX = e.touches[0].pageX - imgPanX;
+                initialPanY = e.touches[0].pageY - imgPanY;
+            }
+        }, { passive: false });
+
+        modal.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const currentDistance = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                const scale = currentDistance / startDistance;
+                currentZoom = Math.min(Math.max(1, initialZoom * scale), 5);
+                updateModalTransform();
+            } else if (e.touches.length === 1 && currentZoom > 1) {
+                e.preventDefault();
+                imgPanX = e.touches[0].pageX - initialPanX;
+                imgPanY = e.touches[0].pageY - initialPanY;
+                updateModalTransform();
+            }
+        }, { passive: false });
+
+        function updateModalTransform() {
+            modalImg.style.transform = `translate(${imgPanX}px, ${imgPanY}px) scale(${currentZoom})`;
+        }
+
+        window.closeImageModal = () => {
+            modal.classList.add('hidden');
+            currentZoom = 1;
+            imgPanX = 0;
+            imgPanY = 0;
+            updateModalTransform();
+            modalImg.src = '';
+        };
 
         window.onload = () => {
             lucide.createIcons();
