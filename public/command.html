@@ -874,19 +874,25 @@
         window.toggleMicStreaming = async () => {
             const btn = document.getElementById('streaming-mic-btn');
             if (isStreaming) {
-                // Enviar señal de fin de habla al backend
-                if (streamWs && streamWs.readyState === WebSocket.OPEN) {
-                    streamWs.send(JSON.stringify({ type: 'speech_end' }));
-                }
+                isStreaming = false;
                 btn.innerHTML = '<i data-lucide="radio" class="w-5 h-5"></i> Reanudar';
                 btn.classList.replace('bg-fuchsia-600', 'bg-indigo-600');
-                isStreaming = false;
                 document.getElementById('streaming-status').innerText = "Procesando...";
                 document.getElementById('voice-orb-glow').classList.remove('animate-pulse');
                 
-                // Detener grabadora para cerrar correctamente el archivo
+                // Detener grabadora. Esto fuerza a que se dispare ondataavailable por última vez
+                // Solo enviamos speech_end DESPUÉS de que se haya detenido completamente para no mezclar audios
                 if (streamMediaRecorder && streamMediaRecorder.state !== 'inactive') {
+                    streamMediaRecorder.onstop = () => {
+                        if (streamWs && streamWs.readyState === WebSocket.OPEN) {
+                            streamWs.send(JSON.stringify({ type: 'speech_end' }));
+                        }
+                    };
                     streamMediaRecorder.stop();
+                } else {
+                    if (streamWs && streamWs.readyState === WebSocket.OPEN) {
+                        streamWs.send(JSON.stringify({ type: 'speech_end' }));
+                    }
                 }
             } else {
                 btn.innerHTML = '<i data-lucide="radio" class="w-5 h-5"></i> Detener Transmisión';
