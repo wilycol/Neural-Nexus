@@ -178,6 +178,10 @@
                 </div>
             </div>
             <div class="flex gap-2">
+                <!-- Botón VIP: Call to Beatriz Streaming -->
+                <button onclick="openStreamingMode()" title="Llamada Directa (Streaming)" class="p-2 bg-fuchsia-500/10 hover:bg-fuchsia-500/20 rounded-lg transition-colors text-fuchsia-400 relative overflow-hidden group border border-fuchsia-500/30">
+                    <i data-lucide="radio" class="w-5 h-5 group-hover:animate-ping"></i>
+                </button>
                 <!-- Botón de actualización de PWA forzada (Xiaomi background fix) -->
                 <button onclick="updateApp()" title="Actualizar Beatriz App" class="p-2 hover:bg-emerald-500/10 rounded-lg transition-colors text-emerald-400 relative">
                     <i data-lucide="refresh-cw" class="w-5 h-5 animate-pulse"></i>
@@ -758,6 +762,19 @@
                     console.log("🔔 Permiso de notificación al cargar:", p, "Enabled:", notificationsEnabled);
                 });
             }
+        };
+
+        // --- Lógica Call to Beatriz (Streaming) ---
+        window.openStreamingMode = () => {
+            // Animación épica antes de abrir
+            document.body.style.transition = "all 0.5s ease";
+            document.body.style.filter = "hue-rotate(45deg) brightness(1.2)";
+            
+            // Navegar a la futura interfaz de streaming en la PWA
+            setTimeout(() => {
+                alert("🚀 Búnker Neural: Iniciando conexión WebSocket segura para Streaming con Beatriz... (Interfaz en construcción)");
+                document.body.style.filter = "none";
+            }, 500);
         };
     </script>
 </body>
