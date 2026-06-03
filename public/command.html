@@ -871,10 +871,10 @@
             }
         };
 
-        window.toggleMicStreaming = () => {
+        window.toggleMicStreaming = async () => {
             const btn = document.getElementById('streaming-mic-btn');
             if (isStreaming) {
-                // Enviar señal de fin de habla
+                // Enviar señal de fin de habla al backend
                 if (streamWs && streamWs.readyState === WebSocket.OPEN) {
                     streamWs.send(JSON.stringify({ type: 'speech_end' }));
                 }
@@ -883,12 +883,27 @@
                 isStreaming = false;
                 document.getElementById('streaming-status').innerText = "Procesando...";
                 document.getElementById('voice-orb-glow').classList.remove('animate-pulse');
+                
+                // Detener grabadora para cerrar correctamente el archivo
+                if (streamMediaRecorder && streamMediaRecorder.state !== 'inactive') {
+                    streamMediaRecorder.stop();
+                }
             } else {
                 btn.innerHTML = '<i data-lucide="radio" class="w-5 h-5"></i> Detener Transmisión';
                 btn.classList.replace('bg-indigo-600', 'bg-fuchsia-600');
                 isStreaming = true;
                 document.getElementById('streaming-status').innerText = "Escuchando...";
                 document.getElementById('voice-orb-glow').classList.add('animate-pulse');
+                
+                // Reiniciar grabadora desde cero para generar un nuevo encabezado limpio
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                streamMediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                streamMediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0 && streamWs && streamWs.readyState === WebSocket.OPEN) {
+                        streamWs.send(e.data);
+                    }
+                };
+                streamMediaRecorder.start(1000);
             }
             lucide.createIcons();
         };
