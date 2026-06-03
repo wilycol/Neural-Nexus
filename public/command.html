@@ -179,6 +179,8 @@
                     class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm focus:border-indigo-500 outline-none transition-all">
                 <input type="text" id="set-bridge" placeholder="Beatriz Bridge URL (ngrok)"
                     class="w-full bg-slate-900 border-2 border-orange-500/50 rounded-xl p-4 text-sm focus:border-orange-500 outline-none transition-all placeholder:text-orange-300/50">
+                <input type="text" id="set-ws" placeholder="Streaming WSS URL (Ej: wss://x.loca.lt)"
+                    class="w-full bg-slate-900 border-2 border-fuchsia-500/50 rounded-xl p-4 text-sm focus:border-fuchsia-500 outline-none transition-all placeholder:text-fuchsia-300/50">
                 <div class="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl">
                     <p class="text-[10px] text-orange-400 leading-tight">⚠️ IMPORTANTE: Sin la URL de ngrok (Bridge URL), el Fénix no recibirá tus mensajes.</p>
                 </div>
@@ -310,10 +312,12 @@
             const url = document.getElementById('set-url').value.trim();
             const key = document.getElementById('set-key').value.trim();
             const bridge = document.getElementById('set-bridge').value.trim();
+            const wsUrl = document.getElementById('set-ws').value.trim();
             if (url && key) {
                 localStorage.setItem('nexus_sb_url', url);
                 localStorage.setItem('nexus_sb_key', key);
                 if (bridge) localStorage.setItem('nexus_bridge_url', bridge);
+                if (wsUrl) localStorage.setItem('nexus_ws_url', wsUrl);
                 initSupabase();
                 requestNotifications(); // Gatillar permisos e inscripción Web Push al guardar credenciales
             }
@@ -812,14 +816,9 @@
             const orb = document.getElementById('voice-orb');
             
             try {
-                // Configurar URL de WebSocket usando el túnel ngrok configurado (cambiando https a wss)
-                const bridgeUrl = localStorage.getItem('nexus_bridge_url');
-                let wsUrl = 'ws://localhost:8765'; // Fallback local
-                if (bridgeUrl) {
-                    // Si tienes un ngrok, asume que el websocket está en la misma red. 
-                    // Para la fase 1, dejaremos localhost:8765 si ejecutas la PWA en la misma PC, o requerirás un puerto expuesto.
-                    // wsUrl = bridgeUrl.replace('https', 'wss').replace('http', 'ws') + '/stream'; 
-                }
+                // Obtener URL de WebSocket desde configuración
+                const configWsUrl = localStorage.getItem('nexus_ws_url');
+                let wsUrl = configWsUrl ? configWsUrl : 'ws://localhost:8765';
 
                 streamWs = new WebSocket(wsUrl);
                 
