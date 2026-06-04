@@ -116,6 +116,47 @@
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
+
+        /* --- Audio Wave Visualizer --- */
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+        }
+        .audio-wave span {
+            display: block;
+            width: 6px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+        
+        /* Animación base cuando está conectada pero en silencio (Escuchando) */
+        .audio-wave.listening span {
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+        
+        /* Animación intensa cuando Beatriz habla */
+        .audio-wave.speaking span {
+            animation: bounce-intense 0.4s ease-in-out infinite alternate;
+        }
+        
+        .audio-wave span:nth-child(1) { animation-delay: -0.8s; height: 16px; }
+        .audio-wave span:nth-child(2) { animation-delay: -0.4s; height: 32px; }
+        .audio-wave span:nth-child(3) { animation-delay: 0s; height: 40px; }
+        .audio-wave span:nth-child(4) { animation-delay: -0.4s; height: 32px; }
+        .audio-wave span:nth-child(5) { animation-delay: -0.8s; height: 16px; }
+
+        @keyframes bounce {
+            0%, 100% { transform: scaleY(0.8); opacity: 0.5; }
+            50% { transform: scaleY(1.2); opacity: 1; }
+        }
+        @keyframes bounce-intense {
+            0% { transform: scaleY(0.4); background-color: #fff; box-shadow: 0 0 8px #fff; }
+            100% { transform: scaleY(1.6); background-color: #fbcfe8; box-shadow: 0 0 15px #fbcfe8; }
+        }
     </style>
 </head>
 
@@ -145,7 +186,9 @@
             <div class="relative w-40 h-40 flex items-center justify-center my-8">
                 <div id="voice-orb-glow" class="absolute inset-0 bg-fuchsia-500/30 rounded-full blur-3xl transition-all duration-300"></div>
                 <div id="voice-orb" class="w-24 h-24 bg-gradient-to-br from-fuchsia-600 to-indigo-600 rounded-full shadow-[0_0_40px_rgba(217,70,239,0.4)] flex items-center justify-center transition-all duration-300 relative z-10 border-4 border-fuchsia-400/20">
-                    <i data-lucide="mic" class="w-10 h-10 text-white"></i>
+                    <div id="visualizer" class="audio-wave">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
                 </div>
             </div>
 
@@ -811,7 +854,6 @@
         let analyser = null;
         let silenceTimer = null;
         let isSpeaking = false;
-        let currentAudio = null;
         const SILENCE_THRESHOLD = 5; // Ajustable, 0-255
         const SILENCE_DURATION = 2000; // 2 segundos
 
@@ -836,6 +878,7 @@
                     statusEl.classList.add('text-emerald-400');
                     transcriptEl.innerText = "Beatriz está lista.";
                     orbGlow.classList.add('animate-pulse');
+                    document.getElementById('visualizer').classList.add('listening');
                     isStreaming = true;
                 };
 
@@ -844,13 +887,7 @@
                         const data = JSON.parse(event.data);
                         if(data.type === 'transcription') {
                             transcriptEl.innerText = `"${data.text}"`;
-                            // Efecto visual cuando Beatriz habla
-                            orb.classList.replace('from-fuchsia-600', 'from-indigo-600');
-                            orb.classList.replace('to-indigo-600', 'to-fuchsia-600');
-                            setTimeout(() => {
-                                orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
-                                orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
-                            }, 2000);
+                            // Solo actualizamos el texto, la animación visual espera al evento onplay del audio
                         }
                     } else {
                         // Reproducir audio recibido de Edge-TTS
@@ -860,6 +897,22 @@
                         const blob = new Blob([event.data], { type: 'audio/mpeg' });
                         const audioUrl = URL.createObjectURL(blob);
                         currentAudio = new Audio(audioUrl);
+                        
+                        // Sincronizar animación con la reproducción real
+                        currentAudio.onplay = () => {
+                            orb.classList.replace('from-fuchsia-600', 'from-indigo-600');
+                            orb.classList.replace('to-indigo-600', 'to-fuchsia-600');
+                            document.getElementById('visualizer').classList.remove('listening');
+                            document.getElementById('visualizer').classList.add('speaking');
+                        };
+                        
+                        currentAudio.onended = () => {
+                            orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
+                            orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
+                            document.getElementById('visualizer').classList.remove('speaking');
+                            document.getElementById('visualizer').classList.add('listening');
+                        };
+                        
                         currentAudio.play();
                     }
                 };
@@ -897,6 +950,7 @@
                 btn.classList.replace('bg-fuchsia-600', 'bg-indigo-600');
                 document.getElementById('streaming-status').innerText = "Procesando...";
                 document.getElementById('voice-orb-glow').classList.remove('animate-pulse');
+                document.getElementById('visualizer').classList.remove('listening', 'speaking');
                 
                 // Detener grabadora. Esto fuerza a que se dispare ondataavailable por última vez
                 // Solo enviamos speech_end DESPUÉS de que se haya detenido completamente para no mezclar audios
@@ -918,6 +972,7 @@
                 isStreaming = true;
                 document.getElementById('streaming-status').innerText = "Escuchando...";
                 document.getElementById('voice-orb-glow').classList.add('animate-pulse');
+                document.getElementById('visualizer').classList.add('listening');
                 
                 // Reiniciar grabadora desde cero para generar un nuevo encabezado limpio
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -957,6 +1012,11 @@
                         // El usuario está hablando
                         if (currentAudio && !currentAudio.paused) {
                             currentAudio.pause();
+                            const orb = document.getElementById('voice-orb');
+                            orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
+                            orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
+                            document.getElementById('visualizer').classList.remove('speaking');
+                            document.getElementById('visualizer').classList.add('listening');
                         }
                         isSpeaking = true;
                         if (silenceTimer) {
