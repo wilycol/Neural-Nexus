@@ -806,13 +806,14 @@
         let streamMediaRecorder = null;
         let isStreaming = false;
         
-        // --- Lógica VAD (Auto-envío tras 3s de silencio) ---
+        // --- Lógica VAD (Auto-envío tras silencios) ---
         let audioContext = null;
         let analyser = null;
         let silenceTimer = null;
         let isSpeaking = false;
+        let currentAudio = null;
         const SILENCE_THRESHOLD = 5; // Ajustable, 0-255
-        const SILENCE_DURATION = 3000; // 3 segundos
+        const SILENCE_DURATION = 2000; // 2 segundos
 
         window.openStreamingMode = async () => {
             document.getElementById('streaming-modal').classList.remove('hidden');
@@ -853,10 +854,13 @@
                         }
                     } else {
                         // Reproducir audio recibido de Edge-TTS
+                        if (currentAudio) {
+                            currentAudio.pause();
+                        }
                         const blob = new Blob([event.data], { type: 'audio/mpeg' });
                         const audioUrl = URL.createObjectURL(blob);
-                        const audio = new Audio(audioUrl);
-                        audio.play();
+                        currentAudio = new Audio(audioUrl);
+                        currentAudio.play();
                     }
                 };
 
@@ -951,6 +955,9 @@
                     
                     if (average > SILENCE_THRESHOLD) {
                         // El usuario está hablando
+                        if (currentAudio && !currentAudio.paused) {
+                            currentAudio.pause();
+                        }
                         isSpeaking = true;
                         if (silenceTimer) {
                             clearTimeout(silenceTimer);
