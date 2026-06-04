@@ -910,7 +910,13 @@
                             orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
                             orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
                             document.getElementById('visualizer').classList.remove('speaking');
-                            document.getElementById('visualizer').classList.add('listening');
+                            
+                            // Auto-reanudar micrófono para mantener la conversación manos libres
+                            if (!isStreaming) {
+                                window.toggleMicStreaming();
+                            } else {
+                                document.getElementById('visualizer').classList.add('listening');
+                            }
                         };
                         
                         currentAudio.play();
@@ -926,8 +932,8 @@
                     }
                 };
 
-                // Enviar chunks de audio cada 1 segundo para procesar silencios (VAD simulado)
-                streamMediaRecorder.start(1000);
+                // Enviar el audio completo al detener la grabadora (evita WebM corrupto en Whisper)
+                streamMediaRecorder.start();
 
             } catch (err) {
                 console.error("Error Streaming:", err);
@@ -982,7 +988,7 @@
                         streamWs.send(e.data);
                     }
                 };
-                streamMediaRecorder.start(1000);
+                streamMediaRecorder.start();
                 
                 // --- Activar Detector de Silencio (VAD) ---
                 if (!audioContext) {
