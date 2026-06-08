@@ -6,7 +6,7 @@ import {
   Scissors, Stethoscope, ShoppingBag, Home, TrendingUp, Key,
   Briefcase, Calculator, Scale, FileText, Hand, Flower2,
   Crown, Palette, MousePointer, Settings, Gamepad2,
-  Plane, Map, BookOpen, Mic, Building2, type LucideIcon
+  Plane, Map, BookOpen, Mic, Building2, AirVent, Gem, Brain, HeartHandshake, Car, Droplets, Paintbrush, Calendar, Camera, Music, PartyPopper, ScanFace, type LucideIcon
 } from 'lucide-react';
 
 export interface ServiceCard {
@@ -803,6 +803,136 @@ export const templates: TemplateData[] = [
       { title: 'El Futuro de la Energía Solar en América Latina', category: 'Energía', readTime: '6 min' },
       { title: 'Cómo el Internet de las Cosas (IoT) Optimiza Fábricas', category: 'IoT', readTime: '5 min' },
       { title: 'Estrategias de Sostenibilidad y Ahorro para Empresas', category: 'Sostenible', readTime: '6 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'homeservices',
+    name: 'HOMEPRO',
+    niche: 'Servicios del Hogar',
+    badge: '// SOLUCIONES PROFESIONALES PARA TU HOGAR',
+    accentColor: 'cyan',
+    accentHex: '#06B6D4',
+    heroImage: '',
+    heroTitle: 'Expertos en tu Hogar, Siempre',
+    heroSubtitle: 'Soluciones integrales de plomería, aire acondicionado, electricidad y limpieza con técnicos certificados y garantía real.',
+    primaryCTA: 'COTIZAR AHORA',
+    secondaryCTA: 'VER SERVICIOS',
+    servicesTitle: 'Servicios Profesionales para tu Hogar',
+    services: [
+      { icon: Wrench, title: 'Plomería Especializada', description: 'Reparación de fugas, destapes, instalación de calentadores y remodelaciones de baño y cocina con garantía por escrito.' },
+      { icon: AirVent, title: 'Aire Acondicionado y Climatización', description: 'Instalación, mantenimiento preventivo y reparación de sistemas HVAC para hogares y oficinas con técnicos certificados.' },
+      { icon: Zap, title: 'Electricidad Residencial', description: 'Instalaciones eléctricas, tableros, cableado estructurado, acometidas y soluciones de respaldo energético seguro.' },
+      { icon: Sparkles, title: 'Limpieza Profesional', description: 'Servicio de limpieza profunda, sanitización, limpieza post-obra y mantenimiento periódico para hogares y comercios.' }
+    ],
+    articles: [
+      { title: '5 señales de que tu sistema de aire acondicionado necesita mantenimiento urgente', category: 'HVAC', readTime: '5 min' },
+      { title: 'Cómo prevenir fugas de agua: guía práctica para propietarios', category: 'Plomería', readTime: '4 min' },
+      { title: 'Instalaciones eléctricas seguras: normativas actualizadas 2025', category: 'Electricidad', readTime: '6 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'esteticaavanzada',
+    name: 'AESTHETICA',
+    niche: 'Estética Avanzada',
+    badge: '// MEDICINA ESTÉTICA Y CIRUGÍA PLÁSTICA',
+    accentColor: 'purple',
+    accentHex: '#A855F7',
+    heroImage: '',
+    heroTitle: 'Transforma tu Imagen, Eleva tu Confianza',
+    heroSubtitle: 'Tratamientos de medicina estética y cirugía plástica con tecnología de vanguardia y médicos certificados en un entorno premium.',
+    primaryCTA: 'AGENDAR VALORACIÓN',
+    secondaryCTA: 'EXPLORAR TRATAMIENTOS',
+    servicesTitle: 'Tratamientos de Excelencia Médica',
+    services: [
+      { icon: ScanFace, title: 'Depilación Láser y Rejuvenecimiento', description: 'Tecnología láser de última generación para depilación permanente, tratamiento de manchas y rejuvenecimiento facial no invasivo.' },
+      { icon: Sparkles, title: 'Dermatología Clínica y Cosmética', description: 'Diagnóstico y tratamiento de afecciones cutáneas, peelings químicos, mesoterapia y protocolos personalizados de skincare médico.' },
+      { icon: HeartPulse, title: 'Cirugía Plástica y Reconstructiva', description: 'Procedimientos quirúrgicos faciales y corporales realizados por cirujanos plásticos certificados con enfoque en resultados naturales.' },
+      { icon: Gem, title: 'Medicina Antienvejecimiento', description: 'Tratamientos con toxina botulínica, ácido hialurónico, hilos tensores y terapias regenerativas para una apariencia fresca y natural.' }
+    ],
+    articles: [
+      { title: 'Depilación láser: mitos y realidades que debes conocer antes de tu primera sesión', category: 'Belleza', readTime: '7 min' },
+      { title: 'Rutina de skincare médico: el protocolo dermatológico definitivo', category: 'Dermatología', readTime: '5 min' },
+      { title: 'Cirugía plástica segura: cómo elegir al cirujano correcto', category: 'Salud', readTime: '8 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'psicologia',
+    name: 'MINDCARE',
+    niche: 'Psicología y Salud Mental',
+    badge: '// BIENESTAR EMOCIONAL Y MENTAL',
+    accentColor: 'green',
+    accentHex: '#10B981',
+    heroImage: '',
+    heroTitle: 'Tu Mente Importa. Empieza Hoy',
+    heroSubtitle: 'Terapia psicológica profesional presencial y online con psicólogos certificados. Un espacio seguro para tu crecimiento personal.',
+    primaryCTA: 'RESERVAR SESIÓN',
+    secondaryCTA: 'CONOCER ENFOQUES',
+    servicesTitle: 'Especialidades Terapéuticas',
+    services: [
+      { icon: Brain, title: 'Terapia Cognitivo-Conductual', description: 'Tratamiento basado en evidencia para ansiedad, depresión, trastornos obsesivos y manejo del estrés con resultados medibles.' },
+      { icon: HeartHandshake, title: 'Psicología Clínica y Online', description: 'Atención psicológica individual para adultos, adolescentes y parejas. Sesiones presenciales y terapia online con total privacidad.' },
+      { icon: BookOpen, title: 'Evaluaciones Psicológicas', description: 'Evaluaciones neuropsicológicas, diagnóstico de TDAH, perfil de personalidad e informes psicológicos para procesos legales.' },
+      { icon: Sparkles, title: 'Bienestar y Crecimiento Personal', description: 'Coaching de vida, manejo de emociones, desarrollo de habilidades sociales y programas de mindfulness para el rendimiento óptimo.' }
+    ],
+    articles: [
+      { title: 'Ansiedad generalizada: señales de alerta y cuándo buscar ayuda profesional', category: 'Salud Mental', readTime: '6 min' },
+      { title: 'Terapia online vs presencial: qué modelo se adapta mejor a tu estilo de vida', category: 'Bienestar', readTime: '5 min' },
+      { title: 'Mindfulness científico: técnicas probadas para reducir el estrés laboral', category: 'Productividad', readTime: '4 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'detailing',
+    name: 'AUTOLUXE',
+    niche: 'Estética Automotriz',
+    badge: '// CUIDADO PREMIUM PARA TU VEHÍCULO',
+    accentColor: 'amber',
+    accentHex: '#F59E0B',
+    heroImage: '',
+    heroTitle: 'Tu Auto, Como Nuevo Siempre',
+    heroSubtitle: 'Car wash premium, ceramic coating, polarizado y personalización con productos de grado profesional y técnicos especializados.',
+    primaryCTA: 'RESERVAR TURNO',
+    secondaryCTA: 'VER TRATAMIENTOS',
+    servicesTitle: 'Servicios de Estética Automotriz',
+    services: [
+      { icon: Car, title: 'Car Wash y Detailing Premium', description: 'Lavado profesional con productos pH neutros, descontaminación de pintura, pulido y encerado para un acabado de concesionario.' },
+      { icon: Droplets, title: 'Ceramic Coating y Protección de Pintura', description: 'Aplicación de recubrimientos cerámicos de alta duración que protegen la pintura de rayones UV, químicos y contaminantes ambientales.' },
+      { icon: Sun, title: 'Polarizado y Protección Solar', description: 'Instalación de láminas de polarizado de alta calidad con protección UV 99%, reducción de calor y privacidad garantizada.' },
+      { icon: Paintbrush, title: 'Personalización y Tuning Estético', description: 'Wrapping vinílico, pintura de calipers, restauración de faros, instalación de body kits y modificaciones estéticas personalizadas.' }
+    ],
+    articles: [
+      { title: 'Ceramic coating vs cera tradicional: diferencias, durabilidad y costos reales', category: 'Automotriz', readTime: '6 min' },
+      { title: 'Guía de mantenimiento post-detailing: cómo conservar el acabado por más tiempo', category: 'Cuidado', readTime: '4 min' },
+      { title: 'Polarizado legal: normativas, porcentajes permitidos y multas vigentes', category: 'Legal', readTime: '5 min' }
+    ],
+    isClassic: true
+  },
+  {
+    id: 'eventos',
+    name: 'EVENTUS',
+    niche: 'Eventos y Producción',
+    badge: '// PRODUCCIÓN DE EVENTOS INOLVIDABLES',
+    accentColor: 'red',
+    accentHex: '#EF4444',
+    heroImage: '',
+    heroTitle: 'Creamos Momentos que Perduran',
+    heroSubtitle: 'Producción integral de bodas, eventos corporativos y celebraciones con diseño personalizado, fotografía profesional y entretenimiento de clase mundial.',
+    primaryCTA: 'COTIZAR MI EVENTO',
+    secondaryCTA: 'VER PORTAFOLIO',
+    servicesTitle: 'Servicios de Producción Integral',
+    services: [
+      { icon: Calendar, title: 'Wedding Planning y Coordinación', description: 'Planificación completa de bodas desde el concepto hasta el día del evento: coordinación de proveedores, cronograma y gestión de cada detalle.' },
+      { icon: Camera, title: 'Fotografía y Cinematografía Profesional', description: 'Cobertura fotográfica y cinematográfica de eventos con edición profesional, álbumes impresos y videos de alta producción.' },
+      { icon: Music, title: 'DJ, Sonido e Iluminación', description: 'Servicio de DJ profesional con equipos de sonido e iluminación de alta gama para crear la atmósfera perfecta en cada momento.' },
+      { icon: PartyPopper, title: 'Decoración y Diseño de Ambientación', description: 'Diseño floral, mobiliario, iluminación decorativa y ambientación temática personalizada para eventos corporativos y sociales.' }
+    ],
+    articles: [
+      { title: 'Presupuesto de boda 2025: guía realista para planificar sin estrés financiero', category: 'Bodas', readTime: '8 min' },
+      { title: 'Tendencias en fotografía de eventos: estilos que dominarán este año', category: 'Tendencias', readTime: '5 min' },
+      { title: 'Eventos corporativos exitosos: claves de producción que impresionan a tu equipo', category: 'Corporativo', readTime: '6 min' }
     ],
     isClassic: true
   }

@@ -33,9 +33,11 @@ interface ReelItemProps {
   isActive: boolean;
   onDelete?: (id: string) => void;
   onEnded?: () => void;
+  isLikedSync?: boolean;
+  likesCountSync?: number;
 }
 
-function ReelItem({ news, isActive, onDelete, onEnded }: ReelItemProps) {
+function ReelItem({ news, isActive, onDelete, onEnded, isLikedSync = false, likesCountSync = 0 }: ReelItemProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playPromiseRef = useRef<Promise<void> | null>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -44,6 +46,13 @@ function ReelItem({ news, isActive, onDelete, onEnded }: ReelItemProps) {
   const [isLiked, setIsLiked] = useState(news.is_liked || false);
   const [likesCount, setLikesCount] = useState(news.likes_count || 0);
   const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    setIsLiked(isLikedSync);
+    if (likesCountSync > 0) {
+      setLikesCount(likesCountSync);
+    }
+  }, [isLikedSync, likesCountSync]);
 
   const reportBrokenLink = async () => {
     if (isBroken) return;
@@ -192,7 +201,7 @@ function ReelItem({ news, isActive, onDelete, onEnded }: ReelItemProps) {
         playsInline
         muted={!isActive}
         crossOrigin="anonymous"
-        preload="auto"
+        preload="metadata"
         poster={news.cover_url || news.image_url}
         onError={reportBrokenLink}
         onEnded={onEnded}
@@ -329,6 +338,72 @@ export function ReelsFeed() {
   
   const lastUserId = useRef<string | null | undefined>(undefined);
   const [authTimedOut, setAuthTimedOut] = useState(false);
+
+  const [likedNews, setLikedNews] = useState<Set<string>>(new Set());
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+
+  const ids = React.useMemo(() => news.map((n) => n.id), [news]);
+
+  const parseMetricsRow = (raw: unknown) => {
+    if (!raw || typeof raw !== "object") return null;
+    const row = raw as Record<string, unknown>;
+    const newsId = typeof row.news_id === "string" ? row.news_id : null;
+    if (!newsId) return null;
+    const likeCount = typeof row.like_count === "number" ? row.like_count : 0;
+    const isLiked = row.is_liked === true;
+    return { newsId, likeCount, isLiked };
+  };
+
+  useEffect(() => {
+    const run = async () => {
+      if (ids.length === 0) return;
+      try {
+        const supabase = getSupabaseBrowserClient();
+        if (!supabase) return;
+        const rpcResult = await (
+          supabase as unknown as {
+            rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown[] | null; error: unknown | null }>;
+          }
+        ).rpc("get_news_feed_metrics", { p_news_ids: ids });
+        
+        if (!rpcResult.error && Array.isArray(rpcResult.data)) {
+          const likeMap: Record<string, number> = {};
+          const liked = new Set<string>();
+          (rpcResult.data as unknown[]).forEach((raw) => {
+            const row = parseMetricsRow(raw);
+            if (!row) return;
+            likeMap[row.newsId] = row.likeCount;
+            if (row.isLiked) liked.add(row.newsId);
+          });
+          setLikeCounts(likeMap);
+          setLikedNews(liked);
+          return;
+        }
+
+        const { data } = await supabase.auth.getUser();
+        const userId = data.user?.id || null;
+        if (userId) {
+          const { data: userLikes } = await supabase.from("likes").select("news_id").eq("user_id", userId).in("news_id", ids);
+          setLikedNews(new Set((userLikes || []).map((l) => l.news_id).filter(Boolean) as string[]));
+        } else {
+          setLikedNews(new Set());
+        }
+        
+        const { data: likesAll } = await supabase.from("likes").select("news_id").in("news_id", ids);
+        const likeMap: Record<string, number> = {};
+        (likesAll || []).forEach((l) => {
+          const id = l.news_id as string | null;
+          if (!id) return;
+          likeMap[id] = (likeMap[id] || 0) + 1;
+        });
+        setLikeCounts(likeMap);
+      } catch {
+        setLikedNews(new Set());
+        setLikeCounts({});
+      }
+    };
+    run();
+  }, [ids]);
 
   useEffect(() => {
     const authBridgeTimeout = setTimeout(() => {
@@ -481,6 +556,8 @@ export function ReelsFeed() {
               isActive={item.id === activeId} 
               onDelete={handleDelete}
               onEnded={() => handleNext(index)}
+              isLikedSync={likedNews.has(item.id)}
+              likesCountSync={likeCounts[item.id] || 0}
             />
             {(index + 1) % 3 === 0 && (
               <div className="h-[calc(100vh-4rem)] w-full bg-zinc-950 flex items-center justify-center snap-start p-4">

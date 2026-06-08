@@ -89,15 +89,23 @@ export function NewsCard({
         entries.forEach((entry) => {
           if (!entry.isIntersecting && videoRef.current) {
             videoRef.current.pause();
+            if (!news.is_short) setIsPlaying(false);
+          } else if (entry.isIntersecting && videoRef.current) {
+            videoRef.current.muted = true;
+            setIsPlaying(true);
+            videoRef.current.play().catch(() => {
+              // Auto-play was blocked by browser
+              setIsPlaying(false);
+            });
           }
         });
       },
-      { threshold: 0.2 } // Pausa cuando menos del 20% es visible
+      { threshold: 0.5 } // Require 50% visibility to play
     );
 
     observer.observe(videoRef.current);
     return () => observer.disconnect();
-  }, [news.video_url]);
+  }, [news.video_url, news.is_short]);
 
   // Si el link está roto y no somos admin, ocultamos la tarjeta por seguridad industrial
   if (isBroken && role !== 'admin') {
