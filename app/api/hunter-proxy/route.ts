@@ -29,7 +29,8 @@ export async function GET(request: Request) {
                 "Content-Type": "text/html"
             }
         });
-    } catch (error: any) {
-        return new NextResponse(`Proxy Error: ${error.message}`, { status: 500 });
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return new NextResponse(`Proxy Error: ${errorMessage}`, { status: 500 });
     }
 }
