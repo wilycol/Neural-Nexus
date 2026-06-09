@@ -3,7 +3,7 @@ import { Card } from './ui/card';
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { getSupabaseBrowserClient } from '@/lib/supabase-client';
+
 import { Badge } from './ui/badge';
 
 interface PitchVideo {
