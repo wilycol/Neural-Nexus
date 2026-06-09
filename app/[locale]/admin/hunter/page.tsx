@@ -1532,12 +1532,12 @@ export default function AdminHunterPage() {
                             </button>
                         </div>
                         
-                        {/* Iframe */}
+                        {/* Iframe usando un proxy interno para bypassear la pantalla de advertencia de ngrok */}
                         <div className="flex-1 w-full bg-white relative">
                             {/* El HTML original del Hunter asume fondo oscuro, pero por si acaso, lo ponemos. 
                                 En realidad el index.html ya tiene sus propios estilos oscuros. */}
                             <iframe 
-                                src={`${backendUrl}/hunter-ui`}
+                                src={`/api/hunter-proxy?backendUrl=${encodeURIComponent(backendUrl)}`}
                                 className="w-full h-full border-none"
                                 title="Hunter Clásico"
                                 allow="geolocation"
