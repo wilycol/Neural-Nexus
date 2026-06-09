@@ -51,30 +51,37 @@ export function SalesAdvisorWidget() {
 
     if (pathname.includes("/admin/hunter")) return null;
 
+    const [sessionId] = useState(() => 'sess_' + Math.random().toString(36).substring(2, 11));
+
     const fetchAIResponse = async (userText: string, chatHistory: { id: number, role: string, text: string }[]) => {
         try {
-            // Usamos la API Key de Google configurada en el portal
-            const apiKey = process.env.NEXT_PUBLIC_GOOGLE_AI_KEY || ""; 
+            const backendUrl = process.env.NEXT_PUBLIC_BEATRIZ_BACKEND_URL || "https://api-beatriz.tu-dominio.com";
+            const secret = process.env.NEXT_PUBLIC_BEATRIZ_API_KEY || "beatriz_publisher_sync_key_2026";
 
             const formattedHistory = chatHistory.map(msg => ({
-                role: msg.role === 'agent' ? 'model' : 'user',
-                parts: [{ text: msg.text }]
+                role: msg.role === 'agent' ? 'assistant' : 'user',
+                content: msg.text
             }));
-            formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
+            formattedHistory.push({ role: 'user', content: userText });
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`${backendUrl}/chat/node`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: formattedHistory,
-                    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
+                    messages: formattedHistory,
+                    systemPrompt: SYSTEM_PROMPT,
+                    secret: secret,
+                    sessionId: sessionId,
+                    nodeId: 'Portal_Neural_Nexus'
                 })
             });
 
-            if (!response.ok) throw new Error('Error en la API');
+            if (!response.ok) throw new Error('Error en la API del Backend');
             const data = await response.json();
-            return data.candidates[0].content.parts[0].text;
-        } catch {
+            if (data.error) throw new Error(data.error);
+            return data.content;
+        } catch (error) {
+            console.error("Error AI:", error);
             return "Mi conexión neuronal parpadeó un segundo. ¿Me repites eso último? Quiero darte la estrategia exacta para tu negocio.";
         }
     };
