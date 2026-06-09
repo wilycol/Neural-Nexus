@@ -49,10 +49,9 @@ export function SalesAdvisorWidget() {
         if (isOpen) scrollToBottom();
     }, [messages, isTyping, isOpen]);
 
-    if (pathname.includes("/admin/hunter")) return null;
-
     const [sessionId] = useState(() => 'sess_' + Math.random().toString(36).substring(2, 11));
 
+    if (pathname.includes("/admin/hunter")) return null;
     const fetchAIResponse = async (userText: string, chatHistory: { id: number, role: string, text: string }[]) => {
         try {
             const backendUrl = process.env.NEXT_PUBLIC_BEATRIZ_BACKEND_URL || "https://api-beatriz.tu-dominio.com";
