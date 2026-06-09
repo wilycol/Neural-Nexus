@@ -136,6 +136,8 @@ export default function AdminHunterPage() {
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
     const [historyFilter, setHistoryFilter] = useState("");
+    
+    const [isLegacyHunterOpen, setIsLegacyHunterOpen] = useState(false);
 
     const supabase = getSupabaseHiveClient();
 
@@ -501,6 +503,13 @@ export default function AdminHunterPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    <Button 
+                        variant="default"
+                        className="bg-neon-blue hover:bg-neon-blue/80 text-black font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(0,163,255,0.4)] mr-2"
+                        onClick={() => setIsLegacyHunterOpen(true)}
+                    >
+                        🦅 Abrir Hunter Clásico
+                    </Button>
                     <Button 
                         variant="ghost" 
                         size="icon" 
@@ -1481,6 +1490,58 @@ export default function AdminHunterPage() {
                             >
                                 <Search size={11} /> Nueva Búsqueda Preferencial
                             </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
+        {/* 🦅 MODAL: HUNTER CLÁSICO (HTML) */}
+        <AnimatePresence>
+            {isLegacyHunterOpen && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                >
+                    <motion.div
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.95, opacity: 0 }}
+                        className="relative w-full max-w-[1200px] h-[85vh] bg-[#0f172a] rounded-2xl border border-neon-blue/30 shadow-[0_0_50px_rgba(0,163,255,0.15)] flex flex-col overflow-hidden"
+                    >
+                        {/* Header del Modal */}
+                        <div className="flex items-center justify-between p-4 border-b border-white/5 bg-black/20 shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-neon-blue/10 rounded-lg border border-neon-blue/20">
+                                    <Radar size={18} className="text-neon-blue animate-pulse" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold font-orbitron uppercase text-white flex items-center gap-2">
+                                        Hunter Clásico <Badge className="text-[7px] bg-neon-blue/20 text-neon-blue border-neon-blue/30 uppercase">Legacy HTML</Badge>
+                                    </h3>
+                                    <p className="text-[10px] text-white/40 font-mono">Conectado a: {backendUrl}/hunter-ui</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsLegacyHunterOpen(false)}
+                                className="p-2 rounded-lg hover:bg-white/5 text-white/50 hover:text-white transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        {/* Iframe */}
+                        <div className="flex-1 w-full bg-white relative">
+                            {/* El HTML original del Hunter asume fondo oscuro, pero por si acaso, lo ponemos. 
+                                En realidad el index.html ya tiene sus propios estilos oscuros. */}
+                            <iframe 
+                                src={`${backendUrl}/hunter-ui`}
+                                className="w-full h-full border-none"
+                                title="Hunter Clásico"
+                                allow="geolocation"
+                            />
                         </div>
                     </motion.div>
                 </motion.div>

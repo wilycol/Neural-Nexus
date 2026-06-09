@@ -467,7 +467,7 @@ function AboutCard() {
             <span className="text-[8px] mt-1 font-mono text-green-500">WhatsApp</span>
           </a>
           <a
-            href="https://instagram.com/neuralnexus.ai"
+            href="https://www.instagram.com/portalneuralnexus/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-col items-center justify-center p-2 rounded-lg border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-all group"

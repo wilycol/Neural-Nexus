@@ -503,7 +503,7 @@ export default function NeuralSitesPage() {
               </a>
               
               <a 
-                href="https://instagram.com/neuralnexus.ai" 
+                href="https://www.instagram.com/portalneuralnexus/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="flex items-center gap-3 p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-all group"

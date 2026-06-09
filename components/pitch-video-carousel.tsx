@@ -38,33 +38,10 @@ export function PitchVideoCarousel() {
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    async function fetchVideos() {
-      try {
-        const supabase = getSupabaseBrowserClient();
-        if (!supabase) return;
-        const { data, error: fetchError } = await supabase
-          .from('pitch_videos')
-          .select('*')
-          .order('created_at', { ascending: true });
-
-        if (fetchError) {
-          console.warn("[PitchCarousel] Usando fallback por error:", fetchError.message);
-          setVideos(FALLBACK_VIDEOS);
-        } else if (!data || data.length === 0) {
-          console.log("[PitchCarousel] Sin videos en DB, usando fallback.");
-          setVideos(FALLBACK_VIDEOS);
-        } else {
-          setVideos(data);
-        }
-      } catch (err) {
-        console.error("[PitchCarousel] Error catastrófico:", err);
-        setVideos(FALLBACK_VIDEOS);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchVideos();
+    // 🛡️ MODO BLINDADO: Wily Cleaner no podrá borrar estos videos porque ahora
+    // se sirven localmente desde el búnker de Next.js en lugar de Supabase.
+    setVideos(FALLBACK_VIDEOS);
+    setLoading(false);
   }, []);
 
   const nextVideo = () => {
