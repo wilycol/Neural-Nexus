@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { 
-    MessageCircle, Users, CheckCircle, XCircle, Clock, Search, Send, FileText, ChevronRight, History
+    MessageCircle, Users, XCircle, Clock, Search, Send, FileText, History
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +35,7 @@ interface SeductorOpsProps {
 export function SeductorOps({ backendUrl }: SeductorOpsProps) {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [selectedLeads, setSelectedLeads] = useState<number[]>([]);
-    const [templates, setTemplates] = useState<any[]>([]);
+    const [templates, setTemplates] = useState<{name: string, language: string}[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
     const [isSending, setIsSending] = useState(false);
@@ -174,7 +174,7 @@ export function SeductorOps({ backendUrl }: SeductorOpsProps) {
             } else {
                 toast.error("Error al actualizar estado");
             }
-        } catch (e) {
+        } catch {
             toast.error("Error de conexión");
         }
     };
