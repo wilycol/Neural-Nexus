@@ -145,7 +145,7 @@ export default function AdminHunterPage() {
     const fetchMetaTemplates = useCallback(async () => {
         setIsLoadingTemplates(true);
         try {
-            const res = await fetch(`${backendUrl}/api/channel/templates`, {
+            const res = await fetch(`/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/api/channel/templates`, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
             const data = await res.json();
@@ -173,7 +173,7 @@ export default function AdminHunterPage() {
         setPreferentialResults([]);
         setPreferentialError("");
         try {
-            const res = await fetch(`${backendUrl}/hunter/preferential-search`, {
+            const res = await fetch(`/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/hunter/preferential-search`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                 body: JSON.stringify({ query: preferentialQuery, limit: preferentialLimit })
@@ -216,7 +216,7 @@ export default function AdminHunterPage() {
     const loadSearchHistory = useCallback(async () => {
         setIsLoadingHistory(true);
         try {
-            const res = await fetch(`${backendUrl}/hunter/history`, {
+            const res = await fetch(`/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/hunter/history`, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
             const data = await res.json();
@@ -255,7 +255,7 @@ export default function AdminHunterPage() {
     // 📡 Polling de Telemetría
     const fetchLogs = useCallback(async () => {
         try {
-            const res = await fetch(`${backendUrl}/hunter/logs`, {
+            const res = await fetch(`/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/hunter/logs`, {
                 headers: { "ngrok-skip-browser-warning": "true" }
             });
             const data = await res.json();
@@ -328,8 +328,8 @@ export default function AdminHunterPage() {
                 return;
             }
 
-            // Llamamos a nuestra nueva API en el backend de Beatriz
-            const res = await fetch(`${backendUrl}/hunter/nearby?lat=${activeCoords.lat}&lng=${activeCoords.lng}&radius=${searchRadius}&types=${selectedNiche.types}`, {
+            // Llamamos a nuestra nueva API en el backend de Beatriz via proxy
+            const res = await fetch(`/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/hunter/nearby?lat=${activeCoords.lat}&lng=${activeCoords.lng}&radius=${searchRadius}&types=${selectedNiche.types}`, {
                 headers: { "ngrok-skip-browser-warning": "true" }
             });
             const data = await res.json();
@@ -372,7 +372,7 @@ export default function AdminHunterPage() {
         setTelemetry(prev => [`🕵️ Hunter: Iniciando OSINT profundo y extracción de activos...`, ...prev]);
         
         try {
-            const res = await fetch(`${backendUrl}/hunter/approve-candidate`, {
+            const res = await fetch(`/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/hunter/approve-candidate`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -426,8 +426,8 @@ export default function AdminHunterPage() {
         try {
             // Si tenemos nodeId (creado por el Hunter), usamos REFACTOR para inyectar ADN real
             const endpoint = selectedBusiness.nodeId 
-                ? `${backendUrl}/api/nodes/refactor` 
-                : `${backendUrl}/api/nodes/create`;
+                ? `/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/api/nodes/refactor` 
+                : `/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/api/nodes/create`;
             
             setTelemetry(prev => [`🔨 Arquitecto: ${selectedBusiness.nodeId ? 'Refactorizando con ADN Industrial...' : 'Clonando Plantilla Express...'}`, ...prev]);
 

@@ -21,8 +21,8 @@ export async function GET(request: Request) {
 
         let html = await response.text();
 
-        // Inject <base> tag to fix relative links and API calls to point to ngrok
-        html = html.replace("<head>", `<head>\n    <base href="${backendUrl}/">`);
+        // Inject window.BACKEND_URL to allow the frontend to use the proxy
+        html = html.replace("<head>", `<head>\n    <script>window.BACKEND_URL = "${backendUrl}";</script>`);
 
         return new NextResponse(html, {
             headers: {
