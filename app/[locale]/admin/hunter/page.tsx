@@ -1518,6 +1518,9 @@ export default function AdminHunterPage() {
                 </motion.div>
             )}
         </AnimatePresence>
+                </>
+            )}
+        </div>
 
         {/* 🦅 MODAL: HUNTER CLÁSICO (HTML) */}
         <AnimatePresence>
