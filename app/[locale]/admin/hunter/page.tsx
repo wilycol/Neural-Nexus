@@ -27,7 +27,8 @@ import {
     Star,
     Download,
     BookMarked,
-    ChevronRight
+    ChevronRight,
+    MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,6 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
+import { SeductorOps } from "@/components/admin/SeductorOps";
 
 interface Business {
     id: string;
@@ -96,6 +98,7 @@ const PIVOTES_ESTRATEGICOS = [
 ];
 
 export default function AdminHunterPage() {
+    const [activeMode, setActiveMode] = useState<'radar' | 'seductor'>('radar');
     const [backendUrl, setBackendUrl] = useState("https://claudine-tristful-moly.ngrok-free.dev");
     // 💋 Serie X Elite - Sincronización Dinámica Activa (v1.2)
     const [selectedNiche, setSelectedNiche] = useState(NICHES[0]);
@@ -504,8 +507,23 @@ export default function AdminHunterPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button 
+                        variant={activeMode === 'radar' ? 'default' : 'outline'}
+                        className={`mr-2 font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(0,163,255,0.4)] ${activeMode === 'radar' ? 'bg-neon-blue text-black hover:bg-neon-blue/80' : 'text-neon-blue border-neon-blue/30 hover:bg-neon-blue/10'}`}
+                        onClick={() => setActiveMode('radar')}
+                    >
+                        <Radar size={14} className="mr-2" /> Radar OSINT
+                    </Button>
+                    <Button 
+                        variant={activeMode === 'seductor' ? 'default' : 'outline'}
+                        className={`mr-4 font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(191,0,255,0.4)] ${activeMode === 'seductor' ? 'bg-neon-purple text-white hover:bg-neon-purple/80' : 'text-neon-purple border-neon-purple/30 hover:bg-neon-purple/10'}`}
+                        onClick={() => setActiveMode('seductor')}
+                    >
+                        <MessageCircle size={14} className="mr-2" /> Seductor CRM
+                    </Button>
+
+                    <Button 
                         variant="default"
-                        className="bg-neon-blue hover:bg-neon-blue/80 text-black font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(0,163,255,0.4)] mr-2"
+                        className="bg-white/10 hover:bg-white/20 text-white font-orbitron text-[10px] uppercase border border-white/20 mr-2"
                         onClick={() => setIsLegacyHunterOpen(true)}
                     >
                         🦅 Abrir Hunter Clásico
@@ -515,6 +533,7 @@ export default function AdminHunterPage() {
                         size="icon" 
                         className={`transition-all ${isManualMode ? 'text-neon-purple animate-pulse' : 'text-white/40 hover:text-white'}`}
                         onClick={() => {
+                            setActiveMode('radar');
                             setIsManualMode(!isManualMode);
                             toast.info(isManualMode ? "Radar normal activado" : "🧬 MODO HÉROE: Inyección Manual Activada");
                         }}
@@ -599,6 +618,10 @@ export default function AdminHunterPage() {
                 )}
             </AnimatePresence>
 
+            {activeMode === 'seductor' ? (
+                <SeductorOps backendUrl={backendUrl} />
+            ) : (
+                <>
             {/* 🧬 MODO HÉROE: INYECCIÓN MANUAL */}
             <AnimatePresence>
                 {isManualMode && (
