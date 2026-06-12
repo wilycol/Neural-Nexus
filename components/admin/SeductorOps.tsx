@@ -39,11 +39,24 @@ export function SeductorOps({ backendUrl }: SeductorOpsProps) {
     const [selectedTemplate, setSelectedTemplate] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
     const [isSending, setIsSending] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     
     // Audit Modal State
     const [auditLead, setAuditLead] = useState<Lead | null>(null);
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+    // Filtrar leads según la búsqueda en caliente (nombre, whatsapp, nicho, ciudad)
+    const filteredLeads = leads.filter(lead => {
+        const query = searchQuery.toLowerCase().trim();
+        if (!query) return true;
+        return (
+            (lead.nombre?.toLowerCase() || "").includes(query) ||
+            (lead.whatsapp?.toLowerCase() || "").includes(query) ||
+            (lead.nicho?.toLowerCase() || "").includes(query) ||
+            (lead.ciudad?.toLowerCase() || "").includes(query)
+        );
+    });
 
     const fetchLeads = useCallback(async () => {
         setIsLoading(true);
@@ -181,21 +194,41 @@ export function SeductorOps({ backendUrl }: SeductorOpsProps) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-xl font-orbitron font-black text-neon-purple flex items-center gap-2">
                         <MessageCircle size={24} /> OPERACIONES SEDUCTOR
                     </h2>
                     <p className="text-xs text-white/50 font-mono mt-1">Seducción industrial automatizada por WhatsApp Cloud</p>
                 </div>
-                <Button 
-                    onClick={fetchLeads} 
-                    variant="outline" 
-                    size="sm"
-                    className="border-neon-purple/30 text-neon-purple hover:bg-neon-purple/10 text-[10px] font-orbitron"
-                >
-                    <History size={14} className="mr-2"/> Refrescar Base
-                </Button>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:flex-none sm:w-64">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Buscar negocio, número o nicho..."
+                            className="w-full bg-black/40 border border-white/10 rounded-lg pl-9 pr-4 py-1.5 text-xs text-white placeholder-white/30 outline-none focus:border-neon-purple/50 font-mono"
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                            >
+                                <XCircle size={12} />
+                            </button>
+                        )}
+                    </div>
+                    <Button 
+                        onClick={fetchLeads} 
+                        variant="outline" 
+                        size="sm"
+                        className="border-neon-purple/30 text-neon-purple hover:bg-neon-purple/10 text-[10px] font-orbitron py-2 h-auto"
+                    >
+                        <History size={14} className="mr-2"/> Refrescar Base
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -212,11 +245,13 @@ export function SeductorOps({ backendUrl }: SeductorOpsProps) {
                             <select 
                                 value={selectedTemplate}
                                 onChange={(e) => setSelectedTemplate(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple"
+                                className="w-full bg-[#0a0518] text-white border border-neon-purple/30 rounded px-3 py-2 text-xs font-mono outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple"
                             >
-                                <option value="">-- Seleccionar Plantilla --</option>
+                                <option value="" className="bg-[#0a0518] text-white/50">-- Seleccionar Plantilla --</option>
                                 {templates.map((t, i) => (
-                                    <option key={i} value={t.name}>{t.name} ({t.language})</option>
+                                    <option key={i} value={t.name} className="bg-[#0a0518] text-white hover:bg-neon-purple/20">
+                                        {t.name} ({t.language || 'es'})
+                                    </option>
                                 ))}
                             </select>
                             <p className="text-[9px] text-white/30 italic">Variable {'{{1}}'} será reemplazada por el nombre del negocio automáticamente.</p>
@@ -245,7 +280,7 @@ export function SeductorOps({ backendUrl }: SeductorOpsProps) {
                 <Card className="bg-black/40 border-white/10 backdrop-blur-md lg:col-span-2 overflow-hidden">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm uppercase font-orbitron text-white/80 flex items-center gap-2">
-                            <Users size={16}/> Base de Operaciones ({leads.length})
+                            <Users size={16}/> Base de Operaciones ({searchQuery ? `${filteredLeads.length} de ${leads.length}` : leads.length})
                         </CardTitle>
                         <Button variant="ghost" size="sm" onClick={selectAll} className="text-[10px] text-white/50 hover:text-white">
                             Seleccionar Todos
@@ -264,7 +299,7 @@ export function SeductorOps({ backendUrl }: SeductorOpsProps) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {leads.map((lead) => (
+                                {filteredLeads.map((lead) => (
                                     <tr key={lead.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                         <td className="p-3 text-center">
                                             <input 
