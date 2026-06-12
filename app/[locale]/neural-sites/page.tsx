@@ -6,6 +6,7 @@ import {
   Zap,
   Check,
   ArrowRight,
+  ArrowUpRight,
   ShieldCheck,
   Cpu,
   Globe,
@@ -42,9 +43,61 @@ const PITCH_MEDIA = [
   { type: "video", url: "/Neural_Growth_Protocol.mp4" }
 ];
 
+interface PioneerNode {
+  id?: string;
+  name: string;
+  description?: string;
+  url?: string;
+  level?: number;
+}
+
 export default function NeuralSitesPage() {
   const [currentPlanImage, setCurrentPlanImage] = useState(0);
   const [currentPitchIdx, setCurrentPitchIdx] = useState(0);
+  const [pioneerNodes, setPioneerNodes] = useState<PioneerNode[]>([]);
+  const [remainingSlots, setRemainingSlots] = useState(90);
+
+  useEffect(() => {
+    const fetchPioneers = async () => {
+      try {
+        const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrY3R4eW95YWpxcmhhYXZuenJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTM1NDUsImV4cCI6MjA5MzQ4OTU0NX0.-RQMZ8LJCt7OIVjTtH999BwuvkltPcPb9Arfevr3MZo";
+        const url = "https://lkctxyoyajqrhaavnzrv.supabase.co/rest/v1/nodes?status=eq.live&order=created_at.desc";
+        const res = await fetch(url, {
+          headers: {
+            "apikey": apiKey,
+            "Authorization": `Bearer ${apiKey}`
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const uniqueNodes: PioneerNode[] = [];
+          const seenNames = new Set<string>();
+          
+          const urlOverrides: Record<string, string> = {
+            "Top Click": "https://nodetopclick.vercel.app",
+            "Miguel Lara Abogados": "https://nodemiguellaraabogados.vercel.app"
+          };
+
+          for (const item of data) {
+            const name = item.name as string;
+            if (!seenNames.has(name)) {
+              seenNames.add(name);
+              uniqueNodes.push({
+                ...item,
+                url: urlOverrides[name] || item.url || `https://node_${name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}.vercel.app`
+              });
+            }
+          }
+          
+          setPioneerNodes(uniqueNodes);
+          setRemainingSlots(100 - uniqueNodes.length);
+        }
+      } catch (err) {
+        console.error("Error fetching pioneer nodes:", err);
+      }
+    };
+    fetchPioneers();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -225,6 +278,62 @@ export default function NeuralSitesPage() {
           </h2>
           <TemplateCarousel3D />
         </section>
+
+        {/* Nuestros Pioneros Lanzados Section */}
+        {pioneerNodes.length > 0 && (
+          <section className="mb-28">
+            <div className="text-center mb-16">
+              <Badge variant="outline" className="border-neon-purple/50 text-neon-purple px-4 py-1.5 font-orbitron tracking-[0.3em] bg-neon-purple/5 uppercase text-[10px] mb-4">
+                PIONEROS EN VIVO • CASOS REALES
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4 uppercase italic tracking-widest">
+                Nuestros Pioneros Lanzados
+              </h2>
+              <p className="text-white/50 text-lg uppercase tracking-widest font-light max-w-2xl mx-auto text-center">
+                Páginas web inteligentes en producción y generando resultados en tiempo real
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {pioneerNodes.map((node, idx) => (
+                <motion.div
+                  key={node.id || idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  whileHover={{ y: -5 }}
+                  className="relative p-6 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 hover:border-neon-blue/50 transition-all duration-300 group shadow-lg hover:shadow-[0_0_30px_rgba(0,163,255,0.15)] flex flex-col justify-between min-h-[180px]"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-orbitron font-bold text-lg text-white group-hover:text-neon-blue transition-colors">
+                        {node.name}
+                      </h3>
+                      <div className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/30 text-green-500 text-[10px] font-mono px-2 py-0.5 rounded-full uppercase animate-pulse">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" /> Live
+                      </div>
+                    </div>
+                    <p className="text-xs text-white/50 leading-relaxed font-light line-clamp-2">
+                      {node.description || `Nodo de negocio inteligente optimizado y entregado con integración de Beatriz AI.`}
+                    </p>
+                  </div>
+                  <div className="pt-4 border-t border-white/5 flex justify-between items-center mt-4">
+                    <span className="text-[10px] text-white/30 uppercase tracking-widest font-mono">
+                      Refactor Nivel {node.level || 1}
+                    </span>
+                    <a
+                      href={node.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-neon-blue hover:text-neon-purple font-orbitron tracking-widest uppercase transition-colors"
+                    >
+                      Visitar Sitio <ArrowUpRight className="h-4 w-4" />
+                    </a>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Galería de Complejidad (Templates) */}
         <section className="mb-28">
@@ -559,7 +668,7 @@ export default function NeuralSitesPage() {
                 <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
                   <h2 className="text-3xl md:text-4xl font-orbitron font-bold italic uppercase tracking-tighter">Empieza hoy tu web automática.</h2>
                   <div className="shrink-0 flex items-center gap-2 bg-neon-blue/10 border border-neon-blue text-neon-blue px-4 py-1.5 rounded-full font-orbitron text-[10px] animate-pulse shadow-[0_0_15px_rgba(0,163,255,0.3)]">
-                    <TrendingUp className="h-3 w-3" /> 39 cupos de 100 disponibles
+                    <TrendingUp className="h-3 w-3" /> {remainingSlots} cupos de 100 disponibles
                   </div>
                 </div>
                 <p className="text-white/60 text-lg leading-relaxed mb-8 italic">

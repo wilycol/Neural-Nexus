@@ -20,13 +20,17 @@ export function NeuralSitesPricing() {
     const fetchSlots = async () => {
       try {
         if (!supabase) return;
-        const { count, error } = await supabase
-          .from('client_sites')
-          .select('*', { count: 'exact', head: true });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabase as any)
+          .from('nodes')
+          .select('name')
+          .eq('status', 'live');
         
-        if (!error && count !== null) {
+        if (!error && data) {
+          const uniqueNames = new Set(data.map((n: { name: string }) => n.name));
+          const count = uniqueNames.size;
           const calculated = 100 - count;
-          setRemainingSlots(Math.max(calculated, 7)); // Mantener un mínimo de 7 para urgencia real
+          setRemainingSlots(calculated);
         }
       } catch (err) {
         console.error('Error fetching site slots:', err);
