@@ -1533,7 +1533,7 @@ export default function AdminHunterPage() {
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.95, opacity: 0 }}
-                        className="relative w-full max-w-[1200px] h-[85vh] bg-[#0f172a] rounded-2xl border border-neon-blue/30 shadow-[0_0_50px_rgba(0,163,255,0.15)] flex flex-col overflow-hidden"
+                        className="relative w-[98vw] max-w-[1800px] h-[95vh] bg-[#0f172a] rounded-2xl border border-neon-blue/30 shadow-[0_0_50px_rgba(0,163,255,0.15)] flex flex-col overflow-hidden"
                     >
                         {/* Header del Modal */}
                         <div className="flex items-center justify-between p-4 border-b border-white/5 bg-black/20 shrink-0">
