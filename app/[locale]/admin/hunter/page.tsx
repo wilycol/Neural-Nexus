@@ -491,12 +491,12 @@ export default function AdminHunterPage() {
         <>
         <div className="min-h-screen bg-background text-white p-4 pb-44 space-y-6">
             {/* Header Industrial */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 className="text-2xl font-black font-orbitron text-neon-blue uppercase tracking-tighter">
                         Hunter <span className="text-white">Field Ops</span>
                     </h1>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mt-1">
                         <p className="text-[10px] text-white/50 uppercase tracking-widest font-mono">
                             Nivel de Acceso: SuperAdmin - Serie X Elite
                         </p>
@@ -505,17 +505,17 @@ export default function AdminHunterPage() {
                         )}
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <Button 
                         variant={activeMode === 'radar' ? 'default' : 'outline'}
-                        className={`mr-2 font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(0,163,255,0.4)] ${activeMode === 'radar' ? 'bg-neon-blue text-black hover:bg-neon-blue/80' : 'text-neon-blue border-neon-blue/30 hover:bg-neon-blue/10'}`}
+                        className={`font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(0,163,255,0.4)] ${activeMode === 'radar' ? 'bg-neon-blue text-black hover:bg-neon-blue/80' : 'text-neon-blue border-neon-blue/30 hover:bg-neon-blue/10'}`}
                         onClick={() => setActiveMode('radar')}
                     >
                         <Radar size={14} className="mr-2" /> Radar OSINT
                     </Button>
                     <Button 
                         variant={activeMode === 'seductor' ? 'default' : 'outline'}
-                        className={`mr-4 font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(191,0,255,0.4)] ${activeMode === 'seductor' ? 'bg-neon-purple text-white hover:bg-neon-purple/80' : 'text-neon-purple border-neon-purple/30 hover:bg-neon-purple/10'}`}
+                        className={`font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(191,0,255,0.4)] ${activeMode === 'seductor' ? 'bg-neon-purple text-white hover:bg-neon-purple/80' : 'text-neon-purple border-neon-purple/30 hover:bg-neon-purple/10'}`}
                         onClick={() => setActiveMode('seductor')}
                     >
                         <MessageCircle size={14} className="mr-2" /> Seductor CRM
@@ -523,7 +523,7 @@ export default function AdminHunterPage() {
 
                     <Button 
                         variant="default"
-                        className="bg-white/10 hover:bg-white/20 text-white font-orbitron text-[10px] uppercase border border-white/20 mr-2"
+                        className="bg-white/10 hover:bg-white/20 text-white font-orbitron text-[10px] uppercase border border-white/20"
                         onClick={() => setIsLegacyHunterOpen(true)}
                     >
                         🦅 Abrir Hunter Clásico
