@@ -51,7 +51,7 @@ export function NeuralSitesPricing() {
       priceUSD: '$15',
       priceCOP: '$60.000',
       image: '/assets/plans/silver.png',
-      features: ['Web Viva (2 publicaciones diarias)', 'Google Maps y GBP de Regalo', 'Posicionamiento Local SEO', 'Soporte Técnico 24/7'],
+      features: ['Web Viva (2 publicaciones diarias)', 'Asesoría y Alta VIP en Google Business (GBP)', 'Posicionamiento Local SEO', 'Soporte Técnico 24/7'],
       color: 'border-slate-400/30',
       glow: 'shadow-[0_0_20px_rgba(148,163,184,0.2)]'
     },
