@@ -108,10 +108,12 @@ export default function CreditsPage() {
             <div className="relative overflow-hidden rounded-3xl border border-neon-blue/20 bg-gradient-to-br from-neon-blue/10 via-background to-background p-8 lg:p-12">
               <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-neon-blue/10 to-transparent opacity-50" />
               <div className="relative flex flex-col md:flex-row items-center gap-8">
-                <div className="h-32 w-32 shrink-0 rounded-2xl bg-gradient-to-br from-neon-blue to-neon-purple p-1 shadow-2xl shadow-neon-blue/20">
-                  <div className="flex h-full w-full items-center justify-center rounded-xl bg-background text-4xl font-black">
-                    W
-                  </div>
+                <div className="h-32 w-32 shrink-0 rounded-2xl bg-gradient-to-br from-neon-blue to-neon-purple p-1 shadow-2xl shadow-neon-blue/20 overflow-hidden">
+                  <img 
+                    src="/wilycol.png" 
+                    alt="WilyCol" 
+                    className="h-full w-full object-cover rounded-xl"
+                  />
                 </div>
                 <div className="text-center md:text-left">
                   <div className="mb-2 flex items-center justify-center md:justify-start gap-2 text-xs font-bold uppercase tracking-widest text-neon-blue">
