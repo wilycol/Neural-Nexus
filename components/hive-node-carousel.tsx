@@ -158,8 +158,8 @@ export function HiveNodeCarousel({ className }: HiveNodeCarouselProps) {
           Neural Ad Engine
         </h3>
         <p className="text-sm text-gray-400 italic max-w-xs">
-          "Posiciona tu marca en la Red Nexus Hive. Segmentación IA de alta
-          precisión."
+          &quot;Posiciona tu marca en la Red Nexus Hive. Segmentación IA de alta
+          precisión.&quot;
         </p>
         <Button
           asChild
