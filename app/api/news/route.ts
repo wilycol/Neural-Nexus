@@ -29,6 +29,9 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const search = searchParams.get('search');
     const isTopStory = searchParams.get('top') === 'true';
+    // 'nodes' → solo noticias de la federación (Neural Ad Engine)
+    // 'portal' (default) → excluye noticias de nodos de la federación
+    const source = searchParams.get('source') || 'portal';
     
     const supabase = (() => {
       try {
@@ -52,6 +55,27 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('news')
       .select('*', { count: 'exact' });
+
+    // ── FILTRO NEURAL HIVE ────────────────────────────────────────────────────
+    // Las noticias de los nodos federados tienen source_url que apunta a
+    // dominios *.vercel.app de los nodos (nodetopclick.vercel.app, etc.)
+    // y sus tags contienen el prefijo 'node_'.
+    // El feed principal del portal NO debe mostrarlas; solo el Neural Ad Engine.
+    if (source === 'nodes') {
+      // Neural Ad Engine: traer SOLO noticias de nodos federados
+      query = query.or('source_url.ilike.%node%.vercel.app%,tags.cs.{node_top_click},tags.cs.{node_euro__arkadia},tags.cs.{node_jarvis_easy_stock},tags.cs.{node_robotic_news},tags.cs.{node_asesoria_juridica}');
+    } else {
+      // Feed principal del portal: EXCLUIR noticias de nodos federados
+      // Un nodo siempre tiene al menos un tag con prefijo 'node_' en minúsculas.
+      // Filtramos por source_name para máxima compatibilidad.
+      query = query
+        .not('tags', 'cs', '{node_top_click}')
+        .not('tags', 'cs', '{node_euro__arkadia}')
+        .not('tags', 'cs', '{node_jarvis_easy_stock}')
+        .not('tags', 'cs', '{node_robotic_news}')
+        .not('tags', 'cs', '{node_asesoria_juridica}');
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // Aplicar filtros
     const categoryFilter = category && NEWS_CATEGORY_SET.has(category as Database["public"]["Tables"]["news"]["Row"]["category"])
