@@ -274,10 +274,10 @@ export function HiveNodeCarousel({ className }: HiveNodeCarouselProps) {
                   boxShadow: `0 0 16px ${meta.glowColor}`,
                 }}
               >
-                <Link href={`/news/${item.slug}`}>
+                <a href={item.source_url || '#'} target="_blank" rel="noopener noreferrer">
                   Ver Publicación
                   <ExternalLink className="ml-1.5 h-3 w-3" />
-                </Link>
+                </a>
               </Button>
 
               {/* Nodo origin link */}
