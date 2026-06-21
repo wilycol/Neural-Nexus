@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { NewsCard } from "@/components/news-card";
 import { InfiniteScroll } from "@/components/infinite-scroll";
 import { AdBanner } from "@/components/ad-banner";
-import { NeuralBillboard } from "@/components/neural-billboard";
+import { HiveNodeCarousel } from "@/components/hive-node-carousel";
 import { PaymentModal } from "@/components/payment/payment-modal";
 import { PartnershipModal } from "@/components/partnership-modal";
 import { useInfiniteNews } from "@/hooks/use-infinite-news";
@@ -298,10 +298,8 @@ export function NewsFeed({ category, search }: NewsFeedProps) {
               />
             )}
             {(index + 1) % 3 === 0 && (
-              <NeuralBillboard 
+              <HiveNodeCarousel 
                 className="my-2"
-                onDonationClick={() => setIsPaymentOpen(true)}
-                onPartnershipClick={() => setIsPartnershipOpen(true)}
               />
             )}
           </React.Fragment>
