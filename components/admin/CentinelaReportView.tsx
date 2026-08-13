@@ -3,16 +3,7 @@
 import React, { useState } from "react";
 import { 
     ShieldCheck, 
-    TrendingUp, 
-    Users, 
     Send, 
-    CheckCircle, 
-    MessageSquare, 
-    Sparkles, 
-    AlertTriangle, 
-    FileText, 
-    ArrowRight,
-    DollarSign,
     Zap,
     FlaskConical
 } from "lucide-react";
@@ -56,13 +47,8 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" }
             });
-            const data = await res.json();
-
-            if (data.success || data.status === "OK") {
-                toast.success("✅ Resumen enviado a NEXUS_OUTBOX.md (WhatsApp listo)");
-            } else {
-                toast.success("✅ Resumen depositado en la cola de envío de WhatsApp");
-            }
+            await res.json();
+            toast.success("✅ Resumen depositado en la cola de envío de WhatsApp");
         } catch {
             // Fallback de notificación positiva en interfaz
             toast.success("✅ Resumen depositado en NEXUS_OUTBOX.md para WhatsApp Cloud");
@@ -126,7 +112,7 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
                         <CardTitle className="text-2xl font-black font-orbitron text-emerald-400">{metrics.m3_demo_acceptance}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-[10px] text-emerald-400/60 font-mono">36 Demos ("Quiero ver la magia")</p>
+                        <p className="text-[10px] text-emerald-400/60 font-mono">36 Demos (&quot;Quiero ver la magia&quot;)</p>
                     </CardContent>
                 </Card>
 
@@ -199,7 +185,7 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
                             <span className="text-xs font-bold text-cyan-300 font-orbitron">VARIANTE A — BENEFICIO</span>
                             <Badge variant="outline" className="text-[8px] border-cyan-500/40 text-cyan-300">50% Tráfico</Badge>
                         </div>
-                        <p className="text-[11px] text-white/70 italic">"Enfoque en presencia digital, sitio web inteligente y 30 días gratis."</p>
+                        <p className="text-[11px] text-white/70 italic">&quot;Enfoque en presencia digital, sitio web inteligente y 30 días gratis.&quot;</p>
                     </div>
 
                     <div className="bg-black/50 p-4 rounded-xl border border-purple-500/20">
@@ -207,7 +193,7 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
                             <span className="text-xs font-bold text-purple-300 font-orbitron">VARIANTE B — CURIOSIDAD</span>
                             <Badge variant="outline" className="text-[8px] border-purple-500/40 text-purple-300">50% Tráfico</Badge>
                         </div>
-                        <p className="text-[11px] text-white/70 italic">"Enfoque en demostración lista ('te hice una demostración') + 'Quiero ver la magia'."</p>
+                        <p className="text-[11px] text-white/70 italic">&quot;Enfoque en demostración lista (&apos;te hice una demostración&apos;) + &apos;Quiero ver la magia&apos;.&quot;</p>
                     </div>
                 </div>
             </Card>
