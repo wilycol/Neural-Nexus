@@ -63,17 +63,31 @@ export async function GET(request: NextRequest) {
     // El feed principal del portal NO debe mostrarlas; solo el Neural Ad Engine.
     if (source === 'nodes') {
       // Neural Ad Engine: traer SOLO noticias de nodos federados
-      query = query.or('source_url.ilike.%node%.vercel.app%,tags.cs.{node_top_click},tags.cs.{node_euro__arkadia},tags.cs.{node_jarvis_easy_stock},tags.cs.{node_robotic_news},tags.cs.{node_asesoria_juridica}');
+      query = query.or('source_name.eq.Auto-Publisher Autónomo,source_url.ilike.%node%.vercel.app%,tags.cs.{node_top_click},tags.cs.{node_euro__arkadia},tags.cs.{node_euro___arkadia},tags.cs.{node_jarvis_easy_stock},tags.cs.{node_robotic_news},tags.cs.{node_asesoria_juridica},tags.cs.{node_ferreteria_la_21},tags.cs.{node_miguel_lara_abogados},tags.cs.{node_secretos_de_mujer},tags.cs.{node_burger_queen_medellin},tags.cs.{node_cafeter_a_la_rosa},tags.cs.{node_estanco_el_desmadre},tags.cs.{node_helader_a_boquitas},tags.cs.{node_jm_tecnologia___accesorios},tags.cs.{node_la_principal_de_licores},tags.cs.{node_v2_taller_torque_proof},tags.cs.{node_wily},tags.cs.{node_wily_col__prueba_}');
     } else {
       // Feed principal del portal: EXCLUIR noticias de nodos federados
-      // Un nodo siempre tiene al menos un tag con prefijo 'node_' en minúsculas.
-      // Filtramos por source_name para máxima compatibilidad.
+      // Excluir por source_name, por coincidencia de url y por cada una de las etiquetas del nodo
       query = query
+        .not('source_name', 'eq', 'Auto-Publisher Autónomo')
+        .not('source_url', 'ilike', '%node%.vercel.app%')
         .not('tags', 'cs', '{node_top_click}')
         .not('tags', 'cs', '{node_euro__arkadia}')
+        .not('tags', 'cs', '{node_euro___arkadia}')
         .not('tags', 'cs', '{node_jarvis_easy_stock}')
         .not('tags', 'cs', '{node_robotic_news}')
-        .not('tags', 'cs', '{node_asesoria_juridica}');
+        .not('tags', 'cs', '{node_asesoria_juridica}')
+        .not('tags', 'cs', '{node_ferreteria_la_21}')
+        .not('tags', 'cs', '{node_miguel_lara_abogados}')
+        .not('tags', 'cs', '{node_secretos_de_mujer}')
+        .not('tags', 'cs', '{node_burger_queen_medellin}')
+        .not('tags', 'cs', '{node_cafeter_a_la_rosa}')
+        .not('tags', 'cs', '{node_estanco_el_desmadre}')
+        .not('tags', 'cs', '{node_helader_a_boquitas}')
+        .not('tags', 'cs', '{node_jm_tecnologia___accesorios}')
+        .not('tags', 'cs', '{node_la_principal_de_licores}')
+        .not('tags', 'cs', '{node_v2_taller_torque_proof}')
+        .not('tags', 'cs', '{node_wily}')
+        .not('tags', 'cs', '{node_wily_col__prueba_}');
     }
     // ─────────────────────────────────────────────────────────────────────────
 

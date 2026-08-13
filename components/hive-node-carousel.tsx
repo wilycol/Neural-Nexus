@@ -33,6 +33,12 @@ const NODE_META: Record<
     glowColor: "rgba(0,206,209,0.4)",
     accentClass: "border-cyan-500/40 text-cyan-400",
   },
+  node_euro___arkadia: {
+    label: "Euro Arkadia",
+    color: "#00CED1",
+    glowColor: "rgba(0,206,209,0.4)",
+    accentClass: "border-cyan-500/40 text-cyan-400",
+  },
   node_jarvis_easy_stock: {
     label: "Jarvis Easy Stock",
     color: "#8A2BE2",
@@ -50,6 +56,78 @@ const NODE_META: Record<
     color: "#FFD700",
     glowColor: "rgba(255,215,0,0.4)",
     accentClass: "border-yellow-500/40 text-yellow-400",
+  },
+  node_miguel_lara_abogados: {
+    label: "Miguel Lara Abogados",
+    color: "#C0C0C0",
+    glowColor: "rgba(192,192,192,0.4)",
+    accentClass: "border-slate-500/40 text-slate-300",
+  },
+  node_ferreteria_la_21: {
+    label: "Ferretería La 21",
+    color: "#FF8C00",
+    glowColor: "rgba(255,140,0,0.4)",
+    accentClass: "border-orange-600/40 text-orange-400",
+  },
+  node_secretos_de_mujer: {
+    label: "Secretos de Mujer",
+    color: "#FF1493",
+    glowColor: "rgba(255,20,147,0.4)",
+    accentClass: "border-pink-500/40 text-pink-400",
+  },
+  node_burger_queen_medellin: {
+    label: "Burger Queen",
+    color: "#FF4500",
+    glowColor: "rgba(255,69,0,0.4)",
+    accentClass: "border-red-500/40 text-red-400",
+  },
+  node_cafeter_a_la_rosa: {
+    label: "Cafetería La Rosa",
+    color: "#D2691E",
+    glowColor: "rgba(210,105,30,0.4)",
+    accentClass: "border-amber-700/40 text-amber-500",
+  },
+  node_estanco_el_desmadre: {
+    label: "Estanco El Desmadre",
+    color: "#9400D3",
+    glowColor: "rgba(148,0,211,0.4)",
+    accentClass: "border-purple-600/40 text-purple-400",
+  },
+  node_helader_a_boquitas: {
+    label: "Heladería Boquitas",
+    color: "#FF69B4",
+    glowColor: "rgba(255,105,180,0.4)",
+    accentClass: "border-rose-400/40 text-rose-300",
+  },
+  node_jm_tecnologia___accesorios: {
+    label: "JM Tecnología",
+    color: "#00FFFF",
+    glowColor: "rgba(0,255,255,0.4)",
+    accentClass: "border-cyan-400/40 text-cyan-300",
+  },
+  node_la_principal_de_licores: {
+    label: "La Principal de Licores",
+    color: "#B22222",
+    glowColor: "rgba(178,34,34,0.4)",
+    accentClass: "border-red-700/40 text-red-500",
+  },
+  node_v2_taller_torque_proof: {
+    label: "Taller Torque Proof",
+    color: "#FF4500",
+    glowColor: "rgba(255,69,0,0.4)",
+    accentClass: "border-orange-600/40 text-orange-500",
+  },
+  node_wily: {
+    label: "Wily Node",
+    color: "#BD00FF",
+    glowColor: "rgba(189,0,255,0.4)",
+    accentClass: "border-fuchsia-500/40 text-fuchsia-400",
+  },
+  node_wily_col__prueba_: {
+    label: "Wily Col Prueba",
+    color: "#00FFCC",
+    glowColor: "rgba(0,255,204,0.4)",
+    accentClass: "border-teal-400/40 text-teal-300",
   },
 };
 

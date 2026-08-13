@@ -37,6 +37,8 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 import { SeductorOps } from "@/components/admin/SeductorOps";
+import { CentinelaReportView } from "@/components/admin/CentinelaReportView";
+import { ShieldCheck } from "lucide-react";
 
 interface Business {
     id: string;
@@ -98,7 +100,7 @@ const PIVOTES_ESTRATEGICOS = [
 ];
 
 export default function AdminHunterPage() {
-    const [activeMode, setActiveMode] = useState<'radar' | 'seductor'>('radar');
+    const [activeMode, setActiveMode] = useState<'radar' | 'seductor' | 'centinela'>('radar');
     const [backendUrl, setBackendUrl] = useState("https://claudine-tristful-moly.ngrok-free.dev");
     // 💋 Serie X Elite - Sincronización Dinámica Activa (v1.2)
     const [selectedNiche, setSelectedNiche] = useState(NICHES[0]);
@@ -522,6 +524,14 @@ export default function AdminHunterPage() {
                     </Button>
 
                     <Button 
+                        variant={activeMode === 'centinela' ? 'default' : 'outline'}
+                        className={`font-orbitron text-[10px] uppercase shadow-[0_0_15px_rgba(16,185,129,0.4)] ${activeMode === 'centinela' ? 'bg-emerald-500 text-black hover:bg-emerald-400 font-bold' : 'text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10'}`}
+                        onClick={() => setActiveMode('centinela')}
+                    >
+                        <ShieldCheck size={14} className="mr-2" /> 🛡️ Reportes Centinela
+                    </Button>
+
+                    <Button 
                         variant="default"
                         className="bg-white/10 hover:bg-white/20 text-white font-orbitron text-[10px] uppercase border border-white/20"
                         onClick={() => setIsLegacyHunterOpen(true)}
@@ -618,7 +628,9 @@ export default function AdminHunterPage() {
                 )}
             </AnimatePresence>
 
-            {activeMode === 'seductor' ? (
+            {activeMode === 'centinela' ? (
+                <CentinelaReportView backendUrl={backendUrl} />
+            ) : activeMode === 'seductor' ? (
                 <SeductorOps backendUrl={backendUrl} />
             ) : (
                 <>
