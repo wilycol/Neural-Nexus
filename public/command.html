@@ -886,9 +886,6 @@
                     document.getElementById('visualizer').classList.add('listening');
                     isStreaming = true;
                 };
-                    document.getElementById('visualizer').classList.add('listening');
-                    isStreaming = true;
-                };
 
                 streamWs.onmessage = (event) => {
                     if (typeof event.data === 'string') {
