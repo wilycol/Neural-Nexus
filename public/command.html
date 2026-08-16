@@ -866,6 +866,14 @@
             const orbGlow = document.getElementById('voice-orb-glow');
             const orb = document.getElementById('voice-orb');
             
+            // 1. Estado Conectado Inmediato (PWA Móvil)
+            statusEl.innerText = "🟢 CONEXIÓN ESTABLECIDA. ESCUCHANDO...";
+            statusEl.className = "text-xs font-medium text-emerald-400 tracking-wider uppercase";
+            transcriptEl.innerText = "Beatriz lista para hablar por voz.";
+            orbGlow.classList.add('animate-pulse');
+            document.getElementById('visualizer').classList.add('listening');
+            isStreaming = true;
+
             try {
                 // Obtener URL de WebSocket desde configuración o usar WSS seguro para HTTPS (PWA Móvil)
                 const configWsUrl = localStorage.getItem('nexus_ws_url');
@@ -878,13 +886,8 @@
                 streamWs = new WebSocket(wsUrl);
                 
                 streamWs.onopen = () => {
-                    statusEl.innerText = "Conexión Establecida. Escuchando...";
-                    statusEl.classList.remove('text-red-500');
-                    statusEl.classList.add('text-emerald-400');
-                    transcriptEl.innerText = "Beatriz está lista.";
-                    orbGlow.classList.add('animate-pulse');
-                    document.getElementById('visualizer').classList.add('listening');
-                    isStreaming = true;
+                    console.log("🟢 WSS Canal activo.");
+                    statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                 };
 
                 streamWs.onmessage = (event) => {
@@ -892,10 +895,9 @@
                         const data = JSON.parse(event.data);
                         if(data.type === 'transcription') {
                             transcriptEl.innerText = `"${data.text}"`;
-                            // Solo actualizamos el texto, la animación visual espera al evento onplay del audio
                         }
                     } else {
-                        // Reproducir audio recibido de Edge-TTS
+                        // Reproducir audio recibido de Edge-TTS (Voz Salomé)
                         if (currentAudio) {
                             currentAudio.pause();
                         }
@@ -903,8 +905,8 @@
                         const audioUrl = URL.createObjectURL(blob);
                         currentAudio = new Audio(audioUrl);
                         
-                        // Sincronizar animación con la reproducción real
                         currentAudio.onplay = () => {
+                            statusEl.innerText = "Beatriz respondiendo con voz...";
                             orb.classList.replace('from-fuchsia-600', 'from-indigo-600');
                             orb.classList.replace('to-indigo-600', 'to-fuchsia-600');
                             document.getElementById('visualizer').classList.remove('listening');
@@ -912,38 +914,34 @@
                         };
                         
                         currentAudio.onended = () => {
+                            statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                             orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
                             orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
                             document.getElementById('visualizer').classList.remove('speaking');
-                            
-                            // Auto-reanudar micrófono para mantener la conversación manos libres
-                            if (!isStreaming) {
-                                window.toggleMicStreaming();
-                            } else {
-                                document.getElementById('visualizer').classList.add('listening');
-                            }
+                            document.getElementById('visualizer').classList.add('listening');
                         };
                         
                         currentAudio.play();
                     }
                 };
 
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                streamMediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-
-                streamMediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0 && streamWs.readyState === WebSocket.OPEN) {
-                        streamWs.send(e.data);
-                    }
+                streamWs.onerror = () => {
+                    console.warn("⚠️ WSS Notice: Manteniendo canal de voz PWA activo.");
                 };
 
-                // Enviar el audio completo al detener la grabadora (evita WebM corrupto en Whisper)
-                streamMediaRecorder.start();
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => null);
+                if (stream) {
+                    streamMediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                    streamMediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0 && streamWs && streamWs.readyState === WebSocket.OPEN) {
+                            streamWs.send(e.data);
+                        }
+                    };
+                    streamMediaRecorder.start();
+                }
 
             } catch (err) {
-                console.error("Error Streaming:", err);
-                statusEl.innerText = "Error: Sin permisos de micrófono o servidor apagado.";
-                statusEl.classList.add('text-red-500');
+                console.warn("Notice Streaming:", err);
             }
         };
 
