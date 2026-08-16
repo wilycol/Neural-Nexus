@@ -1053,6 +1053,10 @@
                             if (transcriptEl) transcriptEl.innerText = `"${data.response}"`;
                             appendStreamLog(`🧠 Beatriz respondió: "${data.response.substring(0, 40)}..."`);
                             
+                            if (data.command_triggered) {
+                                appendStreamLog("⚡ ÓRDEN TÉCNICA INYECTADA AL BÚNKER (Antigravity activado)");
+                            }
+                            
                             const audioUrl = data.voice_url;
                             if (audioUrl) {
                                 appendStreamLog("🗣️ Reproduciendo voz colombiana Salomé (es-CO)...");
