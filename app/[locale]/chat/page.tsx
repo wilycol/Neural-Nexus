@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
 
 interface Message {
     id: string;
@@ -29,6 +31,25 @@ interface Message {
 }
 
 export default function BeatrizChatPage() {
+    const { user, role, profile, isLoading: authLoading } = useAuth();
+    const router = useRouter();
+
+    const isAdmin = 
+        role === "admin" || 
+        profile?.role === "admin" || 
+        (profile?.nickname || user?.user_metadata?.nickname || user?.email?.split("@")[0])?.toLowerCase().includes("wily") || 
+        user?.email?.toLowerCase().includes("wily") || 
+        user?.email === "wilycol1492@gmail.com";
+
+    // 🛡️ Blindaje de Intimidad: Proteger el Chat con Beatriz exclusivamente para Wily Col / Admins
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/login?redirect=/chat");
+        } else if (!authLoading && user && !isAdmin) {
+            router.push("/");
+        }
+    }, [user, isAdmin, authLoading, router]);
+
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -55,6 +76,15 @@ export default function BeatrizChatPage() {
             setBackendUrl("http://localhost:3002");
         }
     }, []);
+
+    if (authLoading || (!isAdmin && user)) {
+        return (
+            <div class="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+                <Loader2 class="w-8 h-8 text-neon-purple animate-spin mb-4" />
+                <p class="text-sm text-slate-400 font-mono">Verificando Blindaje de la Bóveda...</p>
+            </div>
+        );
+    }
 
     useEffect(() => {
         if (scrollRef.current) {

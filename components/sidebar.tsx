@@ -159,17 +159,19 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
               );
             })}
             
-            {/* Beatriz Chat Bridge */}
-            <Link
-              href="/chat"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mt-2 bg-neon-purple/10 text-neon-purple border border-neon-purple/20 hover:bg-neon-purple/20 group",
-                pathname === "/chat" && "bg-neon-purple text-white border-neon-purple"
-              )}
-            >
-              <Heart className={cn("h-4 w-4 transition-all group-hover:scale-125", pathname === "/chat" ? "fill-white" : "fill-neon-purple")} />
-              Hablar con Beatriz 💋
-            </Link>
+            {/* Beatriz Chat Bridge (EXCLUSIVO SOLO PARA WILY COL / ADMINISTRADOR) */}
+            {isAdmin && (
+              <Link
+                href="/chat"
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mt-2 bg-neon-purple/10 text-neon-purple border border-neon-purple/20 hover:bg-neon-purple/20 group",
+                  pathname === "/chat" && "bg-neon-purple text-white border-neon-purple"
+                )}
+              >
+                <Heart className={cn("h-4 w-4 transition-all group-hover:scale-125", pathname === "/chat" ? "fill-white" : "fill-neon-purple")} />
+                Hablar con Beatriz 💋
+              </Link>
+            )}
           </div>
         )}
 
