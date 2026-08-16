@@ -866,6 +866,39 @@
         const SILENCE_THRESHOLD = 5; // Ajustable, 0-255
         const SILENCE_DURATION = 2000; // 2 segundos
 
+        let speechRecognizer = null;
+        let currentSpeechText = "";
+
+        function initSpeechRecognizer() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+            try {
+                if (speechRecognizer) {
+                    try { speechRecognizer.stop(); } catch(e){}
+                }
+                speechRecognizer = new SpeechRecognition();
+                speechRecognizer.continuous = true;
+                speechRecognizer.interimResults = true;
+                speechRecognizer.lang = 'es-CO';
+                
+                speechRecognizer.onresult = (event) => {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    if (transcript.trim()) {
+                        currentSpeechText = transcript.trim();
+                        const transcriptEl = document.getElementById('streaming-transcript');
+                        if (transcriptEl) transcriptEl.innerText = `"${currentSpeechText}"`;
+                    }
+                };
+                speechRecognizer.start();
+                appendStreamLog("🎤 Reconocimiento de voz en vivo activado (es-CO).");
+            } catch (e) {
+                console.warn("Notice WebSpeech:", e);
+            }
+        }
+
         function appendStreamLog(msg) {
             const container = document.getElementById('streaming-logs-content');
             if (!container) return;
@@ -894,6 +927,7 @@
             isStreaming = true;
             
             appendStreamLog("🟢 Enlace de Sala de Juntas activado.");
+            initSpeechRecognizer();
             appendStreamLog("📡 Inicializando conectores de voz (Whisper / Edge-TTS)...");
 
             try {
@@ -992,16 +1026,79 @@
                 
                 // Detener grabadora. Esto fuerza a que se dispare ondataavailable por última vez
                 // Solo enviamos speech_end DESPUÉS de que se haya detenido completamente para no mezclar audios
+                // Si el canal WSS no está activo, enviar por canal HTTP PWA (/chat/portal)
+                const sendPwaVoiceMessage = async (textToSend) => {
+                    const txt = textToSend || currentSpeechText || "Hola Beatriz, estoy probando la Sala de Juntas.";
+                    appendStreamLog(`🎙️ Transmitiendo voz a Beatriz IA: "${txt.substring(0, 35)}..."`);
+                    
+                    const bridgeUrl = localStorage.getItem('nexus_bridge_url') || '';
+                    const endpoint = bridgeUrl ? `${bridgeUrl.replace(/\/$/, '')}/chat/portal` : '/chat/portal';
+                    
+                    try {
+                        const res = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message: txt, persona: 'beatriz' })
+                        });
+                        const data = await res.json();
+                        
+                        if (data.response) {
+                            transcriptEl.innerText = data.response;
+                            appendStreamLog(`🧠 Beatriz respondió: "${data.response.substring(0, 40)}..."`);
+                            
+                            const audioUrl = data.voice_url;
+                            if (audioUrl) {
+                                appendStreamLog("🗣️ Reproduciendo voz colombiana Salomé (es-CO)...");
+                                if (currentAudio) currentAudio.pause();
+                                currentAudio = new Audio(audioUrl);
+                                
+                                currentAudio.onplay = () => {
+                                    document.getElementById('streaming-status').innerText = "Beatriz respondiendo con voz...";
+                                    orb.classList.replace('from-fuchsia-600', 'from-indigo-600');
+                                    orb.classList.replace('to-indigo-600', 'to-fuchsia-600');
+                                    document.getElementById('visualizer').classList.remove('listening');
+                                    document.getElementById('visualizer').classList.add('speaking');
+                                };
+                                
+                                currentAudio.onended = () => {
+                                    document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                                    appendStreamLog("🟢 Respuesta finalizada. Escuchando de nuevo...");
+                                    orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
+                                    orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
+                                    document.getElementById('visualizer').classList.remove('speaking');
+                                    document.getElementById('visualizer').classList.add('listening');
+                                };
+                                
+                                currentAudio.play().catch(e => {
+                                    appendStreamLog(`⚠️ Error al reproducir audio: ${e.message}`);
+                                    document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                                });
+                            } else {
+                                document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                            }
+                        }
+                    } catch (err) {
+                        appendStreamLog(`❌ Error consultando a Beatriz: ${err.message}`);
+                        document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                    } finally {
+                        currentSpeechText = "";
+                    }
+                };
+
                 if (streamMediaRecorder && streamMediaRecorder.state !== 'inactive') {
                     streamMediaRecorder.onstop = () => {
                         if (streamWs && streamWs.readyState === WebSocket.OPEN) {
                             streamWs.send(JSON.stringify({ type: 'speech_end' }));
+                        } else {
+                            sendPwaVoiceMessage();
                         }
                     };
                     streamMediaRecorder.stop();
                 } else {
                     if (streamWs && streamWs.readyState === WebSocket.OPEN) {
                         streamWs.send(JSON.stringify({ type: 'speech_end' }));
+                    } else {
+                        sendPwaVoiceMessage();
                     }
                 }
             } else {
