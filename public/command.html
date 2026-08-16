@@ -867,17 +867,25 @@
             const orb = document.getElementById('voice-orb');
             
             try {
-                // Obtener URL de WebSocket desde configuración
+                // Obtener URL de WebSocket desde configuración o usar WSS seguro para HTTPS (PWA Móvil)
                 const configWsUrl = localStorage.getItem('nexus_ws_url');
-                let wsUrl = configWsUrl ? configWsUrl : 'ws://localhost:8765';
+                const isHttps = window.location.protocol === 'https:';
+                let wsUrl = configWsUrl 
+                    ? configWsUrl 
+                    : (isHttps ? 'wss://wily-nexus-stream.loca.lt' : 'ws://localhost:8765');
 
+                console.log("📡 Conectando streaming WSS:", wsUrl);
                 streamWs = new WebSocket(wsUrl);
                 
                 streamWs.onopen = () => {
                     statusEl.innerText = "Conexión Establecida. Escuchando...";
+                    statusEl.classList.remove('text-red-500');
                     statusEl.classList.add('text-emerald-400');
                     transcriptEl.innerText = "Beatriz está lista.";
                     orbGlow.classList.add('animate-pulse');
+                    document.getElementById('visualizer').classList.add('listening');
+                    isStreaming = true;
+                };
                     document.getElementById('visualizer').classList.add('listening');
                     isStreaming = true;
                 };
