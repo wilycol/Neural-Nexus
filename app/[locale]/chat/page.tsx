@@ -77,20 +77,20 @@ export default function BeatrizChatPage() {
         }
     }, []);
 
-    if (authLoading || (!isAdmin && user)) {
-        return (
-            <div class="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
-                <Loader2 class="w-8 h-8 text-neon-purple animate-spin mb-4" />
-                <p class="text-sm text-slate-400 font-mono">Verificando Blindaje de la Bóveda...</p>
-            </div>
-        );
-    }
-
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages]);
+
+    if (authLoading || (!isAdmin && user)) {
+        return (
+            <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+                <Loader2 className="w-8 h-8 text-neon-purple animate-spin mb-4" />
+                <p className="text-sm text-slate-400 font-mono">Verificando Blindaje de la Bóveda...</p>
+            </div>
+        );
+    }
 
     const testConnection = async () => {
         setIsTesting(true);
