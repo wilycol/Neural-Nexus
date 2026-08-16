@@ -192,9 +192,18 @@
                 </div>
             </div>
 
-            <!-- Subtítulos en Vivo -->
-            <div class="w-full h-24 bg-black/30 rounded-2xl border border-white/5 p-4 overflow-y-auto">
-                <p id="streaming-transcript" class="text-sm text-slate-300 italic text-center font-serif leading-relaxed">Esperando conexión...</p>
+            <!-- Subtítulos y Registros del Búnker en Vivo -->
+            <div class="w-full bg-black/40 rounded-2xl border border-white/10 p-4 space-y-2">
+                <p id="streaming-transcript" class="text-sm text-slate-200 italic text-center font-serif leading-relaxed">Esperando tu voz...</p>
+                <div class="border-t border-white/10 pt-2">
+                    <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono mb-1">
+                        <span class="font-bold text-amber-400">📊 REGISTROS DEL BÚNKER EN VIVO</span>
+                        <span id="streaming-log-status" class="text-emerald-400">EN LINEA</span>
+                    </div>
+                    <div id="streaming-logs-content" class="max-h-24 overflow-y-auto font-mono text-[11px] text-emerald-400/90 space-y-1 bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
+                        <p class="text-slate-500">[09:20:00] 🟢 Enlace de voz listo. Presiona "Detener Transmisión" para procesar o habla directamente.</p>
+                    </div>
+                </div>
             </div>
 
             <button onclick="toggleMicStreaming()" id="streaming-mic-btn" class="w-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-fuchsia-600/20 active:scale-95 transition-all uppercase tracking-widest text-sm flex justify-center items-center gap-2">
@@ -857,6 +866,16 @@
         const SILENCE_THRESHOLD = 5; // Ajustable, 0-255
         const SILENCE_DURATION = 2000; // 2 segundos
 
+        function appendStreamLog(msg) {
+            const container = document.getElementById('streaming-logs-content');
+            if (!container) return;
+            const p = document.createElement('p');
+            const timeStr = new Date().toLocaleTimeString();
+            p.innerText = `[${timeStr}] ${msg}`;
+            container.appendChild(p);
+            container.scrollTop = container.scrollHeight;
+        }
+
         window.openStreamingMode = async () => {
             document.getElementById('streaming-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -873,6 +892,9 @@
             orbGlow.classList.add('animate-pulse');
             document.getElementById('visualizer').classList.add('listening');
             isStreaming = true;
+            
+            appendStreamLog("🟢 Enlace de Sala de Juntas activado.");
+            appendStreamLog("📡 Inicializando conectores de voz (Whisper / Edge-TTS)...");
 
             try {
                 // Obtener URL de WebSocket desde configuración o usar WSS seguro para HTTPS (PWA Móvil)
@@ -888,6 +910,7 @@
                 streamWs.onopen = () => {
                     console.log("🟢 WSS Canal activo.");
                     statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                    appendStreamLog("🟢 Servidor WSS 8765 conectado.");
                 };
 
                 streamWs.onmessage = (event) => {
@@ -895,9 +918,11 @@
                         const data = JSON.parse(event.data);
                         if(data.type === 'transcription') {
                             transcriptEl.innerText = `"${data.text}"`;
+                            appendStreamLog(`🎙️ Transcripción: "${data.text.substring(0, 40)}..."`);
                         }
                     } else {
                         // Reproducir audio recibido de Edge-TTS (Voz Salomé)
+                        appendStreamLog("🗣️ Recibido paquete de audio Salomé (es-CO). Reproduciendo...");
                         if (currentAudio) {
                             currentAudio.pause();
                         }
@@ -907,6 +932,7 @@
                         
                         currentAudio.onplay = () => {
                             statusEl.innerText = "Beatriz respondiendo con voz...";
+                            appendStreamLog("🔊 Beatriz respondiendo por voz...");
                             orb.classList.replace('from-fuchsia-600', 'from-indigo-600');
                             orb.classList.replace('to-indigo-600', 'to-fuchsia-600');
                             document.getElementById('visualizer').classList.remove('listening');
@@ -915,6 +941,7 @@
                         
                         currentAudio.onended = () => {
                             statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                            appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
                             orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
                             orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
                             document.getElementById('visualizer').classList.remove('speaking');
@@ -926,11 +953,12 @@
                 };
 
                 streamWs.onerror = () => {
-                    console.warn("⚠️ WSS Notice: Manteniendo canal de voz PWA activo.");
+                    appendStreamLog("⚠️ WSS 8765 no disponible. Usando canal directo de voz PWA.");
                 };
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => null);
                 if (stream) {
+                    appendStreamLog("🎤 Micrófono PWA capturando audio...");
                     streamMediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
                     streamMediaRecorder.ondataavailable = (e) => {
                         if (e.data.size > 0 && streamWs && streamWs.readyState === WebSocket.OPEN) {
@@ -941,7 +969,7 @@
                 }
 
             } catch (err) {
-                console.warn("Notice Streaming:", err);
+                appendStreamLog(`Notice Streaming: ${err.message || err}`);
             }
         };
 
@@ -958,6 +986,7 @@
                 btn.innerHTML = '<i data-lucide="radio" class="w-5 h-5"></i> Reanudar';
                 btn.classList.replace('bg-fuchsia-600', 'bg-indigo-600');
                 document.getElementById('streaming-status').innerText = "Procesando...";
+                appendStreamLog("⚙️ Procesando audio y consultando a Beatriz IA...");
                 document.getElementById('voice-orb-glow').classList.remove('animate-pulse');
                 document.getElementById('visualizer').classList.remove('listening', 'speaking');
                 
@@ -980,6 +1009,7 @@
                 btn.classList.replace('bg-indigo-600', 'bg-fuchsia-600');
                 isStreaming = true;
                 document.getElementById('streaming-status').innerText = "Escuchando...";
+                appendStreamLog("🟢 Reanudada transmisión de voz.");
                 document.getElementById('voice-orb-glow').classList.add('animate-pulse');
                 document.getElementById('visualizer').classList.add('listening');
                 
