@@ -61,7 +61,7 @@ export function NeuralSitesPricing() {
       priceUSD: '$30',
       priceCOP: '$120.000',
       image: '/assets/plans/gold.png',
-      features: ['Todo lo de Silver', '1 Video Semanal en la Web', 'Asesor de Ventas Web / WhatsApp', 'Cierre de Ventas Autónomo 24/7'],
+      features: ['Todo lo de Silver', 'Autopilot Meta (Auto-publicador en Instagram, Facebook & WhatsApp)', '1 Video Semanal en la Web', 'Asesor de Ventas Web / WhatsApp 24/7', 'Cierre de Ventas Autónomo 24/7'],
       color: 'border-amber-400/50',
       glow: 'shadow-[0_0_30px_rgba(251,191,36,0.3)]',
       popular: true
@@ -72,7 +72,7 @@ export function NeuralSitesPricing() {
       priceUSD: '$79',
       priceCOP: '$316.000',
       image: '/assets/plans/platinum.png',
-      features: ['Todo lo de Gold', 'Autopilot en Redes (YouTube, Meta, TikTok)', 'Configuración Avanzada de APIs', 'Requiere $100 USD Setup Único'],
+      features: ['Todo lo de Gold', 'Autopilot Total (YouTube, TikTok, Meta & LinkedIn)', 'Vídeos Cinemáticos de Ultra Alta Calidad', 'Configuración Avanzada de APIs', 'Requiere $100 USD Setup Único'],
       color: 'border-purple-400/50',
       glow: 'shadow-[0_0_40px_rgba(168,85,247,0.4)]'
     }
