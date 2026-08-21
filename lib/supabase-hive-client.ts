@@ -18,8 +18,13 @@ export const getSupabaseHiveClient = () => {
         return null;
     }
 
-    console.log("🛰️ Hive Client: Conectando a Federación en:", supabaseUrl.slice(0, 20) + "...");
-    
-    hiveClient = createClient(supabaseUrl, supabaseAnonKey);
+    hiveClient = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            lock: false
+        }
+    });
     return hiveClient;
 };

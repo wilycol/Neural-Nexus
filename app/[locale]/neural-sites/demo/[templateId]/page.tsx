@@ -43,7 +43,13 @@ export default function TemplateDemoPage() {
             <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => router.back()} 
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push('/es/neural-sites');
+                  }
+                }} 
                 className="text-white/80 border-white/10 bg-white/5 hover:bg-white/10 rounded-full px-4 h-9 font-orbitron text-[10px] tracking-widest"
             >
                 <ArrowLeft className="mr-2 h-3 w-3" /> VOLVER
