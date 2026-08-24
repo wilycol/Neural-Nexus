@@ -1,5 +1,3 @@
-import axios from "axios";
-
 export interface SaleNotificationData {
   customerName: string;
   customerPhone: string;
@@ -41,12 +39,20 @@ export async function sendTelegramSaleAlert(data: SaleNotificationData): Promise
 
   try {
     const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    await axios.post(url, {
-      chat_id: chatId,
-      text: message,
-      parse_mode: "Markdown",
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: "Markdown",
+      }),
     });
-    console.log("✅ [TELEGRAM-ALERT] Alerta de venta enviada con éxito al Búnker.");
+    if (!res.ok) {
+      console.warn("⚠️ [TELEGRAM-ALERT] Error HTTP de Telegram:", res.status);
+    } else {
+      console.log("✅ [TELEGRAM-ALERT] Alerta de venta enviada con éxito al Búnker.");
+    }
     return true;
   } catch (error: unknown) {
     const errorMsg = error instanceof Error ? error.message : String(error);
@@ -110,19 +116,18 @@ export async function sendWhatsAppOnboardingTemplate(data: {
   };
 
   try {
-    let response;
-    try {
-      // Intentar plantilla primaria de onboarding
-      response = await axios.post(url, payload, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-    } catch {
-      console.warn("⚠️ [WHATSAPP-ONBOARDING] Plantilla primaria en revisión por Meta. Activando fallback a plantilla aprobada 'pionero_invitation_v2'...");
+    let response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      console.warn("⚠️ [WHATSAPP-ONBOARDING] Plantilla primaria en revisión por Meta. Activando fallback a 'pionero_invitation_v2'...");
       
-      // Fallback a plantilla ya APROBADA (es_CO)
       payload = {
         messaging_product: "whatsapp",
         recipient_type: "individual",
@@ -149,15 +154,17 @@ export async function sendWhatsAppOnboardingTemplate(data: {
         },
       };
 
-      response = await axios.post(url, payload, {
+      response = await fetch(url, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(payload),
       });
     }
 
-    console.log(`✅ [WHATSAPP-ONBOARDING] Mensaje de bienvenida entregado a +${cleanPhone}:`, response.data);
+    console.log(`✅ [WHATSAPP-ONBOARDING] Mensaje de bienvenida entregado a +${cleanPhone}`);
     return true;
   } catch (error: unknown) {
     const errorMsg = error instanceof Error ? error.message : String(error);
