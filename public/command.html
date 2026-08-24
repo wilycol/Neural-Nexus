@@ -944,12 +944,13 @@
         let isUserSpeaking = false;
         let speechStartTime = 0;
         let silenceStartTime = 0;
+        let smoothVolume = 0;
         let mediaRecorderInstance = null;
         let recordedChunks = [];
         let globalMediaStream = null;
-        const DB_THRESHOLD = 6; // Umbral ultrasensible para micrófonos móviles
-        const SILENCE_TIMEOUT = 1200; // 1.2s de silencio para despachar frase
-        const MIN_SPEECH_DURATION = 350; // 350ms mínimo para filtrar ruidos
+        const DB_THRESHOLD = 5; // Umbral ultrasensible para micrófonos móviles
+        const SILENCE_TIMEOUT = 2000; // 2.0 segundos de pausa real para despachar
+        const MIN_SPEECH_DURATION = 1000; // 1.0s mínimo de frase hablada
 
         function startMediaRecording(stream) {
             try {
@@ -972,7 +973,7 @@
                         const mime = options.mimeType || 'audio/webm';
                         const audioBlob = new Blob(recordedChunks, { type: mime });
                         recordedChunks = [];
-                        if (audioBlob.size > 600 && isStreaming && !window.isBeatrizSpeaking) {
+                        if (audioBlob.size > 800 && isStreaming && !window.isBeatrizSpeaking) {
                             window.sendPwaAudioBlob(audioBlob);
                         }
                     }
@@ -985,7 +986,7 @@
                 };
 
                 mediaRecorderInstance.start(250);
-                appendStreamLog("🎙️ Grabador nativo Whisper en caliente (250ms chunks).");
+                appendStreamLog("🎙️ Grabador nativo en caliente (pausa configurada: 2.0s).");
             } catch (e) {
                 console.warn("Notice MediaRecorder:", e);
             }
@@ -1031,6 +1032,7 @@
                         sum += dataArray[i];
                     }
                     const avgVolume = sum / bufferLength;
+                    smoothVolume = (smoothVolume * 0.75) + (avgVolume * 0.25); // Suavizado para ignorar pausas de respiración o consonantes
 
                     // Si Beatriz está hablando, no capturar para evitar eco
                     if (window.isBeatrizSpeaking) {
@@ -1040,8 +1042,8 @@
 
                     const now = Date.now();
 
-                    if (avgVolume > DB_THRESHOLD) {
-                        // 🗣️ Voz humana detectada por decibelios
+                    if (smoothVolume > DB_THRESHOLD) {
+                        // 🗣️ Voz humana detectada por decibelios continuos
                         silenceStartTime = 0;
                         if (!isUserSpeaking) {
                             isUserSpeaking = true;
@@ -1060,6 +1062,7 @@
                                 silenceStartTime = now;
                             }
                             
+                            // Solo si el silencio dura 2.0s completos
                             if (now - silenceStartTime >= SILENCE_TIMEOUT) {
                                 const speechDuration = now - speechStartTime;
                                 isUserSpeaking = false;
@@ -1072,7 +1075,7 @@
                                 }
 
                                 if (speechDuration >= MIN_SPEECH_DURATION && mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
-                                    appendStreamLog(`🎙️ Frase de voz completada (${Math.round(speechDuration/100)/10}s). Procesando...`);
+                                    appendStreamLog(`🎙️ Frase completa (${Math.round(speechDuration/100)/10}s). Enviando a Beatriz...`);
                                     try {
                                         mediaRecorderInstance.stop();
                                     } catch(e){}
@@ -1085,7 +1088,7 @@
                 }
 
                 vadLoop();
-                appendStreamLog("🎚️ Sensor VAD y grabador nativo calibrados.");
+                appendStreamLog("🎚️ Sensor VAD calibrado con pausa de 2.0s.");
             } catch (e) {
                 console.warn("Notice Decibel VAD:", e);
             }
