@@ -12,6 +12,8 @@ export const dynamic = "force-dynamic";
 function isWhisperHallucination(text: string): boolean {
   if (!text) return true;
   const clean = text.trim().toLowerCase();
+  if (clean.length < 3) return true;
+
   const hallucinationRegexes = [
     /^(gracias[\s.,!?-]*)+$/i,
     /gracias por ver/i,
@@ -41,7 +43,6 @@ function cleanTextForSpeech(text: string): string {
   return clean.replace(/\s+/g, " ").trim();
 }
 
-
 export async function POST(req: Request) {
   try {
     let userMessage = "";
@@ -59,7 +60,8 @@ export async function POST(req: Request) {
       userUid = (formData.get("uid") as string) || "WILY_STREAMING";
       const manualText = (formData.get("message") as string) || "";
 
-      if (audioFile && audioFile.size > 100) {
+      if (audioFile && audioFile.size > 5000) {
+
         try {
           const whisperData = new FormData();
           whisperData.append("file", audioFile, "audio.webm");
