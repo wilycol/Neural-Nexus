@@ -4,6 +4,7 @@ import { promisify } from "util";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+import WebSocket, { MessageEvent } from "ws";
 
 const execAsync = promisify(exec);
 
@@ -38,18 +39,8 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
     try {
       const wsUrl = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EA5E40A996D880680FA07C74";
       const reqId = Date.now().toString(16);
-      let WSConstructor: any = null;
 
-      if (typeof globalThis.WebSocket !== "undefined") {
-        WSConstructor = globalThis.WebSocket;
-      } else {
-        try {
-          WSConstructor = require("ws");
-        } catch {
-          return resolve(null);
-        }
-      }
-
+      const WSConstructor = typeof globalThis.WebSocket !== "undefined" ? (globalThis.WebSocket as unknown as typeof WebSocket) : WebSocket;
       const ws = new WSConstructor(wsUrl);
       const audioChunks: Buffer[] = [];
 
@@ -85,11 +76,11 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
         ws.send(ssmlMsg);
       };
 
-      ws.onmessage = (event: any) => {
+      ws.onmessage = (event: MessageEvent) => {
         try {
           const data = event.data;
           if (typeof data !== "string" && data) {
-            const buf = Buffer.from(data);
+            const buf = Buffer.from(data as ArrayBuffer);
             const headerIndex = buf.indexOf("\r\n\r\n");
             if (headerIndex !== -1) {
               const audioData = buf.subarray(headerIndex + 4);
@@ -313,7 +304,7 @@ DIRECTIVAS CRÍTICAS:
           if (buffer && buffer.length > 500) {
             voiceUrl = `data:audio/mp3;base64,${buffer.toString("base64")}`;
           }
-        } catch (pyErr) {
+        } catch {
           console.warn("Python edge-tts no disponible, usando fallback WebSocket pure TS...");
         }
 
