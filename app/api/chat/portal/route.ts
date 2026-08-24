@@ -14,6 +14,12 @@ function isWhisperHallucination(text: string): boolean {
   const clean = text.trim().toLowerCase();
   if (clean.length < 3) return true;
 
+  // Filtro estricto para "gracias" aislados o repetidos por alucinación de silencio de Whisper
+  if (clean.length < 40 && /gracias/i.test(clean)) {
+    const isRealSentence = /gracias\s+(por|de|a|en|que)\s+\w{3,}/i.test(clean);
+    if (!isRealSentence) return true;
+  }
+
   const hallucinationRegexes = [
     /^(gracias[\s.,!?-]*)+$/i,
     /gracias por ver/i,
@@ -25,6 +31,96 @@ function isWhisperHallucination(text: string): boolean {
     /^[\s.,!?-]*$/
   ];
   return hallucinationRegexes.some(regex => regex.test(clean));
+}
+
+async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
+  return new Promise((resolve) => {
+    try {
+      const wsUrl = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EA5E40A996D880680FA07C74";
+      const reqId = Date.now().toString(16);
+      let WSConstructor: any = null;
+
+      if (typeof globalThis.WebSocket !== "undefined") {
+        WSConstructor = globalThis.WebSocket;
+      } else {
+        try {
+          WSConstructor = require("ws");
+        } catch {
+          return resolve(null);
+        }
+      }
+
+      const ws = new WSConstructor(wsUrl);
+      const audioChunks: Buffer[] = [];
+
+      const timeout = setTimeout(() => {
+        try { ws.close(); } catch {}
+        resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+      }, 8000);
+
+      ws.onopen = () => {
+        const configMsg =
+          `Path: speech.config\r\n` +
+          `X-RequestId: ${reqId}\r\n` +
+          `Content-Type: application/json; charset=utf-8\r\n\r\n` +
+          JSON.stringify({
+            context: {
+              synthesis: {
+                audio: {
+                  outputFormat: "audio-24khz-48kbitrate-mono-mp3",
+                  voice: "Microsoft Server Speech Text to Speech Voice (es-CO, SalomeNeural)"
+                }
+              }
+            }
+          });
+
+        ws.send(configMsg);
+
+        const ssmlMsg =
+          `Path: ssml\r\n` +
+          `X-RequestId: ${reqId}\r\n` +
+          `Content-Type: application/ssml+xml\r\n\r\n` +
+          `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='es-CO'><voice name='es-CO-SalomeNeural'>${text}</voice></speak>`;
+
+        ws.send(ssmlMsg);
+      };
+
+      ws.onmessage = (event: any) => {
+        try {
+          const data = event.data;
+          if (typeof data !== "string" && data) {
+            const buf = Buffer.from(data);
+            const headerIndex = buf.indexOf("\r\n\r\n");
+            if (headerIndex !== -1) {
+              const audioData = buf.subarray(headerIndex + 4);
+              if (audioData.length > 0) {
+                audioChunks.push(audioData);
+              }
+            }
+          } else if (typeof data === "string" && data.includes("Path: turn.end")) {
+            clearTimeout(timeout);
+            try { ws.close(); } catch {}
+            resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+          }
+        } catch {
+          // ignore chunk error
+        }
+      };
+
+      ws.onerror = () => {
+        clearTimeout(timeout);
+        try { ws.close(); } catch {}
+        resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+      };
+
+      ws.onclose = () => {
+        clearTimeout(timeout);
+        resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+      };
+    } catch {
+      resolve(null);
+    }
+  });
 }
 
 function cleanTextForSpeech(text: string): string {
@@ -204,16 +300,29 @@ DIRECTIVAS CRÍTICAS:
       const cleanTTS = cleanTextForSpeech(beatrizResponse);
 
       if (cleanTTS) {
-        const tmpFile = path.join(os.tmpdir(), `salome_${Date.now()}.mp3`);
-        const escapedText = cleanTTS.replace(/"/g, '\\"');
-        const cmd = `python -m edge_tts --voice "es-CO-SalomeNeural" --text "${escapedText}" --write-media "${tmpFile}"`;
-        await execAsync(cmd);
+        // Intento 1: Python edge-tts (entorno local)
+        try {
+          const tmpFile = path.join(os.tmpdir(), `salome_${Date.now()}.mp3`);
+          const escapedText = cleanTTS.replace(/"/g, '\\"');
+          const cmd = `python -m edge_tts --voice "es-CO-SalomeNeural" --text "${escapedText}" --write-media "${tmpFile}"`;
+          await execAsync(cmd);
 
-        const buffer = await fs.readFile(tmpFile);
-        await fs.unlink(tmpFile).catch(() => {});
+          const buffer = await fs.readFile(tmpFile);
+          await fs.unlink(tmpFile).catch(() => {});
 
-        if (buffer && buffer.length > 500) {
-          voiceUrl = `data:audio/mp3;base64,${buffer.toString("base64")}`;
+          if (buffer && buffer.length > 500) {
+            voiceUrl = `data:audio/mp3;base64,${buffer.toString("base64")}`;
+          }
+        } catch (pyErr) {
+          console.warn("Python edge-tts no disponible, usando fallback WebSocket pure TS...");
+        }
+
+        // Intento 2: Pure TS Edge-TTS WebSocket (Vercel Cloud Serverless)
+        if (!voiceUrl) {
+          const tsBuffer = await synthesizeSalomeEdgeTTS(cleanTTS);
+          if (tsBuffer && tsBuffer.length > 500) {
+            voiceUrl = `data:audio/mp3;base64,${tsBuffer.toString("base64")}`;
+          }
         }
       }
     } catch (vErr) {

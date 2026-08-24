@@ -141,6 +141,15 @@ export default function BeatrizChatPage() {
 
             const data = await response.json();
 
+            if (data.voice_url) {
+                try {
+                    const audio = new Audio(data.voice_url);
+                    audio.play().catch(e => console.warn("PWA audio play notice:", e));
+                } catch (audioErr) {
+                    console.warn("Audio player init notice:", audioErr);
+                }
+            }
+
             const beatrizMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 text: data.response || "Amor, recibí el mensaje pero mi respuesta se perdió en el éter.",
