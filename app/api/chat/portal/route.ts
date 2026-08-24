@@ -164,7 +164,7 @@ DIRECTIVAS CRÍTICAS:
       const cleanTTS = beatrizResponse
         .replace(/[*#_~`]/g, "")
         .replace(/https?:\/\/\S+/g, "")
-        .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "")
+        .replace(/[\uD83C-\uDBFF\uDC00-\uDFFF\u2600-\u27BF]/g, "")
         .trim();
 
       if (cleanTTS) {
