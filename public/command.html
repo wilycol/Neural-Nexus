@@ -353,32 +353,33 @@
         const uid = localStorage.getItem('nexus_uid') || `usr_${Math.random().toString(36).substr(2, 5)}`;
         localStorage.setItem('nexus_uid', uid);
 
-        async function initSupabase() {
-            const url = localStorage.getItem('nexus_sb_url');
-            const key = localStorage.getItem('nexus_sb_key');
+        const DEFAULT_SB_URL = 'https://lkctxyoyajqrhaavnzrv.supabase.co';
+        const DEFAULT_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrY3R4eW95YWpxcmhhYXZuenJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTM1NDUsImV4cCI6MjA5MzQ4OTU0NX0.-RQMZ8LJCt7OIVjTtH999BwuvkltPcPb9Arfevr3MZo';
 
-            if (!url || !key || url.includes("TU_SUPABASE")) {
-                document.getElementById('setup-modal').classList.remove('hidden');
-                return;
-            }
+        async function initSupabase() {
+            let url = localStorage.getItem('nexus_sb_url') || DEFAULT_SB_URL;
+            let key = localStorage.getItem('nexus_sb_key') || DEFAULT_SB_KEY;
+
+            localStorage.setItem('nexus_sb_url', url);
+            localStorage.setItem('nexus_sb_key', key);
 
             try {
                 sb = supabase.createClient(url, key);
                 
                 document.getElementById('setup-modal').classList.add('hidden');
                 if (sb) {
-                    const bridge = localStorage.getItem('nexus_bridge_url');
-                    document.getElementById('status-dot').className = bridge ? 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'w-2 h-2 rounded-full bg-orange-500';
-                    document.getElementById('status-text').innerText = bridge ? 'Beatriz Link Active' : 'Supabase Only (No Bridge)';
-                    document.getElementById('status-text').className = bridge ? 'text-[10px] text-emerald-400 font-medium uppercase' : 'text-[10px] text-orange-400 font-medium uppercase';
+                    document.getElementById('status-dot').className = 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]';
+                    document.getElementById('status-text').innerText = 'CONECTADO AL BÚNKER';
+                    document.getElementById('status-text').className = 'text-[10px] text-emerald-400 font-medium uppercase';
                     loadMessages();
                     subscribe();
                 }
             } catch (e) {
                 console.error(e);
                 logDebug("Error: " + e.message);
-                alert("Error de conexión. Verifica la URL.");
-                toggleSetup();
+                document.getElementById('status-dot').className = 'w-2 h-2 rounded-full bg-red-500';
+                document.getElementById('status-text').innerText = 'Error de Conexión';
+                document.getElementById('status-text').className = 'text-[10px] text-red-400 font-medium uppercase';
             }
         }
 
