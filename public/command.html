@@ -247,7 +247,7 @@
                     <div id="voice-orb-glow" class="absolute inset-0 bg-gradient-to-r from-fuchsia-600/30 to-indigo-600/30 rounded-full blur-2xl transition-all duration-300"></div>
                     <div class="cyber-orb-ring-outer"></div>
                     <div class="cyber-orb-ring-inner"></div>
-                    <div id="voice-orb" class="cyber-orb-core cursor-pointer" onclick="toggleMicStreaming()">
+                    <div id="voice-orb" class="cyber-orb-core cursor-pointer select-none" onmousedown="startPushToTalk(event)" onmouseup="stopPushToTalk(event)" ontouchstart="startPushToTalk(event)" ontouchend="stopPushToTalk(event)">
                         <div id="visualizer" class="audio-wave">
                             <span></span><span></span><span></span><span></span><span></span>
                         </div>
@@ -976,10 +976,16 @@
                             window.sendPwaAudioBlob(audioBlob);
                         }
                     }
+                    // Reiniciar inmediatamente el buffer para no perder el inicio de la siguiente frase
+                    if (isStreaming && globalMediaStream && mediaRecorderInstance.state === 'inactive') {
+                        try {
+                            mediaRecorderInstance.start(250);
+                        } catch(e){}
+                    }
                 };
 
                 mediaRecorderInstance.start(250);
-                appendStreamLog("🎙️ Grabador MediaRecorder nativo en línea.");
+                appendStreamLog("🎙️ Grabador nativo Whisper en caliente (250ms chunks).");
             } catch (e) {
                 console.warn("Notice MediaRecorder:", e);
             }
@@ -1416,6 +1422,40 @@
                 if (orbGlow) orbGlow.classList.add('animate-pulse');
                 if (vis) vis.classList.add('listening');
                 restartMediaRecording();
+            }
+        };
+
+        let pttActive = false;
+        window.startPushToTalk = (e) => {
+            if (e) e.preventDefault();
+            if (window.isBeatrizSpeaking) return;
+            pttActive = true;
+            isUserSpeaking = true;
+            speechStartTime = Date.now();
+            const vis = document.getElementById('visualizer');
+            const orb = document.getElementById('voice-orb');
+            const statusEl = document.getElementById('streaming-status');
+            if (vis) { vis.classList.remove('listening'); vis.classList.add('speaking'); }
+            if (orb) { orb.style.transform = 'scale(1.25)'; orb.style.boxShadow = '0 0 60px rgba(244, 114, 182, 0.95)'; }
+            if (statusEl) statusEl.innerText = '🔴 GRABANDO TU VOZ (Suelta el Orbe para enviar)...';
+            appendStreamLog("🎙️ [PUSH-TO-TALK] Grabando voz directa...");
+            restartMediaRecording();
+        };
+
+        window.stopPushToTalk = (e) => {
+            if (e) e.preventDefault();
+            if (!pttActive) return;
+            pttActive = false;
+            isUserSpeaking = false;
+            const vis = document.getElementById('visualizer');
+            const orb = document.getElementById('voice-orb');
+            const statusEl = document.getElementById('streaming-status');
+            if (vis) { vis.classList.remove('speaking'); vis.classList.add('listening'); }
+            if (orb) { orb.style.transform = 'scale(1)'; orb.style.boxShadow = ''; }
+            if (statusEl) statusEl.innerText = '🧠 Procesando con Whisper Turbo...';
+            appendStreamLog("🚀 [PUSH-TO-TALK] Despachando audio a Beatriz...");
+            if (mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
+                try { mediaRecorderInstance.stop(); } catch(err){}
             }
         };
 
