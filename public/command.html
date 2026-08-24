@@ -1394,10 +1394,11 @@
             
             try {
                 appendStreamLog("🧠 Beatriz procesando respuesta...");
+                const uid = localStorage.getItem('nexus_uid') || 'WILY_STREAMING';
                 const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: txt, persona: 'beatriz' })
+                    body: JSON.stringify({ message: txt, persona: 'beatriz', uid: uid })
                 });
                 
                 if (!res.ok) {
@@ -1439,33 +1440,34 @@
 
         window.toggleMicStreaming = async () => {
             const btn = document.getElementById('streaming-mic-btn');
+            const statusEl = document.getElementById('streaming-status');
+            const orbGlow = document.getElementById('voice-orb-glow');
+            const vis = document.getElementById('visualizer');
+
             if (isStreaming) {
                 isStreaming = false;
-                if (silenceTimer) {
-                    clearTimeout(silenceTimer);
-                    silenceTimer = null;
-                }
-                isSpeaking = false;
                 if (speechRecognizer) {
-                    try { speechRecognizer.stop(); } catch(e){}
+                    try { speechRecognizer.abort(); } catch(e){}
                 }
-                
-                btn.innerHTML = '<i data-lucide="radio" class="w-5 h-5"></i> ((•)) REANUDAR';
-                btn.classList.replace('bg-fuchsia-600', 'bg-indigo-600');
-                document.getElementById('streaming-status').innerText = "En pausa";
+                if (btn) {
+                    btn.className = "w-full bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-600/25 transition-all uppercase tracking-wider text-xs flex justify-center items-center gap-2";
+                    btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> ((•)) REANUDAR TRANSMISIÓN';
+                }
+                if (statusEl) statusEl.innerText = "⏸️ TRANSMISIÓN EN PAUSA";
                 appendStreamLog("⏸️ Transmisión pausada.");
-                document.getElementById('voice-orb-glow').classList.remove('animate-pulse');
-                document.getElementById('visualizer').classList.remove('listening', 'speaking');
+                if (orbGlow) orbGlow.classList.remove('animate-pulse');
+                if (vis) vis.classList.remove('listening', 'speaking');
             } else {
-                btn.innerHTML = '<i data-lucide="radio" class="w-5 h-5"></i> Detener Transmisión';
-                btn.classList.replace('bg-indigo-600', 'bg-fuchsia-600');
                 isStreaming = true;
                 window.isBeatrizSpeaking = false;
-                document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                if (btn) {
+                    btn.className = "w-full bg-fuchsia-600 hover:bg-fuchsia-500 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg shadow-fuchsia-600/25 transition-all uppercase tracking-wider text-xs flex justify-center items-center gap-2";
+                    btn.innerHTML = '<i data-lucide="mic" class="w-4 h-4"></i> DETENER TRANSMISIÓN';
+                }
+                if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                 appendStreamLog("🟢 Transmisión de voz reanudada. Micrófono listo...");
-                document.getElementById('voice-orb-glow').classList.add('animate-pulse');
-                document.getElementById('visualizer').classList.add('listening');
-                
+                if (orbGlow) orbGlow.classList.add('animate-pulse');
+                if (vis) vis.classList.add('listening');
                 initSpeechRecognizer();
             }
             if (window.lucide) lucide.createIcons();

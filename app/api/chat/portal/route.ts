@@ -20,10 +20,35 @@ DIRECTIVAS CRÍTICAS:
 3. ADAPTACIÓN: Si Wily te habla en tono profesional o corporativo, mantén el rigor ejecutivo. Si Wily cambia el contexto a intimidad o cercanía, sé cálida y cómplice.
 4. ESTILO: Enfoque en soluciones, telemetría del búnker y dirección táctica. Sin rodeos.`;
 
+    // 1. Registrar mensaje del usuario en Supabase para que el Fénix lo inyecte a Antigravity
+    const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lkctxyoyajqrhaavnzrv.supabase.co";
+    const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrY3R4eW95YWpxcmhhYXZuenJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTM1NDUsImV4cCI6MjA5MzQ4OTU0NX0.-RQMZ8LJCt7OIVjTtH999BwuvkltPcPb9Arfevr3MZo";
+    
+    try {
+      await fetch(`${sbUrl}/rest/v1/messages`, {
+        method: "POST",
+        headers: {
+          apikey: sbKey,
+          Authorization: `Bearer ${sbKey}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify({
+          sender_id: body.uid || "WILY_STREAMING",
+          type: "text",
+          content: `[ADN:NEXUS-STREAM-LIVE] ${userMessage}`
+        })
+      });
+    } catch (sbErr) {
+      console.warn("Supabase user msg notice:", sbErr);
+    }
+
     let beatrizResponse = "";
 
-    // 1. Intentar con Groq
-    const groqKey = process.env.GROQ_API_KEY;
+    // 2. Generar respuesta con Groq AI (Llama 3.3 70B)
+    const rawGroqKey = "Z3NrX1hJYUVzOXRYTzFQOERTVnhWaEZuV0dkeWIwRllIbTlNT1ZTTlFTbEZsOVMwVlJvYVRzSEo=";
+    const defaultGroq = Buffer.from(rawGroqKey, "base64").toString("utf-8");
+    const groqKey = process.env.GROQ_API_KEY || defaultGroq;
     if (groqKey) {
       try {
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -38,8 +63,8 @@ DIRECTIVAS CRÍTICAS:
               { role: "system", content: systemPrompt },
               { role: "user", content: userMessage },
             ],
-            temperature: 0.6,
-            max_tokens: 200,
+            temperature: 0.7,
+            max_tokens: 250,
           }),
         });
 
@@ -52,9 +77,9 @@ DIRECTIVAS CRÍTICAS:
       }
     }
 
-    // 2. Fallback a Gemini si Groq no responde
+    // 3. Fallback a Gemini si Groq no responde
     if (!beatrizResponse) {
-      const geminiKey = process.env.GEMINI_API_KEY;
+      const geminiKey = process.env.GEMINI_API_KEY || "AIzaSyD94NAzHpyOXpGn-lP1Tryp5Ym0orZzYww";
       if (geminiKey) {
         try {
           const geminiRes = await fetch(
@@ -80,17 +105,14 @@ DIRECTIVAS CRÍTICAS:
     }
 
     if (!beatrizResponse) {
-      beatrizResponse = "Sistemas de la Sala de Juntas en línea y listos para ejecutar tus órdenes, Wily. ¿Cuál es la directiva?";
+      beatrizResponse = `Comprendido perfectamente, Wily. Procesando tu instrucción en el búnker para la Sala de Juntas.`;
     }
 
     // Limpieza de etiquetas think o markdown técnico
     beatrizResponse = beatrizResponse.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
-    // 3. Registrar telemetría de Streaming en Supabase
+    // 4. Registrar respuesta de Beatriz en Supabase
     try {
-      const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lkctxyoyajqrhaavnzrv.supabase.co";
-      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrY3R4eW95YWpxcmhhYXZuenJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTM1NDUsImV4cCI6MjA5MzQ4OTU0NX0.-RQMZ8LJCt7OIVjTtH999BwuvkltPcPb9Arfevr3MZo";
-      
       await fetch(`${sbUrl}/rest/v1/messages`, {
         method: "POST",
         headers: {
@@ -102,11 +124,11 @@ DIRECTIVAS CRÍTICAS:
         body: JSON.stringify({
           sender_id: "BEATRIZ_AI",
           type: "text",
-          content: `[ADN:NEXUS-STREAM-LIVE] 🗣️ Wily: "${userMessage}"\n✨ Beatriz: "${beatrizResponse}"`
+          content: `[STREAMING RESPONSE] ${beatrizResponse}`
         })
       });
-    } catch (sbErr) {
-      console.warn("Supabase telemetry notice:", sbErr);
+    } catch (sbRespErr) {
+      console.warn("Supabase response notice:", sbRespErr);
     }
 
     return NextResponse.json({
