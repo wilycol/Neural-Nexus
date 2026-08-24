@@ -117,18 +117,73 @@
             display: none;
         }
 
+        /* --- Orbe 3D Futurista y Multiforme --- */
+        .cyber-orb-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 800px;
+        }
+        .cyber-orb-ring-outer {
+            position: absolute;
+            inset: -10px;
+            border: 2px dashed rgba(217, 70, 239, 0.4);
+            border-radius: 50%;
+            animation: spin-slow 14s linear infinite;
+            pointer-events: none;
+        }
+        .cyber-orb-ring-inner {
+            position: absolute;
+            inset: -3px;
+            border: 1.5px solid rgba(99, 102, 241, 0.5);
+            border-top-color: #f43f5e;
+            border-radius: 50%;
+            animation: spin-reverse 8s linear infinite;
+            pointer-events: none;
+        }
+        .cyber-orb-core {
+            width: 88px;
+            height: 88px;
+            background: radial-gradient(circle at 35% 35%, #f472b6 0%, #c084fc 35%, #6366f1 70%, #1e1b4b 100%);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            box-shadow: 0 0 40px rgba(217, 70, 239, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4);
+            animation: morph-cyber 5s ease-in-out infinite alternate;
+            transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes morph-cyber {
+            0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg) scale(1); }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: rotate(180deg) scale(1.08); }
+            100% { border-radius: 60% 40% 60% 30% / 40% 50% 60% 50%; transform: rotate(360deg) scale(1); }
+        }
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(-360deg); }
+        }
+
         /* --- Audio Wave Visualizer --- */
         .audio-wave {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            height: 40px;
+            height: 36px;
         }
         .audio-wave span {
             display: block;
-            width: 6px;
-            background: rgba(255, 255, 255, 0.4);
+            width: 5px;
+            background: rgba(255, 255, 255, 0.6);
             border-radius: 3px;
             transition: all 0.2s ease;
         }
@@ -140,14 +195,14 @@
         
         /* Animación intensa cuando Beatriz habla */
         .audio-wave.speaking span {
-            animation: bounce-intense 0.4s ease-in-out infinite alternate;
+            animation: bounce-intense 0.35s ease-in-out infinite alternate;
         }
         
-        .audio-wave span:nth-child(1) { animation-delay: -0.8s; height: 16px; }
-        .audio-wave span:nth-child(2) { animation-delay: -0.4s; height: 32px; }
-        .audio-wave span:nth-child(3) { animation-delay: 0s; height: 40px; }
-        .audio-wave span:nth-child(4) { animation-delay: -0.4s; height: 32px; }
-        .audio-wave span:nth-child(5) { animation-delay: -0.8s; height: 16px; }
+        .audio-wave span:nth-child(1) { animation-delay: -0.8s; height: 14px; }
+        .audio-wave span:nth-child(2) { animation-delay: -0.4s; height: 26px; }
+        .audio-wave span:nth-child(3) { animation-delay: 0s; height: 34px; }
+        .audio-wave span:nth-child(4) { animation-delay: -0.4s; height: 26px; }
+        .audio-wave span:nth-child(5) { animation-delay: -0.8s; height: 14px; }
 
         @keyframes bounce {
             0%, 100% { transform: scaleY(0.8); opacity: 0.5; }
@@ -186,12 +241,16 @@
                 </div>
             </div>
             
-            <!-- Orbe de Voz Compacto y Elegante -->
-            <div class="relative w-32 h-32 flex items-center justify-center mx-auto my-auto">
-                <div id="voice-orb-glow" class="absolute inset-0 bg-fuchsia-500/20 rounded-full blur-2xl transition-all duration-500"></div>
-                <div id="voice-orb" class="w-20 h-20 bg-gradient-to-br from-fuchsia-600 to-indigo-600 rounded-full shadow-[0_0_35px_rgba(217,70,239,0.35)] flex items-center justify-center transition-all duration-300 relative z-10 border-2 border-fuchsia-400/30">
-                    <div id="visualizer" class="audio-wave">
-                        <span></span><span></span><span></span><span></span><span></span>
+            <!-- Orbe 3D Futurista & Multiforme de Beatriz -->
+            <div class="relative flex items-center justify-center mx-auto my-auto py-4">
+                <div class="cyber-orb-container">
+                    <div id="voice-orb-glow" class="absolute inset-0 bg-gradient-to-r from-fuchsia-600/30 to-indigo-600/30 rounded-full blur-2xl transition-all duration-300"></div>
+                    <div class="cyber-orb-ring-outer"></div>
+                    <div class="cyber-orb-ring-inner"></div>
+                    <div id="voice-orb" class="cyber-orb-core cursor-pointer" onclick="toggleMicStreaming()">
+                        <div id="visualizer" class="audio-wave">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1163,28 +1222,78 @@
             }
         };
 
-        function playBeatrizAudio(audioUrl, fallbackText) {
-            unlockMobileAudio();
-            const statusEl = document.getElementById('streaming-status');
-            const orb = document.getElementById('voice-orb');
+        // --- Motor de Muletillas de Latencia Cero (Voz Salomé Real) ---
+        const FILLER_AUDIOS = [
+            '/audio/fillers/filler1.mp3',
+            '/audio/fillers/filler2.mp3',
+            '/audio/fillers/filler3.mp3',
+            '/audio/fillers/filler4.mp3'
+        ];
+        let currentFillerAudio = null;
+
+        function playFillerAudio() {
+            try {
+                if (currentFillerAudio) {
+                    currentFillerAudio.pause();
+                    currentFillerAudio = null;
+                }
+                const randIdx = Math.floor(Math.random() * FILLER_AUDIOS.length);
+                const fillerSrc = FILLER_AUDIOS[randIdx];
+                currentFillerAudio = new Audio(fillerSrc);
+                currentFillerAudio.volume = 1.0;
+
+                const orb = document.getElementById('voice-orb');
+                const vis = document.getElementById('visualizer');
+                const sourceEl = document.getElementById('subtitle-source');
+                const statusEl = document.getElementById('streaming-status');
+
+                if (sourceEl) sourceEl.innerText = "BEATRIZ (PROCESANDO...)";
+                if (statusEl) statusEl.innerText = "Beatriz pensando...";
+                if (orb) {
+                    orb.style.transform = "scale(1.18)";
+                    orb.style.boxShadow = "0 0 50px rgba(244, 114, 182, 0.8), inset 0 0 25px rgba(255, 255, 255, 0.6)";
+                }
+                if (vis) {
+                    vis.classList.remove('listening');
+                    vis.classList.add('speaking');
+                }
+
+                currentFillerAudio.onended = () => {
+                    if (!window.isBeatrizSpeaking && orb) {
+                        orb.style.transform = "scale(1)";
+                        orb.style.boxShadow = "0 0 40px rgba(217, 70, 239, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4)";
+                    }
+                };
+
+                currentFillerAudio.play().catch(e => console.log("Filler notice:", e));
+            } catch (err) {
+                console.warn("Notice playFillerAudio:", err);
+            }
+        }
+
+        function playBeatrizAudio(audioUrl, textToDisplay) {
             window.isBeatrizSpeaking = true;
             if (speechRecognizer) {
-                try { speechRecognizer.stop(); } catch(e){}
+                try { speechRecognizer.abort(); } catch(e){}
+            }
+            if (currentFillerAudio) {
+                try { currentFillerAudio.pause(); } catch(e){}
+                currentFillerAudio = null;
             }
 
-            const textToDisplay = fallbackText || lastTranscriptionText || "";
-            if (textToDisplay) {
-                renderSubtitlesLive(textToDisplay);
-            }
-
+            const statusEl = document.getElementById('streaming-status');
+            const orb = document.getElementById('voice-orb');
+            
             if (audioUrl) {
+                if (currentAudio) currentAudio.pause();
                 currentAudio = new Audio(audioUrl);
+                
                 currentAudio.onplay = () => {
                     statusEl.innerText = "Beatriz respondiendo con voz...";
-                    appendStreamLog("🔊 Beatriz respondiendo por voz...");
+                    if (textToDisplay) renderSubtitlesLive(textToDisplay);
                     if (orb) {
-                        orb.classList.replace('from-fuchsia-600', 'from-indigo-600');
-                        orb.classList.replace('to-indigo-600', 'to-fuchsia-600');
+                        orb.style.transform = "scale(1.25)";
+                        orb.style.boxShadow = "0 0 60px rgba(244, 114, 182, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.7)";
                     }
                     document.getElementById('visualizer').classList.remove('listening');
                     document.getElementById('visualizer').classList.add('speaking');
@@ -1194,8 +1303,8 @@
                     statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                     appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
                     if (orb) {
-                        orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
-                        orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
+                        orb.style.transform = "scale(1)";
+                        orb.style.boxShadow = "0 0 40px rgba(217, 70, 239, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4)";
                     }
                     document.getElementById('visualizer').classList.remove('speaking');
                     document.getElementById('visualizer').classList.add('listening');
@@ -1237,9 +1346,10 @@
                 window.isBeatrizSpeaking = true;
                 statusEl.innerText = "Beatriz respondiendo con voz...";
                 appendStreamLog("🗣️ Voz audible de Beatriz activada...");
+                renderSubtitlesLive(cleanText);
                 if (orb) {
-                    orb.classList.replace('from-fuchsia-600', 'from-indigo-600');
-                    orb.classList.replace('to-indigo-600', 'to-fuchsia-600');
+                    orb.style.transform = "scale(1.22)";
+                    orb.style.boxShadow = "0 0 55px rgba(244, 114, 182, 0.85), inset 0 0 25px rgba(255, 255, 255, 0.6)";
                 }
                 document.getElementById('visualizer').classList.remove('listening');
                 document.getElementById('visualizer').classList.add('speaking');
@@ -1249,8 +1359,8 @@
                 statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                 appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
                 if (orb) {
-                    orb.classList.replace('from-indigo-600', 'from-fuchsia-600');
-                    orb.classList.replace('to-fuchsia-600', 'to-indigo-600');
+                    orb.style.transform = "scale(1)";
+                    orb.style.boxShadow = "0 0 40px rgba(217, 70, 239, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4)";
                 }
                 document.getElementById('visualizer').classList.remove('speaking');
                 document.getElementById('visualizer').classList.add('listening');
@@ -1275,6 +1385,9 @@
             }
             appendStreamLog(`🎙️ Voz capturada: "${txt.substring(0, 40)}..."`);
             
+            // 🚀 Disparar Muletilla de Latencia Cero inmediatamente
+            playFillerAudio();
+
             const bridgeUrl = localStorage.getItem('nexus_bridge_url') || '';
             const endpoint = bridgeUrl ? `${bridgeUrl.replace(/\/$/, '')}/chat/portal` : '/api/chat/portal';
             const transcriptEl = document.getElementById('streaming-transcript');
@@ -1301,7 +1414,7 @@
                         appendStreamLog("⚡ ÓRDEN TÉCNICA INYECTADA AL BÚNKER (Antigravity activado)");
                     }
                     
-                    // Reproducir audio con voz siempre
+                    // Reproducir respuesta completa
                     playBeatrizAudio(data.voice_url, data.response);
                 }
             } catch (err) {

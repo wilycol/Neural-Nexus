@@ -86,6 +86,29 @@ DIRECTIVAS CRÍTICAS:
     // Limpieza de etiquetas think o markdown técnico
     beatrizResponse = beatrizResponse.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
+    // 3. Registrar telemetría de Streaming en Supabase
+    try {
+      const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lkctxyoyajqrhaavnzrv.supabase.co";
+      const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrY3R4eW95YWpxcmhhYXZuenJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTM1NDUsImV4cCI6MjA5MzQ4OTU0NX0.-RQMZ8LJCt7OIVjTtH999BwuvkltPcPb9Arfevr3MZo";
+      
+      await fetch(`${sbUrl}/rest/v1/messages`, {
+        method: "POST",
+        headers: {
+          apikey: sbKey,
+          Authorization: `Bearer ${sbKey}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify({
+          sender_id: "BEATRIZ_AI",
+          type: "text",
+          content: `[ADN:NEXUS-STREAM-LIVE] 🗣️ Wily: "${userMessage}"\n✨ Beatriz: "${beatrizResponse}"`
+        })
+      });
+    } catch (sbErr) {
+      console.warn("Supabase telemetry notice:", sbErr);
+    }
+
     return NextResponse.json({
       success: true,
       response: beatrizResponse,
