@@ -951,9 +951,10 @@
         let isUserSpeaking = false;
         let speechStartTime = 0;
         let silenceStartTime = 0;
-        const DB_THRESHOLD = 16; // Umbral de decibelios para voz humana real
-        const SILENCE_TIMEOUT = 1300; // 1.3 segundos de silencio sostenido para finalizar frase
-        const MIN_SPEECH_DURATION = 350; // 350ms mínimo para filtrar clics o ruidos accidentales
+        let recognitionSilenceTimer = null;
+        const DB_THRESHOLD = 6; // Umbral ultrasensible para micrófonos móviles
+        const SILENCE_TIMEOUT = 1200; // 1.2 segundos de silencio sostenido para finalizar frase
+        const MIN_SPEECH_DURATION = 300; // 300ms mínimo para filtrar ruidos
 
         function initDecibelVAD(stream) {
             if (!stream) return;
@@ -1005,13 +1006,12 @@
                             }
                         }
                     } else {
-                        // 🤫 Nivel de volumen bajo (silencio o ruido suave)
+                        // 🤫 Nivel de volumen bajo (silencio)
                         if (isUserSpeaking) {
                             if (!silenceStartTime) {
                                 silenceStartTime = now;
                             }
                             
-                            // Si el silencio superó el tiempo límite
                             if (now - silenceStartTime >= SILENCE_TIMEOUT) {
                                 const speechDuration = now - speechStartTime;
                                 isUserSpeaking = false;
@@ -1024,7 +1024,7 @@
                                 }
 
                                 if (speechDuration >= MIN_SPEECH_DURATION && currentSpeechText.trim()) {
-                                    appendStreamLog(`🎙️ Frase capturada (${Math.round(speechDuration/100)/10}s): "${currentSpeechText.substring(0, 30)}..."`);
+                                    appendStreamLog(`🎙️ Voz detectada por decibelios: "${currentSpeechText.substring(0, 30)}..."`);
                                     const txtToSend = currentSpeechText;
                                     currentSpeechText = "";
                                     window.sendPwaVoiceMessage(txtToSend);
@@ -1037,7 +1037,7 @@
                 }
 
                 vadLoop();
-                appendStreamLog("🎚️ Sensor de decibelios VAD calibrado y activo.");
+                appendStreamLog("🎚️ Sensor de decibelios VAD ultrasensible activo (umbral: 6).");
             } catch (e) {
                 console.warn("Notice Decibel VAD:", e);
             }
@@ -1075,7 +1075,10 @@
 
         function initSpeechRecognizer() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
+            if (!SpeechRecognition) {
+                appendStreamLog("⚠️ WebSpeech no disponible en este navegador. Usa el campo de texto.");
+                return;
+            }
             try {
                 if (speechRecognizer) {
                     try { speechRecognizer.abort(); } catch(e){}
@@ -1098,12 +1101,24 @@
                         if (sourceEl) sourceEl.innerText = "TU VOZ (es-CO)";
                         if (transcriptEl) transcriptEl.innerText = `🗣️ Tú: "${currentSpeechText}"`;
                         if (container) container.scrollTop = container.scrollHeight;
+
+                        // ⏱️ Auto-envío dual: tras 1.2s de pausa en el reconocimiento
+                        if (recognitionSilenceTimer) clearTimeout(recognitionSilenceTimer);
+                        recognitionSilenceTimer = setTimeout(() => {
+                            if (currentSpeechText.trim() && isStreaming && !window.isBeatrizSpeaking) {
+                                appendStreamLog(`🎙️ Frase lista por voz: "${currentSpeechText.substring(0, 30)}..."`);
+                                const txtToSend = currentSpeechText;
+                                currentSpeechText = "";
+                                window.sendPwaVoiceMessage(txtToSend);
+                            }
+                        }, 1200);
                     }
                 };
                 
                 speechRecognizer.onerror = (e) => {
                     if (e.error !== 'no-speech' && e.error !== 'aborted') {
                         console.warn("SpeechRec error:", e.error);
+                        appendStreamLog(`⚠️ Reconocimiento de voz: ${e.error}`);
                     }
                 };
                 
@@ -1114,7 +1129,7 @@
                 };
 
                 speechRecognizer.start();
-                appendStreamLog("🎤 Reconocimiento de voz continuo activado (es-CO).");
+                appendStreamLog("🎤 Reconocimiento de voz continuo activo (es-CO).");
             } catch (e) {
                 console.warn("Notice WebSpeech:", e);
             }
