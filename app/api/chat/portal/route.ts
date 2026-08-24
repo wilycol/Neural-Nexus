@@ -91,7 +91,7 @@ DIRECTIVAS CRÍTICAS:
       response: beatrizResponse,
       voice_url: null,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error en /api/chat/portal:", error);
     return NextResponse.json(
       {
