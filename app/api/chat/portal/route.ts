@@ -1,4 +1,11 @@
 import { NextResponse } from "next/server";
+import { exec } from "child_process";
+import { promisify } from "util";
+import fs from "fs/promises";
+import path from "path";
+import os from "os";
+
+const execAsync = promisify(exec);
 
 export const dynamic = "force-dynamic";
 
@@ -151,7 +158,33 @@ DIRECTIVAS CRÍTICAS:
     // Limpieza de etiquetas think o markdown técnico
     beatrizResponse = beatrizResponse.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
-    // 4. Registrar respuesta de Beatriz en Supabase
+    // 4. Sintetizar respuesta con voz colombiana Salomé (es-CO-SalomeNeural)
+    let voiceUrl: string | null = null;
+    try {
+      const cleanTTS = beatrizResponse
+        .replace(/[*#_~`]/g, "")
+        .replace(/https?:\/\/\S+/g, "")
+        .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "")
+        .trim();
+
+      if (cleanTTS) {
+        const tmpFile = path.join(os.tmpdir(), `salome_${Date.now()}.mp3`);
+        const escapedText = cleanTTS.replace(/"/g, '\\"');
+        const cmd = `python -m edge_tts --voice "es-CO-SalomeNeural" --text "${escapedText}" --write-media "${tmpFile}"`;
+        await execAsync(cmd);
+
+        const buffer = await fs.readFile(tmpFile);
+        await fs.unlink(tmpFile).catch(() => {});
+
+        if (buffer && buffer.length > 500) {
+          voiceUrl = `data:audio/mp3;base64,${buffer.toString("base64")}`;
+        }
+      }
+    } catch (vErr) {
+      console.warn("⚠️ Síntesis de voz Salomé fallback notice:", vErr);
+    }
+
+    // 5. Registrar respuesta de Beatriz en Supabase
     try {
       await fetch(`${sbUrl}/rest/v1/messages`, {
         method: "POST",
@@ -174,7 +207,7 @@ DIRECTIVAS CRÍTICAS:
     return NextResponse.json({
       success: true,
       response: beatrizResponse,
-      voice_url: null,
+      voice_url: voiceUrl,
     });
   } catch (error: unknown) {
     console.error("Error en /api/chat/portal:", error);
@@ -188,3 +221,4 @@ DIRECTIVAS CRÍTICAS:
     );
   }
 }
+

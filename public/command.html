@@ -247,7 +247,7 @@
                     <div id="voice-orb-glow" class="absolute inset-0 bg-gradient-to-r from-fuchsia-600/30 to-indigo-600/30 rounded-full blur-2xl transition-all duration-300"></div>
                     <div class="cyber-orb-ring-outer"></div>
                     <div class="cyber-orb-ring-inner"></div>
-                    <div id="voice-orb" class="cyber-orb-core cursor-pointer select-none" onmousedown="startPushToTalk(event)" onmouseup="stopPushToTalk(event)" ontouchstart="startPushToTalk(event)" ontouchend="stopPushToTalk(event)">
+                    <div id="voice-orb" class="cyber-orb-core cursor-pointer select-none" onmousedown="handleOrbPressStart(event)" onmouseup="handleOrbPressEnd(event)" ontouchstart="handleOrbPressStart(event)" ontouchend="handleOrbPressEnd(event)">
                         <div id="visualizer" class="audio-wave">
                             <span></span><span></span><span></span><span></span><span></span>
                         </div>
@@ -1500,55 +1500,107 @@
             const statusEl = document.getElementById('streaming-status');
             const orbGlow = document.getElementById('voice-orb-glow');
             const vis = document.getElementById('visualizer');
+            const dot = document.getElementById('streaming-status-dot');
+            const transcriptEl = document.getElementById('streaming-transcript');
 
             if (isStreaming) {
+                // ⏸️ PAUSAR TRANSMISIÓN Y SILENCIAR MICRÓFONO COMPLETAMENTE
                 isStreaming = false;
-                if (statusEl) statusEl.innerText = "⏸️ TRANSMISIÓN EN PAUSA (Toca el Orbe)";
-                appendStreamLog("⏸️ Transmisión pausada.");
-                if (orbGlow) orbGlow.classList.remove('animate-pulse');
+                window.isBeatrizSpeaking = false;
+                isUserSpeaking = false;
+
+                if (globalMediaStream) {
+                    globalMediaStream.getAudioTracks().forEach(t => { t.enabled = false; });
+                }
+                if (mediaRecorderInstance && mediaRecorderInstance.state !== 'inactive') {
+                    try { mediaRecorderInstance.stop(); } catch(e){}
+                }
+                if (currentAudio) {
+                    try { currentAudio.pause(); } catch(e){}
+                }
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+
+                if (statusEl) statusEl.innerText = "⏸️ TRANSMISIÓN PAUSADA | MICRÓFONO SILENCIADO";
+                if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 font-bold";
+                if (orbGlow) {
+                    orbGlow.classList.remove('animate-pulse');
+                    orbGlow.style.background = "rgba(245, 158, 11, 0.2)";
+                }
                 if (vis) vis.classList.remove('listening', 'speaking');
+                if (transcriptEl) transcriptEl.innerText = "⏸️ Transmisión en pausa. Micrófono totalmente silenciado. Toca el Orbe para reanudar...";
+                appendStreamLog("⏸️ Transmisión en pausa. Micrófono silenciado (puedes hablar fuera de transmisión).");
             } else {
+                // 🟢 REANUDAR TRANSMISIÓN Y REACTIVAR MICRÓFONO
                 isStreaming = true;
                 window.isBeatrizSpeaking = false;
+
+                if (globalMediaStream) {
+                    globalMediaStream.getAudioTracks().forEach(t => { t.enabled = true; });
+                }
                 if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-                appendStreamLog("🟢 Transmisión reanudada. Micrófono listo...");
-                if (orbGlow) orbGlow.classList.add('animate-pulse');
+                if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
+                if (orbGlow) {
+                    orbGlow.classList.add('animate-pulse');
+                    orbGlow.style.background = "";
+                }
                 if (vis) vis.classList.add('listening');
+                if (transcriptEl) transcriptEl.innerText = "Toca el Orbe 3D para pausar/silenciar o habla libremente con Beatriz...";
+                appendStreamLog("🟢 Transmisión reanudada. Micrófono activo escuchando...");
                 restartMediaRecording();
             }
         };
 
+        let orbPressTimer = null;
+        let orbPressStartTime = 0;
         let pttActive = false;
-        window.startPushToTalk = (e) => {
+
+        window.handleOrbPressStart = (e) => {
             if (e) e.preventDefault();
-            if (window.isBeatrizSpeaking) return;
-            pttActive = true;
-            isUserSpeaking = true;
-            speechStartTime = Date.now();
-            const vis = document.getElementById('visualizer');
-            const orb = document.getElementById('voice-orb');
-            const statusEl = document.getElementById('streaming-status');
-            if (vis) { vis.classList.remove('listening'); vis.classList.add('speaking'); }
-            if (orb) { orb.style.transform = 'scale(1.25)'; orb.style.boxShadow = '0 0 60px rgba(244, 114, 182, 0.95)'; }
-            if (statusEl) statusEl.innerText = '🔴 GRABANDO TU VOZ (Suelta el Orbe para enviar)...';
-            appendStreamLog("🎙️ [PUSH-TO-TALK] Grabando voz directa...");
-            restartMediaRecording();
+            orbPressStartTime = Date.now();
+            
+            // Si la transmisión está pausada y se presiona el orbe, esperar para decidir si es clic o PTT
+            orbPressTimer = setTimeout(() => {
+                if (window.isBeatrizSpeaking) return;
+                pttActive = true;
+                isUserSpeaking = true;
+                speechStartTime = Date.now();
+                const vis = document.getElementById('visualizer');
+                const orb = document.getElementById('voice-orb');
+                const statusEl = document.getElementById('streaming-status');
+                if (vis) { vis.classList.remove('listening'); vis.classList.add('speaking'); }
+                if (orb) { orb.style.transform = 'scale(1.25)'; orb.style.boxShadow = '0 0 60px rgba(244, 114, 182, 0.95)'; }
+                if (statusEl) statusEl.innerText = '🔴 GRABANDO TU VOZ (Suelta el Orbe para enviar)...';
+                appendStreamLog("🎙️ [PUSH-TO-TALK] Grabando voz directa...");
+                restartMediaRecording();
+            }, 300);
         };
 
-        window.stopPushToTalk = (e) => {
+        window.handleOrbPressEnd = (e) => {
             if (e) e.preventDefault();
-            if (!pttActive) return;
-            pttActive = false;
-            isUserSpeaking = false;
-            const vis = document.getElementById('visualizer');
-            const orb = document.getElementById('voice-orb');
-            const statusEl = document.getElementById('streaming-status');
-            if (vis) { vis.classList.remove('speaking'); vis.classList.add('listening'); }
-            if (orb) { orb.style.transform = 'scale(1)'; orb.style.boxShadow = ''; }
-            if (statusEl) statusEl.innerText = '🧠 Procesando con Whisper Turbo...';
-            appendStreamLog("🚀 [PUSH-TO-TALK] Despachando audio a Beatriz...");
-            if (mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
-                try { mediaRecorderInstance.stop(); } catch(err){}
+            const pressDuration = Date.now() - orbPressStartTime;
+            if (orbPressTimer) {
+                clearTimeout(orbPressTimer);
+                orbPressTimer = null;
+            }
+
+            if (pttActive) {
+                pttActive = false;
+                isUserSpeaking = false;
+                const vis = document.getElementById('visualizer');
+                const orb = document.getElementById('voice-orb');
+                const statusEl = document.getElementById('streaming-status');
+                if (vis) { vis.classList.remove('speaking'); vis.classList.add('listening'); }
+                if (orb) { orb.style.transform = 'scale(1)'; orb.style.boxShadow = ''; }
+                if (statusEl) statusEl.innerText = '🧠 Procesando con Whisper Turbo...';
+                appendStreamLog("🚀 [PUSH-TO-TALK] Despachando audio a Beatriz...");
+                if (mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
+                    try { mediaRecorderInstance.stop(); } catch(err){}
+                }
+            } else if (pressDuration < 300) {
+                // Toque / Clic corto -> TOGGLE PAUSA / SILENCIAR MICRÓFONO
+                window.toggleMicStreaming();
             }
         };
 
@@ -1559,18 +1611,11 @@
             if (globalMediaStream) {
                 globalMediaStream.getTracks().forEach(t => t.stop());
             }
-            document.getElementById('streaming-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            isStreaming = false;
-        };
-
-        window.closeStreamingMode = () => {
             if (streamMediaRecorder) {
-                streamMediaRecorder.stop();
-                streamMediaRecorder.stream.getTracks().forEach(t => t.stop());
+                try { streamMediaRecorder.stop(); } catch(e){}
             }
             if (streamWs) {
-                streamWs.close();
+                try { streamWs.close(); } catch(e){}
             }
             document.getElementById('streaming-modal').classList.add('hidden');
             document.body.style.overflow = 'auto';
