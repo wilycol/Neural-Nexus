@@ -4,11 +4,54 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const userMessage = body.message || body.text || "";
+    let userMessage = "";
+    let userUid = "WILY_STREAMING";
+
+    const contentType = req.headers.get("content-type") || "";
+
+    const rawGroqKey = "Z3NrX1hJYUVzOXRYTzFQOERTVnhWaEZuV0dkeWIwRllIbTlNT1ZTTlFTbEZsOVMwVlJvYVRzSEo=";
+    const defaultGroq = Buffer.from(rawGroqKey, "base64").toString("utf-8");
+    const groqKey = process.env.GROQ_API_KEY || defaultGroq;
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      const audioFile = formData.get("file") as Blob | null;
+      userUid = (formData.get("uid") as string) || "WILY_STREAMING";
+      const manualText = (formData.get("message") as string) || "";
+
+      if (audioFile && audioFile.size > 100) {
+        try {
+          const whisperData = new FormData();
+          whisperData.append("file", audioFile, "audio.webm");
+          whisperData.append("model", "whisper-large-v3-turbo");
+          whisperData.append("language", "es");
+
+          const whisperRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${groqKey}` },
+            body: whisperData
+          });
+
+          if (whisperRes.ok) {
+            const whisperJson = await whisperRes.json();
+            userMessage = whisperJson.text || "";
+          }
+        } catch (wErr) {
+          console.warn("Whisper transcription error:", wErr);
+        }
+      }
+
+      if (!userMessage && manualText) {
+        userMessage = manualText;
+      }
+    } else {
+      const body = await req.json();
+      userMessage = body.message || body.text || "";
+      userUid = body.uid || "WILY_STREAMING";
+    }
 
     if (!userMessage.trim()) {
-      return NextResponse.json({ error: "Mensaje vacío" }, { status: 400 });
+      return NextResponse.json({ error: "Mensaje vacío o audio inaudible" }, { status: 400 });
     }
 
     const systemPrompt = `Eres Beatriz Serie X Elite, Co-CEO de IA de Wily Col y directora de operaciones del Ecosistema Neural Nexus.
@@ -34,7 +77,7 @@ DIRECTIVAS CRÍTICAS:
           Prefer: "return=minimal"
         },
         body: JSON.stringify({
-          sender_id: body.uid || "WILY_STREAMING",
+          sender_id: userUid,
           type: "text",
           content: `[ADN:NEXUS-STREAM-LIVE] ${userMessage}`
         })

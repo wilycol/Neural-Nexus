@@ -255,41 +255,34 @@
                 </div>
             </div>
 
-            <!-- Subtítulos Dinámicos en Tiempo Real (Con Scroll Inteligente) -->
-            <div class="w-full bg-slate-900/80 rounded-2xl border border-white/10 p-3 shadow-xl backdrop-blur-md space-y-2 mb-2">
-                <div class="flex items-center justify-between text-[10px] text-fuchsia-300/70 font-mono border-b border-white/5 pb-1">
-                    <span class="font-bold flex items-center gap-1"><i data-lucide="sparkles" class="w-3 h-3 text-fuchsia-400"></i> SUBTÍTULOS EN VIVO</span>
-                    <span id="subtitle-source" class="text-indigo-400 font-mono text-[9px]">IA VOZ SALOMÉ</span>
+            <!-- Subtítulos Dinámicos en Tiempo Real (Pantalla Ampliada) -->
+            <div class="w-full bg-slate-900/90 rounded-2xl border border-white/10 p-3.5 shadow-2xl backdrop-blur-md space-y-2 mb-2 flex-1 flex flex-col justify-between">
+                <div class="flex items-center justify-between text-[11px] text-fuchsia-300/80 font-mono border-b border-white/10 pb-1.5">
+                    <span class="font-bold flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-fuchsia-400"></i> SUBTÍTULOS EN VIVO</span>
+                    <span id="subtitle-source" class="text-indigo-400 font-mono text-[10px]">IA VOZ SALOMÉ</span>
                 </div>
-                <div id="streaming-transcript-container" class="max-h-24 min-h-[50px] overflow-y-auto pr-1">
-                    <p id="streaming-transcript" class="text-xs text-slate-100 font-medium leading-relaxed transition-all">Beatriz lista para hablar por voz. Di algo por el micrófono...</p>
+                <div id="streaming-transcript-container" class="flex-1 max-h-36 min-h-[70px] overflow-y-auto pr-1">
+                    <p id="streaming-transcript" class="text-xs text-slate-100 font-medium leading-relaxed transition-all">Toca el Orbe 3D para activar el micrófono y habla libremente con Beatriz...</p>
                 </div>
                 
-                <!-- Registros Compactos del Búnker -->
-                <div class="border-t border-white/5 pt-1.5">
-                    <div class="flex items-center justify-between text-[9px] text-slate-400 font-mono mb-0.5">
-                        <span class="text-amber-400/90 font-bold">📊 LOGS DEL BÚNKER</span>
+                <!-- Registros Ampliados del Búnker -->
+                <div class="border-t border-white/10 pt-2">
+                    <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono mb-1">
+                        <span class="text-amber-400/90 font-bold flex items-center gap-1"><i data-lucide="activity" class="w-3 h-3 text-amber-400"></i> TELEMETRÍA DEL BÚNKER</span>
                         <span id="streaming-log-status" class="text-emerald-400">ONLINE</span>
                     </div>
-                    <div id="streaming-logs-content" class="max-h-14 overflow-y-auto font-mono text-[10px] text-emerald-400/80 space-y-0.5 bg-black/40 p-1.5 rounded-lg border border-white/5">
-                        <p class="text-slate-500">[09:20:00] 🟢 Conexión establecida...</p>
+                    <div id="streaming-logs-content" class="max-h-24 overflow-y-auto font-mono text-[10px] text-emerald-400/90 space-y-1 bg-black/50 p-2 rounded-xl border border-white/5">
+                        <p class="text-slate-500">[09:20:00] 🟢 Conexión establecida con el Búnker...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Controles Inferiores (Siempre Visibles y Anclados) -->
-            <div class="w-full space-y-2">
-                <!-- Entrada de Texto / Dictado Alternativo -->
-                <div class="flex gap-1.5 w-full">
-                    <input type="text" id="streaming-text-input" placeholder="Escribe o dicta a Beatriz..." class="flex-1 bg-slate-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-fuchsia-500 transition-all text-slate-200 placeholder:text-slate-500" onkeypress="if(event.key==='Enter') window.sendStreamingInputText()" />
-                    <button onclick="window.sendStreamingInputText()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center shadow-md shadow-indigo-600/20">Enviar</button>
+            <!-- Entrada de Texto / Dictado Alternativo (Anclada al fondo) -->
+            <div class="w-full pt-1">
+                <div class="flex gap-2 w-full">
+                    <input type="text" id="streaming-text-input" placeholder="Escribe o dicta a Beatriz..." class="flex-1 bg-slate-900/90 border border-white/15 rounded-xl px-4 py-3 text-xs outline-none focus:border-fuchsia-500 transition-all text-slate-200 placeholder:text-slate-500 shadow-inner" onkeypress="if(event.key==='Enter') window.sendStreamingInputText()" />
+                    <button onclick="window.sendStreamingInputText()" class="bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 active:scale-95 text-white px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center shadow-lg shadow-fuchsia-600/25">Enviar</button>
                 </div>
-
-                <!-- Botón Principal de Transmisión -->
-                <button onclick="toggleMicStreaming()" id="streaming-mic-btn" class="w-full bg-fuchsia-600 hover:bg-fuchsia-500 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg shadow-fuchsia-600/25 transition-all uppercase tracking-wider text-xs flex justify-center items-center gap-2">
-                    <i data-lucide="mic" class="w-4 h-4"></i>
-                    Detener Transmisión
-                </button>
             </div>
         </div>
     </div>
@@ -944,20 +937,68 @@
         let currentSpeechText = "";
         let subtitleInterval = null;
 
-        // --- Variables del Motor de Decibelios (VAD) ---
+        // --- Variables del Motor de Streaming & Audio ---
         let audioContext = null;
         let analyser = null;
         let vadAnimationId = null;
         let isUserSpeaking = false;
         let speechStartTime = 0;
         let silenceStartTime = 0;
-        let recognitionSilenceTimer = null;
+        let mediaRecorderInstance = null;
+        let recordedChunks = [];
+        let globalMediaStream = null;
         const DB_THRESHOLD = 6; // Umbral ultrasensible para micrófonos móviles
-        const SILENCE_TIMEOUT = 1200; // 1.2 segundos de silencio sostenido para finalizar frase
-        const MIN_SPEECH_DURATION = 300; // 300ms mínimo para filtrar ruidos
+        const SILENCE_TIMEOUT = 1200; // 1.2s de silencio para despachar frase
+        const MIN_SPEECH_DURATION = 350; // 350ms mínimo para filtrar ruidos
+
+        function startMediaRecording(stream) {
+            try {
+                if (!stream) return;
+                const options = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                    ? { mimeType: 'audio/webm;codecs=opus' }
+                    : (MediaRecorder.isTypeSupported('audio/webm') ? { mimeType: 'audio/webm' } : {});
+                
+                mediaRecorderInstance = new MediaRecorder(stream, options);
+                recordedChunks = [];
+
+                mediaRecorderInstance.ondataavailable = (e) => {
+                    if (e.data && e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorderInstance.onstop = () => {
+                    if (recordedChunks.length > 0) {
+                        const mime = options.mimeType || 'audio/webm';
+                        const audioBlob = new Blob(recordedChunks, { type: mime });
+                        recordedChunks = [];
+                        if (audioBlob.size > 600 && isStreaming && !window.isBeatrizSpeaking) {
+                            window.sendPwaAudioBlob(audioBlob);
+                        }
+                    }
+                };
+
+                mediaRecorderInstance.start(250);
+                appendStreamLog("🎙️ Grabador MediaRecorder nativo en línea.");
+            } catch (e) {
+                console.warn("Notice MediaRecorder:", e);
+            }
+        }
+
+        function restartMediaRecording() {
+            if (mediaRecorderInstance && mediaRecorderInstance.state === 'inactive' && globalMediaStream && isStreaming) {
+                try {
+                    recordedChunks = [];
+                    mediaRecorderInstance.start(250);
+                } catch(e){}
+            }
+        }
 
         function initDecibelVAD(stream) {
             if (!stream) return;
+            globalMediaStream = stream;
+            startMediaRecording(stream);
+
             try {
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -985,7 +1026,7 @@
                     }
                     const avgVolume = sum / bufferLength;
 
-                    // Si Beatriz está respondiendo con voz, no capturar para evitar eco
+                    // Si Beatriz está hablando, no capturar para evitar eco
                     if (window.isBeatrizSpeaking) {
                         vadAnimationId = requestAnimationFrame(vadLoop);
                         return;
@@ -1004,9 +1045,10 @@
                                 vis.classList.remove('listening');
                                 vis.classList.add('speaking');
                             }
+                            restartMediaRecording();
                         }
                     } else {
-                        // 🤫 Nivel de volumen bajo (silencio)
+                        // 🤫 Silencio
                         if (isUserSpeaking) {
                             if (!silenceStartTime) {
                                 silenceStartTime = now;
@@ -1023,11 +1065,11 @@
                                     vis.classList.add('listening');
                                 }
 
-                                if (speechDuration >= MIN_SPEECH_DURATION && currentSpeechText.trim()) {
-                                    appendStreamLog(`🎙️ Voz detectada por decibelios: "${currentSpeechText.substring(0, 30)}..."`);
-                                    const txtToSend = currentSpeechText;
-                                    currentSpeechText = "";
-                                    window.sendPwaVoiceMessage(txtToSend);
+                                if (speechDuration >= MIN_SPEECH_DURATION && mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
+                                    appendStreamLog(`🎙️ Frase de voz completada (${Math.round(speechDuration/100)/10}s). Procesando...`);
+                                    try {
+                                        mediaRecorderInstance.stop();
+                                    } catch(e){}
                                 }
                             }
                         }
@@ -1037,7 +1079,7 @@
                 }
 
                 vadLoop();
-                appendStreamLog("🎚️ Sensor de decibelios VAD ultrasensible activo (umbral: 6).");
+                appendStreamLog("🎚️ Sensor VAD y grabador nativo calibrados.");
             } catch (e) {
                 console.warn("Notice Decibel VAD:", e);
             }
@@ -1060,7 +1102,6 @@
             transcriptEl.innerHTML = '';
             let wordIdx = 0;
             
-            // Efecto subtítulos karaoke continuo (~135ms por palabra)
             subtitleInterval = setInterval(() => {
                 if (wordIdx < words.length) {
                     transcriptEl.innerText = words.slice(0, wordIdx + 1).join(' ');
@@ -1070,69 +1111,7 @@
                     clearInterval(subtitleInterval);
                     subtitleInterval = null;
                 }
-            }, 135);
-        }
-
-        function initSpeechRecognizer() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                appendStreamLog("⚠️ WebSpeech no disponible en este navegador. Usa el campo de texto.");
-                return;
-            }
-            try {
-                if (speechRecognizer) {
-                    try { speechRecognizer.abort(); } catch(e){}
-                }
-                speechRecognizer = new SpeechRecognition();
-                speechRecognizer.continuous = true;
-                speechRecognizer.interimResults = true;
-                speechRecognizer.lang = 'es-CO';
-                
-                speechRecognizer.onresult = (event) => {
-                    let transcript = '';
-                    for (let i = event.resultIndex; i < event.results.length; ++i) {
-                        transcript += event.results[i][0].transcript;
-                    }
-                    if (transcript.trim()) {
-                        currentSpeechText = transcript.trim();
-                        const transcriptEl = document.getElementById('streaming-transcript');
-                        const container = document.getElementById('streaming-transcript-container');
-                        const sourceEl = document.getElementById('subtitle-source');
-                        if (sourceEl) sourceEl.innerText = "TU VOZ (es-CO)";
-                        if (transcriptEl) transcriptEl.innerText = `🗣️ Tú: "${currentSpeechText}"`;
-                        if (container) container.scrollTop = container.scrollHeight;
-
-                        // ⏱️ Auto-envío dual: tras 1.2s de pausa en el reconocimiento
-                        if (recognitionSilenceTimer) clearTimeout(recognitionSilenceTimer);
-                        recognitionSilenceTimer = setTimeout(() => {
-                            if (currentSpeechText.trim() && isStreaming && !window.isBeatrizSpeaking) {
-                                appendStreamLog(`🎙️ Frase lista por voz: "${currentSpeechText.substring(0, 30)}..."`);
-                                const txtToSend = currentSpeechText;
-                                currentSpeechText = "";
-                                window.sendPwaVoiceMessage(txtToSend);
-                            }
-                        }, 1200);
-                    }
-                };
-                
-                speechRecognizer.onerror = (e) => {
-                    if (e.error !== 'no-speech' && e.error !== 'aborted') {
-                        console.warn("SpeechRec error:", e.error);
-                        appendStreamLog(`⚠️ Reconocimiento de voz: ${e.error}`);
-                    }
-                };
-                
-                speechRecognizer.onend = () => {
-                    if (isStreaming && !window.isBeatrizSpeaking) {
-                        try { speechRecognizer.start(); } catch(e){}
-                    }
-                };
-
-                speechRecognizer.start();
-                appendStreamLog("🎤 Reconocimiento de voz continuo activo (es-CO).");
-            } catch (e) {
-                console.warn("Notice WebSpeech:", e);
-            }
+            }, 130);
         }
 
         function appendStreamLog(msg) {
@@ -1172,66 +1151,25 @@
             const statusEl = document.getElementById('streaming-status');
             const transcriptEl = document.getElementById('streaming-transcript');
             const orbGlow = document.getElementById('voice-orb-glow');
-            const orb = document.getElementById('voice-orb');
             
-            // 1. Estado Conectado Inmediato (PWA Móvil)
             statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
             statusEl.className = "text-[11px] font-mono font-medium text-emerald-400 uppercase tracking-wider";
-            transcriptEl.innerText = "Beatriz lista para hablar por voz. Di algo por el micrófono...";
+            transcriptEl.innerText = "Toca el Orbe 3D o habla por el micrófono. Beatriz te escucha...";
             orbGlow.classList.add('animate-pulse');
             document.getElementById('visualizer').classList.add('listening');
             isStreaming = true;
             window.isBeatrizSpeaking = false;
             
             appendStreamLog("🟢 Enlace de Sala de Juntas activado.");
-            initSpeechRecognizer();
-            appendStreamLog("📡 Inicializando canal de streaming de voz bidireccional...");
 
             try {
-                // Obtener URL de WebSocket desde configuración o usar WSS seguro para HTTPS (PWA Móvil)
-                const configWsUrl = localStorage.getItem('nexus_ws_url');
-                const isHttps = window.location.protocol === 'https:';
-                let wsUrl = configWsUrl 
-                    ? configWsUrl 
-                    : (isHttps ? 'wss://wily-nexus-stream.loca.lt' : 'ws://localhost:8765');
-
-                console.log("📡 Conectando streaming WSS:", wsUrl);
-                streamWs = new WebSocket(wsUrl);
-                
-                streamWs.onopen = () => {
-                    console.log("🟢 WSS Canal activo.");
-                    statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-                    appendStreamLog("🟢 Servidor WSS 8765 conectado.");
-                };
-
-                streamWs.onmessage = (event) => {
-                    if (typeof event.data === 'string') {
-                        const data = JSON.parse(event.data);
-                        if(data.type === 'transcription') {
-                            lastTranscriptionText = data.text;
-                            renderSubtitlesLive(data.text);
-                            appendStreamLog(`🎙️ Transcripción: "${data.text.substring(0, 40)}..."`);
-                        }
-                    } else {
-                        // Reproducir audio recibido de Edge-TTS (Voz Salomé)
-                        appendStreamLog("🗣️ Recibido paquete de audio Salomé (es-CO). Reproduciendo...");
-                        if (currentAudio) currentAudio.pause();
-                        const blob = new Blob([event.data], { type: 'audio/mpeg' });
-                        const audioUrl = URL.createObjectURL(blob);
-                        playBeatrizAudio(audioUrl, lastTranscriptionText);
-                    }
-                };
-
-                streamWs.onerror = () => {
-                    appendStreamLog("⚠️ WSS 8765 no disponible. Usando canal directo de voz PWA.");
-                };
-
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).catch(() => null);
                 if (stream) {
-                    appendStreamLog("🎤 Micrófono PWA capturando audio...");
+                    appendStreamLog("🎤 Micrófono PWA capturando audio nativo...");
                     initDecibelVAD(stream);
+                } else {
+                    appendStreamLog("⚠️ Permiso de micrófono requerido. Usa el campo de texto inferior.");
                 }
-
             } catch (err) {
                 appendStreamLog(`Notice Streaming: ${err.message || err}`);
             }
@@ -1273,13 +1211,6 @@
                     vis.classList.add('speaking');
                 }
 
-                currentFillerAudio.onended = () => {
-                    if (!window.isBeatrizSpeaking && orb) {
-                        orb.style.transform = "scale(1)";
-                        orb.style.boxShadow = "0 0 40px rgba(217, 70, 239, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4)";
-                    }
-                };
-
                 currentFillerAudio.play().catch(e => console.log("Filler notice:", e));
             } catch (err) {
                 console.warn("Notice playFillerAudio:", err);
@@ -1288,9 +1219,6 @@
 
         function playBeatrizAudio(audioUrl, textToDisplay) {
             window.isBeatrizSpeaking = true;
-            if (speechRecognizer) {
-                try { speechRecognizer.abort(); } catch(e){}
-            }
             if (currentFillerAudio) {
                 try { currentFillerAudio.pause(); } catch(e){}
                 currentFillerAudio = null;
@@ -1324,11 +1252,11 @@
                     document.getElementById('visualizer').classList.remove('speaking');
                     document.getElementById('visualizer').classList.add('listening');
                     window.isBeatrizSpeaking = false;
-                    initSpeechRecognizer();
+                    restartMediaRecording();
                 };
                 
                 currentAudio.play().catch(e => {
-                    appendStreamLog(`⚠️ Audio nativo interceptado (${e.message}). Activando voz sintetizada...`);
+                    appendStreamLog(`⚠️ Reproduciendo voz con sintetizador móvil...`);
                     speakWithBrowserTTS(textToDisplay);
                 });
             } else if (textToDisplay) {
@@ -1339,7 +1267,7 @@
         function speakWithBrowserTTS(text) {
             if (!text || !('speechSynthesis' in window)) {
                 window.isBeatrizSpeaking = false;
-                initSpeechRecognizer();
+                restartMediaRecording();
                 return;
             }
             
@@ -1380,66 +1308,83 @@
                 document.getElementById('visualizer').classList.remove('speaking');
                 document.getElementById('visualizer').classList.add('listening');
                 window.isBeatrizSpeaking = false;
-                initSpeechRecognizer();
+                restartMediaRecording();
             };
 
             utterance.onerror = () => {
                 window.isBeatrizSpeaking = false;
-                initSpeechRecognizer();
+                restartMediaRecording();
             };
 
             window.speechSynthesis.speak(utterance);
         }
 
-        window.sendPwaVoiceMessage = async (textToSend) => {
-            const txt = textToSend || currentSpeechText;
-            if (!txt || !txt.trim()) {
-                appendStreamLog("🎤 No se detectó voz aún. Habla por el micrófono...");
-                document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-                return;
-            }
-            appendStreamLog(`🎙️ Voz capturada: "${txt.substring(0, 40)}..."`);
-            
-            // 🚀 Disparar Muletilla de Latencia Cero inmediatamente
+        window.sendPwaAudioBlob = async (audioBlob) => {
+            if (!audioBlob || audioBlob.size < 500) return;
+            appendStreamLog(`🎙️ Procesando audio nativo (${Math.round(audioBlob.size/1024)} KB)...`);
             playFillerAudio();
 
-            const bridgeUrl = localStorage.getItem('nexus_bridge_url') || '';
-            const endpoint = bridgeUrl ? `${bridgeUrl.replace(/\/$/, '')}/chat/portal` : '/api/chat/portal';
+            const uid = localStorage.getItem('nexus_uid') || 'WILY_STREAMING';
+            const formData = new FormData();
+            formData.append('file', audioBlob, 'audio.webm');
+            formData.append('uid', uid);
+            formData.append('persona', 'beatriz');
+
+            const transcriptEl = document.getElementById('streaming-transcript');
+
+            try {
+                appendStreamLog("🧠 Transcribiendo con Whisper Turbo y consultando a Beatriz...");
+                const res = await fetch('/api/chat/portal', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (data.response) {
+                    if (transcriptEl) transcriptEl.innerText = `"${data.response}"`;
+                    appendStreamLog(`🧠 Beatriz respondió: "${data.response.substring(0, 45)}..."`);
+                    playBeatrizAudio(data.voice_url, data.response);
+                }
+            } catch (err) {
+                appendStreamLog(`❌ Error procesando voz: ${err.message}`);
+                document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                window.isBeatrizSpeaking = false;
+                restartMediaRecording();
+            }
+        };
+
+        window.sendPwaVoiceMessage = async (textToSend) => {
+            const txt = textToSend;
+            if (!txt || !txt.trim()) return;
+            appendStreamLog(`✍️ Mensaje enviado: "${txt.substring(0, 35)}..."`);
+            playFillerAudio();
+
+            const uid = localStorage.getItem('nexus_uid') || 'WILY_STREAMING';
             const transcriptEl = document.getElementById('streaming-transcript');
             
             try {
                 appendStreamLog("🧠 Beatriz procesando respuesta...");
-                const uid = localStorage.getItem('nexus_uid') || 'WILY_STREAMING';
-                const res = await fetch(endpoint, {
+                const res = await fetch('/api/chat/portal', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: txt, persona: 'beatriz', uid: uid })
                 });
                 
-                if (!res.ok) {
-                    throw new Error(`HTTP error ${res.status}`);
-                }
-
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
                 
                 if (data.response) {
                     if (transcriptEl) transcriptEl.innerText = `"${data.response}"`;
-                    appendStreamLog(`🧠 Beatriz respondió: "${data.response.substring(0, 40)}..."`);
-                    
-                    if (data.command_triggered) {
-                        appendStreamLog("⚡ ÓRDEN TÉCNICA INYECTADA AL BÚNKER (Antigravity activado)");
-                    }
-                    
-                    // Reproducir respuesta completa
+                    appendStreamLog(`🧠 Beatriz respondió: "${data.response.substring(0, 45)}..."`);
                     playBeatrizAudio(data.voice_url, data.response);
                 }
             } catch (err) {
                 appendStreamLog(`❌ Error consultando a Beatriz: ${err.message}`);
                 document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                 window.isBeatrizSpeaking = false;
-                initSpeechRecognizer();
-            } finally {
-                currentSpeechText = "";
+                restartMediaRecording();
             }
         };
 
@@ -1449,43 +1394,41 @@
             const val = inputEl.value.trim();
             if (!val) return;
             inputEl.value = '';
-            appendStreamLog(`✍️ Mensaje enviado a Beatriz: "${val.substring(0, 35)}..."`);
             window.sendPwaVoiceMessage(val);
         };
 
         window.toggleMicStreaming = async () => {
-            const btn = document.getElementById('streaming-mic-btn');
             const statusEl = document.getElementById('streaming-status');
             const orbGlow = document.getElementById('voice-orb-glow');
             const vis = document.getElementById('visualizer');
 
             if (isStreaming) {
                 isStreaming = false;
-                if (speechRecognizer) {
-                    try { speechRecognizer.abort(); } catch(e){}
-                }
-                if (btn) {
-                    btn.className = "w-full bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-600/25 transition-all uppercase tracking-wider text-xs flex justify-center items-center gap-2";
-                    btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> ((•)) REANUDAR TRANSMISIÓN';
-                }
-                if (statusEl) statusEl.innerText = "⏸️ TRANSMISIÓN EN PAUSA";
+                if (statusEl) statusEl.innerText = "⏸️ TRANSMISIÓN EN PAUSA (Toca el Orbe)";
                 appendStreamLog("⏸️ Transmisión pausada.");
                 if (orbGlow) orbGlow.classList.remove('animate-pulse');
                 if (vis) vis.classList.remove('listening', 'speaking');
             } else {
                 isStreaming = true;
                 window.isBeatrizSpeaking = false;
-                if (btn) {
-                    btn.className = "w-full bg-fuchsia-600 hover:bg-fuchsia-500 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg shadow-fuchsia-600/25 transition-all uppercase tracking-wider text-xs flex justify-center items-center gap-2";
-                    btn.innerHTML = '<i data-lucide="mic" class="w-4 h-4"></i> DETENER TRANSMISIÓN';
-                }
                 if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-                appendStreamLog("🟢 Transmisión de voz reanudada. Micrófono listo...");
+                appendStreamLog("🟢 Transmisión reanudada. Micrófono listo...");
                 if (orbGlow) orbGlow.classList.add('animate-pulse');
                 if (vis) vis.classList.add('listening');
-                initSpeechRecognizer();
+                restartMediaRecording();
             }
-            if (window.lucide) lucide.createIcons();
+        };
+
+        window.closeStreamingMode = () => {
+            if (mediaRecorderInstance && mediaRecorderInstance.state !== 'inactive') {
+                try { mediaRecorderInstance.stop(); } catch(e){}
+            }
+            if (globalMediaStream) {
+                globalMediaStream.getTracks().forEach(t => t.stop());
+            }
+            document.getElementById('streaming-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            isStreaming = false;
         };
 
         window.closeStreamingMode = () => {
