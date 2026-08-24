@@ -892,6 +892,105 @@
         let currentSpeechText = "";
         let subtitleInterval = null;
 
+        // --- Variables del Motor de Decibelios (VAD) ---
+        let audioContext = null;
+        let analyser = null;
+        let vadAnimationId = null;
+        let isUserSpeaking = false;
+        let speechStartTime = 0;
+        let silenceStartTime = 0;
+        const DB_THRESHOLD = 16; // Umbral de decibelios para voz humana real
+        const SILENCE_TIMEOUT = 1300; // 1.3 segundos de silencio sostenido para finalizar frase
+        const MIN_SPEECH_DURATION = 350; // 350ms mínimo para filtrar clics o ruidos accidentales
+
+        function initDecibelVAD(stream) {
+            if (!stream) return;
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+
+                const source = audioContext.createMediaStreamSource(stream);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                analyser.smoothingTimeConstant = 0.3;
+                source.connect(analyser);
+
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                function vadLoop() {
+                    if (!isStreaming) return;
+                    
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                    }
+                    const avgVolume = sum / bufferLength;
+
+                    // Si Beatriz está respondiendo con voz, no capturar para evitar eco
+                    if (window.isBeatrizSpeaking) {
+                        vadAnimationId = requestAnimationFrame(vadLoop);
+                        return;
+                    }
+
+                    const now = Date.now();
+
+                    if (avgVolume > DB_THRESHOLD) {
+                        // 🗣️ Voz humana detectada por decibelios
+                        silenceStartTime = 0;
+                        if (!isUserSpeaking) {
+                            isUserSpeaking = true;
+                            speechStartTime = now;
+                            const vis = document.getElementById('visualizer');
+                            if (vis) {
+                                vis.classList.remove('listening');
+                                vis.classList.add('speaking');
+                            }
+                        }
+                    } else {
+                        // 🤫 Nivel de volumen bajo (silencio o ruido suave)
+                        if (isUserSpeaking) {
+                            if (!silenceStartTime) {
+                                silenceStartTime = now;
+                            }
+                            
+                            // Si el silencio superó el tiempo límite
+                            if (now - silenceStartTime >= SILENCE_TIMEOUT) {
+                                const speechDuration = now - speechStartTime;
+                                isUserSpeaking = false;
+                                silenceStartTime = 0;
+                                
+                                const vis = document.getElementById('visualizer');
+                                if (vis) {
+                                    vis.classList.remove('speaking');
+                                    vis.classList.add('listening');
+                                }
+
+                                if (speechDuration >= MIN_SPEECH_DURATION && currentSpeechText.trim()) {
+                                    appendStreamLog(`🎙️ Frase capturada (${Math.round(speechDuration/100)/10}s): "${currentSpeechText.substring(0, 30)}..."`);
+                                    const txtToSend = currentSpeechText;
+                                    currentSpeechText = "";
+                                    window.sendPwaVoiceMessage(txtToSend);
+                                }
+                            }
+                        }
+                    }
+
+                    vadAnimationId = requestAnimationFrame(vadLoop);
+                }
+
+                vadLoop();
+                appendStreamLog("🎚️ Sensor de decibelios VAD calibrado y activo.");
+            } catch (e) {
+                console.warn("Notice Decibel VAD:", e);
+            }
+        }
+
         function renderSubtitlesLive(text) {
             const transcriptEl = document.getElementById('streaming-transcript');
             const container = document.getElementById('streaming-transcript-container');
@@ -909,7 +1008,7 @@
             transcriptEl.innerHTML = '';
             let wordIdx = 0;
             
-            // Efecto subtítulos karaoke continuo (~140ms por palabra)
+            // Efecto subtítulos karaoke continuo (~135ms por palabra)
             subtitleInterval = setInterval(() => {
                 if (wordIdx < words.length) {
                     transcriptEl.innerText = words.slice(0, wordIdx + 1).join(' ');
@@ -947,17 +1046,6 @@
                         if (sourceEl) sourceEl.innerText = "TU VOZ (es-CO)";
                         if (transcriptEl) transcriptEl.innerText = `🗣️ Tú: "${currentSpeechText}"`;
                         if (container) container.scrollTop = container.scrollHeight;
-                        
-                        // ⏱️ VAD: Detección automática de pausa de voz (1.4 segundos)
-                        if (silenceTimer) clearTimeout(silenceTimer);
-                        silenceTimer = setTimeout(() => {
-                            if (currentSpeechText.trim() && isStreaming) {
-                                appendStreamLog(`⏸️ Pausa detectada. Enviando: "${currentSpeechText.substring(0, 30)}..."`);
-                                const txtToSend = currentSpeechText;
-                                currentSpeechText = "";
-                                window.sendPwaVoiceMessage(txtToSend);
-                            }
-                        }, 1400);
                     }
                 };
                 
@@ -974,7 +1062,7 @@
                 };
 
                 speechRecognizer.start();
-                appendStreamLog("🎤 Reconocimiento de voz en vivo activado (es-CO).");
+                appendStreamLog("🎤 Reconocimiento de voz continuo activado (es-CO).");
             } catch (e) {
                 console.warn("Notice WebSpeech:", e);
             }
@@ -1071,9 +1159,10 @@
                     appendStreamLog("⚠️ WSS 8765 no disponible. Usando canal directo de voz PWA.");
                 };
 
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => null);
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).catch(() => null);
                 if (stream) {
                     appendStreamLog("🎤 Micrófono PWA capturando audio...");
+                    initDecibelVAD(stream);
                 }
 
             } catch (err) {
