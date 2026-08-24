@@ -880,14 +880,6 @@
         let streamWs = null;
         let streamMediaRecorder = null;
         let isStreaming = false;
-        
-        // --- Lógica VAD (Auto-envío tras silencios) ---
-        let audioContext = null;
-        let analyser = null;
-        let silenceTimer = null;
-        let isSpeaking = false;
-        const SILENCE_THRESHOLD = 5; // Ajustable, 0-255
-        const SILENCE_DURATION = 2000; // 2 segundos
 
         let speechRecognizer = null;
         let currentSpeechText = "";
