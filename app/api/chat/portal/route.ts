@@ -26,16 +26,21 @@ function isWhisperHallucination(text: string): boolean {
 }
 
 function cleanTextForSpeech(text: string): string {
-  return text
+  if (!text) return "";
+  let clean = text
     .replace(/<think>[\s\S]*?<\/think>/gi, "")
     .replace(/```[\s\S]*?```/g, "")
     .replace(/[*#_~`>|\-\\]/g, " ")
     .replace(/https?:\/\/\S+/g, "")
-    .replace(/\[ADN:[^\]]+\]/g, "")
-    .replace(/[\u{1F300}-\u{1F9FF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F1E6}-\u{1F1FF}]|[\u{1F300}-\u{1F5FF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F004}]|[\u{1F0CF}]|[\u{1F170}-\u{1F19A}]|[\u{1F201}-\u{1F251}]|[\u{1F000}-\u{1F02F}]|[\u{1F0A0}-\u{1F0DF}]|[\u{1F100}-\u{1F10A}]|[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/\[ADN:[^\]]+\]/g, "");
+
+  // ES5 compatible emoji & symbol stripping without requiring /u regex flag
+  clean = clean.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, "");
+  clean = clean.replace(/[\u2600-\u27BF\uFE00-\uFE0F\u200D]/g, "");
+
+  return clean.replace(/\s+/g, " ").trim();
 }
+
 
 export async function POST(req: Request) {
   try {
