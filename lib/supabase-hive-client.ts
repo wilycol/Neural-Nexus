@@ -22,8 +22,7 @@ export const getSupabaseHiveClient = () => {
         auth: {
             persistSession: true,
             autoRefreshToken: true,
-            detectSessionInUrl: true,
-            lock: false
+            detectSessionInUrl: true
         }
     });
     return hiveClient;

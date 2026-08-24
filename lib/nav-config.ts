@@ -35,6 +35,7 @@ export const primaryMenuItems = [
 export const destacadosItems = [
   { href: "/muro-de-la-fama", label: "Muro de la Fama", icon: Trophy, color: "text-amber-500" },
   { href: "/top5", label: "Top 5 del Día", icon: Sparkles, color: "text-neon-blue" },
+  { href: "/kitsune-ads", label: "Kitsune AI ADS", icon: Video, color: "text-amber-400" },
   { href: "/pitch", label: "Pitch Técnico", icon: Presentation, color: "text-neon-purple" },
   { href: "/neural-sites", label: "Neural Sites SaaS", icon: Zap, color: "text-neon-blue" },
 ];

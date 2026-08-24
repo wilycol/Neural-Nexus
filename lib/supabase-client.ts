@@ -19,8 +19,7 @@ export const createBrowserClient = () => {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true,
-        lock: false
+        detectSessionInUrl: true
       }
     });
   } catch (error) {
