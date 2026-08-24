@@ -89,9 +89,6 @@ DIRECTIVAS CRÍTICAS:
     let beatrizResponse = "";
 
     // 2. Generar respuesta con Groq AI (Llama 3.3 70B)
-    const rawGroqKey = "Z3NrX1hJYUVzOXRYTzFQOERTVnhWaEZuV0dkeWIwRllIbTlNT1ZTTlFTbEZsOVMwVlJvYVRzSEo=";
-    const defaultGroq = Buffer.from(rawGroqKey, "base64").toString("utf-8");
-    const groqKey = process.env.GROQ_API_KEY || defaultGroq;
     if (groqKey) {
       try {
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
