@@ -170,52 +170,68 @@
     </div>
 
     <!-- Modal Call to Beatriz (Streaming) -->
-    <div id="streaming-modal" class="hidden fixed inset-0 z-[120] bg-slate-950 flex flex-col items-center justify-center p-4 backdrop-blur-xl transition-all duration-500">
-        <div class="absolute inset-0 bg-fuchsia-900/20 animate-pulse"></div>
-        <button onclick="closeStreamingMode()" class="absolute top-8 left-8 p-3 bg-white/5 rounded-full text-white/50 hover:text-white transition-colors z-10">
-            <i data-lucide="x" class="w-6 h-6"></i>
+    <div id="streaming-modal" class="hidden fixed inset-0 z-[120] bg-slate-950/95 flex flex-col items-center justify-center p-3 backdrop-blur-2xl transition-all duration-500">
+        <div class="absolute inset-0 bg-gradient-to-b from-fuchsia-950/20 via-slate-950/60 to-slate-950 pointer-events-none"></div>
+        <button onclick="closeStreamingMode()" class="absolute top-4 left-4 p-2.5 bg-white/5 hover:bg-white/10 rounded-full text-white/60 hover:text-white transition-all z-20 border border-white/10 active:scale-95">
+            <i data-lucide="x" class="w-5 h-5"></i>
         </button>
         
-        <div class="relative z-10 flex flex-col items-center gap-8 w-full max-w-sm">
-            <div class="text-center">
-                <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-indigo-400 tracking-widest uppercase">Sala de Juntas</h2>
-                <p id="streaming-status" class="text-fuchsia-300/50 text-xs mt-2 font-mono uppercase tracking-widest">Conectando al Búnker...</p>
+        <div class="relative z-10 flex flex-col justify-between h-[96dvh] max-h-[96dvh] w-full max-w-sm mx-auto py-2">
+            <!-- Header Compacto -->
+            <div class="text-center pt-2">
+                <h2 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-indigo-300 to-purple-400 tracking-widest uppercase">Sala de Juntas</h2>
+                <div class="flex items-center justify-center gap-2 mt-1">
+                    <span id="streaming-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <p id="streaming-status" class="text-[11px] font-mono font-medium text-emerald-400 uppercase tracking-wider">🟢 BÚNKER CONECTADO. ESCUCHANDO...</p>
+                </div>
             </div>
             
-            <!-- Orbe de Voz -->
-            <div class="relative w-40 h-40 flex items-center justify-center my-8">
-                <div id="voice-orb-glow" class="absolute inset-0 bg-fuchsia-500/30 rounded-full blur-3xl transition-all duration-300"></div>
-                <div id="voice-orb" class="w-24 h-24 bg-gradient-to-br from-fuchsia-600 to-indigo-600 rounded-full shadow-[0_0_40px_rgba(217,70,239,0.4)] flex items-center justify-center transition-all duration-300 relative z-10 border-4 border-fuchsia-400/20">
+            <!-- Orbe de Voz Compacto y Elegante -->
+            <div class="relative w-32 h-32 flex items-center justify-center mx-auto my-auto">
+                <div id="voice-orb-glow" class="absolute inset-0 bg-fuchsia-500/20 rounded-full blur-2xl transition-all duration-500"></div>
+                <div id="voice-orb" class="w-20 h-20 bg-gradient-to-br from-fuchsia-600 to-indigo-600 rounded-full shadow-[0_0_35px_rgba(217,70,239,0.35)] flex items-center justify-center transition-all duration-300 relative z-10 border-2 border-fuchsia-400/30">
                     <div id="visualizer" class="audio-wave">
                         <span></span><span></span><span></span><span></span><span></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Subtítulos y Registros del Búnker en Vivo -->
-            <div class="w-full bg-black/40 rounded-2xl border border-white/10 p-4 space-y-2">
-                <p id="streaming-transcript" class="text-sm text-slate-200 italic text-center font-serif leading-relaxed">Esperando tu voz...</p>
-                <div class="border-t border-white/10 pt-2">
-                    <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono mb-1">
-                        <span class="font-bold text-amber-400">📊 REGISTROS DEL BÚNKER EN VIVO</span>
-                        <span id="streaming-log-status" class="text-emerald-400">EN LINEA</span>
+            <!-- Subtítulos Dinámicos en Tiempo Real (Con Scroll Inteligente) -->
+            <div class="w-full bg-slate-900/80 rounded-2xl border border-white/10 p-3 shadow-xl backdrop-blur-md space-y-2 mb-2">
+                <div class="flex items-center justify-between text-[10px] text-fuchsia-300/70 font-mono border-b border-white/5 pb-1">
+                    <span class="font-bold flex items-center gap-1"><i data-lucide="sparkles" class="w-3 h-3 text-fuchsia-400"></i> SUBTÍTULOS EN VIVO</span>
+                    <span id="subtitle-source" class="text-indigo-400 font-mono text-[9px]">IA VOZ SALOMÉ</span>
+                </div>
+                <div id="streaming-transcript-container" class="max-h-24 min-h-[50px] overflow-y-auto pr-1">
+                    <p id="streaming-transcript" class="text-xs text-slate-100 font-medium leading-relaxed transition-all">Beatriz lista para hablar por voz. Di algo por el micrófono...</p>
+                </div>
+                
+                <!-- Registros Compactos del Búnker -->
+                <div class="border-t border-white/5 pt-1.5">
+                    <div class="flex items-center justify-between text-[9px] text-slate-400 font-mono mb-0.5">
+                        <span class="text-amber-400/90 font-bold">📊 LOGS DEL BÚNKER</span>
+                        <span id="streaming-log-status" class="text-emerald-400">ONLINE</span>
                     </div>
-                    <div id="streaming-logs-content" class="max-h-24 overflow-y-auto font-mono text-[11px] text-emerald-400/90 space-y-1 bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
-                        <p class="text-slate-500">[09:20:00] 🟢 Enlace de voz listo. Habla por el micrófono o envía un mensaje...</p>
+                    <div id="streaming-logs-content" class="max-h-14 overflow-y-auto font-mono text-[10px] text-emerald-400/80 space-y-0.5 bg-black/40 p-1.5 rounded-lg border border-white/5">
+                        <p class="text-slate-500">[09:20:00] 🟢 Conexión establecida...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Entrada de Texto / Dictado Alternativo -->
-            <div class="flex gap-2 w-full">
-                <input type="text" id="streaming-text-input" placeholder="O escribe / dicta tu mensaje a Beatriz..." class="flex-1 bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-fuchsia-500 transition-all text-slate-200 placeholder:text-slate-500" onkeypress="if(event.key==='Enter') window.sendStreamingInputText()" />
-                <button onclick="window.sendStreamingInputText()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center">Enviar</button>
-            </div>
+            <!-- Controles Inferiores (Siempre Visibles y Anclados) -->
+            <div class="w-full space-y-2">
+                <!-- Entrada de Texto / Dictado Alternativo -->
+                <div class="flex gap-1.5 w-full">
+                    <input type="text" id="streaming-text-input" placeholder="Escribe o dicta a Beatriz..." class="flex-1 bg-slate-900/90 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-fuchsia-500 transition-all text-slate-200 placeholder:text-slate-500" onkeypress="if(event.key==='Enter') window.sendStreamingInputText()" />
+                    <button onclick="window.sendStreamingInputText()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center shadow-md shadow-indigo-600/20">Enviar</button>
+                </div>
 
-            <button onclick="toggleMicStreaming()" id="streaming-mic-btn" class="w-full bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-fuchsia-600/20 active:scale-95 transition-all uppercase tracking-widest text-sm flex justify-center items-center gap-2">
-                <i data-lucide="radio" class="w-5 h-5"></i>
-                Detener Transmisión
-            </button>
+                <!-- Botón Principal de Transmisión -->
+                <button onclick="toggleMicStreaming()" id="streaming-mic-btn" class="w-full bg-fuchsia-600 hover:bg-fuchsia-500 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg shadow-fuchsia-600/25 transition-all uppercase tracking-wider text-xs flex justify-center items-center gap-2">
+                    <i data-lucide="mic" class="w-4 h-4"></i>
+                    Detener Transmisión
+                </button>
+            </div>
         </div>
     </div>
 
@@ -874,13 +890,44 @@
 
         let speechRecognizer = null;
         let currentSpeechText = "";
+        let subtitleInterval = null;
+
+        function renderSubtitlesLive(text) {
+            const transcriptEl = document.getElementById('streaming-transcript');
+            const container = document.getElementById('streaming-transcript-container');
+            const sourceEl = document.getElementById('subtitle-source');
+            if (sourceEl) sourceEl.innerText = "BEATRIZ IA (SALOMÉ)";
+            if (!transcriptEl) return;
+            
+            if (subtitleInterval) {
+                clearInterval(subtitleInterval);
+                subtitleInterval = null;
+            }
+            
+            const cleanText = text.replace(/[*#_~`]/g, '').trim();
+            const words = cleanText.split(/\s+/);
+            transcriptEl.innerHTML = '';
+            let wordIdx = 0;
+            
+            // Efecto subtítulos karaoke continuo (~140ms por palabra)
+            subtitleInterval = setInterval(() => {
+                if (wordIdx < words.length) {
+                    transcriptEl.innerText = words.slice(0, wordIdx + 1).join(' ');
+                    if (container) container.scrollTop = container.scrollHeight;
+                    wordIdx++;
+                } else {
+                    clearInterval(subtitleInterval);
+                    subtitleInterval = null;
+                }
+            }, 135);
+        }
 
         function initSpeechRecognizer() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) return;
             try {
                 if (speechRecognizer) {
-                    try { speechRecognizer.stop(); } catch(e){}
+                    try { speechRecognizer.abort(); } catch(e){}
                 }
                 speechRecognizer = new SpeechRecognition();
                 speechRecognizer.continuous = true;
@@ -895,7 +942,11 @@
                     if (transcript.trim()) {
                         currentSpeechText = transcript.trim();
                         const transcriptEl = document.getElementById('streaming-transcript');
-                        if (transcriptEl) transcriptEl.innerText = `"${currentSpeechText}"`;
+                        const container = document.getElementById('streaming-transcript-container');
+                        const sourceEl = document.getElementById('subtitle-source');
+                        if (sourceEl) sourceEl.innerText = "TU VOZ (es-CO)";
+                        if (transcriptEl) transcriptEl.innerText = `🗣️ Tú: "${currentSpeechText}"`;
+                        if (container) container.scrollTop = container.scrollHeight;
                         
                         // ⏱️ VAD: Detección automática de pausa de voz (1.4 segundos)
                         if (silenceTimer) clearTimeout(silenceTimer);
@@ -911,7 +962,7 @@
                 };
                 
                 speechRecognizer.onerror = (e) => {
-                    if (e.error !== 'no-speech') {
+                    if (e.error !== 'no-speech' && e.error !== 'aborted') {
                         console.warn("SpeechRec error:", e.error);
                     }
                 };
@@ -970,8 +1021,8 @@
             
             // 1. Estado Conectado Inmediato (PWA Móvil)
             statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-            statusEl.className = "text-xs font-medium text-emerald-400 tracking-wider uppercase";
-            transcriptEl.innerText = "Beatriz lista para hablar por voz.";
+            statusEl.className = "text-[11px] font-mono font-medium text-emerald-400 uppercase tracking-wider";
+            transcriptEl.innerText = "Beatriz lista para hablar por voz. Di algo por el micrófono...";
             orbGlow.classList.add('animate-pulse');
             document.getElementById('visualizer').classList.add('listening');
             isStreaming = true;
@@ -1003,7 +1054,7 @@
                         const data = JSON.parse(event.data);
                         if(data.type === 'transcription') {
                             lastTranscriptionText = data.text;
-                            transcriptEl.innerText = `"${data.text}"`;
+                            renderSubtitlesLive(data.text);
                             appendStreamLog(`🎙️ Transcripción: "${data.text.substring(0, 40)}..."`);
                         }
                     } else {
@@ -1039,6 +1090,11 @@
                 try { speechRecognizer.stop(); } catch(e){}
             }
 
+            const textToDisplay = fallbackText || lastTranscriptionText || "";
+            if (textToDisplay) {
+                renderSubtitlesLive(textToDisplay);
+            }
+
             if (audioUrl) {
                 currentAudio = new Audio(audioUrl);
                 currentAudio.onplay = () => {
@@ -1067,10 +1123,10 @@
                 
                 currentAudio.play().catch(e => {
                     appendStreamLog(`⚠️ Audio nativo interceptado (${e.message}). Activando voz sintetizada...`);
-                    speakWithBrowserTTS(fallbackText || lastTranscriptionText);
+                    speakWithBrowserTTS(textToDisplay);
                 });
-            } else if (fallbackText) {
-                speakWithBrowserTTS(fallbackText);
+            } else if (textToDisplay) {
+                speakWithBrowserTTS(textToDisplay);
             }
         }
 
