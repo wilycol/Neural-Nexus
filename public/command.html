@@ -1276,7 +1276,7 @@
             appendStreamLog(`🎙️ Voz capturada: "${txt.substring(0, 40)}..."`);
             
             const bridgeUrl = localStorage.getItem('nexus_bridge_url') || '';
-            const endpoint = bridgeUrl ? `${bridgeUrl.replace(/\/$/, '')}/chat/portal` : '/chat/portal';
+            const endpoint = bridgeUrl ? `${bridgeUrl.replace(/\/$/, '')}/chat/portal` : '/api/chat/portal';
             const transcriptEl = document.getElementById('streaming-transcript');
             
             try {
@@ -1286,6 +1286,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: txt, persona: 'beatriz' })
                 });
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP error ${res.status}`);
+                }
+
                 const data = await res.json();
                 
                 if (data.response) {
