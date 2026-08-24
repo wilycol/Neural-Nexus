@@ -1184,7 +1184,7 @@
             }
         };
 
-        // --- Motor de Muletillas de Latencia Cero (Voz Salomé Real) ---
+        // --- Motor de Muletillas & Audio Secuencial (Voz Salomé Real) ---
         const FILLER_AUDIOS = [
             '/audio/fillers/filler1.mp3',
             '/audio/fillers/filler2.mp3',
@@ -1192,17 +1192,57 @@
             '/audio/fillers/filler4.mp3'
         ];
         let currentFillerAudio = null;
+        let isFillerPlaying = false;
+        let pendingBeatrizPayload = null;
+        let responseTimeoutTimer = null;
+
+        function startResponseTimeout() {
+            clearResponseTimeout();
+            responseTimeoutTimer = setTimeout(() => {
+                if (!window.isBeatrizSpeaking && isStreaming) {
+                    play30sFillerAudio();
+                }
+            }, 30000);
+        }
+
+        function clearResponseTimeout() {
+            if (responseTimeoutTimer) {
+                clearTimeout(responseTimeoutTimer);
+                responseTimeoutTimer = null;
+            }
+        }
+
+        function play30sFillerAudio() {
+            try {
+                if (window.isBeatrizSpeaking) return;
+                appendStreamLog("⏳ 30s de procesamiento alcanzados. Despachando muletilla de espera...");
+                const audio30s = new Audio('/audio/fillers/filler_30s.mp3');
+                audio30s.volume = 1.0;
+                
+                const sourceEl = document.getElementById('subtitle-source');
+                const statusEl = document.getElementById('streaming-status');
+                if (sourceEl) sourceEl.innerText = "BEATRIZ (ESPERA PROLONGADA)";
+                if (statusEl) statusEl.innerText = "Beatriz consultando registros...";
+                
+                renderSubtitlesLive("Vaya, está difícil buscarlo, la red está un poco lenta pero no te preocupes, ya estamos en marcha, ya pronto encontraremos la solución que estás buscando.");
+                
+                audio30s.play().catch(e => console.log("30s filler notice:", e));
+            } catch(e){}
+        }
 
         function playFillerAudio() {
             try {
+                startResponseTimeout();
                 if (currentFillerAudio) {
-                    currentFillerAudio.pause();
+                    try { currentFillerAudio.pause(); } catch(e){}
                     currentFillerAudio = null;
                 }
                 const randIdx = Math.floor(Math.random() * FILLER_AUDIOS.length);
                 const fillerSrc = FILLER_AUDIOS[randIdx];
                 currentFillerAudio = new Audio(fillerSrc);
                 currentFillerAudio.volume = 1.0;
+                isFillerPlaying = true;
+                pendingBeatrizPayload = null;
 
                 const orb = document.getElementById('voice-orb');
                 const vis = document.getElementById('visualizer');
@@ -1220,19 +1260,41 @@
                     vis.classList.add('speaking');
                 }
 
-                currentFillerAudio.play().catch(e => console.log("Filler notice:", e));
+                currentFillerAudio.onended = () => {
+                    isFillerPlaying = false;
+                    currentFillerAudio = null;
+                    if (pendingBeatrizPayload) {
+                        const payload = pendingBeatrizPayload;
+                        pendingBeatrizPayload = null;
+                        executePlayBeatriz(payload.url, payload.text);
+                    } else if (!window.isBeatrizSpeaking && orb) {
+                        orb.style.transform = "scale(1)";
+                        orb.style.boxShadow = "";
+                    }
+                };
+
+                currentFillerAudio.play().catch(e => {
+                    console.log("Filler notice:", e);
+                    isFillerPlaying = false;
+                });
             } catch (err) {
                 console.warn("Notice playFillerAudio:", err);
+                isFillerPlaying = false;
             }
         }
 
         function playBeatrizAudio(audioUrl, textToDisplay) {
-            window.isBeatrizSpeaking = true;
-            if (currentFillerAudio) {
-                try { currentFillerAudio.pause(); } catch(e){}
-                currentFillerAudio = null;
+            clearResponseTimeout();
+            if (isFillerPlaying) {
+                appendStreamLog("⏳ Esperando que termine la muletilla para iniciar respuesta...");
+                pendingBeatrizPayload = { url: audioUrl, text: textToDisplay };
+                return;
             }
+            executePlayBeatriz(audioUrl, textToDisplay);
+        }
 
+        function executePlayBeatriz(audioUrl, textToDisplay) {
+            window.isBeatrizSpeaking = true;
             const statusEl = document.getElementById('streaming-status');
             const orb = document.getElementById('voice-orb');
             
@@ -1256,7 +1318,7 @@
                     appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
                     if (orb) {
                         orb.style.transform = "scale(1)";
-                        orb.style.boxShadow = "0 0 40px rgba(217, 70, 239, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4)";
+                        orb.style.boxShadow = "";
                     }
                     document.getElementById('visualizer').classList.remove('speaking');
                     document.getElementById('visualizer').classList.add('listening');
@@ -1265,7 +1327,7 @@
                 };
                 
                 currentAudio.play().catch(e => {
-                    appendStreamLog(`⚠️ Reproduciendo voz con sintetizador móvil...`);
+                    appendStreamLog(`⚠️ Audio nativo: ${e.message}. Activando voz del dispositivo...`);
                     speakWithBrowserTTS(textToDisplay);
                 });
             } else if (textToDisplay) {
@@ -1312,7 +1374,7 @@
                 appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
                 if (orb) {
                     orb.style.transform = "scale(1)";
-                    orb.style.boxShadow = "0 0 40px rgba(217, 70, 239, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.4)";
+                    orb.style.boxShadow = "";
                 }
                 document.getElementById('visualizer').classList.remove('speaking');
                 document.getElementById('visualizer').classList.add('listening');
@@ -1358,6 +1420,7 @@
                 }
             } catch (err) {
                 appendStreamLog(`❌ Error procesando voz: ${err.message}`);
+                clearResponseTimeout();
                 document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                 window.isBeatrizSpeaking = false;
                 restartMediaRecording();
@@ -1391,6 +1454,7 @@
                 }
             } catch (err) {
                 appendStreamLog(`❌ Error consultando a Beatriz: ${err.message}`);
+                clearResponseTimeout();
                 document.getElementById('streaming-status').innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                 window.isBeatrizSpeaking = false;
                 restartMediaRecording();
