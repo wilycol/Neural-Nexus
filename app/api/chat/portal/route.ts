@@ -213,24 +213,6 @@ DIRECTIVAS CRÍTICAS:
       console.warn("⚠️ Síntesis de voz Salomé fallback notice:", vErr);
     }
 
-
-      if (cleanTTS) {
-        const tmpFile = path.join(os.tmpdir(), `salome_${Date.now()}.mp3`);
-        const escapedText = cleanTTS.replace(/"/g, '\\"');
-        const cmd = `python -m edge_tts --voice "es-CO-SalomeNeural" --text "${escapedText}" --write-media "${tmpFile}"`;
-        await execAsync(cmd);
-
-        const buffer = await fs.readFile(tmpFile);
-        await fs.unlink(tmpFile).catch(() => {});
-
-        if (buffer && buffer.length > 500) {
-          voiceUrl = `data:audio/mp3;base64,${buffer.toString("base64")}`;
-        }
-      }
-    } catch (vErr) {
-      console.warn("⚠️ Síntesis de voz Salomé fallback notice:", vErr);
-    }
-
     // 5. Registrar respuesta de Beatriz en Supabase
     try {
       await fetch(`${sbUrl}/rest/v1/messages`, {
