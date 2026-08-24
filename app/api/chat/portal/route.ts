@@ -9,6 +9,34 @@ const execAsync = promisify(exec);
 
 export const dynamic = "force-dynamic";
 
+function isWhisperHallucination(text: string): boolean {
+  if (!text) return true;
+  const clean = text.trim().toLowerCase();
+  const hallucinationRegexes = [
+    /^(gracias[\s.,!?-]*)+$/i,
+    /gracias por ver/i,
+    /subt[íi]tulos/i,
+    /suscr[íi]bete/i,
+    /amara\.org/i,
+    /transcriptor/i,
+    /continuar[áa]/i,
+    /^[\s.,!?-]*$/
+  ];
+  return hallucinationRegexes.some(regex => regex.test(clean));
+}
+
+function cleanTextForSpeech(text: string): string {
+  return text
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/[*#_~`>|\-\\]/g, " ")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/\[ADN:[^\]]+\]/g, "")
+    .replace(/[\u{1F300}-\u{1F9FF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F1E6}-\u{1F1FF}]|[\u{1F300}-\u{1F5FF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F004}]|[\u{1F0CF}]|[\u{1F170}-\u{1F19A}]|[\u{1F201}-\u{1F251}]|[\u{1F000}-\u{1F02F}]|[\u{1F0A0}-\u{1F0DF}]|[\u{1F100}-\u{1F10A}]|[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export async function POST(req: Request) {
   try {
     let userMessage = "";
@@ -41,7 +69,12 @@ export async function POST(req: Request) {
 
           if (whisperRes.ok) {
             const whisperJson = await whisperRes.json();
-            userMessage = whisperJson.text || "";
+            const transcribed = whisperJson.text || "";
+            if (!isWhisperHallucination(transcribed)) {
+              userMessage = transcribed;
+            } else {
+              console.log("🛡️ [WHISPER-FILTER] Ignorando alucinación de silencio detectada:", transcribed);
+            }
           }
         } catch (wErr) {
           console.warn("Whisper transcription error:", wErr);
@@ -161,11 +194,25 @@ DIRECTIVAS CRÍTICAS:
     // 4. Sintetizar respuesta con voz colombiana Salomé (es-CO-SalomeNeural)
     let voiceUrl: string | null = null;
     try {
-      const cleanTTS = beatrizResponse
-        .replace(/[*#_~`]/g, "")
-        .replace(/https?:\/\/\S+/g, "")
-        .replace(/[\uD83C-\uDBFF\uDC00-\uDFFF\u2600-\u27BF]/g, "")
-        .trim();
+      const cleanTTS = cleanTextForSpeech(beatrizResponse);
+
+      if (cleanTTS) {
+        const tmpFile = path.join(os.tmpdir(), `salome_${Date.now()}.mp3`);
+        const escapedText = cleanTTS.replace(/"/g, '\\"');
+        const cmd = `python -m edge_tts --voice "es-CO-SalomeNeural" --text "${escapedText}" --write-media "${tmpFile}"`;
+        await execAsync(cmd);
+
+        const buffer = await fs.readFile(tmpFile);
+        await fs.unlink(tmpFile).catch(() => {});
+
+        if (buffer && buffer.length > 500) {
+          voiceUrl = `data:audio/mp3;base64,${buffer.toString("base64")}`;
+        }
+      }
+    } catch (vErr) {
+      console.warn("⚠️ Síntesis de voz Salomé fallback notice:", vErr);
+    }
+
 
       if (cleanTTS) {
         const tmpFile = path.join(os.tmpdir(), `salome_${Date.now()}.mp3`);
