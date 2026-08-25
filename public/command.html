@@ -572,6 +572,9 @@
             }
         }
  
+        let lastBeatrizAudioTimestamp = 0;
+        let lastBeatrizAudioText = "";
+
         function renderMsg(m) {
             if (!m.id) m.id = `temp_${Date.now()}`;
             const isNew = !messageMap.has(m.id);
@@ -605,6 +608,14 @@
                                        .trim();
 
                             if (text && m.type === 'text') {
+                                const now = Date.now();
+                                if (window.isBeatrizSpeaking || (now - lastBeatrizAudioTimestamp < 8000 && text === lastBeatrizAudioText)) {
+                                    appendStreamLog("⏳ Beatriz ya está hablando con voz. Omitiendo re-disparo de audio...");
+                                    return;
+                                }
+                                lastBeatrizAudioTimestamp = now;
+                                lastBeatrizAudioText = text;
+
                                 appendStreamLog(`📥 Sintetizando voz Salomé vía /api/tts...`);
                                 fetch('/api/tts', {
                                     method: 'POST',
