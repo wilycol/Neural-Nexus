@@ -636,6 +636,21 @@
                                 lastBeatrizAudioTimestamp = now;
                                 lastBeatrizAudioText = text;
 
+                                // 🚀 FASE 1: Detener muletilla e iniciar subtítulos Karaoke en pantalla AL INSTANTE (0ms latencia)
+                                clearResponseTimeout();
+                                if (currentFillerAudio) {
+                                    try { currentFillerAudio.pause(); } catch(e){}
+                                    currentFillerAudio = null;
+                                }
+                                isFillerPlaying = false;
+                                pendingBeatrizPayload = null;
+
+                                window.isBeatrizSpeaking = true;
+                                const statusEl = document.getElementById('streaming-status');
+                                if (statusEl) statusEl.innerText = "Beatriz respondiendo...";
+                                renderSubtitlesLive(text);
+
+                                // 🚀 FASE 2: Sintetizar voz Salomé en segundo plano y acoplar audio al instante
                                 appendStreamLog(`📥 Sintetizando voz Salomé vía /api/tts...`);
                                 fetch('/api/tts', {
                                     method: 'POST',
@@ -645,11 +660,9 @@
                                     if (d && d.voice_url) {
                                         appendStreamLog("📥 Voz Salomé lista. Reproduciendo...");
                                         playBeatrizAudio(d.voice_url, text, d.chunks);
-                                    } else {
-                                        playBeatrizAudio(null, text);
                                     }
                                 }).catch(err => {
-                                    playBeatrizAudio(null, text);
+                                    console.warn("TTS notice:", err);
                                 });
                             }
                         }
