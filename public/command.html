@@ -1369,11 +1369,12 @@
 
         function playBeatrizAudio(audioUrl, textToDisplay) {
             clearResponseTimeout();
-            if (isFillerPlaying) {
-                appendStreamLog("⏳ Esperando que termine la muletilla para iniciar respuesta...");
-                pendingBeatrizPayload = { url: audioUrl, text: textToDisplay };
-                return;
+            if (currentFillerAudio) {
+                try { currentFillerAudio.pause(); } catch(e){}
+                currentFillerAudio = null;
             }
+            isFillerPlaying = false;
+            pendingBeatrizPayload = null;
             executePlayBeatriz(audioUrl, textToDisplay);
         }
 
@@ -1383,7 +1384,10 @@
             const orb = document.getElementById('voice-orb');
             
             if (audioUrl) {
-                if (currentAudio) currentAudio.pause();
+                if (currentAudio) {
+                    try { currentAudio.pause(); } catch(e){}
+                    currentAudio = null;
+                }
                 currentAudio = new Audio(audioUrl);
                 
                 currentAudio.onplay = () => {
@@ -1393,8 +1397,11 @@
                         orb.style.transform = "scale(1.25)";
                         orb.style.boxShadow = "0 0 60px rgba(244, 114, 182, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.7)";
                     }
-                    document.getElementById('visualizer').classList.remove('listening');
-                    document.getElementById('visualizer').classList.add('speaking');
+                    const vis = document.getElementById('visualizer');
+                    if (vis) {
+                        vis.classList.remove('listening');
+                        vis.classList.add('speaking');
+                    }
                 };
                 
                 currentAudio.onended = () => {
@@ -1404,18 +1411,33 @@
                         orb.style.transform = "scale(1)";
                         orb.style.boxShadow = "";
                     }
-                    document.getElementById('visualizer').classList.remove('speaking');
-                    document.getElementById('visualizer').classList.add('listening');
+                    const vis = document.getElementById('visualizer');
+                    if (vis) {
+                        vis.classList.remove('speaking');
+                        vis.classList.add('listening');
+                    }
+                    window.isBeatrizSpeaking = false;
+                    restartMediaRecording();
+                };
+
+                currentAudio.onerror = () => {
+                    appendStreamLog("⚠️ Error cargando audio MP3.");
                     window.isBeatrizSpeaking = false;
                     restartMediaRecording();
                 };
                 
-                currentAudio.play().catch(e => {
-                    appendStreamLog(`⚠️ Audio nativo: ${e.message}. Activando voz del dispositivo...`);
-                    speakWithBrowserTTS(textToDisplay);
-                });
+                const p = currentAudio.play();
+                if (p && p.catch) {
+                    p.catch(e => {
+                        appendStreamLog(`⚠️ Autoplay bloqueado: ${e.message}`);
+                        window.isBeatrizSpeaking = false;
+                        restartMediaRecording();
+                    });
+                }
             } else if (textToDisplay) {
-                speakWithBrowserTTS(textToDisplay);
+                renderSubtitlesLive(textToDisplay);
+                window.isBeatrizSpeaking = false;
+                restartMediaRecording();
             }
         }
 
