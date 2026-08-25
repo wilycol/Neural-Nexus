@@ -1173,7 +1173,7 @@
             }
         }
 
-        function renderSubtitlesLive(text) {
+        function renderSubtitlesLive(text, audioPlayer = null) {
             const transcriptEl = document.getElementById('streaming-transcript');
             const container = document.getElementById('streaming-transcript-container');
             const sourceEl = document.getElementById('subtitle-source');
@@ -1186,15 +1186,45 @@
             }
             
             const cleanText = text.replace(/[*#_~`]/g, '').trim();
-            const words = cleanText.split(/\s+/);
-            transcriptEl.innerHTML = '';
-            let wordIdx = 0;
+            if (!cleanText) return;
             
+            const words = cleanText.split(/\s+/);
+            let activeIdx = 0;
+
+            function renderKaraokeFrame(currentWordIndex) {
+                const html = words.map((word, idx) => {
+                    if (idx < currentWordIndex) {
+                        return `<span class="text-slate-200 font-medium opacity-90 transition-colors">${word} </span>`;
+                    } else if (idx === currentWordIndex) {
+                        return `<span class="text-pink-300 font-black text-lg scale-110 drop-shadow-[0_0_15px_rgba(244,114,182,1)] inline-block transform transition-all duration-100">${word} </span>`;
+                    } else {
+                        return `<span class="text-slate-500/40 opacity-40 transition-colors">${word} </span>`;
+                    }
+                }).join('');
+
+                transcriptEl.innerHTML = html;
+                if (container) container.scrollTop = container.scrollHeight;
+            }
+
+            renderKaraokeFrame(0);
+
+            if (audioPlayer) {
+                const updateOnTime = () => {
+                    if (!audioPlayer.duration || isNaN(audioPlayer.duration)) return;
+                    const progress = audioPlayer.currentTime / audioPlayer.duration;
+                    const targetIdx = Math.min(words.length - 1, Math.floor(progress * words.length));
+                    if (targetIdx !== activeIdx) {
+                        activeIdx = targetIdx;
+                        renderKaraokeFrame(activeIdx);
+                    }
+                };
+                audioPlayer.ontimeupdate = updateOnTime;
+            }
+
             subtitleInterval = setInterval(() => {
-                if (wordIdx < words.length) {
-                    transcriptEl.innerText = words.slice(0, wordIdx + 1).join(' ');
-                    if (container) container.scrollTop = container.scrollHeight;
-                    wordIdx++;
+                if (activeIdx < words.length) {
+                    renderKaraokeFrame(activeIdx);
+                    activeIdx++;
                 } else {
                     clearInterval(subtitleInterval);
                     subtitleInterval = null;
@@ -1553,7 +1583,7 @@
             
             beatrizMasterPlayer.onplay = () => {
                 if (statusEl) statusEl.innerText = "Beatriz respondiendo con voz...";
-                if (textToDisplay) renderSubtitlesLive(textToDisplay);
+                if (textToDisplay) renderSubtitlesLive(textToDisplay, beatrizMasterPlayer);
                 if (orb) {
                     orb.style.transform = "scale(1.25)";
                     orb.style.boxShadow = "0 0 60px rgba(244, 114, 182, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.7)";
