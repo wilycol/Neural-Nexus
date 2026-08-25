@@ -329,34 +329,29 @@ DIRECTIVAS CRÍTICAS:
     // Limpieza de etiquetas think o markdown técnico
     beatrizResponse = beatrizResponse.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
-    // 4. Sintetizar respuesta con voz colombiana Salomé (es-CO-SalomeNeural)
-    let voiceUrl: string | null = null;
+    // 4. Sintetizar respuesta con voz colombiana Salomé en fragmentos (Sequential Chunked Audio)
+    let voiceUrls: string[] = [];
     try {
       const cleanTTS = cleanTextForSpeech(beatrizResponse);
 
       if (cleanTTS) {
-        // Intento 1: Python edge-tts (entorno local)
-        try {
-          const tmpFile = path.join(os.tmpdir(), `salome_${Date.now()}.mp3`);
-          const escapedText = cleanTTS.replace(/"/g, '\\"');
-          const cmd = `python -m edge_tts --voice "es-CO-SalomeNeural" --text "${escapedText}" --write-media "${tmpFile}"`;
-          await execAsync(cmd);
+        // Dividir el texto en oraciones cortas de ~10s máximo
+        const sentenceChunks = cleanTTS
+          .split(/(?<=[.?!])\s+|\n+/)
+          .map(s => s.trim())
+          .filter(s => s.length > 0);
 
-          const buffer = await fs.readFile(tmpFile);
-          await fs.unlink(tmpFile).catch(() => {});
+        for (const chunk of sentenceChunks) {
+          let chunkUrl: string | null = null;
 
-          if (buffer && buffer.length > 500) {
-            voiceUrl = `data:audio/mp3;base64,${buffer.toString("base64")}`;
-          }
-        } catch {
-          console.warn("Python edge-tts no disponible, usando fallback WebSocket pure TS...");
-        }
-
-        // Intento 2: Pure TS Edge-TTS WebSocket (Vercel Cloud Serverless)
-        if (!voiceUrl) {
-          const tsBuffer = await synthesizeSalomeEdgeTTS(cleanTTS);
+          // Intento 1: Pure TS Edge-TTS WebSocket (Vercel / Cloud Serverless)
+          const tsBuffer = await synthesizeSalomeEdgeTTS(chunk);
           if (tsBuffer && tsBuffer.length > 500) {
-            voiceUrl = `data:audio/mp3;base64,${tsBuffer.toString("base64")}`;
+            chunkUrl = `data:audio/mp3;base64,${tsBuffer.toString("base64")}`;
+          }
+
+          if (chunkUrl) {
+            voiceUrls.push(chunkUrl);
           }
         }
       }
@@ -384,10 +379,13 @@ DIRECTIVAS CRÍTICAS:
       console.warn("Supabase response notice:", sbRespErr);
     }
 
+    const primaryVoiceUrl = voiceUrls.length > 0 ? (voiceUrls.length === 1 ? voiceUrls[0] : voiceUrls) : null;
+
     return NextResponse.json({
       success: true,
       response: beatrizResponse,
-      voice_url: voiceUrl,
+      voice_url: primaryVoiceUrl,
+      voice_urls: voiceUrls,
     });
   } catch (error: unknown) {
     console.error("Error en /api/chat/portal:", error);

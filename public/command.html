@@ -1406,6 +1406,33 @@
             }
         }
 
+        // --- Motor de Cola de Audios Encolados (Sequential Audio Queueing System) ---
+        let audioPlaybackQueue = [];
+        let isAudioQueueProcessing = false;
+
+        function enqueueBeatrizAudioItem(playSrc, textToDisplay) {
+            audioPlaybackQueue.push({ playSrc, textToDisplay });
+            processAudioPlaybackQueue();
+        }
+
+        function processAudioPlaybackQueue() {
+            if (isAudioQueueProcessing || audioPlaybackQueue.length === 0) return;
+            
+            const next = audioPlaybackQueue.shift();
+            isAudioQueueProcessing = true;
+            window.isBeatrizSpeaking = true;
+            
+            executePlayBeatrizSourceWithCallback(next.playSrc, next.textToDisplay, () => {
+                isAudioQueueProcessing = false;
+                if (audioPlaybackQueue.length > 0) {
+                    processAudioPlaybackQueue();
+                } else {
+                    window.isBeatrizSpeaking = false;
+                    restartMediaRecording();
+                }
+            });
+        }
+
         function playBeatrizAudio(audioUrl, textToDisplay) {
             clearResponseTimeout();
             if (currentFillerAudio) {
@@ -1414,20 +1441,33 @@
             }
             isFillerPlaying = false;
             pendingBeatrizPayload = null;
-            executePlayBeatriz(audioUrl, textToDisplay);
+
+            if (Array.isArray(audioUrl)) {
+                audioUrl.forEach((url, i) => {
+                    const textChunk = (Array.isArray(textToDisplay) ? textToDisplay[i] : (i === 0 ? textToDisplay : null));
+                    let playSrc = url;
+                    if (url && url.startsWith('data:audio')) {
+                        try {
+                            const parts = url.split(',');
+                            const mime = (parts[0].match(/:(.*?);/) || [])[1] || 'audio/mp3';
+                            const bstr = atob(parts[1]);
+                            let n = bstr.length;
+                            const u8arr = new Uint8Array(n);
+                            while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+                            const blob = new Blob([u8arr], { type: mime });
+                            playSrc = URL.createObjectURL(blob);
+                        } catch(e){}
+                    }
+                    enqueueBeatrizAudioItem(playSrc, textChunk);
+                });
+            } else {
+                executePlayBeatriz(audioUrl, textToDisplay);
+            }
         }
 
         function executePlayBeatriz(audioUrl, textToDisplay) {
-            window.isBeatrizSpeaking = true;
-            
             if (audioUrl) {
-                if (currentAudio) {
-                    try { currentAudio.pause(); } catch(e){}
-                    currentAudio = null;
-                }
-
                 let playSrc = audioUrl;
-                // Convert Base64 data URI to Object URL for 100% mobile browser compatibility (Xiaomi / Safari / Android Fix)
                 if (audioUrl.startsWith('data:audio')) {
                     try {
                         const parts = audioUrl.split(',');
@@ -1435,17 +1475,13 @@
                         const bstr = atob(parts[1]);
                         let n = bstr.length;
                         const u8arr = new Uint8Array(n);
-                        while (n--) {
-                            u8arr[n] = bstr.charCodeAt(n);
-                        }
+                        while (n--) { u8arr[n] = bstr.charCodeAt(n); }
                         const blob = new Blob([u8arr], { type: mime });
                         playSrc = URL.createObjectURL(blob);
-                    } catch(bErr) {
-                        console.warn("Notice Blob conversion:", bErr);
-                    }
+                    } catch(bErr) {}
                 }
 
-                executePlayBeatrizSource(playSrc, textToDisplay);
+                enqueueBeatrizAudioItem(playSrc, textToDisplay);
             } else if (textToDisplay) {
                 renderSubtitlesLive(textToDisplay);
                 window.isBeatrizSpeaking = false;
@@ -1453,12 +1489,16 @@
             }
         }
 
-        function executePlayBeatrizSource(playSrc, textToDisplay) {
+        function executePlayBeatrizSourceWithCallback(playSrc, textToDisplay, onEndedCallback) {
             const statusEl = document.getElementById('streaming-status');
             const orb = document.getElementById('voice-orb');
 
+            if (currentAudio) {
+                try { currentAudio.pause(); } catch(e){}
+                currentAudio = null;
+            }
+
             currentAudio = new Audio();
-            // Only set crossOrigin for remote HTTP/HTTPS URLs (NEVER for blob: or data: URIs as mobile WebKit fails silently)
             if (playSrc.startsWith('http://') || playSrc.startsWith('https://')) {
                 currentAudio.crossOrigin = 'anonymous';
             }
@@ -1480,35 +1520,38 @@
             };
             
             currentAudio.onended = () => {
-                if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-                appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
-                if (orb) {
-                    orb.style.transform = "scale(1)";
-                    orb.style.boxShadow = "";
+                if (audioPlaybackQueue.length === 0) {
+                    if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                    appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
+                    if (orb) {
+                        orb.style.transform = "scale(1)";
+                        orb.style.boxShadow = "";
+                    }
+                    const vis = document.getElementById('visualizer');
+                    if (vis) {
+                        vis.classList.remove('speaking');
+                        vis.classList.add('listening');
+                    }
                 }
-                const vis = document.getElementById('visualizer');
-                if (vis) {
-                    vis.classList.remove('speaking');
-                    vis.classList.add('listening');
-                }
-                window.isBeatrizSpeaking = false;
-                restartMediaRecording();
+                if (onEndedCallback) onEndedCallback();
             };
 
             currentAudio.onerror = (e) => {
                 appendStreamLog(`⚠️ Error cargando audio MP3.`);
-                window.isBeatrizSpeaking = false;
-                restartMediaRecording();
+                if (onEndedCallback) onEndedCallback();
             };
             
             const p = currentAudio.play();
             if (p && p.catch) {
                 p.catch(e => {
                     appendStreamLog(`⚠️ Autoplay bloqueado: ${e.message}`);
-                    window.isBeatrizSpeaking = false;
-                    restartMediaRecording();
+                    if (onEndedCallback) onEndedCallback();
                 });
             }
+        }
+
+        function executePlayBeatrizSource(playSrc, textToDisplay) {
+            executePlayBeatrizSourceWithCallback(playSrc, textToDisplay, null);
         }
 
         function speakWithBrowserTTS(text) {
