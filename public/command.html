@@ -607,13 +607,7 @@
                                        .replace(/\*\*/g, '')
                                        .trim();
 
-                            if (m.type === 'voice' && m.content && (m.content.startsWith('http') || m.content.startsWith('data:audio'))) {
-                                appendStreamLog("📥 Audio de voz Salomé recibido desde el búnker. Reproduciendo...");
-                                playBeatrizAudio(m.content, text);
-                                return;
-                            }
-
-                            if (text && m.type === 'text') {
+                            if (text) {
                                 const now = Date.now();
                                 if (window.isBeatrizSpeaking || (now - lastBeatrizAudioTimestamp < 8000 && text === lastBeatrizAudioText)) {
                                     appendStreamLog("⏳ Beatriz ya está hablando con voz. Omitiendo re-disparo de audio...");
