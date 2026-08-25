@@ -4,7 +4,7 @@ import { promisify } from "util";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
-import WebSocket, { MessageEvent } from "ws";
+import WebSocket from "ws";
 
 const execAsync = promisify(exec);
 
