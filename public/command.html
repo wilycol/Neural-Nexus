@@ -1362,58 +1362,50 @@
         }
 
         function speakWithBrowserTTS(text) {
-            if (!text || !('speechSynthesis' in window)) {
+            if ('speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                } catch (e) {}
+            }
+
+            if (!text) {
                 window.isBeatrizSpeaking = false;
                 restartMediaRecording();
                 return;
             }
             
+            const cleanText = text.replace(/[*#_~`]/g, '').replace(/https?:\/\/\S+/g, '').trim();
             const statusEl = document.getElementById('streaming-status');
             const orb = document.getElementById('voice-orb');
-            window.speechSynthesis.cancel();
-            
-            const cleanText = text.replace(/[*#_~`]/g, '').replace(/https?:\/\/\S+/g, '').trim();
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'es-CO';
-            utterance.rate = 1.05;
-            utterance.pitch = 1.05;
 
-            const voices = window.speechSynthesis.getVoices();
-            const esVoice = voices.find(v => v.lang.includes('es-CO') || v.lang.includes('es-MX') || v.lang.includes('es-US') || v.lang.startsWith('es'));
-            if (esVoice) utterance.voice = esVoice;
+            if (statusEl) statusEl.innerText = "Beatriz mostrando respuesta...";
+            appendStreamLog("📝 Subtítulos en vivo mostrados en pantalla (Voz robótica deshabilitada)...");
+            renderSubtitlesLive(cleanText);
 
-            utterance.onstart = () => {
-                window.isBeatrizSpeaking = true;
-                statusEl.innerText = "Beatriz respondiendo con voz...";
-                appendStreamLog("🗣️ Voz audible de Beatriz activada...");
-                renderSubtitlesLive(cleanText);
-                if (orb) {
-                    orb.style.transform = "scale(1.22)";
-                    orb.style.boxShadow = "0 0 55px rgba(244, 114, 182, 0.85), inset 0 0 25px rgba(255, 255, 255, 0.6)";
-                }
-                document.getElementById('visualizer').classList.remove('listening');
-                document.getElementById('visualizer').classList.add('speaking');
-            };
+            if (orb) {
+                orb.style.transform = "scale(1.15)";
+                orb.style.boxShadow = "0 0 45px rgba(244, 114, 182, 0.75), inset 0 0 20px rgba(255, 255, 255, 0.5)";
+            }
+            const vis = document.getElementById('visualizer');
+            if (vis) {
+                vis.classList.remove('listening');
+                vis.classList.add('speaking');
+            }
 
-            utterance.onend = () => {
-                statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-                appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
+            const displayDuration = Math.min(8000, Math.max(2500, cleanText.length * 60));
+            setTimeout(() => {
+                if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                 if (orb) {
                     orb.style.transform = "scale(1)";
                     orb.style.boxShadow = "";
                 }
-                document.getElementById('visualizer').classList.remove('speaking');
-                document.getElementById('visualizer').classList.add('listening');
+                if (vis) {
+                    vis.classList.remove('speaking');
+                    vis.classList.add('listening');
+                }
                 window.isBeatrizSpeaking = false;
                 restartMediaRecording();
-            };
-
-            utterance.onerror = () => {
-                window.isBeatrizSpeaking = false;
-                restartMediaRecording();
-            };
-
-            window.speechSynthesis.speak(utterance);
+            }, displayDuration);
         }
 
         window.sendPwaAudioBlob = async (audioBlob) => {
