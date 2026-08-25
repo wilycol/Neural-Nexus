@@ -1009,6 +1009,7 @@
         let streamWs = null;
         let streamMediaRecorder = null;
         let isStreaming = false;
+        let isMicMuted = false;
 
         let speechRecognizer = null;
         let currentSpeechText = "";
@@ -1050,12 +1051,12 @@
                         const mime = options.mimeType || 'audio/webm';
                         const audioBlob = new Blob(recordedChunks, { type: mime });
                         recordedChunks = [];
-                        if (audioBlob.size > 800 && isStreaming && !window.isBeatrizSpeaking) {
+                        if (audioBlob.size > 800 && isStreaming && !isMicMuted && !window.isBeatrizSpeaking) {
                             window.sendPwaAudioBlob(audioBlob);
                         }
                     }
                     // Reiniciar inmediatamente el buffer para no perder el inicio de la siguiente frase
-                    if (isStreaming && globalMediaStream && mediaRecorderInstance.state === 'inactive') {
+                    if (isStreaming && !isMicMuted && globalMediaStream && mediaRecorderInstance.state === 'inactive') {
                         try {
                             mediaRecorderInstance.start(250);
                         } catch(e){}
@@ -1070,7 +1071,7 @@
         }
 
         function restartMediaRecording() {
-            if (mediaRecorderInstance && mediaRecorderInstance.state === 'inactive' && globalMediaStream && isStreaming) {
+            if (mediaRecorderInstance && mediaRecorderInstance.state === 'inactive' && globalMediaStream && isStreaming && !isMicMuted) {
                 try {
                     recordedChunks = [];
                     mediaRecorderInstance.start(250);
@@ -1101,7 +1102,10 @@
                 const dataArray = new Uint8Array(bufferLength);
 
                 function vadLoop() {
-                    if (!isStreaming) return;
+                    if (!isStreaming || isMicMuted) {
+                        vadAnimationId = requestAnimationFrame(vadLoop);
+                        return;
+                    }
                     
                     analyser.getByteFrequencyData(dataArray);
                     let sum = 0;
@@ -1290,6 +1294,7 @@
             orbGlow.classList.add('animate-pulse');
             document.getElementById('visualizer').classList.add('listening');
             isStreaming = true;
+            isMicMuted = false;
             window.isBeatrizSpeaking = false;
             
             appendStreamLog("🟢 Enlace de Sala de Juntas activado.");
@@ -1731,12 +1736,12 @@
             const dot = document.getElementById('streaming-status-dot');
             const transcriptEl = document.getElementById('streaming-transcript');
 
-            if (isStreaming) {
-                // ⏸️ PAUSAR TRANSMISIÓN Y SILENCIAR MICRÓFONO COMPLETAMENTE
-                isStreaming = false;
-                window.isBeatrizSpeaking = false;
+            isMicMuted = !isMicMuted;
+
+            if (isMicMuted) {
+                // 🔇 SILENCIAR MICRÓFONO (TRANSMISIÓN EN VIVO MANTENIDA)
                 isUserSpeaking = false;
-                releaseScreenWakeLock();
+                silenceStartTime = 0;
 
                 if (globalMediaStream) {
                     globalMediaStream.getAudioTracks().forEach(t => { t.enabled = false; });
@@ -1744,28 +1749,18 @@
                 if (mediaRecorderInstance && mediaRecorderInstance.state !== 'inactive') {
                     try { mediaRecorderInstance.stop(); } catch(e){}
                 }
-                if (currentAudio) {
-                    try { currentAudio.pause(); } catch(e){}
-                }
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                }
 
-                if (statusEl) statusEl.innerText = "⏸️ TRANSMISIÓN PAUSADA | MICRÓFONO SILENCIADO";
+                if (statusEl) statusEl.innerText = "🔇 MICRÓFONO SILENCIADO (TRANSMISIÓN EN VIVO)";
                 if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 font-bold";
                 if (orbGlow) {
                     orbGlow.classList.remove('animate-pulse');
-                    orbGlow.style.background = "rgba(245, 158, 11, 0.2)";
+                    orbGlow.style.background = "rgba(245, 158, 11, 0.25)";
                 }
                 if (vis) vis.classList.remove('listening', 'speaking');
-                if (transcriptEl) transcriptEl.innerText = "⏸️ Transmisión en pausa. Micrófono totalmente silenciado. Toca el Orbe para reanudar...";
-                appendStreamLog("⏸️ Transmisión en pausa. Micrófono silenciado (puedes hablar fuera de transmisión).");
+                if (transcriptEl) transcriptEl.innerText = "🔇 Micrófono silenciado. Puedes hablar fuera de aire. Beatriz sigue transmitiendo y escuchándote en vivo...";
+                appendStreamLog("🔇 Micrófono silenciado por toque de Orbe (Transmisión en vivo mantenida).");
             } else {
-                // 🟢 REANUDAR TRANSMISIÓN Y REACTIVAR MICRÓFONO
-                isStreaming = true;
-                window.isBeatrizSpeaking = false;
-                requestScreenWakeLock();
-
+                // 🟢 REACTIVAR MICRÓFONO
                 if (globalMediaStream) {
                     globalMediaStream.getAudioTracks().forEach(t => { t.enabled = true; });
                 }
@@ -1776,8 +1771,8 @@
                     orbGlow.style.background = "";
                 }
                 if (vis) vis.classList.add('listening');
-                if (transcriptEl) transcriptEl.innerText = "Toca el Orbe 3D para pausar/silenciar o habla libremente con Beatriz...";
-                appendStreamLog("🟢 Transmisión reanudada. Micrófono activo escuchando...");
+                if (transcriptEl) transcriptEl.innerText = "Toca el Orbe 3D para silenciar/activar micrófono o habla libremente con Beatriz...";
+                appendStreamLog("🟢 Micrófono reactivado. Escuchando de nuevo...");
                 restartMediaRecording();
             }
         };
@@ -1851,6 +1846,7 @@
             document.getElementById('streaming-modal').classList.add('hidden');
             document.body.style.overflow = 'auto';
             isStreaming = false;
+            isMicMuted = false;
         };
     </script>
 </body>
