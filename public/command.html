@@ -605,7 +605,8 @@
                         if (m.type === 'voice' || text.startsWith('http://') || text.startsWith('https://')) {
                             appendStreamLog("📥 Audio de voz Salomé recibido desde el búnker. Reproduciendo vía Proxy...");
                             const proxyUrl = `/api/proxy-audio?url=${encodeURIComponent(text)}`;
-                            playBeatrizAudio(proxyUrl, null);
+                            const subtitleText = lastBeatrizAudioText || "Voz de Salomé recibida en vivo";
+                            playBeatrizAudio(proxyUrl, subtitleText);
                             return;
                         }
 
@@ -637,6 +638,10 @@
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ text: text })
                                 }).then(r => r.json()).then(d => {
+                                    if (window.isBeatrizSpeaking) {
+                                        appendStreamLog("⏳ Voz de Salomé ya está sonando en el reproductor. Ignorando TTS secundario...");
+                                        return;
+                                    }
                                     if (d && d.voice_url) {
                                         appendStreamLog("📥 Voz Salomé lista. Reproduciendo...");
                                         playBeatrizAudio(d.voice_url, text);
@@ -644,7 +649,9 @@
                                         playBeatrizAudio(null, text);
                                     }
                                 }).catch(err => {
-                                    playBeatrizAudio(null, text);
+                                    if (!window.isBeatrizSpeaking) {
+                                        playBeatrizAudio(null, text);
+                                    }
                                 });
                             }
                         }
