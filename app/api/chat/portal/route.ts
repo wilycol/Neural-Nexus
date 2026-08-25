@@ -136,7 +136,7 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
       });
 
-      ws.onclose = () => {
+      ws.on("close", () => {
         clearTimeout(timeout);
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
       });
