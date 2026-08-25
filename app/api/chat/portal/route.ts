@@ -9,6 +9,7 @@ import WebSocket from "ws";
 const execAsync = promisify(exec);
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 function isWhisperHallucination(text: string): boolean {
   if (!text) return true;
@@ -76,7 +77,7 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
       const timeout = setTimeout(() => {
         try { ws.close(); } catch {}
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-      }, 25000);
+      }, 60000);
 
       ws.on("open", () => {
         const ts = new Date().toUTCString();

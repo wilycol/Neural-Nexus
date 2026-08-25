@@ -3,6 +3,7 @@ import crypto from "crypto";
 import WebSocket from "ws";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 function cleanTextForSpeech(text: string): string {
   if (!text) return "";
@@ -59,7 +60,7 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
       const timeout = setTimeout(() => {
         try { ws.close(); } catch {}
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-      }, 25000);
+      }, 60000);
 
       ws.on("open", () => {
         const ts = new Date().toUTCString();
