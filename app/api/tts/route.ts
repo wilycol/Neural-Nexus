@@ -145,7 +145,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ voice_url: voiceUrl });
     }
     return NextResponse.json({ voice_url: null });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ voice_url: null });
   }
 }
