@@ -164,6 +164,16 @@ export default function NeuralSitesPage() {
           >
             <Button 
               size="lg" 
+              className="bg-gradient-to-r from-cyan-500 via-teal-500 to-purple-600 text-white px-8 h-16 rounded-full shadow-[0_0_30px_rgba(6,182,212,0.4)] font-orbitron tracking-widest text-sm hover:scale-105 transition-all group"
+              asChild
+            >
+              <a href="/es/neural-sites/guia">
+                ⚡ Guía Interactiva ADN
+                <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </Button>
+            <Button 
+              size="lg" 
               className="bg-gradient-to-r from-neon-blue to-neon-purple text-white px-10 h-16 rounded-full shadow-[0_0_30px_rgba(0,163,255,0.4)] font-orbitron tracking-widest text-sm hover:scale-105 transition-all group"
               asChild
             >

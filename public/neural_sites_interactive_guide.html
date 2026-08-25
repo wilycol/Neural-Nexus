@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva Neural Sites | Tu Web Inteligente Autónoma</title>
+    <meta name="description" content="Genera tu ADN de Negocio y prueba en tiempo real cómo Neural Sites y Beatriz AI transforman tu presencia digital.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        neural: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                            violet: '#8b5cf6',
+                            cyan: '#06b6d4',
+                            accent: '#a855f7',
+                            dark: '#090d16',
+                            card: '#111827',
+                            border: '#1f2937'
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s infinite alternate',
+                        'scanline': 'scanline 4s linear infinite',
+                        'fadeIn': 'fadeIn 0.3s ease-in-out'
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%': { boxShadow: '0 0 15px rgba(6, 182, 212, 0.3)' },
+                            '100%': { boxShadow: '0 0 35px rgba(139, 92, 246, 0.6)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(6px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- React & Babel CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #05070e;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-glow {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.15);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Glosario Explicativo Comercial para Dueños de Negocio
+        const GLOSSARY = {
+            'CRM Integrado': 'Sistema que guarda automáticamente los datos de contacto de tus clientes interesados y organiza tus conversaciones para que no pierdas ventas.',
+            'Leads': 'Personas o clientes potenciales que han dejado su nombre, WhatsApp o correo expresando interés en tus productos o servicios.',
+            'SEO Predictivo': 'Estrategia técnica para posicionar tu web en los primeros lugares de Google anticipándonos a lo que tus clientes buscarán en tu ciudad.',
+            'Telemetría': 'Medición en tiempo real de qué productos o servicios miran tus clientes en tu web y dónde hacen clic.',
+            'A/B Testing': 'Probar dos versiones distintas de una oferta o título para ver cuál vende más y quedarse automáticamente con la ganadora.',
+            'Social Sync': 'Tus fotos de productos enviadas por WhatsApp se convierten en publicaciones automáticas para tu web, Instagram y Facebook.',
+            'Autopilot': 'Modo autónomo donde Beatriz AI redacta, diseña, publica en redes y atiende clientes por WhatsApp sin requerir tu tiempo libre.',
+            'ADN de Negocio': 'Ficha inteligente de tu marca con tus productos, dirección y WhatsApp que permite crear tu web lista en segundos.',
+            'Beatriz AI': 'Tu asistente comercial inteligente que toma tus fotos de productos, redacta publicaciones y responde dudas de tus clientes 24/7.'
+        };
+
+        // Componente Tooltip Interactivo Comercial
+        function Tooltip({ term, definition, children }) {
+            const [visible, setVisible] = useState(false);
+            const defText = definition || GLOSSARY[term] || 'Explicación sencilla del concepto comercial.';
+
+            return (
+                <span 
+                    className="relative inline-flex items-center group cursor-help"
+                    onMouseEnter={() => setVisible(true)}
+                    onMouseLeave={() => setVisible(false)}
+                    onClick={(e) => { e.stopPropagation(); setVisible(!visible); }}
+                >
+                    {children || <span className="border-b border-dotted border-cyan-400/80 text-gray-100 font-medium">{term}</span>}
+                    <span className="ml-1 text-[10px] text-cyan-300 bg-cyan-950 border border-cyan-700/60 rounded-full w-4 h-4 inline-flex items-center justify-center font-bold font-mono hover:bg-cyan-400 hover:text-gray-950 transition-colors">
+                        ?
+                    </span>
+
+                    {visible && (
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-gray-950 border border-cyan-500/60 text-gray-200 text-xs rounded-xl shadow-2xl backdrop-blur-md z-50 font-sans font-normal normal-case leading-relaxed pointer-events-none animate-fadeIn">
+                            <div className="font-bold text-cyan-300 font-mono text-[11px] border-b border-gray-800 pb-1 mb-1 flex items-center gap-1">
+                                💡 {term}
+                            </div>
+                            <p className="text-[11px] text-gray-300 leading-normal">{defText}</p>
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-cyan-500/60"></div>
+                        </div>
+                    )}
+                </span>
+            );
+        }
+
+        // Catálogo Real de Plantillas Neural Sites (36+ disponibles, muestra representativa)
+        const CATALOG_TEMPLATES = [
+            {
+                id: 'kimi_prism_pro',
+                code: 'KIMI - PRISM PRO',
+                name: 'Kimi Prism Pro',
+                category: 'Tecnología, Cómputo & Servicio Técnico',
+                nicheKeyword: 'computo',
+                colorAccent: '#06b6d4',
+                bgClass: 'bg-cyan-500',
+                textClass: 'text-cyan-400',
+                borderClass: 'border-cyan-500',
+                recommendedPlan: 'GOLD',
+                defaultServices: ['Laptops & Equipos de Cómputo', 'Mantenimiento & Servicio Técnico', 'Accesorios & Gaming'],
+                commercialLabel: 'Ideal para Tiendas de Tecnología y Cómputo'
+            },
+            {
+                id: 'kimi_gourmet_v2',
+                code: 'KIMI - BISTRO ENGINE V2',
+                name: 'Kimi Gourmet',
+                category: 'Gastronomía & Restaurantes',
+                nicheKeyword: 'restaurante',
+                colorAccent: '#f59e0b',
+                bgClass: 'bg-amber-500',
+                textClass: 'text-amber-400',
+                borderClass: 'border-amber-500',
+                recommendedPlan: 'GOLD',
+                defaultServices: ['Menú Ejecutivo Gourmet', 'Reservas por WhatsApp', 'Cenas Privadas & Catering'],
+                commercialLabel: 'Ideal para Restaurantes y Cafeterías'
+            },
+            {
+                id: 'elite_medica_ai',
+                code: 'ELITE - MEDICA AI',
+                name: 'Elite Médica AI',
+                category: 'Salud, Clínicas & Odontología',
+                nicheKeyword: 'salud',
+                colorAccent: '#10b981',
+                bgClass: 'bg-emerald-500',
+                textClass: 'text-emerald-400',
+                borderClass: 'border-emerald-500',
+                recommendedPlan: 'GOLD',
+                defaultServices: ['Diseño de Sonrisa', 'Ortodoncia Invisible', 'Consulta Especializada'],
+                commercialLabel: 'Ideal para Clínicas y Consultorios Médicos'
+            },
+            {
+                id: 'foundry_realty_v1',
+                code: 'FOUNDRY - RE REALTY',
+                name: 'Foundry Realty',
+                category: 'Inmobiliaria & Bienes Raíces',
+                nicheKeyword: 'inmobiliaria',
+                colorAccent: '#8b5cf6',
+                bgClass: 'bg-violet-500',
+                textClass: 'text-violet-400',
+                borderClass: 'border-violet-500',
+                recommendedPlan: 'PLATINUM',
+                defaultServices: ['Venta de Inmuebles Luxury', 'Alquiler Garantizado', 'Asesoría en Inversión'],
+                commercialLabel: 'Ideal para Inmobiliarias y Propiedades'
+            },
+            {
+                id: 'kimi_fit_lab',
+                code: 'KIMI - FIT LAB',
+                name: 'Kimi Fit Lab',
+                category: 'Fitness, Gimnasios & Deporte',
+                nicheKeyword: 'gimnasio',
+                colorAccent: '#eab308',
+                bgClass: 'bg-yellow-500',
+                textClass: 'text-yellow-400',
+                borderClass: 'border-yellow-500',
+                recommendedPlan: 'GOLD',
+                defaultServices: ['Entrenamiento Personalizado', 'Planes de Nutrición', 'Pases VIP Mensuales'],
+                commercialLabel: 'Ideal para Gimnasios y Centros Deportivos'
+            },
+            {
+                id: 'kimi_commerce_matrix',
+                code: 'KIMI - COMMERCE MATRIX',
+                name: 'Kimi Commerce Matrix',
+                category: 'E-commerce & Tiendas Online',
+                nicheKeyword: 'tienda',
+                colorAccent: '#f43f5e',
+                bgClass: 'bg-rose-500',
+                textClass: 'text-rose-400',
+                borderClass: 'border-rose-500',
+                recommendedPlan: 'PLATINUM',
+                defaultServices: ['Catálogo Interactivo 24/7', 'Pedidos por WhatsApp', 'Envíos Nacionales'],
+                commercialLabel: 'Ideal para Tiendas de Venta Directa'
+            }
+        ];
+
+        const AUTONOMY_LEVELS = [
+            {
+                level: 0,
+                name: 'Presencia Digital Básica',
+                tag: 'Básico',
+                desc: 'Sitio estático de alta conversión con botón directo a WhatsApp y mapa interactivo.',
+                features: ['Diseño Ultra-Rápido Móvil', 'Página Nosotros + Servicios', 'Formulario Directo', 'Ubicación Google Maps'],
+                color: 'from-blue-500 to-teal-500'
+            },
+            {
+                level: 1,
+                name: 'Sistema Comercial Atractivo',
+                tag: 'Popular',
+                desc: 'Beatriz AI genera contenidos periódicos en tu web sobre tus productos estrella.',
+                features: ['Titular de Alto Impacto', 'Blog impulsado por Beatriz AI', 'Captura de Leads por WhatsApp', 'Posicionamiento Google Local'],
+                color: 'from-cyan-500 to-blue-600'
+            },
+            {
+                level: 2,
+                name: 'Sistema Multimedia & Preguntas Frecuentes',
+                tag: 'Avanzado',
+                desc: 'Imágenes optimizadas, respuestas automáticas a preguntas comunes y promociones.',
+                features: ['Fotos de Productos Destacados', 'Respuestas Automáticas 24/7', 'Promociones de Temporada', 'Medición de Clics de Clientes'],
+                color: 'from-violet-500 to-indigo-600'
+            },
+            {
+                level: 3,
+                name: 'Automatización Comercial Inteligible',
+                tag: 'Recomendado',
+                desc: 'Tus fotos enviadas por WhatsApp se transforman en publicaciones para tu web, Instagram y Facebook.',
+                features: ['Autopilot Publicaciones en Instagram / Facebook', 'Beatriz AI Atendiendo WhatsApp', 'CRM para Organizar Clientes', 'Auditoría Continua de Posicionamiento'],
+                color: 'from-purple-500 to-pink-600'
+            },
+            {
+                level: 4,
+                name: 'Ecosistema Piloto Automático Total',
+                tag: 'Empresarial',
+                desc: 'Vídeos automáticos, sincronización con TikTok/YouTube y pruebas automáticas para maximizar ventas.',
+                features: ['Generación de Vídeos Cortos', 'Difusión Multicanal Total', 'Pruebas de Ventas A/B', 'Sincronización Total 24/7'],
+                color: 'from-fuchsia-500 to-rose-600'
+            }
+        ];
+
+        function App() {
+            const [step, setStep] = useState(1); // 1: Captura ADN, 2: Catálogo Plantillas, 3: Canvas Staging & ADN, 4: Planes
+            
+            // 7 Campos de ADN de Negocio (Recolección Agente Hunter)
+            const [businessDna, setBusinessDna] = useState({
+                business_name: 'Compumax Cúcuta',
+                niche: 'Venta de Laptops, Cómputo & Servicio Técnico',
+                city: 'Cúcuta',
+                address: 'Av. 0 # 11-45 Centro',
+                brand_color: '#06b6d4',
+                services: 'Venta de Laptops Gamer & Oficina, Mantenimiento Técnico Preventivo, Impresoras & Suministros',
+                unique_selling_prop: 'Los mejores equipos de cómputo con garantía real y servicio técnico a domicilio en Cúcuta',
+                whatsapp_number: '+573101234567',
+                rating: '4.9',
+                reviews_count: '215'
+            });
+
+            // Plantilla seleccionada del Catálogo
+            const [selectedTemplate, setSelectedTemplate] = useState(CATALOG_TEMPLATES[0]); // kimi_prism_pro
+            
+            // Estado para conmutar entre Ficha de ADN Comercial y Código JSON
+            const [dnaViewMode, setDnaViewMode] = useState('card'); // 'card' or 'json'
+
+            const [isCompiling, setIsCompiling] = useState(false);
+            const [buildProgress, setBuildProgress] = useState([]);
+            const [autonomyIndex, setAutonomyIndex] = useState(3);
+            
+            const [toggles, setToggles] = useState({
+                seo: true,
+                content: true,
+                socialSync: true,
+                videoAi: false,
+                crm: true,
+                abTesting: false
+            });
+
+            // Calculadora de eficiencia
+            const [calcPublicaciones, setCalcPublicaciones] = useState(5);
+            const [calcRedes, setCalcRedes] = useState(4);
+            const [calcUpdates, setCalcUpdates] = useState(3);
+            const [calcMantenimiento, setCalcMantenimiento] = useState(6);
+
+            const [activeHotspot, setActiveHotspot] = useState('beatriz');
+            const [eventsLog, setEventsLog] = useState([
+                { id: 1, time: new Date().toLocaleTimeString(), event: 'HUNTER_AGENT_INIT', details: 'Agente Hunter listo para estructurar ADN comercial' }
+            ]);
+
+            const logEvent = (eventName, details) => {
+                const newEv = {
+                    id: Date.now(),
+                    time: new Date().toLocaleTimeString(),
+                    event: eventName,
+                    details: details
+                };
+                setEventsLog(prev => [newEv, ...prev.slice(0, 7)]);
+            };
+
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [step, isCompiling, activeHotspot, toggles, eventsLog, businessDna, selectedTemplate, dnaViewMode]);
+
+            // Actualizar ADN
+            const handleDnaChange = (field, value) => {
+                setBusinessDna(prev => ({ ...prev, [field]: value }));
+                logEvent('DNA_FIELD_UPDATE', `${field} -> ${value}`);
+            };
+
+            // Selección de Plantilla
+            const handleSelectTemplate = (tpl) => {
+                setSelectedTemplate(tpl);
+                handleDnaChange('brand_color', tpl.colorAccent);
+                logEvent('TEMPLATE_SELECTED', `Plantilla asignada: ${tpl.name}`);
+            };
+
+            // Compilar Simulación de Arquitecto V3
+            const startCompilerSimulation = () => {
+                setIsCompiling(true);
+                setBuildProgress([]);
+                setStep(2.5); // Pantalla transitoria
+
+                const stepsList = [
+                    `Estructurando Ficha de ADN para "${businessDna.business_name}"...`,
+                    `Aplicando plantilla recomendada: ${selectedTemplate.name}...`,
+                    `Inyectando propuesta comercial: "${businessDna.unique_selling_prop.substring(0, 30)}..."`,
+                    `Conectando mapa interactivo en ${businessDna.city}...`,
+                    `Configurando botón directo a WhatsApp (${businessDna.whatsapp_number})...`,
+                    `Inicializando a Beatriz AI con fotos de tus productos estrella...`,
+                    `¡TUS SITIO ESTÁ LISTO! Desplegando en la vista previa...`
+                ];
+
+                stepsList.forEach((msg, idx) => {
+                    setTimeout(() => {
+                        setBuildProgress(prev => [...prev, msg]);
+                        if (idx === stepsList.length - 1) {
+                            setTimeout(() => {
+                                setIsCompiling(false);
+                                setStep(3);
+                                logEvent('ARQUITECTO_V3_COMPILED', 'Vista previa generada con éxito');
+                            }, 600);
+                        }
+                    }, (idx + 1) * 450);
+                });
+            };
+
+            // Enviar ADN al Agente Hunter vía WhatsApp
+            const sendDnaToHunterWhatsApp = () => {
+                const jsonDnaString = JSON.stringify({
+                    business_name: businessDna.business_name,
+                    niche: businessDna.niche,
+                    city: businessDna.city,
+                    address: businessDna.address,
+                    template_selected: selectedTemplate.code,
+                    brand_color: businessDna.brand_color,
+                    services: businessDna.services.split(',').map(s => s.trim()),
+                    unique_selling_prop: businessDna.unique_selling_prop,
+                    whatsapp_number: businessDna.whatsapp_number,
+                    google_proof: `${businessDna.rating} ⭐ (${businessDna.reviews_count} reseñas)`
+                }, null, 2);
+
+                const textMessage = `Hola Agente Hunter! 🚀 He completado el ADN de mi Negocio en la Guía Interactiva.\n\n` +
+                                    `📌 *Marca:* ${businessDna.business_name}\n` +
+                                    `🏢 *Nicho:* ${businessDna.niche}\n` +
+                                    `🎨 *Plantilla elegida:* ${selectedTemplate.name} (${selectedTemplate.code})\n` +
+                                    `📍 *Ubicación:* ${businessDna.address}, ${businessDna.city}\n` +
+                                    `📞 *WhatsApp:* ${businessDna.whatsapp_number}\n\n` +
+                                    `Aquí tienes mi Ficha de ADN de Marca:\n\`\`\`json\n${jsonDnaString}\n\`\`\`\n\n` +
+                                    `¡Quiero ver mi sitio publicado en Vercel con mi dominio propio!`;
+
+                const encodedUrl = `https://wa.me/?text=${encodeURIComponent(textMessage)}`;
+                window.open(encodedUrl, '_blank');
+                logEvent('DNA_SENT_TO_WHATSAPP', 'Cliente despachó ADN al Agente Hunter');
+            };
+
+            const totalHoursSaved = Math.round((calcPublicaciones * 1.5) + (calcRedes * 2) + (calcUpdates * 2.5) + (calcMantenimiento * 1));
+            const servicesList = businessDna.services ? businessDna.services.split(',').map(s => s.trim()) : [];
+
+            return (
+                <div className="min-h-screen flex flex-col justify-between">
+                    {/* Header Nav */}
+                    <header className="sticky top-0 z-50 glass-panel border-b border-gray-800 px-4 lg:px-8 py-3 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20">
+                                NS
+                            </div>
+                            <div>
+                                <span className="font-extrabold text-lg tracking-wider text-white">NEURAL SITES</span>
+                                <span className="hidden sm:inline-block ml-2 px-2.5 py-0.5 text-xs bg-cyan-950 text-cyan-300 border border-cyan-800 rounded-full font-medium">
+                                    Creador de Tu Web en Vivo
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Tracker de Pasos */}
+                        <div className="hidden md:flex items-center space-x-2 text-xs font-mono">
+                            <span className={`px-3 py-1 rounded-full ${step === 1 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40' : 'text-gray-500'}`}>1. Datos de Tu Negocio</span>
+                            <span className="text-gray-700">→</span>
+                            <span className={`px-3 py-1 rounded-full ${step === 2 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40' : 'text-gray-500'}`}>2. Elegir Plantilla</span>
+                            <span className="text-gray-700">→</span>
+                            <span className={`px-3 py-1 rounded-full ${step === 3 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40' : 'text-gray-500'}`}>3. Ver Tu Web en Vivo</span>
+                            <span className="text-gray-700">→</span>
+                            <span className={`px-3 py-1 rounded-full ${step === 4 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40' : 'text-gray-500'}`}>4. Publicar</span>
+                        </div>
+
+                        <button 
+                            onClick={sendDnaToHunterWhatsApp}
+                            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-lg transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2"
+                        >
+                            <i data-lucide="message-circle" className="w-4 h-4"></i>
+                            <span className="hidden sm:inline">Enviar Datos a WhatsApp</span>
+                        </button>
+                    </header>
+
+                    {/* Main Container */}
+                    <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+                        {/* PASO 1: RECOLECCIÓN DE DATOS DE ADN (PREGUNTAS DEL AGENTE HUNTER) */}
+                        {step === 1 && (
+                            <div className="space-y-10 animate-fadeIn">
+                                <div className="text-center max-w-3xl mx-auto space-y-4">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel border-cyan-500/30 text-cyan-300 text-xs font-medium">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                        Agente Hunter en Línea: Creador de <Tooltip term="ADN de Negocio" />
+                                    </div>
+                                    <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+                                        Mira cómo queda <span className="gradient-text">tu propia página web</span> en tiempo real
+                                    </h1>
+                                    <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+                                        Escribe los datos sencillos de tu empresa. Con esta información, nuestra asistente <strong className="text-cyan-300">Beatriz AI</strong> creará la vista previa de tu sitio web inteligente antes de publicarlo en internet.
+                                    </p>
+                                </div>
+
+                                {/* Formulario de Datos Comerciales */}
+                                <div className="glass-panel rounded-2xl p-6 sm:p-8 border border-gray-800 space-y-6">
+                                    <div className="border-b border-gray-800 pb-4 flex items-center justify-between">
+                                        <div>
+                                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                                <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 text-xs font-mono">📋</span>
+                                                1. Cuéntanos sobre tu Negocio
+                                            </h2>
+                                            <p className="text-xs text-gray-400 mt-0.5">Respuestas simples que usaremos para personalizar tu diseño.</p>
+                                        </div>
+                                        <span className="text-xs font-mono bg-cyan-950 text-cyan-300 px-3 py-1 rounded-full border border-cyan-800">
+                                            Ficha de Marca
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* 1. Nombre de Marca & Nicho */}
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-gray-200 block">
+                                                1. Nombre Exacto de tu Tienda o Empresa:
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={businessDna.business_name}
+                                                onChange={(e) => handleDnaChange('business_name', e.target.value)}
+                                                className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                                                placeholder="Ej. Compumax Cúcuta, Odontología San José..."
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-gray-200 block">
+                                                ¿A qué se dedica tu negocio?:
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={businessDna.niche}
+                                                onChange={(e) => handleDnaChange('niche', e.target.value)}
+                                                className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                                                placeholder="Ej. Venta de Laptops & Servicio Técnico, Restaurante..."
+                                            />
+                                        </div>
+
+                                        {/* 2. Ubicación Física & Ciudad */}
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-gray-200 block">
+                                                2. Ciudad donde estás ubicado:
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={businessDna.city}
+                                                onChange={(e) => handleDnaChange('city', e.target.value)}
+                                                className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                                                placeholder="Ej. Cúcuta, Bogotá, Medellín..."
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-gray-200 block">
+                                                Dirección para mostrar en Google Maps:
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={businessDna.address}
+                                                onChange={(e) => handleDnaChange('address', e.target.value)}
+                                                className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                                                placeholder="Ej. Av. 0 # 11-45 Centro"
+                                            />
+                                        </div>
+
+                                        {/* 3. Propuesta Única de Valor (USP) */}
+                                        <div className="md:col-span-2 space-y-2">
+                                            <label className="text-xs font-semibold text-gray-200 block">
+                                                3. Frase Principal para enamorar a tus clientes (Tu mayor orgullo o ventaja):
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={businessDna.unique_selling_prop}
+                                                onChange={(e) => handleDnaChange('unique_selling_prop', e.target.value)}
+                                                className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                                                placeholder="Ej. Los mejores equipos de cómputo con garantía real y servicio a domicilio en Cúcuta"
+                                            />
+                                            <span className="text-[11px] text-gray-400">
+                                                Esta frase aparecerá en letras grandes en la portada principal de tu sitio web.
+                                            </span>
+                                        </div>
+
+                                        {/* 4. Servicios Estrella */}
+                                        <div className="md:col-span-2 space-y-2">
+                                            <label className="text-xs font-semibold text-gray-200 block">
+                                                4. Tus 3 Productos o Servicios Estrella (separados por comas):
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={businessDna.services}
+                                                onChange={(e) => handleDnaChange('services', e.target.value)}
+                                                className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                                                placeholder="Ej. Venta de Laptops, Mantenimiento Técnico, Impresoras"
+                                            />
+                                        </div>
+
+                                        {/* 5. Canal Directo (WhatsApp) */}
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-gray-200 block">
+                                                5. WhatsApp donde recibirás los mensajes de clientes:
+                                            </label>
+                                            <input 
+                                                type="text"
+                                                value={businessDna.whatsapp_number}
+                                                onChange={(e) => handleDnaChange('whatsapp_number', e.target.value)}
+                                                className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400 code-font"
+                                                placeholder="+573101234567"
+                                            />
+                                        </div>
+
+                                        {/* 6. Calificación Google */}
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-semibold text-gray-200 block">
+                                                    6. Estrellas Google:
+                                                </label>
+                                                <input 
+                                                    type="text"
+                                                    value={businessDna.rating}
+                                                    onChange={(e) => handleDnaChange('rating', e.target.value)}
+                                                    className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400 text-center font-bold"
+                                                    placeholder="4.9"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-semibold text-gray-200 block">
+                                                    Reseñas Recibidas:
+                                                </label>
+                                                <input 
+                                                    type="text"
+                                                    value={businessDna.reviews_count}
+                                                    onChange={(e) => handleDnaChange('reviews_count', e.target.value)}
+                                                    className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400 text-center font-bold"
+                                                    placeholder="215"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4 border-t border-gray-800 flex justify-end">
+                                        <button 
+                                            onClick={() => setStep(2)}
+                                            className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold text-xs transition shadow-lg shadow-cyan-500/20 flex items-center gap-2"
+                                        >
+                                            <span>Paso 2: Elegir Plantilla para tu Negocio →</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PASO 2: SELECCIÓN DE PLANTILLA RECOMENDADA POR NICHO */}
+                        {step === 2 && (
+                            <div className="space-y-8 animate-fadeIn">
+                                <div className="text-center max-w-2xl mx-auto space-y-3">
+                                    <span className="px-3 py-1 rounded-full text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800">
+                                        Catálogo Oficial de Plantillas (36+ Diseños)
+                                    </span>
+                                    <h2 className="text-3xl font-black text-white">
+                                        Elige el Diseño para <span className="text-cyan-400">{businessDna.business_name}</span>
+                                    </h2>
+                                    <p className="text-xs text-gray-300">
+                                        Nuestra plataforma adapta automáticamente la plantilla elegida a los colores y estilo de tu empresa.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                    {CATALOG_TEMPLATES.map((tpl) => {
+                                        const isRecommended = businessDna.niche.toLowerCase().includes(tpl.nicheKeyword);
+
+                                        return (
+                                            <div
+                                                key={tpl.id}
+                                                onClick={() => handleSelectTemplate(tpl)}
+                                                className={`cursor-pointer rounded-2xl p-5 border transition-all duration-200 flex flex-col justify-between h-64 relative ${
+                                                    selectedTemplate.id === tpl.id 
+                                                    ? 'bg-gray-900 border-cyan-400 ring-2 ring-cyan-500/40 scale-105 shadow-2xl' 
+                                                    : 'bg-gray-950/80 border-gray-800 hover:border-gray-700 hover:bg-gray-900/60'
+                                                }`}
+                                            >
+                                                {isRecommended && (
+                                                    <div className="absolute -top-3 left-4 bg-emerald-400 text-gray-950 font-extrabold text-[10px] px-3 py-0.5 rounded-full shadow-md flex items-center gap-1">
+                                                        <span>⭐ RECOMENDADA PARA TU NICHO</span>
+                                                    </div>
+                                                )}
+
+                                                {selectedTemplate.id === tpl.id && (
+                                                    <div className="absolute -top-3 right-4 bg-cyan-400 text-gray-950 font-black text-[9px] px-2.5 py-0.5 rounded-full font-mono uppercase">
+                                                        SELECCIONADA
+                                                    </div>
+                                                )}
+
+                                                <div className="space-y-3 pt-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-gray-300">
+                                                            {tpl.commercialLabel}
+                                                        </span>
+                                                        <span className="text-[10px] font-mono text-gray-500">Plan {tpl.recommendedPlan}</span>
+                                                    </div>
+
+                                                    <h3 className="font-extrabold text-lg text-white">{tpl.name}</h3>
+                                                    <p className="text-xs text-gray-400">{tpl.category}</p>
+
+                                                    <div className="space-y-1 pt-1">
+                                                        <div className="text-[10px] font-mono text-gray-400">EJEMPLOS DE SERVICIOS:</div>
+                                                        <div className="text-xs text-gray-300">
+                                                            {tpl.defaultServices.join(' • ')}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-3 border-t border-gray-800/80 flex items-center justify-between text-xs">
+                                                    <span className="text-xs text-cyan-400 font-medium">Color de acento sugerido</span>
+                                                    <div className={`w-5 h-5 rounded-full ${tpl.bgClass} shadow-md`}></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="flex items-center justify-between pt-4">
+                                    <button 
+                                        onClick={() => setStep(1)} 
+                                        className="px-4 py-2 rounded-xl border border-gray-700 text-gray-300 text-xs font-mono hover:bg-gray-800"
+                                    >
+                                        ← Volver a Datos de Negocio
+                                    </button>
+                                    <button 
+                                        onClick={startCompilerSimulation}
+                                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold text-xs transition shadow-lg shadow-cyan-500/20"
+                                    >
+                                        ⚡ Crear Vista Previa de Mi Web en Vivo →
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PASO 2.5: SIMULADOR DE CONSTRUCCIÓN EN VIVO */}
+                        {step === 2.5 && (
+                            <div className="max-w-2xl mx-auto py-12 space-y-8 animate-fadeIn">
+                                <div className="text-center space-y-3">
+                                    <div className="inline-block p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mb-2">
+                                        <i data-lucide="cpu" className="w-8 h-8 animate-spin"></i>
+                                    </div>
+                                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                                        Construyendo la Web para {businessDna.business_name}...
+                                    </h2>
+                                    <p className="text-sm text-gray-400">
+                                        Ensamblando contenidos y plantilla: <span className="text-cyan-300 font-semibold">{selectedTemplate.name}</span>
+                                    </p>
+                                </div>
+
+                                <div className="glass-panel-glow rounded-2xl p-6 code-font text-xs sm:text-sm space-y-3 font-mono">
+                                    <div className="flex items-center justify-between border-b border-gray-800 pb-3 text-gray-400">
+                                        <span>ESTADO DE CONSTRUCCIÓN: EN PROCESO</span>
+                                        <span className="text-cyan-400 animate-pulse">● EN VIVO</span>
+                                    </div>
+
+                                    <div className="space-y-2 pt-2">
+                                        {buildProgress.map((msg, i) => (
+                                            <div key={i} className="flex items-center space-x-2 text-cyan-300">
+                                                <span className="text-emerald-400">✓</span>
+                                                <span>{msg}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {isCompiling && (
+                                        <div className="flex items-center space-x-2 text-gray-500 pt-2 animate-pulse">
+                                            <span className="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+                                            <span>Generando vista previa interactiva...</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PASO 3: VISTA PREVIA EN VIVO DE LA WEB & FICHA TÉCNICA DE MARCA */}
+                        {step >= 3 && (
+                            <div className="space-y-10 animate-fadeIn">
+                                
+                                {/* Encabezado de Vista Previa */}
+                                <div className="glass-panel rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-cyan-500/30 bg-gradient-to-r from-gray-900 via-gray-900 to-cyan-950/40">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="px-3 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                Vista Previa en Vivo Generada
+                                            </span>
+                                            <span className="text-xs text-gray-400 font-mono">Plantilla: {selectedTemplate.name}</span>
+                                        </div>
+                                        <h2 className="text-2xl font-black text-white mt-1">
+                                            Sitio Creado: <span style={{ color: businessDna.brand_color }}>{businessDna.business_name}</span>
+                                        </h2>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => setStep(1)} 
+                                            className="px-3.5 py-2 rounded-lg border border-gray-700 text-gray-300 text-xs font-medium hover:bg-gray-800 transition"
+                                        >
+                                            ↺ Editar Datos
+                                        </button>
+                                        <button 
+                                            onClick={sendDnaToHunterWhatsApp}
+                                            className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-bold text-xs transition shadow-lg shadow-emerald-500/20 flex items-center gap-1.5"
+                                        >
+                                            <i data-lucide="send" className="w-3.5 h-3.5"></i>
+                                            <span>Enviar Datos a WhatsApp →</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* PANTALLA DIVIDIDA: FICHA DE MARCA (IZQ) / VISTA PREVIA WEB (DER) */}
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                                    
+                                    {/* Izquierda: Ficha de Resumen de Marca / ADN (Con Switch a JSON) */}
+                                    <div className="lg:col-span-5 glass-panel rounded-2xl p-6 border border-gray-800 space-y-6">
+                                        <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+                                            <h3 className="font-bold text-base text-white flex items-center gap-2">
+                                                <i data-lucide="file-text" className="w-4 h-4 text-cyan-400"></i>
+                                                <Tooltip term="ADN de Negocio">Ficha Técnica de Tu Marca</Tooltip>
+                                            </h3>
+                                            
+                                            {/* Selector Ficha vs JSON */}
+                                            <div className="flex items-center bg-gray-950 rounded-lg p-0.5 border border-gray-800 text-[10px] font-mono">
+                                                <button 
+                                                    onClick={() => setDnaViewMode('card')}
+                                                    className={`px-2.5 py-1 rounded-md transition ${dnaViewMode === 'card' ? 'bg-cyan-500 text-gray-950 font-bold' : 'text-gray-400 hover:text-white'}`}
+                                                >
+                                                    Ficha Comercial
+                                                </button>
+                                                <button 
+                                                    onClick={() => setDnaViewMode('json')}
+                                                    className={`px-2.5 py-1 rounded-md transition ${dnaViewMode === 'json' ? 'bg-purple-600 text-white font-bold' : 'text-gray-400 hover:text-white'}`}
+                                                >
+                                                    JSON Técnico
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Vista 1: Ficha Comercial Visual */}
+                                        {dnaViewMode === 'card' ? (
+                                            <div className="space-y-4 text-xs">
+                                                <div className="p-3.5 rounded-xl bg-gray-950 border border-gray-800 space-y-2">
+                                                    <div className="text-[10px] uppercase font-mono text-cyan-400">Nombre de Empresa & Nicho</div>
+                                                    <div className="font-bold text-white text-sm">{businessDna.business_name}</div>
+                                                    <div className="text-gray-400">{businessDna.niche}</div>
+                                                </div>
+
+                                                <div className="p-3.5 rounded-xl bg-gray-950 border border-gray-800 space-y-2">
+                                                    <div className="text-[10px] uppercase font-mono text-cyan-400">Ubicación & Contacto</div>
+                                                    <div className="text-gray-200 font-medium">📍 {businessDna.address}, {businessDna.city}</div>
+                                                    <div className="text-emerald-400 font-mono">📱 WhatsApp: {businessDna.whatsapp_number}</div>
+                                                </div>
+
+                                                <div className="p-3.5 rounded-xl bg-gray-950 border border-gray-800 space-y-2">
+                                                    <div className="text-[10px] uppercase font-mono text-cyan-400">Frase Principal en Portada</div>
+                                                    <div className="text-gray-200 italic">"{businessDna.unique_selling_prop}"</div>
+                                                </div>
+
+                                                <div className="p-3.5 rounded-xl bg-gray-950 border border-gray-800 space-y-2">
+                                                    <div className="text-[10px] uppercase font-mono text-cyan-400">Prueba Social Google</div>
+                                                    <div className="text-yellow-400 font-bold">
+                                                        ⭐ {businessDna.rating} de Calificación ({businessDna.reviews_count} opiniones de clientes)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            /* Vista 2: JSON para Desarrolladores */
+                                            <div className="bg-gray-950 p-4 rounded-xl border border-gray-800 font-mono text-[11px] text-cyan-300 space-y-1 overflow-x-auto">
+                                                <div className="text-gray-500">// Objeto estructurado para el Arquitecto V3</div>
+                                                <div>&#123;</div>
+                                                <div className="pl-4"><span className="text-purple-400">"business_name"</span>: <span className="text-emerald-300">"{businessDna.business_name}"</span>,</div>
+                                                <div className="pl-4"><span className="text-purple-400">"niche"</span>: <span className="text-emerald-300">"{businessDna.niche}"</span>,</div>
+                                                <div className="pl-4"><span className="text-purple-400">"city"</span>: <span className="text-emerald-300">"{businessDna.city}"</span>,</div>
+                                                <div className="pl-4"><span className="text-purple-400">"address"</span>: <span className="text-emerald-300">"{businessDna.address}"</span>,</div>
+                                                <div className="pl-4"><span className="text-purple-400">"template_selected"</span>: <span className="text-amber-300">"{selectedTemplate.code}"</span>,</div>
+                                                <div className="pl-4"><span className="text-purple-400">"color_accent"</span>: <span className="text-cyan-300">"{businessDna.brand_color}"</span>,</div>
+                                                <div className="pl-4"><span className="text-purple-400">"unique_selling_prop"</span>: <span className="text-emerald-300">"{businessDna.unique_selling_prop.substring(0, 35)}..."</span>,</div>
+                                                <div className="pl-4"><span className="text-purple-400">"whatsapp"</span>: <span className="text-emerald-300">"{businessDna.whatsapp_number}"</span></div>
+                                                <div>&#125;</div>
+                                            </div>
+                                        )}
+
+                                        {/* Explorador de Módulos Inteligentes */}
+                                        <div className="space-y-2 pt-2 border-t border-gray-800">
+                                            <label className="text-xs font-semibold text-gray-300 block">
+                                                Explorar Capacidades en la Web:
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {[
+                                                    { id: 'beatriz', name: '🤖 Beatriz AI', tag: 'Asistente 24/7' },
+                                                    { id: 'seo', name: '🔎 Posicionamiento SEO', tag: 'Google Rank' },
+                                                    { id: 'content', name: '📝 Publicaciones IA', tag: 'Contenido' },
+                                                    { id: 'telemetry', name: '📊 Clientes y Clics', tag: 'Medición' },
+                                                    { id: 'optim', name: '🔄 Pruebas de Ventas', tag: 'Optimizador' },
+                                                    { id: 'social', name: '🌐 Social Sync', tag: 'Instagram/FB' }
+                                                ].map(spot => (
+                                                    <button
+                                                        key={spot.id}
+                                                        onClick={() => {
+                                                            setActiveHotspot(spot.id);
+                                                            logEvent('HOTSPOT_CLICK', `Exploró: ${spot.name}`);
+                                                        }}
+                                                        className={`p-2 rounded-lg border text-left transition-all ${
+                                                            activeHotspot === spot.id 
+                                                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' 
+                                                            : 'bg-gray-900 border-gray-800 text-gray-400 hover:text-white'
+                                                        }`}
+                                                    >
+                                                        <div className="text-xs font-semibold">{spot.name}</div>
+                                                        <div className="text-[10px] text-gray-500 font-mono">{spot.tag}</div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Explicación Comercial del Módulo Activo */}
+                                        <div className="p-4 rounded-xl bg-gray-950 border border-gray-800 space-y-2 text-xs">
+                                            {activeHotspot === 'beatriz' && (
+                                                <>
+                                                    <div className="font-bold text-cyan-300 font-mono">🤖 BEATRIZ AI ASISTENTE</div>
+                                                    <p className="text-gray-300 leading-relaxed text-[11px]">
+                                                        Beatriz toma las fotos de tus productos enviadas por WhatsApp, redacta textos comerciales y atiende a las personas interesadas que escriban a tu número <span className="text-white font-semibold">({businessDna.whatsapp_number})</span>.
+                                                    </p>
+                                                </>
+                                            )}
+                                            {activeHotspot === 'seo' && (
+                                                <>
+                                                    <div className="font-bold text-cyan-300 font-mono">🔎 POSICIONAMIENTO EN GOOGLE</div>
+                                                    <p className="text-gray-300 leading-relaxed text-[11px]">
+                                                        Optimiza automáticamente tu sitio para que las personas que busquen servicios en <span className="text-white font-semibold">{businessDna.city}</span> te encuentren de primeros en Google.
+                                                    </p>
+                                                </>
+                                            )}
+                                            {activeHotspot === 'content' && (
+                                                <>
+                                                    <div className="font-bold text-cyan-300 font-mono">📝 PUBLICACIONES AUTOMÁTICAS</div>
+                                                    <p className="text-gray-300 leading-relaxed text-[11px]">
+                                                        Mantiene tu sitio actualizado redactando consejos y noticias sobre tus servicios estrella: <span className="text-cyan-300 font-semibold">{businessDna.services}</span>.
+                                                    </p>
+                                                </>
+                                            )}
+                                            {activeHotspot === 'telemetry' && (
+                                                <>
+                                                    <div className="font-bold text-cyan-300 font-mono">📊 MEDICIÓN DE CLIENTES</div>
+                                                    <p className="text-gray-300 leading-relaxed text-[11px]">
+                                                        Te muestra cuántas personas entraron a tu web, qué productos miraron y a qué hora hicieron clic en tu botón de WhatsApp.
+                                                    </p>
+                                                </>
+                                            )}
+                                            {activeHotspot === 'optim' && (
+                                                <>
+                                                    <div className="font-bold text-cyan-300 font-mono">🔄 PRUEBAS AUTOMÁTICAS DE OFERTAS</div>
+                                                    <p className="text-gray-300 leading-relaxed text-[11px]">
+                                                        Prueba distintas frases promocionales para averiguar cuál atrae más clientes a <span className="text-white font-semibold">{businessDna.business_name}</span>.
+                                                    </p>
+                                                </>
+                                            )}
+                                            {activeHotspot === 'social' && (
+                                                <>
+                                                    <div className="font-bold text-cyan-300 font-mono">🌐 PUBLICACIÓN AUTOMÁTICA EN REDES</div>
+                                                    <p className="text-gray-300 leading-relaxed text-[11px]">
+                                                        Las novedades creadas en tu sitio web se adaptan y comparten automáticamente en tus perfiles de Instagram y Facebook.
+                                                    </p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Derecha: VISTA PREVIA RENDERIZADA EN VIVO DE LA WEB */}
+                                    <div className="lg:col-span-7 glass-panel rounded-2xl p-4 sm:p-6 border border-gray-800 space-y-4 relative">
+                                        <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+                                            <div className="flex items-center space-x-2">
+                                                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                                                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                                                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                                <span className="text-xs font-mono text-gray-400 ml-2 truncate max-w-[200px] sm:max-w-none">
+                                                    https://{businessDna.business_name.toLowerCase().replace(/[^a-z0-9]/g, '')}.neural-site.app
+                                                </span>
+                                            </div>
+                                            <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-mono rounded border border-emerald-500/30">
+                                                VISTA PREVIA ACTIVA
+                                            </span>
+                                        </div>
+
+                                        {/* Mockup de la Página Web Creada */}
+                                        <div className="bg-gray-950 rounded-xl p-6 border border-gray-800 space-y-6 relative overflow-hidden min-h-[500px]">
+                                            
+                                            {/* Navbar del Sitio */}
+                                            <div className="flex items-center justify-between border-b border-gray-900 pb-4">
+                                                <div className="flex items-center gap-2">
+                                                    <div 
+                                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-950 font-black text-xs shadow-md"
+                                                        style={{ backgroundColor: businessDna.brand_color }}
+                                                    >
+                                                        {businessDna.business_name.substring(0, 2).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <span className="font-extrabold text-sm text-white block">{businessDna.business_name}</span>
+                                                        <span className="text-[10px] text-gray-400 font-mono">{businessDna.city}</span>
+                                                    </div>
+                                                </div>
+                                                <a 
+                                                    href={`https://wa.me/${businessDna.whatsapp_number.replace(/[^0-9]/g, '')}`} 
+                                                    target="_blank" 
+                                                    rel="noreferrer"
+                                                    className="px-3.5 py-1.5 text-gray-950 font-extrabold rounded-lg text-xs shadow-md flex items-center gap-1.5 transition hover:scale-105"
+                                                    style={{ backgroundColor: businessDna.brand_color }}
+                                                >
+                                                    <span>Chat WhatsApp</span>
+                                                </a>
+                                            </div>
+
+                                            {/* Portada Principal */}
+                                            <div className="space-y-4 py-4">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className="text-[10px] uppercase font-bold font-mono px-2.5 py-0.5 rounded bg-gray-900 text-cyan-300 border border-cyan-800">
+                                                        {selectedTemplate.name} • {businessDna.niche}
+                                                    </span>
+                                                    <span className="text-[10px] text-yellow-400 font-bold bg-yellow-950/60 px-2.5 py-0.5 rounded border border-yellow-800/50">
+                                                        ⭐ {businessDna.rating} ({businessDna.reviews_count} opiniones en Google)
+                                                    </span>
+                                                </div>
+                                                
+                                                <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+                                                    {businessDna.unique_selling_prop}
+                                                </h3>
+                                                
+                                                <p className="text-xs text-gray-300 max-w-md leading-relaxed">
+                                                    Bienvenidos a <strong className="text-white">{businessDna.business_name}</strong> en <strong className="text-white">{businessDna.city}</strong>. Te ofrecemos atención personal, repuestos garantizados y atención inmediata por WhatsApp.
+                                                </p>
+
+                                                <div className="flex items-center gap-3 pt-1">
+                                                    <a 
+                                                        href={`https://wa.me/${businessDna.whatsapp_number.replace(/[^0-9]/g, '')}`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="px-4 py-2.5 text-gray-950 font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-2"
+                                                        style={{ backgroundColor: businessDna.brand_color }}
+                                                    >
+                                                        <span>Consultar por WhatsApp ({businessDna.whatsapp_number})</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            {/* Sección de Servicios y Productos */}
+                                            <div className="border-t border-gray-900 pt-4 space-y-3">
+                                                <div className="text-xs font-mono text-gray-400 flex items-center justify-between">
+                                                    <span>SERVICIOS Y PRODUCTOS DESTACADOS</span>
+                                                    <span className="text-[10px] text-emerald-400">✓ Inyectado desde tu ADN</span>
+                                                </div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                    {servicesList.length > 0 ? servicesList.map((srv, idx) => (
+                                                        <div key={idx} className="p-3 rounded-lg bg-gray-900/90 border border-gray-800 space-y-1">
+                                                            <div className="text-xs font-bold text-white flex items-center gap-1">
+                                                                <span className="text-cyan-400">⚡</span> {srv}
+                                                            </div>
+                                                            <div className="text-[10px] text-gray-400">Garantía Directa</div>
+                                                        </div>
+                                                    )) : (
+                                                        <div className="col-span-3 text-xs text-gray-500 italic">No se agregaron servicios</div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Tarjeta de Ubicación en Google Maps */}
+                                            <div className="p-3.5 rounded-xl bg-gray-900/80 border border-gray-800 flex items-center justify-between text-xs">
+                                                <div className="flex items-center gap-2 text-gray-200">
+                                                    <span className="text-rose-400 text-base">📍</span>
+                                                    <div>
+                                                        <div className="font-semibold text-white">{businessDna.address}</div>
+                                                        <div className="text-[10px] text-gray-400 font-mono">{businessDna.city} • Mapa Interactivo</div>
+                                                    </div>
+                                                </div>
+                                                <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950 px-2 py-1 rounded border border-cyan-800">
+                                                    Ubicación Lista
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* PANEL DE CONTROL DE MÓDULOS ACTIVOS */}
+                                <div className="glass-panel rounded-2xl p-6 sm:p-8 border border-gray-800 space-y-6">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-4">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                                <i data-lucide="sliders" className="w-5 h-5 text-cyan-400"></i>
+                                                Activa o Desactiva Funciones en Tu Web
+                                            </h3>
+                                            <p className="text-xs text-gray-300">
+                                                Tú decides qué herramientas quieres que trabajen por tu negocio. Pasa el cursor por (?) para leer la explicación.
+                                            </p>
+                                        </div>
+                                        <span className="text-xs font-mono text-purple-300 bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/50">
+                                            Interruptores Digitales
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {[
+                                            { key: 'seo', title: 'Posicionamiento en Google', term: 'SEO Predictivo', desc: 'Aparece automáticamente en las búsquedas locales de tus clientes.' },
+                                            { key: 'content', title: 'Redactor de Noticias IA', term: null, desc: 'Publica artículos en tu blog sobre tus productos sin escribir nada.' },
+                                            { key: 'crm', title: 'Organizador de Clientes (CRM)', term: 'CRM Integrado', desc: 'Guarda los datos de WhatsApp de personas interesadas.' },
+                                            { key: 'socialSync', title: 'Publicador en Instagram & Facebook', term: 'Social Sync', desc: 'Sincroniza automáticamente tus fotos de productos en tus redes sociales.' },
+                                            { key: 'videoAi', title: 'Creador de Vídeos Cortos', term: null, desc: 'Genera clips para promocionar tus productos en redes.' },
+                                            { key: 'abTesting', title: 'Pruebas de Títulos de Ventas', term: 'A/B Testing', desc: 'Evalúa qué frases atraen más clientes a tu negocio.' },
+                                        ].map(item => (
+                                            <div key={item.key} className="p-4 rounded-xl bg-gray-900/80 border border-gray-800 flex items-start justify-between gap-3">
+                                                <div className="space-y-1">
+                                                    <h4 className="font-semibold text-xs text-white flex items-center gap-1">
+                                                        {item.term ? <Tooltip term={item.term}>{item.title}</Tooltip> : item.title}
+                                                    </h4>
+                                                    <p className="text-[11px] text-gray-400">{item.desc}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        const newVal = !toggles[item.key];
+                                                        setToggles(prev => ({ ...prev, [item.key]: newVal }));
+                                                        logEvent('TOGGLE_FEATURE', `${item.title}: ${newVal ? 'ACTIVADO' : 'DESACTIVADO'}`);
+                                                    }}
+                                                    className={`w-11 h-6 rounded-full transition-colors relative flex items-center px-0.5 ${
+                                                        toggles[item.key] ? 'bg-cyan-500' : 'bg-gray-700'
+                                                    }`}
+                                                >
+                                                    <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                                                        toggles[item.key] ? 'translate-x-5' : 'translate-x-0'
+                                                    }`}></div>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* SLIDER DE NIVEL DE AUTONOMÍA */}
+                                <div className="glass-panel rounded-2xl p-6 sm:p-8 border border-gray-800 space-y-6">
+                                    <div className="border-b border-gray-800 pb-4">
+                                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                            <i data-lucide="zap" className="w-5 h-5 text-amber-400"></i>
+                                            ¿Qué tanto trabajo quieres que haga la web por ti?
+                                        </h3>
+                                        <p className="text-xs text-gray-300 mt-1">
+                                            Mueve la barra para seleccionar el nivel de automatización para tu negocio.
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <input 
+                                                type="range" 
+                                                min="0" 
+                                                max="4" 
+                                                value={autonomyIndex}
+                                                onChange={(e) => {
+                                                    const idx = parseInt(e.target.value);
+                                                    setAutonomyIndex(idx);
+                                                    logEvent('AUTONOMY_CHANGE', `Nivel seleccionado: ${AUTONOMY_LEVELS[idx].name}`);
+                                                }}
+                                                className="w-full accent-cyan-400 cursor-pointer h-2 bg-gray-800 rounded-lg"
+                                            />
+                                            <div className="flex justify-between text-[11px] font-mono text-gray-400">
+                                                <span>1. Básica</span>
+                                                <span>2. Atractiva</span>
+                                                <span>3. Multimedia</span>
+                                                <span>4. Automatizada</span>
+                                                <span>5. Piloto Automático</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Caja Dinámica del Nivel de Autonomía */}
+                                        <div className={`p-6 rounded-2xl bg-gradient-to-r ${AUTONOMY_LEVELS[autonomyIndex].color} bg-opacity-10 border border-gray-700 space-y-4`}>
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-lg font-bold text-white">
+                                                    {AUTONOMY_LEVELS[autonomyIndex].name}
+                                                </h4>
+                                                <span className="px-3 py-1 rounded-full text-xs font-mono bg-black/40 text-white border border-white/20">
+                                                    {AUTONOMY_LEVELS[autonomyIndex].tag}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-200 leading-relaxed">
+                                                {AUTONOMY_LEVELS[autonomyIndex].desc}
+                                            </p>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 text-xs font-medium text-white">
+                                                {AUTONOMY_LEVELS[autonomyIndex].features.map((feat, i) => (
+                                                    <div key={i} className="flex items-center gap-2 bg-black/30 p-2 rounded-lg">
+                                                        <span className="text-cyan-300">⚡</span>
+                                                        <span>{feat}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CALCULADORA DE HORAS AHORRADAS */}
+                                <div className="glass-panel rounded-2xl p-6 sm:p-8 border border-gray-800 space-y-6">
+                                    <div className="border-b border-gray-800 pb-4">
+                                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                            <i data-lucide="calculator" className="w-5 h-5 text-emerald-400"></i>
+                                            Calculadora de Tiempo Ahorrado en Tu Negocio
+                                        </h3>
+                                        <p className="text-xs text-gray-300 mt-1">
+                                            Averigua cuántas horas de trabajo manual te ahorrarás cada mes.
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                                        <div className="md:col-span-7 space-y-5">
+                                            <div>
+                                                <div className="flex justify-between text-xs text-gray-300 mb-1">
+                                                    <span>Redacción de artículos o blogs por semana</span>
+                                                    <span className="font-mono text-cyan-400 font-bold">{calcPublicaciones}</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="1" max="15" value={calcPublicaciones} 
+                                                    onChange={(e) => setCalcPublicaciones(parseInt(e.target.value))}
+                                                    className="w-full accent-cyan-400 h-1.5 bg-gray-800 rounded"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <div className="flex justify-between text-xs text-gray-300 mb-1">
+                                                    <span>Publicaciones en Instagram / Facebook por semana</span>
+                                                    <span className="font-mono text-cyan-400 font-bold">{calcRedes}</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="1" max="20" value={calcRedes} 
+                                                    onChange={(e) => setCalcRedes(parseInt(e.target.value))}
+                                                    className="w-full accent-cyan-400 h-1.5 bg-gray-800 rounded"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <div className="flex justify-between text-xs text-gray-300 mb-1">
+                                                    <span>Actualizaciones de precios o productos al mes</span>
+                                                    <span className="font-mono text-cyan-400 font-bold">{calcUpdates}</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="0" max="10" value={calcUpdates} 
+                                                    onChange={(e) => setCalcUpdates(parseInt(e.target.value))}
+                                                    className="w-full accent-cyan-400 h-1.5 bg-gray-800 rounded"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <div className="flex justify-between text-xs text-gray-300 mb-1">
+                                                    <span>Horas de mantenimiento web mensual</span>
+                                                    <span className="font-mono text-cyan-400 font-bold">{calcMantenimiento} h</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="1" max="20" value={calcMantenimiento} 
+                                                    onChange={(e) => setCalcMantenimiento(parseInt(e.target.value))}
+                                                    className="w-full accent-cyan-400 h-1.5 bg-gray-800 rounded"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="md:col-span-5 glass-panel-glow p-6 rounded-2xl text-center space-y-4 border border-cyan-500/40">
+                                            <span className="text-xs font-mono uppercase text-cyan-300 tracking-wider">
+                                                Tiempo Ganado
+                                            </span>
+                                            <div>
+                                                <div className="text-5xl font-black text-white gradient-text">
+                                                    {totalHoursSaved} horas
+                                                </div>
+                                                <div className="text-xs text-gray-300 mt-1">ahorradas todos los meses</div>
+                                            </div>
+                                            <p className="text-xs text-gray-300 leading-relaxed border-t border-gray-800 pt-3">
+                                                Dedicas aproximadamente <span className="text-white font-bold">{totalHoursSaved} horas mensuales</span> a tareas repetitivas que Neural Sites y Beatriz AI pueden realizar por ti automáticamente.
+                                            </p>
+                                            <button 
+                                                onClick={sendDnaToHunterWhatsApp}
+                                                className="block w-full py-2.5 px-4 bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold text-xs rounded-xl transition shadow-lg shadow-cyan-500/20"
+                                            >
+                                                Recuperar Mi Tiempo Libre →
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* PASO 4: COMPARADOR Y RECOMENDACIÓN DE PLANES */}
+                                <div id="cta" className="space-y-8 pt-6">
+                                    <div className="text-center max-w-2xl mx-auto space-y-3">
+                                        <span className="px-3 py-1 rounded-full text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800">
+                                            Planes de Publicación
+                                        </span>
+                                        <h2 className="text-3xl font-black text-white">
+                                            Publica <span className="text-cyan-400">{businessDna.business_name}</span> en Internet
+                                        </h2>
+                                        <p className="text-xs text-gray-300">
+                                            Selecciona el plan que mejor se adapte a las metas de tu negocio.
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* SILVER */}
+                                        <div className="glass-panel rounded-2xl p-6 border border-gray-800 flex flex-col justify-between space-y-6 hover:border-gray-700 transition">
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-mono text-gray-400">🥈 SILVER</span>
+                                                    <span className="text-[10px] bg-gray-800 px-2.5 py-0.5 rounded text-gray-300 font-mono">Presencia</span>
+                                                </div>
+                                                <h3 className="text-lg font-bold text-white">"Quiero estar en Google"</h3>
+                                                <div className="text-3xl font-extrabold text-white">$15 <span className="text-xs font-normal text-gray-400">/mes</span></div>
+                                                <ul className="text-xs text-gray-300 space-y-2.5 font-mono pt-2">
+                                                    <li className="flex items-center gap-2">✓ Sitio Web Dinámico Listo</li>
+                                                    <li className="flex items-center gap-2">✓ 2 artículos automáticos/semana</li>
+                                                    <li className="flex items-center gap-2">✓ Ubicación Google Maps</li>
+                                                    <li className="flex items-center gap-2">✓ Botón directo a WhatsApp</li>
+                                                    <li className="flex items-center gap-2 text-gray-500">✕ Sin publicación en Instagram/FB</li>
+                                                </ul>
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    logEvent('PLAN_SELECTED', 'Seleccionó Plan Silver');
+                                                    sendDnaToHunterWhatsApp();
+                                                }}
+                                                className="w-full py-2.5 rounded-xl border border-gray-700 text-gray-300 hover:bg-gray-800 text-xs font-bold transition"
+                                            >
+                                                Elegir Plan Silver
+                                            </button>
+                                        </div>
+
+                                        {/* GOLD */}
+                                        <div className="glass-panel-glow rounded-2xl p-6 border border-cyan-500/60 flex flex-col justify-between space-y-6 relative scale-105 shadow-2xl shadow-cyan-500/10">
+                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white text-[10px] font-mono px-3 py-0.5 rounded-full font-bold shadow">
+                                                RECOMENDADO PARA TU SECTOR
+                                            </div>
+                                            <div className="space-y-4 pt-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-mono text-cyan-400 font-bold">🥇 GOLD</span>
+                                                    <span className="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2.5 py-0.5 rounded font-mono">Más Vendido</span>
+                                                </div>
+                                                <h3 className="text-lg font-bold text-white">"Quiero conseguir clientes"</h3>
+                                                <div className="text-3xl font-extrabold text-white">$30 <span className="text-xs font-normal text-gray-400">/mes</span></div>
+                                                <ul className="text-xs text-gray-200 space-y-2.5 font-mono pt-2">
+                                                    <li className="flex items-center gap-2">✓ Todo lo incluido en Silver</li>
+                                                    <li className="flex items-center gap-2">✓ Autopilot en Instagram / Facebook</li>
+                                                    <li className="flex items-center gap-2">✓ Beatriz AI atiende tu WhatsApp 24/7</li>
+                                                    <li className="flex items-center gap-2">✓ Beatriz usa tus fotos de productos</li>
+                                                    <li className="flex items-center gap-2">✓ Organizador de Clientes (CRM)</li>
+                                                </ul>
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    logEvent('PLAN_SELECTED', 'Seleccionó Plan Gold');
+                                                    sendDnaToHunterWhatsApp();
+                                                }}
+                                                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white text-xs font-bold transition shadow-lg shadow-cyan-500/25"
+                                            >
+                                                Publicar {businessDna.business_name} (Plan Gold) →
+                                            </button>
+                                        </div>
+
+                                        {/* PLATINUM */}
+                                        <div className="glass-panel rounded-2xl p-6 border border-gray-800 flex flex-col justify-between space-y-6 hover:border-gray-700 transition">
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-mono text-purple-400">💎 PLATINUM</span>
+                                                    <span className="text-[10px] bg-purple-950 px-2.5 py-0.5 rounded text-purple-300 font-mono">Ecosistema</span>
+                                                </div>
+                                                <h3 className="text-lg font-bold text-white">"Piloto Automático Total"</h3>
+                                                <div className="text-3xl font-extrabold text-white">$79 <span className="text-xs font-normal text-gray-400">/mes</span></div>
+                                                <ul className="text-xs text-gray-300 space-y-2.5 font-mono pt-2">
+                                                    <li className="flex items-center gap-2">✓ Todo lo incluido en Gold</li>
+                                                    <li className="flex items-center gap-2">✓ Difusión en TikTok / YouTube</li>
+                                                    <li className="flex items-center gap-2">✓ Vídeos creados con Inteligencia Artificial</li>
+                                                    <li className="flex items-center gap-2">✓ Pruebas A/B autónomas</li>
+                                                    <li className="flex items-center gap-2">✓ Soporte e implementación prioritaria</li>
+                                                </ul>
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    logEvent('PLAN_SELECTED', 'Seleccionó Plan Platinum');
+                                                    sendDnaToHunterWhatsApp();
+                                                }}
+                                                className="w-full py-2.5 rounded-xl border border-gray-700 text-gray-300 hover:bg-gray-800 text-xs font-bold transition"
+                                            >
+                                                Elegir Plan Platinum
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* BOTÓN FINAL DE DESPACHO A WHATSAPP */}
+                                <div className="glass-panel-glow rounded-3xl p-8 sm:p-12 border border-cyan-500/40 text-center max-w-3xl mx-auto space-y-6">
+                                    <div className="space-y-2">
+                                        <h3 className="text-3xl font-black text-white">
+                                            Tu web para <span className="text-cyan-400">{businessDna.business_name}</span> está lista para publicarse.
+                                        </h3>
+                                        <p className="text-sm text-gray-300">
+                                            Haz clic abajo para enviar los datos de tu empresa a nuestro WhatsApp e iniciar el despliegue de tu sitio web.
+                                        </p>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+                                        <button 
+                                            onClick={sendDnaToHunterWhatsApp}
+                                            className="w-full px-6 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-sm transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+                                        >
+                                            <i data-lucide="message-circle" className="w-5 h-5"></i>
+                                            <span>📱 Enviar Datos a WhatsApp para Publicar Web</span>
+                                        </button>
+                                    </div>
+
+                                    <p className="text-[11px] text-gray-400">
+                                        Sin compromisos ni pagos por adelantado. Te enviaremos tu enlace temporal a WhatsApp.
+                                    </p>
+                                </div>
+
+                            </div>
+                        )}
+
+                        {/* REGISTRO DE EVENTOS CENTINELA */}
+                        <div className="mt-16 glass-panel rounded-2xl p-4 sm:p-6 border border-gray-800 space-y-3">
+                            <div className="flex items-center justify-between text-xs font-mono border-b border-gray-800 pb-2">
+                                <span className="text-cyan-400 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                    CENTINELA MONITOREO EN VIVO
+                                </span>
+                                <span className="text-gray-500">{eventsLog.length} Eventos Registrados</span>
+                            </div>
+
+                            <div className="space-y-1 font-mono text-[11px] max-h-36 overflow-y-auto">
+                                {eventsLog.map(ev => (
+                                    <div key={ev.id} className="flex items-center justify-between py-1 px-2 rounded bg-gray-950/60 border border-gray-900 text-gray-400">
+                                        <span className="text-gray-600">{ev.time}</span>
+                                        <span className="text-purple-400 font-semibold">{ev.event}</span>
+                                        <span className="text-gray-300 truncate max-w-xs">{ev.details}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                    </main>
+
+                    {/* Pie de Página */}
+                    <footer className="border-t border-gray-900 glass-panel mt-16 px-6 py-6 text-center text-xs text-gray-500 font-mono">
+                        <p>© 2026 Neural Sites & Neural Nexus. Todos los derechos reservados.</p>
+                        <p className="mt-1 text-[10px] text-gray-600">Guía Interactiva & Generador de Sitios Inteligentes con Beatriz AI</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
