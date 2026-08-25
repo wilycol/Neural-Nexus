@@ -1604,9 +1604,11 @@
 
             beatrizMasterPlayer.src = playSrc;
             
+            // 🚀 Renderizar subtítulos al instante sin esperar la respuesta de play()
+            if (textToDisplay) renderSubtitlesLive(textToDisplay, beatrizMasterPlayer);
+            
             beatrizMasterPlayer.onplay = () => {
                 if (statusEl) statusEl.innerText = "Beatriz respondiendo con voz...";
-                if (textToDisplay) renderSubtitlesLive(textToDisplay, beatrizMasterPlayer);
                 if (orb) {
                     orb.style.transform = "scale(1.25)";
                     orb.style.boxShadow = "0 0 60px rgba(244, 114, 182, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.7)";
