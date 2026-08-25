@@ -594,6 +594,15 @@
 
                     if (m.sender_id === 'BEATRIZ_AI') {
                         let text = m.content || '';
+
+                        // Si m.content es una URL directa a un archivo MP3 (enviado por el búnker como type='voice' o URL)
+                        if (m.type === 'voice' || text.startsWith('http://') || text.startsWith('https://')) {
+                            appendStreamLog("📥 Audio de voz Salomé recibido desde el búnker. Reproduciendo vía Proxy...");
+                            const proxyUrl = `/api/proxy-audio?url=${encodeURIComponent(text)}`;
+                            playBeatrizAudio(proxyUrl, null);
+                            return;
+                        }
+
                         const isStreamingFlag = text.includes('[STREAMING LOG]') || text.includes('[ADN:NEXUS-STREAM-LIVE]') || text.includes('[STREAMING RESPONSE]');
                         
                         if (isStreamingFlag || text.length > 5) {
@@ -607,7 +616,7 @@
                                        .replace(/\*\*/g, '')
                                        .trim();
 
-                            if (text) {
+                            if (text && !text.startsWith('http')) {
                                 const now = Date.now();
                                 if (window.isBeatrizSpeaking || (now - lastBeatrizAudioTimestamp < 8000 && text === lastBeatrizAudioText)) {
                                     appendStreamLog("⏳ Beatriz ya está hablando con voz. Omitiendo re-disparo de audio...");
