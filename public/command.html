@@ -1427,7 +1427,7 @@
                 // to prevent mobile WebKit MIME-type rejection (application/octet-stream -> Failed to load because no supported source was found)
                 if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
                     appendStreamLog("📥 Descargando stream MP3 nativo...");
-                    fetch(audioUrl)
+                    fetch(audioUrl, { mode: 'cors' })
                         .then(r => r.arrayBuffer())
                         .then(buf => {
                             const blob = new Blob([buf], { type: 'audio/mp3' });
@@ -1435,9 +1435,8 @@
                             executePlayBeatrizSource(playSrc, textToDisplay);
                         })
                         .catch(err => {
-                            appendStreamLog(`⚠️ Error descargando audio: ${err.message}`);
-                            window.isBeatrizSpeaking = false;
-                            restartMediaRecording();
+                            appendStreamLog(`⚠️ Notice fetch: ${err.message}. Probando reproductor directo...`);
+                            executePlayBeatrizSource(audioUrl, textToDisplay);
                         });
                     return;
                 }
