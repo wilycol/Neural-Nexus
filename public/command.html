@@ -605,21 +605,8 @@
                                        .trim();
 
                             if (text && m.type === 'text') {
-                                appendStreamLog(`📥 Sintetizando voz Salomé para respuesta de Beatriz...`);
-                                fetch('/api/chat/portal', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ message: text, persona: 'beatriz', uid: 'BEATRIZ_AI' })
-                                }).then(r => r.json()).then(d => {
-                                    if (d.voice_url) {
-                                        appendStreamLog("📥 Voz Salomé lista. Reproduciendo...");
-                                        playBeatrizAudio(d.voice_url, text);
-                                    } else {
-                                        playBeatrizAudio(null, text);
-                                    }
-                                }).catch(err => {
-                                    playBeatrizAudio(null, text);
-                                });
+                                appendStreamLog(`📥 Respuesta de Beatriz: "${text.substring(0, 35)}..."`);
+                                playBeatrizAudio(null, text);
                             } else if (m.type === 'voice' && m.content) {
                                 appendStreamLog("📥 Audio de voz de Beatriz recibido. Reproduciendo...");
                                 playBeatrizAudio(m.content, "Respuesta de voz de Beatriz recibida.");
