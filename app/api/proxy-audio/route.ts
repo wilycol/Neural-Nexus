@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
                 'Cache-Control': 'public, max-age=3600',
             },
         });
-    } catch (err: any) {
-        return new NextResponse(`Error proxying audio: ${err.message}`, { status: 500 });
+    } catch (err) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        return new NextResponse(`Error proxying audio: ${errMsg}`, { status: 500 });
     }
 }
