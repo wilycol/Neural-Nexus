@@ -1199,14 +1199,27 @@
 
         let lastTranscriptionText = "";
         let audioUnlocked = false;
+        let beatrizMasterPlayer = null;
 
         function unlockMobileAudio() {
+            if (!beatrizMasterPlayer) {
+                beatrizMasterPlayer = document.getElementById('beatriz-master-player');
+                if (!beatrizMasterPlayer) {
+                    beatrizMasterPlayer = document.createElement('audio');
+                    beatrizMasterPlayer.id = 'beatriz-master-player';
+                    beatrizMasterPlayer.preload = 'auto';
+                    beatrizMasterPlayer.setAttribute('playsinline', '');
+                    beatrizMasterPlayer.setAttribute('webkit-playsinline', '');
+                    document.body.appendChild(beatrizMasterPlayer);
+                }
+            }
+
             if (audioUnlocked) return;
             try {
-                const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
-                silentAudio.play().then(() => {
+                beatrizMasterPlayer.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+                beatrizMasterPlayer.play().then(() => {
                     audioUnlocked = true;
-                    console.log("🔊 Audio móvil desbloqueado.");
+                    appendStreamLog("🔊 Reproductor Maestro desbloqueado en el dispositivo móvil.");
                 }).catch(() => {});
                 
                 if ('speechSynthesis' in window) {
@@ -1493,19 +1506,33 @@
             const statusEl = document.getElementById('streaming-status');
             const orb = document.getElementById('voice-orb');
 
-            if (currentAudio) {
-                try { currentAudio.pause(); } catch(e){}
-                currentAudio = null;
+            if (!beatrizMasterPlayer) {
+                beatrizMasterPlayer = document.getElementById('beatriz-master-player');
+                if (!beatrizMasterPlayer) {
+                    beatrizMasterPlayer = document.createElement('audio');
+                    beatrizMasterPlayer.id = 'beatriz-master-player';
+                    beatrizMasterPlayer.preload = 'auto';
+                    beatrizMasterPlayer.setAttribute('playsinline', '');
+                    beatrizMasterPlayer.setAttribute('webkit-playsinline', '');
+                    document.body.appendChild(beatrizMasterPlayer);
+                }
             }
 
-            currentAudio = new Audio();
+            beatrizMasterPlayer.onplay = null;
+            beatrizMasterPlayer.onended = null;
+            beatrizMasterPlayer.onerror = null;
+
+            try { beatrizMasterPlayer.pause(); } catch(e){}
+
             if (playSrc.startsWith('http://') || playSrc.startsWith('https://')) {
-                currentAudio.crossOrigin = 'anonymous';
+                beatrizMasterPlayer.crossOrigin = 'anonymous';
+            } else {
+                beatrizMasterPlayer.removeAttribute('crossorigin');
             }
-            currentAudio.preload = 'auto';
-            currentAudio.src = playSrc;
+
+            beatrizMasterPlayer.src = playSrc;
             
-            currentAudio.onplay = () => {
+            beatrizMasterPlayer.onplay = () => {
                 if (statusEl) statusEl.innerText = "Beatriz respondiendo con voz...";
                 if (textToDisplay) renderSubtitlesLive(textToDisplay);
                 if (orb) {
@@ -1519,7 +1546,7 @@
                 }
             };
             
-            currentAudio.onended = () => {
+            beatrizMasterPlayer.onended = () => {
                 if (audioPlaybackQueue.length === 0) {
                     if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
                     appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
@@ -1536,12 +1563,12 @@
                 if (onEndedCallback) onEndedCallback();
             };
 
-            currentAudio.onerror = (e) => {
+            beatrizMasterPlayer.onerror = (e) => {
                 appendStreamLog(`⚠️ Error cargando audio MP3.`);
                 if (onEndedCallback) onEndedCallback();
             };
             
-            const p = currentAudio.play();
+            const p = beatrizMasterPlayer.play();
             if (p && p.catch) {
                 p.catch(e => {
                     appendStreamLog(`⚠️ Autoplay bloqueado: ${e.message}`);
