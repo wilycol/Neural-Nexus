@@ -34,80 +34,112 @@ function isWhisperHallucination(text: string): boolean {
   return hallucinationRegexes.some(regex => regex.test(clean));
 }
 
+import crypto from "crypto";
+
+function generateSecMsGec(): string {
+  const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
+  const WIN_EPOCH = 11644473600;
+  
+  let ticks = Date.now() / 1000;
+  ticks += WIN_EPOCH;
+  ticks -= ticks % 300;
+  ticks *= 1e7;
+
+  const strToHash = `${Math.floor(ticks)}${TRUSTED_CLIENT_TOKEN}`;
+  return crypto.createHash("sha256").update(strToHash, "ascii").digest("hex").toUpperCase();
+}
+
 async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
   return new Promise((resolve) => {
     try {
-      const wsUrl = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EA5E40A996D880680FA07C74";
-      const reqId = Date.now().toString(16);
+      const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
+      const secMsGec = generateSecMsGec();
+      const CHROMIUM_FULL_VERSION = "143.0.3650.75";
+      const connectId = crypto.randomBytes(16).toString("hex");
+
+      const wsUrl = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=1-${CHROMIUM_FULL_VERSION}&ConnectionId=${connectId}`;
+      const reqId = connectId;
 
       const WSConstructor = typeof globalThis.WebSocket !== "undefined" ? (globalThis.WebSocket as unknown as typeof WebSocket) : WebSocket;
-      const ws = new WSConstructor(wsUrl);
+      const ws = new WSConstructor(wsUrl, {
+        headers: {
+          "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0`,
+          "Origin": "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
+          "Pragma": "no-cache",
+          "Cache-Control": "no-cache",
+          "Sec-WebSocket-Version": "13"
+        }
+      });
+
       const audioChunks: Buffer[] = [];
 
       const timeout = setTimeout(() => {
         try { ws.close(); } catch {}
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-      }, 8000);
+      }, 10000);
 
-      ws.onopen = () => {
+      ws.on("open", () => {
+        const ts = new Date().toUTCString();
+
         const configMsg =
-          `Path: speech.config\r\n` +
-          `X-RequestId: ${reqId}\r\n` +
-          `Content-Type: application/json; charset=utf-8\r\n\r\n` +
-          JSON.stringify({
-            context: {
-              synthesis: {
-                audio: {
-                  outputFormat: "audio-24khz-48kbitrate-mono-mp3",
-                  voice: "Microsoft Server Speech Text to Speech Voice (es-CO, SalomeNeural)"
-                }
-              }
-            }
-          });
+          `X-Timestamp:${ts}\r\n` +
+          `Content-Type:application/json; charset=utf-8\r\n` +
+          `Path:speech.config\r\n\r\n` +
+          `{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}\r\n`;
 
         ws.send(configMsg);
 
+        const escapedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='es-CO'><voice name='es-CO-SalomeNeural'><prosody pitch='+0Hz' rate='+0%' volume='+0%'>${escapedText}</prosody></voice></speak>`;
+
         const ssmlMsg =
-          `Path: ssml\r\n` +
-          `X-RequestId: ${reqId}\r\n` +
-          `Content-Type: application/ssml+xml\r\n\r\n` +
-          `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='es-CO'><voice name='es-CO-SalomeNeural'>${text}</voice></speak>`;
+          `X-RequestId:${reqId}\r\n` +
+          `Content-Type:application/ssml+xml\r\n` +
+          `X-Timestamp:${ts}Z\r\n` +
+          `Path:ssml\r\n\r\n` +
+          `${ssml}`;
 
         ws.send(ssmlMsg);
-      };
+      });
 
-      ws.onmessage = (event: MessageEvent) => {
-        try {
-          const data = event.data;
-          if (typeof data !== "string" && data) {
-            const buf = Buffer.from(data as ArrayBuffer);
-            const headerIndex = buf.indexOf("\r\n\r\n");
-            if (headerIndex !== -1) {
-              const audioData = buf.subarray(headerIndex + 4);
-              if (audioData.length > 0) {
-                audioChunks.push(audioData);
-              }
-            }
-          } else if (typeof data === "string" && data.includes("Path: turn.end")) {
+      ws.on("message", (data: unknown) => {
+        if (typeof data === "string") {
+          if (data.includes("Path:turn.end")) {
             clearTimeout(timeout);
             try { ws.close(); } catch {}
             resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
           }
-        } catch {
-          // ignore chunk error
+        } else if (Buffer.isBuffer(data)) {
+          const str = data.toString("utf-8");
+          if (str.includes("Path:turn.end")) {
+            clearTimeout(timeout);
+            try { ws.close(); } catch {}
+            resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+          } else if (data.length > 2) {
+            const headerLength = data.readUInt16BE(0);
+            if (headerLength < data.length) {
+              const headerStr = data.subarray(2, 2 + headerLength).toString("utf-8");
+              if (headerStr.includes("Path:audio")) {
+                const audioData = data.subarray(2 + headerLength);
+                if (audioData.length > 0) {
+                  audioChunks.push(audioData);
+                }
+              }
+            }
+          }
         }
-      };
+      });
 
-      ws.onerror = () => {
+      ws.on("error", () => {
         clearTimeout(timeout);
         try { ws.close(); } catch {}
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-      };
+      });
 
       ws.onclose = () => {
         clearTimeout(timeout);
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-      };
+      });
     } catch {
       resolve(null);
     }
