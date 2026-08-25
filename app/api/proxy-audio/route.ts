@@ -18,10 +18,13 @@ export async function GET(req: NextRequest) {
         }
 
         const audioBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(audioBuffer);
 
-        return new NextResponse(audioBuffer, {
+        return new Response(buffer, {
+            status: 200,
             headers: {
                 'Content-Type': 'audio/mpeg',
+                'Content-Length': buffer.length.toString(),
                 'Access-Control-Allow-Origin': '*',
                 'Cache-Control': 'public, max-age=3600',
             },
