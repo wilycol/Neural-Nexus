@@ -982,9 +982,9 @@
         let mediaRecorderInstance = null;
         let recordedChunks = [];
         let globalMediaStream = null;
-        const DB_THRESHOLD = 5; // Umbral ultrasensible para micrófonos móviles
-        const SILENCE_TIMEOUT = 2000; // 2.0 segundos de pausa real para despachar
-        const MIN_SPEECH_DURATION = 1000; // 1.0s mínimo de frase hablada
+        const DB_THRESHOLD = 12; // Umbral filtrado para evitar cortes prematuros
+        const SILENCE_TIMEOUT = 3500; // 3.5 segundos de pausa para permitir pausas naturales del speaker
+        const MIN_SPEECH_DURATION = 1800; // 1.8s mínimo de frase hablada
 
         function startMediaRecording(stream) {
             try {
@@ -1020,7 +1020,7 @@
                 };
 
                 mediaRecorderInstance.start(250);
-                appendStreamLog("🎙️ Grabador nativo en caliente (pausa configurada: 2.0s).");
+                appendStreamLog("🎙️ Grabador nativo en caliente (pausa configurada: 3.5s).");
             } catch (e) {
                 console.warn("Notice MediaRecorder:", e);
             }
@@ -1051,7 +1051,7 @@
                 const source = audioContext.createMediaStreamSource(stream);
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 256;
-                analyser.smoothingTimeConstant = 0.3;
+                analyser.smoothingTimeConstant = 0.5;
                 source.connect(analyser);
 
                 const bufferLength = analyser.frequencyBinCount;
@@ -1066,7 +1066,7 @@
                         sum += dataArray[i];
                     }
                     const avgVolume = sum / bufferLength;
-                    smoothVolume = (smoothVolume * 0.75) + (avgVolume * 0.25); // Suavizado para ignorar pausas de respiración o consonantes
+                    smoothVolume = (smoothVolume * 0.85) + (avgVolume * 0.15); // Suavizado robusto para ignorar micro-pausas
 
                     // Si Beatriz está hablando, no capturar para evitar eco
                     if (window.isBeatrizSpeaking) {
@@ -1096,7 +1096,7 @@
                                 silenceStartTime = now;
                             }
                             
-                            // Solo si el silencio dura 2.0s completos
+                            // Solo si el silencio dura 3.5s completos
                             if (now - silenceStartTime >= SILENCE_TIMEOUT) {
                                 const speechDuration = now - speechStartTime;
                                 isUserSpeaking = false;
@@ -1122,7 +1122,7 @@
                 }
 
                 vadLoop();
-                appendStreamLog("🎚️ Sensor VAD calibrado con pausa de 2.0s.");
+                appendStreamLog("🎚️ Sensor VAD recalibrado (pausa natural: 3.5s, umbral: 12dB).");
             } catch (e) {
                 console.warn("Notice Decibel VAD:", e);
             }
@@ -1236,7 +1236,7 @@
                 if (!window.isBeatrizSpeaking && isStreaming) {
                     play30sFillerAudio();
                 }
-            }, 30000);
+            }, 20000);
         }
 
         function clearResponseTimeout() {
