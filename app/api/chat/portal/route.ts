@@ -76,7 +76,7 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
       const timeout = setTimeout(() => {
         try { ws.close(); } catch {}
         resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-      }, 10000);
+      }, 25000);
 
       ws.on("open", () => {
         const ts = new Date().toUTCString();
