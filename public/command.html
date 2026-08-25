@@ -1304,8 +1304,13 @@
             try {
                 if (window.isBeatrizSpeaking) return;
                 appendStreamLog("⏳ 20s de procesamiento alcanzados. Despachando muletilla de espera...");
-                const audio30s = new Audio('/audio/fillers/filler_30s.mp3');
-                audio30s.volume = 1.0;
+                if (currentFillerAudio) {
+                    try { currentFillerAudio.pause(); } catch(e){}
+                    currentFillerAudio = null;
+                }
+                currentFillerAudio = new Audio('/audio/fillers/filler_30s.mp3');
+                currentFillerAudio.volume = 1.0;
+                isFillerPlaying = true;
                 
                 const sourceEl = document.getElementById('subtitle-source');
                 const statusEl = document.getElementById('streaming-status');
@@ -1314,7 +1319,24 @@
                 
                 renderSubtitlesLive("Vaya, está difícil buscarlo, la red está un poco lenta pero no te preocupes, ya estamos en marcha, ya pronto encontraremos la solución que estás buscando.");
                 
-                audio30s.play().catch(e => console.log("30s filler notice:", e));
+                currentFillerAudio.onended = () => {
+                    isFillerPlaying = false;
+                    currentFillerAudio = null;
+                    if (pendingBeatrizPayload) {
+                        const payload = pendingBeatrizPayload;
+                        pendingBeatrizPayload = null;
+                        executePlayBeatriz(payload.url, payload.text);
+                    } else if (!window.isBeatrizSpeaking) {
+                        const orb = document.getElementById('voice-orb');
+                        if (orb) { orb.style.transform = "scale(1)"; orb.style.boxShadow = ""; }
+                        restartMediaRecording();
+                    }
+                };
+
+                currentFillerAudio.play().catch(e => {
+                    console.log("30s filler notice:", e);
+                    isFillerPlaying = false;
+                });
             } catch(e){}
         }
 
