@@ -1416,13 +1416,30 @@
 
         function executePlayBeatriz(audioUrl, textToDisplay) {
             window.isBeatrizSpeaking = true;
-            const statusEl = document.getElementById('streaming-status');
-            const orb = document.getElementById('voice-orb');
             
             if (audioUrl) {
                 if (currentAudio) {
                     try { currentAudio.pause(); } catch(e){}
                     currentAudio = null;
+                }
+
+                // If audioUrl is an HTTP/HTTPS remote URL (e.g. Supabase Storage), fetch as ArrayBuffer -> Blob -> Object URL
+                // to prevent mobile WebKit MIME-type rejection (application/octet-stream -> Failed to load because no supported source was found)
+                if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
+                    appendStreamLog("📥 Descargando stream MP3 nativo...");
+                    fetch(audioUrl)
+                        .then(r => r.arrayBuffer())
+                        .then(buf => {
+                            const blob = new Blob([buf], { type: 'audio/mp3' });
+                            const playSrc = URL.createObjectURL(blob);
+                            executePlayBeatrizSource(playSrc, textToDisplay);
+                        })
+                        .catch(err => {
+                            appendStreamLog(`⚠️ Error descargando audio: ${err.message}`);
+                            window.isBeatrizSpeaking = false;
+                            restartMediaRecording();
+                        });
+                    return;
                 }
 
                 let playSrc = audioUrl;
@@ -1444,58 +1461,65 @@
                     }
                 }
 
-                currentAudio = new Audio();
-                currentAudio.preload = 'auto';
-                currentAudio.src = playSrc;
-                
-                currentAudio.onplay = () => {
-                    statusEl.innerText = "Beatriz respondiendo con voz...";
-                    if (textToDisplay) renderSubtitlesLive(textToDisplay);
-                    if (orb) {
-                        orb.style.transform = "scale(1.25)";
-                        orb.style.boxShadow = "0 0 60px rgba(244, 114, 182, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.7)";
-                    }
-                    const vis = document.getElementById('visualizer');
-                    if (vis) {
-                        vis.classList.remove('listening');
-                        vis.classList.add('speaking');
-                    }
-                };
-                
-                currentAudio.onended = () => {
-                    statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
-                    appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
-                    if (orb) {
-                        orb.style.transform = "scale(1)";
-                        orb.style.boxShadow = "";
-                    }
-                    const vis = document.getElementById('visualizer');
-                    if (vis) {
-                        vis.classList.remove('speaking');
-                        vis.classList.add('listening');
-                    }
-                    window.isBeatrizSpeaking = false;
-                    restartMediaRecording();
-                };
-
-                currentAudio.onerror = (e) => {
-                    appendStreamLog(`⚠️ Error cargando audio MP3.`);
-                    window.isBeatrizSpeaking = false;
-                    restartMediaRecording();
-                };
-                
-                const p = currentAudio.play();
-                if (p && p.catch) {
-                    p.catch(e => {
-                        appendStreamLog(`⚠️ Autoplay bloqueado: ${e.message}`);
-                        window.isBeatrizSpeaking = false;
-                        restartMediaRecording();
-                    });
-                }
+                executePlayBeatrizSource(playSrc, textToDisplay);
             } else if (textToDisplay) {
                 renderSubtitlesLive(textToDisplay);
                 window.isBeatrizSpeaking = false;
                 restartMediaRecording();
+            }
+        }
+
+        function executePlayBeatrizSource(playSrc, textToDisplay) {
+            const statusEl = document.getElementById('streaming-status');
+            const orb = document.getElementById('voice-orb');
+
+            currentAudio = new Audio();
+            currentAudio.preload = 'auto';
+            currentAudio.src = playSrc;
+            
+            currentAudio.onplay = () => {
+                if (statusEl) statusEl.innerText = "Beatriz respondiendo con voz...";
+                if (textToDisplay) renderSubtitlesLive(textToDisplay);
+                if (orb) {
+                    orb.style.transform = "scale(1.25)";
+                    orb.style.boxShadow = "0 0 60px rgba(244, 114, 182, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.7)";
+                }
+                const vis = document.getElementById('visualizer');
+                if (vis) {
+                    vis.classList.remove('listening');
+                    vis.classList.add('speaking');
+                }
+            };
+            
+            currentAudio.onended = () => {
+                if (statusEl) statusEl.innerText = "🟢 BÚNKER CONECTADO. ESCUCHANDO...";
+                appendStreamLog("🟢 Audio finalizado. Escuchando de nuevo...");
+                if (orb) {
+                    orb.style.transform = "scale(1)";
+                    orb.style.boxShadow = "";
+                }
+                const vis = document.getElementById('visualizer');
+                if (vis) {
+                    vis.classList.remove('speaking');
+                    vis.classList.add('listening');
+                }
+                window.isBeatrizSpeaking = false;
+                restartMediaRecording();
+            };
+
+            currentAudio.onerror = (e) => {
+                appendStreamLog(`⚠️ Error cargando audio MP3.`);
+                window.isBeatrizSpeaking = false;
+                restartMediaRecording();
+            };
+            
+            const p = currentAudio.play();
+            if (p && p.catch) {
+                p.catch(e => {
+                    appendStreamLog(`⚠️ Autoplay bloqueado: ${e.message}`);
+                    window.isBeatrizSpeaking = false;
+                    restartMediaRecording();
+                });
             }
         }
 
