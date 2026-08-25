@@ -1396,7 +1396,29 @@
                     try { currentAudio.pause(); } catch(e){}
                     currentAudio = null;
                 }
-                currentAudio = new Audio(audioUrl);
+
+                let playSrc = audioUrl;
+                // Convert Base64 data URI to Object URL for 100% mobile browser compatibility (Xiaomi / Safari / Android Fix)
+                if (audioUrl.startsWith('data:audio')) {
+                    try {
+                        const parts = audioUrl.split(',');
+                        const mime = (parts[0].match(/:(.*?);/) || [])[1] || 'audio/mp3';
+                        const bstr = atob(parts[1]);
+                        let n = bstr.length;
+                        const u8arr = new Uint8Array(n);
+                        while (n--) {
+                            u8arr[n] = bstr.charCodeAt(n);
+                        }
+                        const blob = new Blob([u8arr], { type: mime });
+                        playSrc = URL.createObjectURL(blob);
+                    } catch(bErr) {
+                        console.warn("Notice Blob conversion:", bErr);
+                    }
+                }
+
+                currentAudio = new Audio();
+                currentAudio.preload = 'auto';
+                currentAudio.src = playSrc;
                 
                 currentAudio.onplay = () => {
                     statusEl.innerText = "Beatriz respondiendo con voz...";
@@ -1428,8 +1450,8 @@
                     restartMediaRecording();
                 };
 
-                currentAudio.onerror = () => {
-                    appendStreamLog("⚠️ Error cargando audio MP3.");
+                currentAudio.onerror = (e) => {
+                    appendStreamLog(`⚠️ Error cargando audio MP3.`);
                     window.isBeatrizSpeaking = false;
                     restartMediaRecording();
                 };
