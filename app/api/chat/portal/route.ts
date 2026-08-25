@@ -315,8 +315,11 @@ DIRECTIVAS CRÍTICAS:
       }
     }
 
-    if (!beatrizResponse) {
-      beatrizResponse = `Comprendido perfectamente, Wily. Procesando tu instrucción en el búnker para la Sala de Juntas.`;
+    let isDynamicResponse = false;
+    if (beatrizResponse) {
+      isDynamicResponse = true;
+    } else {
+      beatrizResponse = "";
     }
 
     // Limpieza de etiquetas think o markdown técnico
@@ -352,24 +355,26 @@ DIRECTIVAS CRÍTICAS:
       console.warn("⚠️ Síntesis de voz Salomé fallback notice:", vErr);
     }
 
-    // 5. Registrar respuesta de Beatriz en Supabase
-    try {
-      await fetch(`${sbUrl}/rest/v1/messages`, {
-        method: "POST",
-        headers: {
-          apikey: sbKey,
-          Authorization: `Bearer ${sbKey}`,
-          "Content-Type": "application/json",
-          Prefer: "return=minimal"
-        },
-        body: JSON.stringify({
-          sender_id: "BEATRIZ_AI",
-          type: "text",
-          content: `[STREAMING RESPONSE] ${beatrizResponse}`
-        })
-      });
-    } catch (sbRespErr) {
-      console.warn("Supabase response notice:", sbRespErr);
+    // 5. Registrar respuesta de Beatriz en Supabase SOLO si es una respuesta dinámica real de LLM
+    if (isDynamicResponse && beatrizResponse) {
+      try {
+        await fetch(`${sbUrl}/rest/v1/messages`, {
+          method: "POST",
+          headers: {
+            apikey: sbKey,
+            Authorization: `Bearer ${sbKey}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal"
+          },
+          body: JSON.stringify({
+            sender_id: "BEATRIZ_AI",
+            type: "text",
+            content: `[STREAMING RESPONSE] ${beatrizResponse}`
+          })
+        });
+      } catch (sbRespErr) {
+        console.warn("Supabase response notice:", sbRespErr);
+      }
     }
 
     const primaryVoiceUrl = voiceUrls.length > 0 ? (voiceUrls.length === 1 ? voiceUrls[0] : voiceUrls) : null;

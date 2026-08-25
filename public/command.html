@@ -613,7 +613,8 @@
                             return;
                         }
 
-                        const isStreamingFlag = text.includes('[STREAMING LOG]') || text.includes('[ADN:NEXUS-STREAM-LIVE]') || text.includes('[STREAMING RESPONSE]');
+                         const isStreamingFlag = text.includes('[STREAMING LOG]') || text.includes('[ADN:NEXUS-STREAM-LIVE]') || text.includes('[STREAMING RESPONSE]');
+                        const isOutboxStreamMsg = text.includes('[ADN:NEXUS-STREAM-LIVE]');
                         
                         if (isStreamingFlag || text.length > 5) {
                             text = text.replace(/^---.*?---\s*/s, '')
@@ -629,7 +630,16 @@
 
                             if (text && !text.startsWith('http')) {
                                 const now = Date.now();
-                                if ((window.isBeatrizSpeaking && !isFillerPlaying) || (now - lastBeatrizAudioTimestamp < 5000 && text === lastBeatrizAudioText)) {
+                                
+                                if (isOutboxStreamMsg) {
+                                    // ⚡ Forzar interrupción de muletillas o mensajes genéricos previos al recibir la respuesta real del OUTBOX
+                                    window.isBeatrizSpeaking = false;
+                                    audioPlaybackQueue = [];
+                                    isAudioQueueProcessing = false;
+                                    if (beatrizMasterPlayer) {
+                                        try { beatrizMasterPlayer.pause(); } catch(e){}
+                                    }
+                                } else if ((window.isBeatrizSpeaking && !isFillerPlaying) || (now - lastBeatrizAudioTimestamp < 5000 && text === lastBeatrizAudioText)) {
                                     appendStreamLog("⏳ Beatriz ya está hablando con voz. Omitiendo re-disparo de audio...");
                                     return;
                                 }
