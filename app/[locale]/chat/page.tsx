@@ -143,6 +143,9 @@ export default function BeatrizChatPage() {
 
             if (data.voice_url) {
                 try {
+                    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                    }
                     const audio = new Audio(data.voice_url);
                     audio.play().catch(e => console.warn("PWA audio play notice:", e));
                 } catch (audioErr) {
