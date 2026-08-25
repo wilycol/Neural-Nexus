@@ -605,8 +605,21 @@
                                        .trim();
 
                             if (text && m.type === 'text') {
-                                appendStreamLog(`📥 Respuesta de Beatriz (OUTBOX): "${text.substring(0, 35)}..."`);
-                                playBeatrizAudio(null, text);
+                                appendStreamLog(`📥 Sintetizando voz Salomé para respuesta de Beatriz...`);
+                                fetch('/api/chat/portal', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ message: text, persona: 'beatriz', uid: 'BEATRIZ_AI' })
+                                }).then(r => r.json()).then(d => {
+                                    if (d.voice_url) {
+                                        appendStreamLog("📥 Voz Salomé lista. Reproduciendo...");
+                                        playBeatrizAudio(d.voice_url, text);
+                                    } else {
+                                        playBeatrizAudio(null, text);
+                                    }
+                                }).catch(err => {
+                                    playBeatrizAudio(null, text);
+                                });
                             } else if (m.type === 'voice' && m.content) {
                                 appendStreamLog("📥 Audio de voz de Beatriz recibido. Reproduciendo...");
                                 playBeatrizAudio(m.content, "Respuesta de voz de Beatriz recibida.");
@@ -1186,8 +1199,41 @@
             } catch(e){}
         }
 
+        // --- Screen Wake Lock API (Mantener Pantalla Encendida en Móviles) ---
+        let wakeLockInstance = null;
+
+        async function requestScreenWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLockInstance = await navigator.wakeLock.request('screen');
+                    appendStreamLog("💡 Pantalla encendida continuamente (Wake Lock activo).");
+                    wakeLockInstance.addEventListener('release', () => {
+                        appendStreamLog("💡 Wake Lock liberado.");
+                    });
+                } else {
+                    appendStreamLog("ℹ️ Screen Wake Lock API no disponible en este navegador.");
+                }
+            } catch (err) {
+                console.warn("Notice Wake Lock:", err.message);
+            }
+        }
+
+        function releaseScreenWakeLock() {
+            if (wakeLockInstance !== null) {
+                try { wakeLockInstance.release(); } catch(e){}
+                wakeLockInstance = null;
+            }
+        }
+
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'visible' && isStreaming) {
+                await requestScreenWakeLock();
+            }
+        });
+
         window.openStreamingMode = async () => {
             unlockMobileAudio();
+            requestScreenWakeLock();
             document.getElementById('streaming-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
             
@@ -1508,6 +1554,7 @@
                 isStreaming = false;
                 window.isBeatrizSpeaking = false;
                 isUserSpeaking = false;
+                releaseScreenWakeLock();
 
                 if (globalMediaStream) {
                     globalMediaStream.getAudioTracks().forEach(t => { t.enabled = false; });
@@ -1535,6 +1582,7 @@
                 // 🟢 REANUDAR TRANSMISIÓN Y REACTIVAR MICRÓFONO
                 isStreaming = true;
                 window.isBeatrizSpeaking = false;
+                requestScreenWakeLock();
 
                 if (globalMediaStream) {
                     globalMediaStream.getAudioTracks().forEach(t => { t.enabled = true; });
@@ -1605,6 +1653,7 @@
         };
 
         window.closeStreamingMode = () => {
+            releaseScreenWakeLock();
             if (mediaRecorderInstance && mediaRecorderInstance.state !== 'inactive') {
                 try { mediaRecorderInstance.stop(); } catch(e){}
             }
