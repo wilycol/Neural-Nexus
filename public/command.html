@@ -1423,24 +1423,6 @@
                     currentAudio = null;
                 }
 
-                // If audioUrl is an HTTP/HTTPS remote URL (e.g. Supabase Storage), fetch as ArrayBuffer -> Blob -> Object URL
-                // to prevent mobile WebKit MIME-type rejection (application/octet-stream -> Failed to load because no supported source was found)
-                if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
-                    appendStreamLog("📥 Descargando stream MP3 nativo...");
-                    fetch(audioUrl, { mode: 'cors' })
-                        .then(r => r.arrayBuffer())
-                        .then(buf => {
-                            const blob = new Blob([buf], { type: 'audio/mp3' });
-                            const playSrc = URL.createObjectURL(blob);
-                            executePlayBeatrizSource(playSrc, textToDisplay);
-                        })
-                        .catch(err => {
-                            appendStreamLog(`⚠️ Notice fetch: ${err.message}. Probando reproductor directo...`);
-                            executePlayBeatrizSource(audioUrl, textToDisplay);
-                        });
-                    return;
-                }
-
                 let playSrc = audioUrl;
                 // Convert Base64 data URI to Object URL for 100% mobile browser compatibility (Xiaomi / Safari / Android Fix)
                 if (audioUrl.startsWith('data:audio')) {
@@ -1473,6 +1455,7 @@
             const orb = document.getElementById('voice-orb');
 
             currentAudio = new Audio();
+            currentAudio.crossOrigin = 'anonymous';
             currentAudio.preload = 'auto';
             currentAudio.src = playSrc;
             
