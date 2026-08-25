@@ -611,9 +611,24 @@
                             return;
                         }
 
-                        // Si m.content es un archivo multimedia directo (audio MP3 / voz) del búnker, omitir su reproducción directa en favor de la síntesis Base64 para evitar errores de MIME en móviles
+                        // 🎙️ Si m.content es un archivo de voz MP3/WEBM del búnker, reproducirlo de inmediato sin descartarlo
                         if (m.type === 'voice' || (text.startsWith('http') && (text.includes('.mp3') || text.includes('.wav') || text.includes('.webm')))) {
-                            appendStreamLog("ℹ️ Archivo de voz en búnker detectado. Aguardando síntesis de texto en vivo...");
+                            appendStreamLog("🎙️ Archivo de voz en búnker detectado. Reproduciendo voz de Salomé en vivo...");
+                            clearResponseTimeout();
+                            if (currentFillerAudio) {
+                                try { currentFillerAudio.pause(); } catch(e){}
+                                currentFillerAudio = null;
+                            }
+                            isFillerPlaying = false;
+                            audioPlaybackQueue = [];
+                            isAudioQueueProcessing = false;
+                            if (beatrizMasterPlayer) {
+                                try { beatrizMasterPlayer.pause(); } catch(e){}
+                            }
+                            
+                            const displaySubtitle = "🎙️ Beatriz respondiendo con voz de Salomé en vivo...";
+                            renderSubtitlesLive(displaySubtitle);
+                            playBeatrizAudio(text, displaySubtitle);
                             return;
                         }
 
