@@ -110,12 +110,7 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
             resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
           }
         } else if (Buffer.isBuffer(data)) {
-          const str = data.toString("utf-8");
-          if (str.includes("Path:turn.end")) {
-            clearTimeout(timeout);
-            try { ws.close(); } catch {}
-            resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-          } else if (data.length > 2) {
+          if (data.length > 2) {
             const headerLength = data.readUInt16BE(0);
             if (headerLength < data.length) {
               const headerStr = data.subarray(2, 2 + headerLength).toString("utf-8");
@@ -126,6 +121,12 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
                 }
               }
             }
+          }
+          const str = data.toString("utf-8");
+          if (str.includes("Path:turn.end")) {
+            clearTimeout(timeout);
+            try { ws.close(); } catch {}
+            resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
           }
         }
       });
