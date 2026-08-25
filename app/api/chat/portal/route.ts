@@ -1,12 +1,5 @@
 import { NextResponse } from "next/server";
-import { exec } from "child_process";
-import { promisify } from "util";
-import fs from "fs/promises";
-import path from "path";
-import os from "os";
 import WebSocket from "ws";
-
-const execAsync = promisify(exec);
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -330,7 +323,7 @@ DIRECTIVAS CRÍTICAS:
     beatrizResponse = beatrizResponse.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
     // 4. Sintetizar respuesta con voz colombiana Salomé en fragmentos (Sequential Chunked Audio)
-    let voiceUrls: string[] = [];
+    const voiceUrls: string[] = [];
     try {
       const cleanTTS = cleanTextForSpeech(beatrizResponse);
 
