@@ -1,7 +1,7 @@
-const CACHE_NAME = 'nexus-command-v4.8.0';
+const CACHE_NAME = 'nexus-command-v5.0.0';
 const ASSETS = [
   '/',
-  '/command.html?v=4.8.0',
+  '/command.html?v=5.0.0',
   '/manifest.json',
   '/brand.png',
   '/favicon.ico',
@@ -13,7 +13,6 @@ const ASSETS = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(async (c) => {
-      // Bucle tolerante a fallos para asegurar la instalación incluso con assets faltantes temporales
       for (const asset of ASSETS) {
         try {
           await c.add(asset);
@@ -34,6 +33,20 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  const url = e.request.url;
+  // Estrategia Network-First para la PWA y rutas API para garantizar actualización inmediata desde Vercel
+  if (e.request.mode === 'navigate' || url.includes('command.html') || url.includes('/api/')) {
+    e.respondWith(
+      fetch(e.request).then(response => {
+        if (response && response.status === 200 && response.type === 'basic') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+        }
+        return response;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
   e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
 });
 
