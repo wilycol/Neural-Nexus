@@ -93,7 +93,7 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
             setTimeout(() => {
               try { ws.close(); } catch {}
               resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-            }, 300);
+            }, 600);
           }
         } else if (Buffer.isBuffer(data)) {
           if (data.length > 2) {
@@ -114,7 +114,7 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
             setTimeout(() => {
               try { ws.close(); } catch {}
               resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
-            }, 300);
+            }, 600);
           }
         }
       });
