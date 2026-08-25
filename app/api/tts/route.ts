@@ -90,8 +90,10 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
         if (typeof data === "string") {
           if (data.includes("Path:turn.end")) {
             clearTimeout(timeout);
-            try { ws.close(); } catch {}
-            resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+            setTimeout(() => {
+              try { ws.close(); } catch {}
+              resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+            }, 300);
           }
         } else if (Buffer.isBuffer(data)) {
           if (data.length > 2) {
@@ -109,8 +111,10 @@ async function synthesizeSalomeEdgeTTS(text: string): Promise<Buffer | null> {
           const str = data.toString("utf-8");
           if (str.includes("Path:turn.end")) {
             clearTimeout(timeout);
-            try { ws.close(); } catch {}
-            resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+            setTimeout(() => {
+              try { ws.close(); } catch {}
+              resolve(audioChunks.length > 0 ? Buffer.concat(audioChunks) : null);
+            }, 300);
           }
         }
       });
