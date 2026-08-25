@@ -644,7 +644,7 @@
                                     }
                                     if (d && d.voice_url) {
                                         appendStreamLog("📥 Voz Salomé lista. Reproduciendo...");
-                                        playBeatrizAudio(d.voice_url, text);
+                                        playBeatrizAudio(d.voice_url, text, d.chunks);
                                     } else {
                                         playBeatrizAudio(null, text);
                                     }
@@ -1459,7 +1459,7 @@
             });
         }
 
-        function playBeatrizAudio(audioUrl, textToDisplay) {
+        function playBeatrizAudio(audioUrl, textToDisplay, textChunks) {
             clearResponseTimeout();
             if (currentFillerAudio) {
                 try { currentFillerAudio.pause(); } catch(e){}
@@ -1470,7 +1470,10 @@
 
             if (Array.isArray(audioUrl)) {
                 audioUrl.forEach((url, i) => {
-                    const textChunk = (Array.isArray(textToDisplay) ? textToDisplay[i] : (i === 0 ? textToDisplay : null));
+                    const textChunk = (Array.isArray(textChunks) && textChunks[i])
+                        ? textChunks[i]
+                        : (Array.isArray(textToDisplay) ? textToDisplay[i] : (i === 0 ? textToDisplay : null));
+                    
                     let playSrc = url;
                     if (url && url.startsWith('data:audio')) {
                         try {

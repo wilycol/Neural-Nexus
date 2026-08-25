@@ -145,11 +145,30 @@ export async function POST(req: Request) {
     if (!cleanTTS) {
       return NextResponse.json({ voice_url: null });
     }
-    const tsBuffer = await synthesizeSalomeEdgeTTS(cleanTTS);
-    if (tsBuffer && tsBuffer.length > 500) {
-      const voiceUrl = `data:audio/mp3;base64,${tsBuffer.toString("base64")}`;
-      return NextResponse.json({ voice_url: voiceUrl });
+
+    // Dividir el texto en oraciones cortas para sintetizar cada una de forma fluida y completa
+    const sentenceChunks = cleanTTS
+      .split(/(?<=[.?!])\s+|\n+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    const voiceUrls: string[] = [];
+    for (const chunk of sentenceChunks) {
+      const tsBuffer = await synthesizeSalomeEdgeTTS(chunk);
+      if (tsBuffer && tsBuffer.length > 500) {
+        voiceUrls.push(`data:audio/mp3;base64,${tsBuffer.toString("base64")}`);
+      }
     }
+
+    if (voiceUrls.length > 0) {
+      const primaryVoiceUrl = voiceUrls.length === 1 ? voiceUrls[0] : voiceUrls;
+      return NextResponse.json({
+        voice_url: primaryVoiceUrl,
+        voice_urls: voiceUrls,
+        chunks: sentenceChunks
+      });
+    }
+
     return NextResponse.json({ voice_url: null });
   } catch {
     return NextResponse.json({ voice_url: null });
