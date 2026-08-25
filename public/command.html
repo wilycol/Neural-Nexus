@@ -620,9 +620,6 @@
                                 }).catch(err => {
                                     playBeatrizAudio(null, text);
                                 });
-                            } else if (m.type === 'voice' && m.content) {
-                                appendStreamLog("📥 Audio de voz de Beatriz recibido. Reproduciendo...");
-                                playBeatrizAudio(m.content, text || "Respuesta de voz de Beatriz recibida.");
                             }
                         }
                     }
@@ -1295,7 +1292,7 @@
         function play30sFillerAudio() {
             try {
                 if (window.isBeatrizSpeaking) return;
-                appendStreamLog("⏳ 30s de procesamiento alcanzados. Despachando muletilla de espera...");
+                appendStreamLog("⏳ 20s de procesamiento alcanzados. Despachando muletilla de espera...");
                 const audio30s = new Audio('/audio/fillers/filler_30s.mp3');
                 audio30s.volume = 1.0;
                 
