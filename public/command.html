@@ -581,28 +581,36 @@
             if (isNew) {
                 triggerNotificationIfNew(m);
 
-                // 🎙️ Auto-reproducción y subtitulado en vivo en la Sala de Juntas si el streaming está activo
-                if (m.sender_id === 'BEATRIZ_AI' && isStreaming) {
-                    let text = m.content || '';
-                    const isStreamingFlag = text.includes('[STREAMING LOG]') || text.includes('[ADN:NEXUS-STREAM-LIVE]') || text.includes('[STREAMING RESPONSE]');
-                    
-                    if (isStreamingFlag || text.length > 5) {
-                        text = text.replace(/^---.*?---\s*/s, '')
-                                   .replace(/^BEATRIZ:\s*/i, '')
-                                   .replace(/🎙️\s*\[STREAMING LOG\]\s*/gi, '')
-                                   .replace(/\[STREAMING RESPONSE\]\s*/gi, '')
-                                   .replace(/\[DEPLOY CONFIRMED\]\s*/gi, '')
-                                   .replace(/\[DIAGNÓSTICO EXACTO\]\s*/gi, '')
-                                   .replace(/\[WHISPER NATIVO.*?\]\s*/gi, '')
-                                   .replace(/\*\*/g, '')
-                                   .trim();
+                // 🎙️ Auto-reproducción y muletilla de relleno en vivo en la Sala de Juntas si el streaming está activo
+                if (isStreaming) {
+                    const isUserMsg = m.sender_id === uid || (m.sender_id && m.sender_id.startsWith('usr_')) || m.sender_id === 'WILY_STREAMING';
+                    if (isUserMsg && !window.isBeatrizSpeaking && !isFillerPlaying) {
+                        appendStreamLog("⏳ Mensaje del usuario recibido. Reproduciendo muletilla de relleno de Salomé...");
+                        playFillerAudio();
+                    }
 
-                        if (text && m.type === 'text') {
-                            appendStreamLog(`📥 Respuesta de Beatriz (OUTBOX): "${text.substring(0, 35)}..."`);
-                            playBeatrizAudio(null, text);
-                        } else if (m.type === 'voice' && m.content) {
-                            appendStreamLog("📥 Audio de voz de Beatriz recibido. Reproduciendo...");
-                            playBeatrizAudio(m.content, "Respuesta de voz de Beatriz recibida.");
+                    if (m.sender_id === 'BEATRIZ_AI') {
+                        let text = m.content || '';
+                        const isStreamingFlag = text.includes('[STREAMING LOG]') || text.includes('[ADN:NEXUS-STREAM-LIVE]') || text.includes('[STREAMING RESPONSE]');
+                        
+                        if (isStreamingFlag || text.length > 5) {
+                            text = text.replace(/^---.*?---\s*/s, '')
+                                       .replace(/^BEATRIZ:\s*/i, '')
+                                       .replace(/🎙️\s*\[STREAMING LOG\]\s*/gi, '')
+                                       .replace(/\[STREAMING RESPONSE\]\s*/gi, '')
+                                       .replace(/\[DEPLOY CONFIRMED\]\s*/gi, '')
+                                       .replace(/\[DIAGNÓSTICO EXACTO\]\s*/gi, '')
+                                       .replace(/\[WHISPER NATIVO.*?\]\s*/gi, '')
+                                       .replace(/\*\*/g, '')
+                                       .trim();
+
+                            if (text && m.type === 'text') {
+                                appendStreamLog(`📥 Respuesta de Beatriz (OUTBOX): "${text.substring(0, 35)}..."`);
+                                playBeatrizAudio(null, text);
+                            } else if (m.type === 'voice' && m.content) {
+                                appendStreamLog("📥 Audio de voz de Beatriz recibido. Reproduciendo...");
+                                playBeatrizAudio(m.content, "Respuesta de voz de Beatriz recibida.");
+                            }
                         }
                     }
                 }
