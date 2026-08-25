@@ -602,11 +602,10 @@
                         let text = m.content || '';
 
                         // Si m.content es una URL directa a un archivo MP3 (enviado por el búnker como type='voice' o URL)
-                        if (m.type === 'voice' || text.startsWith('http://') || text.startsWith('https://')) {
-                            appendStreamLog("📥 Audio de voz Salomé recibido desde el búnker. Reproduciendo vía Proxy...");
-                            const proxyUrl = `/api/proxy-audio?url=${encodeURIComponent(text)}`;
+                        if (m.type === 'voice' || (text.startsWith('http') && (text.includes('.mp3') || text.includes('.wav') || text.includes('.webm')))) {
+                            appendStreamLog("📥 Audio de voz Salomé recibido desde el búnker. Reproduciendo...");
                             const subtitleText = lastBeatrizAudioText || "Voz de Salomé recibida en vivo";
-                            playBeatrizAudio(proxyUrl, subtitleText);
+                            playBeatrizAudio(text, subtitleText);
                             return;
                         }
 
@@ -625,7 +624,7 @@
 
                             if (text && !text.startsWith('http')) {
                                 const now = Date.now();
-                                if (window.isBeatrizSpeaking || (now - lastBeatrizAudioTimestamp < 8000 && text === lastBeatrizAudioText)) {
+                                if ((window.isBeatrizSpeaking && !isFillerPlaying) || (now - lastBeatrizAudioTimestamp < 8000 && text === lastBeatrizAudioText)) {
                                     appendStreamLog("⏳ Beatriz ya está hablando con voz. Omitiendo re-disparo de audio...");
                                     return;
                                 }
@@ -638,7 +637,7 @@
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ text: text })
                                 }).then(r => r.json()).then(d => {
-                                    if (window.isBeatrizSpeaking) {
+                                    if (window.isBeatrizSpeaking && !isFillerPlaying) {
                                         appendStreamLog("⏳ Voz de Salomé ya está sonando en el reproductor. Ignorando TTS secundario...");
                                         return;
                                     }
@@ -649,7 +648,7 @@
                                         playBeatrizAudio(null, text);
                                     }
                                 }).catch(err => {
-                                    if (!window.isBeatrizSpeaking) {
+                                    if (!window.isBeatrizSpeaking || isFillerPlaying) {
                                         playBeatrizAudio(null, text);
                                     }
                                 });
