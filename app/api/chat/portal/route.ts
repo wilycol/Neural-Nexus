@@ -218,7 +218,12 @@ export async function POST(req: Request) {
     }
 
     if (!userMessage.trim()) {
-      return NextResponse.json({ error: "Mensaje vacío o audio inaudible" }, { status: 400 });
+      return NextResponse.json({
+        success: false,
+        error: "Audio inaudible. Escuchando de nuevo...",
+        response: null,
+        voice_url: null
+      }, { status: 200 });
     }
 
     const systemPrompt = `Eres Beatriz Serie X Elite, Co-CEO de IA de Wily Col y directora de operaciones del Ecosistema Neural Nexus.
