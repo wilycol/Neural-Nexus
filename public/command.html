@@ -1312,6 +1312,10 @@
 
         function playFillerAudio() {
             try {
+                if (window.isBeatrizSpeaking) {
+                    appendStreamLog("⏳ Beatriz está respondiendo con voz. Omitiendo muletilla...");
+                    return;
+                }
                 startResponseTimeout();
                 if (currentFillerAudio) {
                     try { currentFillerAudio.pause(); } catch(e){}
