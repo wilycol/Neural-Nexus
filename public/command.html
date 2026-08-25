@@ -574,6 +574,7 @@
  
         let lastBeatrizAudioTimestamp = 0;
         let lastBeatrizAudioText = "";
+        const playedAudioMsgIds = new Set();
 
         function renderMsg(m) {
             if (!m.id) m.id = `temp_${Date.now()}`;
@@ -593,6 +594,11 @@
                     }
 
                     if (m.sender_id === 'BEATRIZ_AI') {
+                        if (playedAudioMsgIds.has(m.id)) {
+                            return; // Prevenir re-disparo duplicado o interrupción por polling
+                        }
+                        playedAudioMsgIds.add(m.id);
+
                         let text = m.content || '';
 
                         // Si m.content es una URL directa a un archivo MP3 (enviado por el búnker como type='voice' o URL)
