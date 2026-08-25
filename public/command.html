@@ -1449,7 +1449,10 @@
             const orb = document.getElementById('voice-orb');
 
             currentAudio = new Audio();
-            currentAudio.crossOrigin = 'anonymous';
+            // Only set crossOrigin for remote HTTP/HTTPS URLs (NEVER for blob: or data: URIs as mobile WebKit fails silently)
+            if (playSrc.startsWith('http://') || playSrc.startsWith('https://')) {
+                currentAudio.crossOrigin = 'anonymous';
+            }
             currentAudio.preload = 'auto';
             currentAudio.src = playSrc;
             
