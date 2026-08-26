@@ -41,6 +41,31 @@ export interface TemplateData {
 
 export const templates: TemplateData[] = [
   {
+    id: 'legend-box',
+    name: 'LEGEND BOX',
+    niche: 'Gimnasio / CrossFit & Entrenamiento Funcional',
+    badge: '// LEGEND BOX CROSSFIT (PROSPECTO VIP)',
+    accentColor: 'red',
+    accentHex: '#FF2D55',
+    heroImage: '/hero/forge.jpg',
+    heroTitle: 'Legend Box. Domina tu Fuerza, Desata tu Poder.',
+    heroSubtitle: 'El centro de CrossFit y entrenamiento funcional de alto rendimiento en Bogotá. Coach certificado, comunidad apasionada y transformación física garantizada. ¡Agenda tu clase de prueba gratis hoy!',
+    primaryCTA: 'CLASE DE PRUEBA GRATIS 🏋️‍♂️',
+    secondaryCTA: 'VER PLANES & HORARIOS',
+    servicesTitle: 'Programas de Entrenamiento Legend Box',
+    services: [
+      { icon: Dumbbell, title: 'CrossFit & WODs', description: 'Sesiones diarias de alta intensidad combinando levantamiento olímpico, gimnasia y capacidad cardiovascular.' },
+      { icon: Weight, title: 'Entrenamiento Funcional', description: 'Acondicionamiento físico completo para mejorar postura, agilidad, potencia muscular y resistencia.' },
+      { icon: UserCheck, title: 'Personal Training 1-on-1', description: 'Coaching personalizado para metas específicas: pérdida de grasa, ganancia de masa muscular y fuerza.' },
+      { icon: Activity, title: 'Nutrición & Composición Corporal', description: 'Planes nutricionales integrales y medición de masa muscular para resultados acelerados.' },
+    ],
+    articles: [
+      { title: '5 Claves para Dominar tu Primer WOD en Legend Box', category: 'Entrenamiento', readTime: '5 min' },
+      { title: 'Cómo la Nutrición Acelera tu Recuperación Muscular en CrossFit', category: 'Nutrición', readTime: '6 min' },
+      { title: 'Historias de Transformación: De Cero a Atleta Legendario', category: 'Comunidad', readTime: '4 min' },
+    ],
+  },
+  {
     id: 'foundry',
     name: 'FOUNDRY',
     niche: 'Ferretería Industrial',
