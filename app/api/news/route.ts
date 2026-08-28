@@ -56,14 +56,19 @@ export async function GET(request: NextRequest) {
       .from('news')
       .select('*', { count: 'exact' });
 
+    const tag = searchParams.get('tag');
+
     // ── FILTRO NEURAL HIVE ────────────────────────────────────────────────────
     // Las noticias de los nodos federados tienen source_url que apunta a
     // dominios *.vercel.app de los nodos (nodetopclick.vercel.app, etc.)
     // y sus tags contienen el prefijo 'node_'.
     // El feed principal del portal NO debe mostrarlas; solo el Neural Ad Engine.
-    if (source === 'nodes') {
+    if (tag) {
+      // Filtrar directamente por el tag del nodo específico
+      query = query.contains('tags', [tag]);
+    } else if (source === 'nodes') {
       // Neural Ad Engine: traer SOLO noticias de nodos federados
-      query = query.or('source_name.eq.Auto-Publisher Autónomo,source_url.ilike.%node%.vercel.app%,tags.cs.{node_top_click},tags.cs.{node_euro__arkadia},tags.cs.{node_euro___arkadia},tags.cs.{node_jarvis_easy_stock},tags.cs.{node_robotic_news},tags.cs.{node_asesoria_juridica},tags.cs.{node_ferreteria_la_21},tags.cs.{node_miguel_lara_abogados},tags.cs.{node_secretos_de_mujer},tags.cs.{node_burger_queen_medellin},tags.cs.{node_cafeter_a_la_rosa},tags.cs.{node_estanco_el_desmadre},tags.cs.{node_helader_a_boquitas},tags.cs.{node_jm_tecnologia___accesorios},tags.cs.{node_la_principal_de_licores},tags.cs.{node_v2_taller_torque_proof},tags.cs.{node_wily},tags.cs.{node_wily_col__prueba_}');
+      query = query.or('source_name.eq.Auto-Publisher Autónomo,source_url.ilike.%node%.vercel.app%,tags.cs.{node_top_click},tags.cs.{node_legend_box},tags.cs.{node_euro__arkadia},tags.cs.{node_euro___arkadia},tags.cs.{node_jarvis_easy_stock},tags.cs.{node_robotic_news},tags.cs.{node_asesoria_juridica},tags.cs.{node_ferreteria_la_21},tags.cs.{node_miguel_lara_abogados},tags.cs.{node_secretos_de_mujer},tags.cs.{node_burger_queen_medellin},tags.cs.{node_cafeter_a_la_rosa},tags.cs.{node_estanco_el_desmadre},tags.cs.{node_helader_a_boquitas},tags.cs.{node_jm_tecnologia___accesorios},tags.cs.{node_la_principal_de_licores},tags.cs.{node_v2_taller_torque_proof},tags.cs.{node_wily},tags.cs.{node_wily_col__prueba_}');
     } else {
       // Feed principal del portal: EXCLUIR noticias de nodos federados
       // Excluir por source_name, por coincidencia de url y por cada una de las etiquetas del nodo
@@ -71,6 +76,7 @@ export async function GET(request: NextRequest) {
         .not('source_name', 'eq', 'Auto-Publisher Autónomo')
         .not('source_url', 'ilike', '%node%.vercel.app%')
         .not('tags', 'cs', '{node_top_click}')
+        .not('tags', 'cs', '{node_legend_box}')
         .not('tags', 'cs', '{node_euro__arkadia}')
         .not('tags', 'cs', '{node_euro___arkadia}')
         .not('tags', 'cs', '{node_jarvis_easy_stock}')

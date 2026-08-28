@@ -23,6 +23,21 @@ export default function TemplateDemoPage() {
   
   const template = templates.find((t) => t.id === templateId);
 
+  const [liveArticles, setLiveArticles] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    if (!template) return;
+    const tag = `node_${template.id.replace(/-/g, '_')}`;
+    fetch(`/api/news?tag=${tag}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.data && data.data.length > 0) {
+          setLiveArticles(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching live node news:", err));
+  }, [template]);
+
   if (!template) {
     return (
       <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6">
@@ -34,6 +49,26 @@ export default function TemplateDemoPage() {
       </div>
     );
   }
+
+  const displayArticles = liveArticles.length > 0
+    ? liveArticles.map((item) => ({
+        title: item.title,
+        category: item.category || 'Actualidad',
+        summary: item.summary || item.content?.substring(0, 100) + '...',
+        imageUrl: item.image_url,
+        publishedAt: item.published_at ? new Date(item.published_at).toLocaleDateString('es-CO') : 'Hoy',
+        readTime: '3 min',
+        isLive: true,
+      }))
+    : template.articles.map((art) => ({
+        title: art.title,
+        category: art.category,
+        summary: '',
+        imageUrl: '',
+        publishedAt: '',
+        readTime: art.readTime,
+        isLive: false,
+      }));
 
   return (
     <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden font-inter">
@@ -169,7 +204,9 @@ export default function TemplateDemoPage() {
                 <div className="max-w-2xl">
                     <div className="flex flex-wrap gap-2 mb-4">
                         <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 font-orbitron tracking-widest text-[9px]">BEATRIZ_FACTORY_V5.0</Badge>
-                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-orbitron tracking-widest text-[9px]">ADN_NEURAL_CONECTADO</Badge>
+                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-orbitron tracking-widest text-[9px]">
+                          {liveArticles.length > 0 ? "EN_VIVO • NOTICIAS_DE_HOY" : "ADN_NEURAL_CONECTADO"}
+                        </Badge>
                     </div>
                     <h2 className="text-4xl md:text-5xl font-orbitron font-bold italic uppercase">Feed Autónomo de Noticias</h2>
                     <p className="text-white/50 mt-4 leading-relaxed italic uppercase tracking-widest text-xs">
@@ -182,21 +219,31 @@ export default function TemplateDemoPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {template.articles.map((article, idx) => (
-                    <div key={idx} className="relative p-8 rounded-3xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent hover:border-white/20 transition-all cursor-pointer">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/40">
-                                <Tag className="h-3 w-3" /> {article.category}
+                {displayArticles.map((article, idx) => (
+                    <div key={idx} className="relative p-8 rounded-3xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent hover:border-white/20 transition-all cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            {article.imageUrl && (
+                                <div className="w-full h-48 rounded-2xl mb-6 overflow-hidden bg-cover bg-center border border-white/10" style={{ backgroundImage: `url(${article.imageUrl})` }} />
+                            )}
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="flex items-center gap-1.5 text-[10px] font-mono text-neon-blue">
+                                    <Tag className="h-3 w-3" /> {article.category}
+                                </div>
+                                <div className="h-1 w-1 rounded-full bg-white/20" />
+                                <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/40">
+                                    <Clock className="h-3 w-3" /> {article.publishedAt || article.readTime}
+                                </div>
                             </div>
-                            <div className="h-1 w-1 rounded-full bg-white/20" />
-                            <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/40">
-                                <Clock className="h-3 w-3" /> {article.readTime}
-                            </div>
+                            <h3 className="text-xl font-orbitron font-bold mb-4 group-hover:text-neon-blue transition-colors leading-snug">
+                                {article.title}
+                            </h3>
+                            {article.summary && (
+                                <p className="text-white/60 text-xs leading-relaxed mb-6 font-light">
+                                    {article.summary}
+                                </p>
+                            )}
                         </div>
-                        <h3 className="text-xl font-orbitron font-bold mb-8 group-hover:text-neon-blue transition-colors leading-snug">
-                            {article.title}
-                        </h3>
-                        <div className="flex items-center gap-2 text-neon-blue text-[10px] font-orbitron tracking-widest uppercase">
+                        <div className="flex items-center gap-2 text-neon-blue text-[10px] font-orbitron tracking-widest uppercase mt-4">
                             LEER ARTICULO <ArrowRight className="h-3 w-3" />
                         </div>
                     </div>
