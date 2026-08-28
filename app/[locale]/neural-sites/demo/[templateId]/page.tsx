@@ -23,6 +23,7 @@ export default function TemplateDemoPage() {
   
   const template = templates.find((t) => t.id === templateId);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [liveArticles, setLiveArticles] = React.useState<any[]>([]);
 
   React.useEffect(() => {
