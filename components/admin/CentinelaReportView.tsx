@@ -5,7 +5,8 @@ import {
     ShieldCheck, 
     Send, 
     Zap,
-    FlaskConical
+    FlaskConical,
+    Globe
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -84,14 +85,24 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
                     </div>
                 </div>
 
-                <Button
-                    onClick={handleSendWhatsAppSummary}
-                    disabled={isSendingWhatsApp}
-                    className="bg-emerald-500 hover:bg-emerald-400 text-black font-orbitron font-bold text-xs uppercase shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all"
-                >
-                    <Send size={14} className="mr-2" />
-                    {isSendingWhatsApp ? "Enviando..." : "Enviar Resumen a WhatsApp"}
-                </Button>
+                <div className="flex items-center gap-3">
+                    <Button
+                        onClick={() => window.location.href = "/es/admin/nodes"}
+                        className="bg-cyan-500 hover:bg-cyan-400 text-black font-orbitron font-bold text-xs uppercase shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all"
+                    >
+                        <Globe size={14} className="mr-2" />
+                        Matriz Telemetría Nodos
+                    </Button>
+
+                    <Button
+                        onClick={handleSendWhatsAppSummary}
+                        disabled={isSendingWhatsApp}
+                        className="bg-emerald-500 hover:bg-emerald-400 text-black font-orbitron font-bold text-xs uppercase shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all"
+                    >
+                        <Send size={14} className="mr-2" />
+                        {isSendingWhatsApp ? "Enviando..." : "Enviar Resumen a WhatsApp"}
+                    </Button>
+                </div>
             </div>
 
             {/* Tarjetas de Métricas Clave M1 - M6 */}
