@@ -21,14 +21,11 @@ import {
     Eye,
     Activity,
     Sparkles,
-    Send,
     Table,
     LayoutGrid,
     Search,
-    BarChart3,
     ShieldCheck,
-    MessageCircle,
-    Flame
+    MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
