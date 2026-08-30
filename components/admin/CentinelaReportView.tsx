@@ -19,7 +19,7 @@ interface CentinelaReportViewProps {
     backendUrl: string;
 }
 
-export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
+export function CentinelaReportView({ backendUrl: _backendUrl }: CentinelaReportViewProps) {
     const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
     const [isSendingTelegram, setIsSendingTelegram] = useState(false);
 
