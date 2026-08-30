@@ -8,8 +8,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const target = body.target || "both"; // 'whatsapp', 'telegram', 'both'
 
-    const telegramToken = process.env.TELEGRAM_BOT_TOKEN || "8633239165:AAFgjeqxVEGaPY4cdLWeMPXkMgVaIJ9fPkc";
-    const telegramChatId = process.env.TELEGRAM_CHAT_ID || "7914389661";
+    const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+    const telegramChatId = process.env.TELEGRAM_CHAT_ID;
 
     const centinelaSummaryText = `🛡️ <b>[REPORTE EJECUTIVO EL CENTINELA (v8.1)]</b>
 <i>Supervisión & Auditoría del Embudo Comercial</i>
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     let whatsappSent = false;
 
     // 1. Enviar a Telegram si aplica
-    if (target === "telegram" || target === "both") {
+    if ((target === "telegram" || target === "both") && telegramToken && telegramChatId) {
       try {
         const tgRes = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
           method: "POST",
