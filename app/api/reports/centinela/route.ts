@@ -8,25 +8,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const target = body.target || "both"; // 'whatsapp', 'telegram', 'both'
 
-    const telegramToken = process.env.TELEGRAM_BOT_TOKEN || "8029589998:AAFLc_-JtC2oK3LqS1v1FhGvhA3P8q0Gz9Q";
+    const telegramToken = process.env.TELEGRAM_BOT_TOKEN || "8633239165:AAFgjeqxVEGaPY4cdLWeMPXkMgVaIJ9fPkc";
     const telegramChatId = process.env.TELEGRAM_CHAT_ID || "7914389661";
 
-    const centinelaSummaryText = `🛡️ *[REPORTE EJECUTIVO EL CENTINELA (v8.1)]*
-*Supervisión & Auditoría del Embudo Comercial*
+    const centinelaSummaryText = `🛡️ <b>[REPORTE EJECUTIVO EL CENTINELA (v8.1)]</b>
+<i>Supervisión & Auditoría del Embudo Comercial</i>
 
-📊 *Métricas del Embudo:*
-• 🎯 *Descubiertos:* 883 prospectos
-• 📬 *Entregados:* 785 contactos
-• 💬 *Tasa de Respuesta (M1):* 4.84% (38 Respuestas)
-• ✨ *Aceptación Demo (M3):* 94.74% (36 Demos "Quiero la magia")
-• 🔥 *Intención de Compra (M2):* 5.56% (2 Hot Leads)
-• 💳 *Conversión a Paid (M6):* 0.0%
+📊 <b>Métricas del Embudo:</b>
+• 🎯 <b>Descubiertos:</b> 883 prospectos
+• 📬 <b>Entregados:</b> 785 contactos
+• 💬 <b>Tasa de Respuesta (M1):</b> 4.84% (38 Respuestas)
+• ✨ <b>Aceptación Demo (M3):</b> 94.74% (36 Demos "Quiero la magia")
+• 🔥 <b>Intención de Compra (M2):</b> 5.56% (2 Hot Leads)
+• 💳 <b>Conversión a Paid (M6):</b> 0.0%
 
-📈 *Rendimiento por Lote (20 msgs/día):*
-• ⚡ *Demos generadas:* 0.92 demos/día
-• 💵 *Ingreso estimado / 100:* $0.0 COP
+📈 <b>Rendimiento por Lote (20 msgs/día):</b>
+• ⚡ <b>Demos generadas:</b> 0.92 demos/día
+• 💵 <b>Ingreso estimado / 100:</b> $0.0 COP
 
-🤖 *Estado Serie X:* Centinela operando en monitoreo continuo. Todos los nodos respondiendo 200 OK. 🚀💋`;
+🤖 <b>Estado Serie X:</b> Centinela operando en monitoreo continuo. Todos los nodos respondiendo 200 OK. 🚀💋`;
 
     let telegramSent = false;
     let whatsappSent = false;
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             chat_id: telegramChatId,
             text: centinelaSummaryText,
-            parse_mode: "Markdown",
+            parse_mode: "HTML",
           }),
         });
 
