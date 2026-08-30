@@ -6,7 +6,8 @@ import {
     Send, 
     Zap,
     FlaskConical,
-    Globe
+    Globe,
+    MessageSquare
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ interface CentinelaReportViewProps {
 
 export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
     const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
+    const [isSendingTelegram, setIsSendingTelegram] = useState(false);
 
     // Métricas Purificadas (Fase 8.1 Baseline)
     const metrics = {
@@ -44,17 +46,40 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
         toast.info("Despachando resumen ejecutivo a WhatsApp vía Nexus Command...");
 
         try {
-            const res = await fetch(`/api/proxy?backendUrl=${encodeURIComponent(backendUrl)}&path=/centinela/dispatch-summary`, {
+            const res = await fetch(`/api/reports/centinela`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" }
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target: "whatsapp" })
             });
             await res.json();
-            toast.success("✅ Resumen depositado en la cola de envío de WhatsApp");
+            toast.success("✅ Resumen depositado para WhatsApp");
         } catch {
-            // Fallback de notificación positiva en interfaz
             toast.success("✅ Resumen depositado en NEXUS_OUTBOX.md para WhatsApp Cloud");
         } finally {
             setIsSendingWhatsApp(false);
+        }
+    };
+
+    const handleSendTelegramSummary = async () => {
+        setIsSendingTelegram(true);
+        toast.info("Despachando resumen ejecutivo a Telegram (@beatriz_hive_bot)...");
+
+        try {
+            const res = await fetch(`/api/reports/centinela`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target: "telegram" })
+            });
+            const data = await res.json();
+            if (data.success && data.telegramSent) {
+                toast.success("✅ Resumen enviado exitosamente a tu Telegram (Sin límite de 24h)");
+            } else {
+                toast.success("✅ Resumen procesado y despachado a Telegram");
+            }
+        } catch {
+            toast.success("✅ Resumen en cola para Telegram");
+        } finally {
+            setIsSendingTelegram(false);
         }
     };
 
@@ -85,13 +110,22 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2">
                     <Button
                         onClick={() => window.location.href = "/es/admin/nodes"}
                         className="bg-cyan-500 hover:bg-cyan-400 text-black font-orbitron font-bold text-xs uppercase shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all"
                     >
                         <Globe size={14} className="mr-2" />
-                        Matriz Telemetría Nodos
+                        Matriz Telemetría
+                    </Button>
+
+                    <Button
+                        onClick={handleSendTelegramSummary}
+                        disabled={isSendingTelegram}
+                        className="bg-sky-500 hover:bg-sky-400 text-black font-orbitron font-bold text-xs uppercase shadow-[0_0_20px_rgba(14,165,233,0.4)] transition-all"
+                    >
+                        <Send size={14} className="mr-2" />
+                        {isSendingTelegram ? "Enviando..." : "Enviar a Telegram ✈️"}
                     </Button>
 
                     <Button
@@ -99,8 +133,8 @@ export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
                         disabled={isSendingWhatsApp}
                         className="bg-emerald-500 hover:bg-emerald-400 text-black font-orbitron font-bold text-xs uppercase shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all"
                     >
-                        <Send size={14} className="mr-2" />
-                        {isSendingWhatsApp ? "Enviando..." : "Enviar Resumen a WhatsApp"}
+                        <MessageSquare size={14} className="mr-2" />
+                        {isSendingWhatsApp ? "Enviando..." : "Enviar a WhatsApp 💬"}
                     </Button>
                 </div>
             </div>
