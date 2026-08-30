@@ -59,7 +59,8 @@ export async function POST(request: NextRequest) {
     if (target === "whatsapp" || target === "both") {
       try {
         const supabase = createServerClient();
-        await supabase.from("messages").insert({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).from("messages").insert({
           type: "text",
           content: centinelaSummaryText,
           sender_id: "BEATRIZ_AI",
