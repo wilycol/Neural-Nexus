@@ -386,20 +386,34 @@ export function SeductorOps({ backendUrl }: SeductorOpsProps) {
                                 ) : chatHistory.length === 0 ? (
                                     <div className="text-center p-8 text-white/30 font-mono text-xs">No hay historial de conversación registrado.</div>
                                 ) : (
-                                    chatHistory.map((msg, i) => (
-                                        <div key={i} className={`flex flex-col ${msg.sender_id === 'CLIENT' ? 'items-start' : 'items-end'}`}>
-                                            <div className={`max-w-[80%] rounded-xl p-3 text-sm ${
-                                                msg.sender_id === 'CLIENT' 
-                                                ? 'bg-white/10 text-white rounded-tl-sm' 
-                                                : 'bg-neon-purple/20 border border-neon-purple/30 text-white rounded-tr-sm'
-                                            }`}>
-                                                {msg.content}
+                                    chatHistory.map((msg, i) => {
+                                        const isFallbackMsg = msg.content?.includes("Mientras mi equipo estratégico procesa") || msg.content?.includes("video exclusivo de 2 minutos");
+                                        const isApiErrorMsg = msg.content?.includes("Error de Inteligencia");
+                                        
+                                        return (
+                                            <div key={i} className={`flex flex-col ${msg.sender_id === 'CLIENT' ? 'items-start' : 'items-end'}`}>
+                                                <div className={`max-w-[80%] rounded-xl p-3 text-sm ${
+                                                    msg.sender_id === 'CLIENT' 
+                                                    ? 'bg-white/10 text-white rounded-tl-sm' 
+                                                    : isFallbackMsg
+                                                    ? 'bg-amber-500/10 border border-amber-500/30 text-amber-200 rounded-tr-sm'
+                                                    : isApiErrorMsg
+                                                    ? 'bg-red-500/10 border border-red-500/30 text-red-300 rounded-tr-sm'
+                                                    : 'bg-neon-purple/20 border border-neon-purple/30 text-white rounded-tr-sm'
+                                                }`}>
+                                                    {isFallbackMsg && (
+                                                        <div className="flex items-center gap-1 text-[9px] uppercase font-bold text-amber-400 mb-1 font-mono">
+                                                            <span>🎬 DEMO EN VIDEO ENVIADA (ESPERA REFRESCO API)</span>
+                                                        </div>
+                                                    )}
+                                                    {msg.content}
+                                                </div>
+                                                <span className="text-[9px] text-white/30 mt-1 font-mono">
+                                                    {msg.sender_id === 'CLIENT' ? 'Cliente' : 'Seductor (IA)'} • {new Date(msg.created_at).toLocaleString()}
+                                                </span>
                                             </div>
-                                            <span className="text-[9px] text-white/30 mt-1 font-mono">
-                                                {msg.sender_id === 'CLIENT' ? 'Cliente' : 'Seductor (IA)'} • {new Date(msg.created_at).toLocaleString()}
-                                            </span>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 )}
                             </div>
 
