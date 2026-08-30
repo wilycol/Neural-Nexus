@@ -19,7 +19,7 @@ interface CentinelaReportViewProps {
     backendUrl: string;
 }
 
-export function CentinelaReportView({ backendUrl: _backendUrl }: CentinelaReportViewProps) {
+export function CentinelaReportView({ backendUrl }: CentinelaReportViewProps) {
     const [isSendingWhatsApp, setIsSendingWhatsApp] = useState(false);
     const [isSendingTelegram, setIsSendingTelegram] = useState(false);
 
@@ -49,7 +49,7 @@ export function CentinelaReportView({ backendUrl: _backendUrl }: CentinelaReport
             const res = await fetch(`/api/reports/centinela`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ target: "whatsapp" })
+                body: JSON.stringify({ target: "whatsapp", backendUrl })
             });
             await res.json();
             toast.success("✅ Resumen depositado para WhatsApp");
