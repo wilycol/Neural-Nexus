@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Download, FileText, RefreshCw, ShieldCheck, User, Search } from "lucide-react";
+import { ArrowLeft, Download, FileText, RefreshCw, ShieldCheck, User, Search, Trash2 } from "lucide-react";
 
 interface ApplicationRecord {
   id: string;
@@ -24,6 +24,8 @@ export default function CareersAdminPage({ params }: { params: { locale: string 
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   const fetchApplications = async () => {
     setLoading(true);
     try {
@@ -36,6 +38,29 @@ export default function CareersAdminPage({ params }: { params: { locale: string 
       console.error("Error cargando postulaciones:", e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteApplication = async (id: string, name: string) => {
+    if (!confirm(`¿Estás seguro de eliminar permanentemente la candidatura de '${name}'?`)) {
+      return;
+    }
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/careers/delete?id=${encodeURIComponent(id)}`, {
+        method: "DELETE"
+      });
+      const data = await res.json();
+      if (data.success) {
+        setApplications((prev) => prev.filter((app) => app.id !== id));
+      } else {
+        alert("Error al eliminar la candidatura: " + (data.error || "Desconocido"));
+      }
+    } catch (e) {
+      console.error("Error eliminando candidatura:", e);
+      alert("Error al intentar eliminar la candidatura.");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -150,17 +175,29 @@ export default function CareersAdminPage({ params }: { params: { locale: string 
                       </td>
 
                       <td className="p-4 text-right space-y-2">
-                        {app.cv_file ? (
-                          <a
-                            href={`/api/careers/download-cv?file=${encodeURIComponent(app.cv_file)}`}
-                            download
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 hover:text-white text-[11px] font-bold transition-all shadow-md"
+                        <div className="flex items-center justify-end gap-2">
+                          {app.cv_file ? (
+                            <a
+                              href={`/api/careers/download-cv?file=${encodeURIComponent(app.cv_file)}`}
+                              download
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 hover:text-white text-[11px] font-bold transition-all shadow-md"
+                            >
+                              <Download className="w-3.5 h-3.5" /> Descargar CV PDF
+                            </a>
+                          ) : (
+                            <span className="text-slate-600 text-[10px]">Sin PDF</span>
+                          )}
+
+                          <button
+                            onClick={() => handleDeleteApplication(app.id, app.applicant_name)}
+                            disabled={deletingId === app.id}
+                            title="Eliminar candidatura de la base de datos"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-300 hover:text-white text-[11px] font-bold transition-all shadow-md cursor-pointer disabled:opacity-50"
                           >
-                            <Download className="w-3.5 h-3.5" /> Descargar CV PDF
-                          </a>
-                        ) : (
-                          <span className="text-slate-600 text-[10px]">Sin PDF</span>
-                        )}
+                            <Trash2 className="w-3.5 h-3.5" />
+                            {deletingId === app.id ? "..." : "Eliminar"}
+                          </button>
+                        </div>
 
                         {app.cover_letter && (
                           <button
