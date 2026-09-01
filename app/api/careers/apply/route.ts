@@ -57,11 +57,12 @@ export async function POST(req: Request) {
 
     console.log("📄 [NEURAL NEXUS TALENT HUB] Nueva Postulación Recibida:", applicationRecord.applicant_name);
 
-    // 1. Guardar en Supabase Hive para persistencia global en Vercel
+    // 1. Guardar en Supabase Hive (doble persistencia: candidate_applications + messages)
     const supabase = getSupabaseHiveClient();
     if (supabase) {
       try {
-        const { error: sbErr } = await supabase.from("candidate_applications").insert({
+        // Intento 1: Tabla dedicada candidate_applications
+        await supabase.from("candidate_applications").insert({
           id: applicationRecord.id,
           applicant_name: applicationRecord.applicant_name,
           email: applicationRecord.email,
@@ -73,27 +74,20 @@ export async function POST(req: Request) {
           cv_size: applicationRecord.cv_size,
           cv_base64: applicationRecord.cv_base64,
           status: applicationRecord.status
-        });
+        }).then(() => {}).catch(() => {});
 
-        if (sbErr) {
-          console.warn("Aviso tabla candidate_applications Supabase:", sbErr.message);
-          // Fallback log in messages/leads if table missing
-          try {
-            await supabase.from("messages").insert({
-              type: "text",
-              content: `📄 NUEVA CANDIDATURA ATS: ${applicationRecord.applicant_name} (${applicationRecord.email}) - CV: ${applicationRecord.cv_file}`,
-              sender_id: "ATS_RECRUITMENT"
-            });
-          } catch {
-            // Ignorar si falla mensaje fallback
-          }
-        }
+        // Intento 2: Tabla garantizada 'messages' (Respaldo inquebrantable)
+        await supabase.from("messages").insert({
+          type: "candidate_application",
+          content: JSON.stringify(applicationRecord),
+          sender_id: "ATS_RECRUITMENT"
+        });
       } catch (errSb) {
         console.warn("Error enviando candidatura a Supabase:", errSb);
       }
     }
 
-    // 2. Guardar en log local
+    // 2. Guardar en log local JSON
     try {
       const logsDir = path.join(process.cwd(), "data");
       if (!fs.existsSync(logsDir)) {
@@ -108,9 +102,7 @@ export async function POST(req: Request) {
           existingLogs = [];
         }
       }
-      // Omit cv_base64 from local file log to keep file light
-      const lightRecord = { ...applicationRecord, cv_base64: cvBase64 ? "PRESENT" : "" };
-      existingLogs.unshift(lightRecord);
+      existingLogs.unshift(applicationRecord);
       fs.writeFileSync(logFile, JSON.stringify(existingLogs, null, 2));
     } catch (fsLogErr) {
       console.warn("Aviso guardado local JSON:", fsLogErr);

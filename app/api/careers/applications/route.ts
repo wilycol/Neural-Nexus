@@ -11,13 +11,38 @@ export async function GET() {
     const supabase = getSupabaseHiveClient();
     if (supabase) {
       try {
-        const { data, error } = await supabase
+        // Intento A: Tabla dedicada candidate_applications
+        const { data: candData, error: candErr } = await supabase
           .from("candidate_applications")
           .select("*")
           .order("created_at", { ascending: false });
 
-        if (!error && data && data.length > 0) {
-          applications = data as Record<string, unknown>[];
+        if (!candErr && candData && candData.length > 0) {
+          applications = candData as Record<string, unknown>[];
+        } else {
+          // Intento B: Respaldo inquebrantable en tabla 'messages'
+          const { data: msgData, error: msgErr } = await supabase
+            .from("messages")
+            .select("*")
+            .eq("type", "candidate_application")
+            .order("created_at", { ascending: false });
+
+          if (!msgErr && msgData && msgData.length > 0) {
+            const parsedApps: Record<string, unknown>[] = [];
+            for (const m of msgData) {
+              try {
+                if (m.content) {
+                  const parsed = JSON.parse(m.content);
+                  parsedApps.push(parsed);
+                }
+              } catch {
+                // omit
+              }
+            }
+            if (parsedApps.length > 0) {
+              applications = parsedApps;
+            }
+          }
         }
       } catch (sbErr) {
         console.warn("Aviso consulta Supabase applications:", sbErr);
