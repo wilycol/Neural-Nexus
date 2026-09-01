@@ -78,11 +78,15 @@ export async function POST(req: Request) {
         if (sbErr) {
           console.warn("Aviso tabla candidate_applications Supabase:", sbErr.message);
           // Fallback log in messages/leads if table missing
-          await supabase.from("messages").insert({
-            type: "text",
-            content: `📄 NUEVA CANDIDATURA ATS: ${applicationRecord.applicant_name} (${applicationRecord.email}) - CV: ${applicationRecord.cv_file}`,
-            sender_id: "ATS_RECRUITMENT"
-          }).catch(() => {});
+          try {
+            await supabase.from("messages").insert({
+              type: "text",
+              content: `📄 NUEVA CANDIDATURA ATS: ${applicationRecord.applicant_name} (${applicationRecord.email}) - CV: ${applicationRecord.cv_file}`,
+              sender_id: "ATS_RECRUITMENT"
+            });
+          } catch {
+            // Ignorar si falla mensaje fallback
+          }
         }
       } catch (errSb) {
         console.warn("Error enviando candidatura a Supabase:", errSb);
