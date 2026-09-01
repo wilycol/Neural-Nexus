@@ -10,8 +10,16 @@ export default function CareersHubPage({ params }: { params: { locale: string } 
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header Hero */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" /> Neural Nexus Talent Hub
+          <div className="flex items-center justify-center gap-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" /> Neural Nexus Talent Hub
+            </div>
+            <Link
+              href={`/${locale}/careers/admin`}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-300 hover:text-white text-xs font-mono transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> Admin Candidaturas
+            </Link>
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-200 to-cyan-500 bg-clip-text text-transparent">
             Centro de Reclutamiento & Atracción de Talento
