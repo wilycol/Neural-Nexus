@@ -62,19 +62,23 @@ export async function POST(req: Request) {
     if (supabase) {
       try {
         // Intento 1: Tabla dedicada candidate_applications
-        await supabase.from("candidate_applications").insert({
-          id: applicationRecord.id,
-          applicant_name: applicationRecord.applicant_name,
-          email: applicationRecord.email,
-          phone: applicationRecord.phone,
-          linkedin: applicationRecord.linkedin,
-          salary: applicationRecord.salary,
-          cover_letter: applicationRecord.cover_letter,
-          cv_file: applicationRecord.cv_file,
-          cv_size: applicationRecord.cv_size,
-          cv_base64: applicationRecord.cv_base64,
-          status: applicationRecord.status
-        }).then(() => {}).catch(() => {});
+        try {
+          await supabase.from("candidate_applications").insert({
+            id: applicationRecord.id,
+            applicant_name: applicationRecord.applicant_name,
+            email: applicationRecord.email,
+            phone: applicationRecord.phone,
+            linkedin: applicationRecord.linkedin,
+            salary: applicationRecord.salary,
+            cover_letter: applicationRecord.cover_letter,
+            cv_file: applicationRecord.cv_file,
+            cv_size: applicationRecord.cv_size,
+            cv_base64: applicationRecord.cv_base64,
+            status: applicationRecord.status
+          });
+        } catch {
+          // Ignorar si falla candidate_applications
+        }
 
         // Intento 2: Tabla garantizada 'messages' (Respaldo inquebrantable)
         await supabase.from("messages").insert({
