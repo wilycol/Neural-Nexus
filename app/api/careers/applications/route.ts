@@ -72,17 +72,7 @@ export async function GET() {
       }
     }
 
-    // 2. Si no hay registros en Supabase, consultar log local JSON
-    if (applications.length === 0) {
-      const logFile = path.join(process.cwd(), "data", "applications_received.json");
-      if (fs.existsSync(logFile)) {
-        try {
-          applications = JSON.parse(fs.readFileSync(logFile, "utf-8"));
-        } catch {
-          applications = [];
-        }
-      }
-    }
+
 
     return NextResponse.json({
       success: true,
