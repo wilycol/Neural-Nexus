@@ -10,7 +10,7 @@ export async function GET() {
     if (fs.existsSync(logFile)) {
       try {
         applications = JSON.parse(fs.readFileSync(logFile, "utf-8"));
-      } catch (e) {
+      } catch {
         applications = [];
       }
     }

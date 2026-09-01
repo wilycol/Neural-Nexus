@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Download, FileText, RefreshCw, ShieldCheck, User, Search, Eye } from "lucide-react";
+import { ArrowLeft, Download, FileText, RefreshCw, ShieldCheck, User, Search } from "lucide-react";
 
 interface ApplicationRecord {
   id: string;
