@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 export async function GET() {
