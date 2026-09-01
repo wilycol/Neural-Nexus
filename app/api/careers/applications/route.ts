@@ -7,11 +7,11 @@ export async function GET() {
   try {
     let applications: Record<string, unknown>[] = [];
 
-    // 1. Intentar consultar desde Supabase Hive
+    // 1. Consultar desde Supabase Hive
     const supabase = getSupabaseHiveClient();
     if (supabase) {
       try {
-        // Intento A: Tabla dedicada candidate_applications
+        // Intento 1: Tabla dedicada candidate_applications
         const { data: candData, error: candErr } = await supabase
           .from("candidate_applications")
           .select("*")
@@ -20,21 +20,35 @@ export async function GET() {
         if (!candErr && candData && candData.length > 0) {
           applications = candData as Record<string, unknown>[];
         } else {
-          // Intento B: Respaldo inquebrantable en tabla 'messages'
-          const { data: msgData, error: msgErr } = await supabase
-            .from("messages")
+          // Intento 2: Consulta en partnership_leads (company empieza por ATS_CANDIDATE:)
+          const { data: leadData, error: leadErr } = await supabase
+            .from("partnership_leads")
             .select("*")
-            .eq("type", "candidate_application")
+            .like("company", "ATS_CANDIDATE:%")
             .order("created_at", { ascending: false });
 
-          if (!msgErr && msgData && msgData.length > 0) {
+          if (!leadErr && leadData && leadData.length > 0) {
             const parsedApps: Record<string, unknown>[] = [];
-            for (const m of msgData) {
+            for (const l of leadData) {
               try {
-                if (m.content) {
-                  const parsed = JSON.parse(m.content);
-                  parsedApps.push(parsed);
+                let parsedMsg: any = {};
+                if (l.message) {
+                  parsedMsg = JSON.parse(l.message);
                 }
+                parsedApps.push({
+                  id: l.company ? l.company.replace("ATS_CANDIDATE:", "") : `APP-${l.id}`,
+                  created_at: l.created_at,
+                  applicant_name: l.name,
+                  email: l.email,
+                  phone: l.phone,
+                  linkedin: parsedMsg.linkedin || "",
+                  salary: parsedMsg.salary || "",
+                  cover_letter: parsedMsg.cover_letter || "",
+                  cv_file: parsedMsg.cv_file || "",
+                  cv_size: parsedMsg.cv_size || "",
+                  cv_base64: parsedMsg.cv_base64 || "",
+                  status: "RECEIVED_ATS_PASSED"
+                });
               } catch {
                 // omit
               }

@@ -57,35 +57,43 @@ export async function POST(req: Request) {
 
     console.log("📄 [NEURAL NEXUS TALENT HUB] Nueva Postulación Recibida:", applicationRecord.applicant_name);
 
-    // 1. Guardar en Supabase Hive (doble persistencia: candidate_applications + messages)
+    // 1. Guardar en Supabase Hive EXCLUSIVAMENTE en tabla candidate_applications / partnership_leads (NUNCA en messages)
     const supabase = getSupabaseHiveClient();
     if (supabase) {
       try {
-        // Intento 1: Tabla dedicada candidate_applications
-        try {
-          await supabase.from("candidate_applications").insert({
-            id: applicationRecord.id,
-            applicant_name: applicationRecord.applicant_name,
+        // Guardar en candidate_applications
+        const { error: candErr } = await supabase.from("candidate_applications").insert({
+          id: applicationRecord.id,
+          applicant_name: applicationRecord.applicant_name,
+          email: applicationRecord.email,
+          phone: applicationRecord.phone,
+          linkedin: applicationRecord.linkedin,
+          salary: applicationRecord.salary,
+          cover_letter: applicationRecord.cover_letter,
+          cv_file: applicationRecord.cv_file,
+          cv_size: applicationRecord.cv_size,
+          cv_base64: applicationRecord.cv_base64,
+          status: applicationRecord.status
+        });
+
+        if (candErr) {
+          console.warn("Aviso inserción candidate_applications:", candErr.message);
+          // Respaldo en partnership_leads (sin detonar el bridge de mensajes)
+          await supabase.from("partnership_leads").insert({
+            name: applicationRecord.applicant_name,
             email: applicationRecord.email,
             phone: applicationRecord.phone,
-            linkedin: applicationRecord.linkedin,
-            salary: applicationRecord.salary,
-            cover_letter: applicationRecord.cover_letter,
-            cv_file: applicationRecord.cv_file,
-            cv_size: applicationRecord.cv_size,
-            cv_base64: applicationRecord.cv_base64,
-            status: applicationRecord.status
+            company: `ATS_CANDIDATE:${applicationRecord.id}`,
+            message: JSON.stringify({
+              salary: applicationRecord.salary,
+              linkedin: applicationRecord.linkedin,
+              cover_letter: applicationRecord.cover_letter,
+              cv_file: applicationRecord.cv_file,
+              cv_size: applicationRecord.cv_size,
+              cv_base64: applicationRecord.cv_base64
+            })
           });
-        } catch {
-          // Ignorar si falla candidate_applications
         }
-
-        // Intento 2: Tabla garantizada 'messages' (Respaldo inquebrantable)
-        await supabase.from("messages").insert({
-          type: "candidate_application",
-          content: JSON.stringify(applicationRecord),
-          sender_id: "ATS_RECRUITMENT"
-        });
       } catch (errSb) {
         console.warn("Error enviando candidatura a Supabase:", errSb);
       }

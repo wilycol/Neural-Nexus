@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       });
     }
 
-    // 2. Buscar cv_base64 en Supabase (candidate_applications o messages)
+    // 2. Buscar cv_base64 en Supabase (candidate_applications o partnership_leads)
     const supabase = getSupabaseHiveClient();
     if (supabase) {
       // Intento 1: candidate_applications
@@ -46,18 +46,18 @@ export async function GET(req: Request) {
         });
       }
 
-      // Intento 2: messages table fallback
-      const { data: msgData } = await supabase
-        .from("messages")
-        .select("content")
-        .eq("type", "candidate_application")
+      // Intento 2: partnership_leads table fallback
+      const { data: leadData } = await supabase
+        .from("partnership_leads")
+        .select("message")
+        .like("company", "ATS_CANDIDATE:%")
         .order("created_at", { ascending: false });
 
-      if (msgData) {
-        for (const m of msgData) {
+      if (leadData) {
+        for (const l of leadData) {
           try {
-            if (m.content) {
-              const parsed = JSON.parse(m.content);
+            if (l.message) {
+              const parsed = JSON.parse(l.message);
               if (parsed.cv_file === filename && parsed.cv_base64 && parsed.cv_base64.length > 20) {
                 const fileBuffer = Buffer.from(parsed.cv_base64, "base64");
                 return new NextResponse(fileBuffer, {
