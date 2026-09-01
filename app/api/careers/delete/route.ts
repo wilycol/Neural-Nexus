@@ -16,29 +16,27 @@ export async function DELETE(req: Request) {
 
     const supabase = getSupabaseHiveClient();
     if (supabase) {
-      // 1. Borrar de candidate_applications
+      // 1. Borrar de candidate_applications por eq(id) y like(id)
       try {
-        const { error: e1 } = await supabase.from("candidate_applications").delete().eq("id", id);
-        if (e1) console.warn("Aviso borrado candidate_applications:", e1.message);
+        await supabase.from("candidate_applications").delete().eq("id", id);
+        await supabase.from("candidate_applications").delete().like("id", `%${id}%`);
       } catch (err) {
         console.warn("Aviso borrado candidate_applications:", err);
       }
 
-      // 2. Borrar de partnership_leads (company = ATS_CANDIDATE:{id})
+      // 2. Borrar de partnership_leads conteniendo el id en company
       try {
-        const { error: e2 } = await supabase.from("partnership_leads").delete().eq("company", `ATS_CANDIDATE:${id}`);
-        if (e2) console.warn("Aviso borrado partnership_leads (company):", e2.message);
+        await supabase.from("partnership_leads").delete().like("company", `%${id}%`);
       } catch (err) {
         console.warn("Aviso borrado partnership_leads:", err);
       }
 
-      // 3. Borrar de partnership_leads si id es numérico puro o tras remover APP-
+      // 3. Borrar de partnership_leads si id es un número de fila
       const cleanNum = id.replace("APP-", "");
       if (/^\d+$/.test(cleanNum)) {
         try {
           const numVal = parseInt(cleanNum, 10);
-          const { error: e3 } = await supabase.from("partnership_leads").delete().eq("id", numVal);
-          if (e3) console.warn("Aviso borrado partnership_leads (num):", e3.message);
+          await supabase.from("partnership_leads").delete().eq("id", numVal);
         } catch {
           // omit
         }
