@@ -31,7 +31,7 @@ export async function GET() {
             const parsedApps: Record<string, unknown>[] = [];
             for (const l of leadData) {
               try {
-                let parsedMsg: any = {};
+                let parsedMsg: Record<string, string> = {};
                 if (l.message) {
                   parsedMsg = JSON.parse(l.message);
                 }
