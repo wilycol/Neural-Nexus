@@ -270,6 +270,18 @@ export function Sidebar({ isLoggedIn: manualIsLoggedIn, user: manualUser, onLogo
               Log de Recepción 📡
             </Link>
             <Link
+              href="/careers/admin"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all mb-1",
+                pathname?.includes("/careers/admin")
+                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <FileText className="h-4 w-4 text-cyan-400" />
+              Candidatos & ATS 📄
+            </Link>
+            <Link
               href="/admin/monitor?tab=reels"
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",

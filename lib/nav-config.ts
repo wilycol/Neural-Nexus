@@ -18,10 +18,12 @@ import {
   Zap,
   Trash2,
   Trophy,
+  Briefcase,
 } from "lucide-react";
 
 export const primaryMenuItems = [
   { href: "/", label: "Inicio", icon: Home },
+  { href: "/careers", label: "Empleos", icon: Briefcase },
   { href: "/reels", label: "Reels", icon: Video },
   { href: "/categoria/modelos", label: "Modelos", icon: Brain },
   { href: "/categoria/herramientas", label: "Herramientas", icon: Wrench },

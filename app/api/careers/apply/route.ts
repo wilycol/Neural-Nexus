@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 export async function POST(req: Request) {
   try {
@@ -16,20 +17,27 @@ export async function POST(req: Request) {
 
     let savedFileName = "";
     let fileSizeKb = "0 KB";
+    let cvBase64 = "";
 
     if (file) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "cvs");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
+      cvBase64 = buffer.toString("base64");
       savedFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-      const filePath = path.join(uploadDir, savedFileName);
-      fs.writeFileSync(filePath, buffer);
       fileSizeKb = `${(buffer.length / 1024).toFixed(1)} KB`;
+
+      // Save locally if filesystem writable
+      try {
+        const uploadDir = path.join(process.cwd(), "public", "uploads", "cvs");
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const filePath = path.join(uploadDir, savedFileName);
+        fs.writeFileSync(filePath, buffer);
+      } catch (fsErr) {
+        console.warn("Aviso filesystem local no escribible:", fsErr);
+      }
     }
 
     const applicationRecord = {
@@ -43,32 +51,79 @@ export async function POST(req: Request) {
       cover_letter: coverLetter,
       cv_file: savedFileName,
       cv_size: fileSizeKb,
+      cv_base64: cvBase64,
       status: "RECEIVED_ATS_PASSED"
     };
 
-    console.log("📄 [NEURAL NEXUS TALENT HUB] Nueva Postulación Recibida:", applicationRecord);
+    console.log("📄 [NEURAL NEXUS TALENT HUB] Nueva Postulación Recibida:", applicationRecord.applicant_name);
 
-    // Save metadata log locally for inspection
-    const logsDir = path.join(process.cwd(), "data");
-    if (!fs.existsSync(logsDir)) {
-      fs.mkdirSync(logsDir, { recursive: true });
-    }
-    const logFile = path.join(logsDir, "applications_received.json");
-    let existingLogs = [];
-    if (fs.existsSync(logFile)) {
+    // 1. Guardar en Supabase Hive para persistencia global en Vercel
+    const supabase = getSupabaseHiveClient();
+    if (supabase) {
       try {
-        existingLogs = JSON.parse(fs.readFileSync(logFile, "utf-8"));
-      } catch {
-        existingLogs = [];
+        const { error: sbErr } = await supabase.from("candidate_applications").insert({
+          id: applicationRecord.id,
+          applicant_name: applicationRecord.applicant_name,
+          email: applicationRecord.email,
+          phone: applicationRecord.phone,
+          linkedin: applicationRecord.linkedin,
+          salary: applicationRecord.salary,
+          cover_letter: applicationRecord.cover_letter,
+          cv_file: applicationRecord.cv_file,
+          cv_size: applicationRecord.cv_size,
+          cv_base64: applicationRecord.cv_base64,
+          status: applicationRecord.status
+        });
+
+        if (sbErr) {
+          console.warn("Aviso tabla candidate_applications Supabase:", sbErr.message);
+          // Fallback log in messages/leads if table missing
+          await supabase.from("messages").insert({
+            type: "text",
+            content: `📄 NUEVA CANDIDATURA ATS: ${applicationRecord.applicant_name} (${applicationRecord.email}) - CV: ${applicationRecord.cv_file}`,
+            sender_id: "ATS_RECRUITMENT"
+          }).catch(() => {});
+        }
+      } catch (errSb) {
+        console.warn("Error enviando candidatura a Supabase:", errSb);
       }
     }
-    existingLogs.unshift(applicationRecord);
-    fs.writeFileSync(logFile, JSON.stringify(existingLogs, null, 2));
+
+    // 2. Guardar en log local
+    try {
+      const logsDir = path.join(process.cwd(), "data");
+      if (!fs.existsSync(logsDir)) {
+        fs.mkdirSync(logsDir, { recursive: true });
+      }
+      const logFile = path.join(logsDir, "applications_received.json");
+      let existingLogs = [];
+      if (fs.existsSync(logFile)) {
+        try {
+          existingLogs = JSON.parse(fs.readFileSync(logFile, "utf-8"));
+        } catch {
+          existingLogs = [];
+        }
+      }
+      // Omit cv_base64 from local file log to keep file light
+      const lightRecord = { ...applicationRecord, cv_base64: cvBase64 ? "PRESENT" : "" };
+      existingLogs.unshift(lightRecord);
+      fs.writeFileSync(logFile, JSON.stringify(existingLogs, null, 2));
+    } catch (fsLogErr) {
+      console.warn("Aviso guardado local JSON:", fsLogErr);
+    }
 
     return NextResponse.json({
       success: true,
       message: "¡Postulación recibida y registrada exitosamente en Neural Nexus Talent Hub!",
-      application: applicationRecord
+      application: {
+        id: applicationRecord.id,
+        applicant_name: applicationRecord.applicant_name,
+        email: applicationRecord.email,
+        phone: applicationRecord.phone,
+        cv_file: applicationRecord.cv_file,
+        cv_size: applicationRecord.cv_size,
+        status: applicationRecord.status
+      }
     });
   } catch (error: unknown) {
     const errMessage = error instanceof Error ? error.message : "Internal Server Error";

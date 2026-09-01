@@ -1,17 +1,38 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 export async function GET() {
   try {
-    const logFile = path.join(process.cwd(), "data", "applications_received.json");
-    let applications = [];
+    let applications: any[] = [];
 
-    if (fs.existsSync(logFile)) {
+    // 1. Intentar consultar desde Supabase Hive
+    const supabase = getSupabaseHiveClient();
+    if (supabase) {
       try {
-        applications = JSON.parse(fs.readFileSync(logFile, "utf-8"));
-      } catch {
-        applications = [];
+        const { data, error } = await supabase
+          .from("candidate_applications")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          applications = data;
+        }
+      } catch (sbErr) {
+        console.warn("Aviso consulta Supabase applications:", sbErr);
+      }
+    }
+
+    // 2. Si no hay registros en Supabase, consultar log local JSON
+    if (applications.length === 0) {
+      const logFile = path.join(process.cwd(), "data", "applications_received.json");
+      if (fs.existsSync(logFile)) {
+        try {
+          applications = JSON.parse(fs.readFileSync(logFile, "utf-8"));
+        } catch {
+          applications = [];
+        }
       }
     }
 
