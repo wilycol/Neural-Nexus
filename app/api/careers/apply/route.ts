@@ -58,7 +58,9 @@ export async function POST(req: Request) {
     if (fs.existsSync(logFile)) {
       try {
         existingLogs = JSON.parse(fs.readFileSync(logFile, "utf-8"));
-      } catch (e) {}
+      } catch {
+        existingLogs = [];
+      }
     }
     existingLogs.unshift(applicationRecord);
     fs.writeFileSync(logFile, JSON.stringify(existingLogs, null, 2));
@@ -68,10 +70,11 @@ export async function POST(req: Request) {
       message: "¡Postulación recibida y registrada exitosamente en Neural Nexus Talent Hub!",
       application: applicationRecord
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Internal Server Error";
     console.error("❌ Error procesando candidatura:", error);
     return NextResponse.json(
-      { success: false, error: error?.message || "Internal Server Error" },
+      { success: false, error: errMessage },
       { status: 500 }
     );
   }

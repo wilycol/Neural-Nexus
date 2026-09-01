@@ -2,7 +2,17 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, FileText, Send, ShieldCheck, Sparkles, User, UploadCloud, AlertCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, FileText, Send, AlertCircle } from "lucide-react";
+
+interface ApplicationData {
+  id: string;
+  applicant_name: string;
+  email: string;
+  phone: string;
+  cv_file: string;
+  cv_size: string;
+  status: string;
+}
 
 export default function AILeadArchitectJobPage({ params }: { params: { locale: string } }) {
   const [formData, setFormData] = useState({
@@ -17,7 +27,7 @@ export default function AILeadArchitectJobPage({ params }: { params: { locale: s
   });
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [submittedData, setSubmittedData] = useState<any>(null);
+  const [submittedData, setSubmittedData] = useState<ApplicationData | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -65,7 +75,7 @@ export default function AILeadArchitectJobPage({ params }: { params: { locale: s
       } else {
         setErrorMsg(result.error || "Error al procesar la candidatura.");
       }
-    } catch (err: any) {
+    } catch {
       setErrorMsg("Error de conexión al enviar la postulación.");
     } finally {
       setSubmitting(false);
