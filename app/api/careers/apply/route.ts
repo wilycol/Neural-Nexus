@@ -23,7 +23,16 @@ export async function POST(req: Request) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      cvBase64 = buffer.toString("base64");
+      if (buffer.length > 4.5 * 1024 * 1024) {
+        return NextResponse.json(
+          { success: false, error: "El archivo PDF supera el límite de 4.5 MB. Por favor adjunta un archivo PDF comprimido o de menor tamaño." },
+          { status: 400 }
+        );
+      }
+
+      if (buffer.length <= 3.5 * 1024 * 1024) {
+        cvBase64 = buffer.toString("base64");
+      }
       savedFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
       fileSizeKb = `${(buffer.length / 1024).toFixed(1)} KB`;
 

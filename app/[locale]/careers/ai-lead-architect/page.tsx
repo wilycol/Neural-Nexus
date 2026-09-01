@@ -42,7 +42,15 @@ export default function AILeadArchitectJobPage({ params }: { params: { locale: s
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      if (selectedFile.size > 4.5 * 1024 * 1024) {
+        setErrorMsg("⚠️ El archivo PDF supera el límite de 4.5 MB. Por favor adjunta un archivo PDF menor a 4.5 MB.");
+        setFile(null);
+        e.target.value = "";
+        return;
+      }
+      setErrorMsg("");
+      setFile(selectedFile);
     }
   };
 
@@ -50,6 +58,12 @@ export default function AILeadArchitectJobPage({ params }: { params: { locale: s
     e.preventDefault();
     setSubmitting(true);
     setErrorMsg("");
+
+    if (file && file.size > 4.5 * 1024 * 1024) {
+      setErrorMsg("⚠️ El archivo PDF es demasiado grande para el servidor (máximo 4.5 MB). Por favor comíprimelo antes de enviar.");
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const data = new FormData();
@@ -68,6 +82,18 @@ export default function AILeadArchitectJobPage({ params }: { params: { locale: s
         method: "POST",
         body: data
       });
+
+      if (!res.ok) {
+        if (res.status === 413) {
+          setErrorMsg("⚠️ El archivo adjunto supera el límite de tamaño permitido por Vercel (4.5 MB). Comprime el PDF e intentalo de nuevo.");
+          setSubmitting(false);
+          return;
+        }
+        const errorJson = await res.json().catch(() => ({}));
+        setErrorMsg(errorJson.error || `Error en el servidor (${res.status}).`);
+        setSubmitting(false);
+        return;
+      }
 
       const result = await res.json();
       if (result.success) {
