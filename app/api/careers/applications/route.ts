@@ -5,7 +5,7 @@ import { getSupabaseHiveClient } from "@/lib/supabase-hive-client";
 
 export async function GET() {
   try {
-    let applications: any[] = [];
+    let applications: Record<string, unknown>[] = [];
 
     // 1. Intentar consultar desde Supabase Hive
     const supabase = getSupabaseHiveClient();
@@ -17,7 +17,7 @@ export async function GET() {
           .order("created_at", { ascending: false });
 
         if (!error && data && data.length > 0) {
-          applications = data;
+          applications = data as Record<string, unknown>[];
         }
       } catch (sbErr) {
         console.warn("Aviso consulta Supabase applications:", sbErr);
