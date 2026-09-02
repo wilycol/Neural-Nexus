@@ -5,10 +5,9 @@ export async function GET() {
   try {
     let applications: Record<string, unknown>[] = [];
 
-    // 1. Consultar desde Supabase Hive
     const supabase = getSupabaseHiveClient();
     if (supabase) {
-
+      try {
         const { data: candData } = await supabase
           .from("candidate_applications")
           .select("*")
@@ -21,8 +20,6 @@ export async function GET() {
         console.warn("Aviso consulta Supabase candidate_applications:", sbErr);
       }
     }
-
-
 
     return NextResponse.json({
       success: true,
