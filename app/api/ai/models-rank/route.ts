@@ -33,7 +33,7 @@ export async function POST(req: Request) {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Genera el benchmark de élite para la categoría ${category} ahora mismo.` }
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: 'qwen/qwen3.6-27b',
       response_format: { type: 'json_object' },
     });
 
