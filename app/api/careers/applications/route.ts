@@ -8,11 +8,7 @@ export async function GET() {
     // 1. Consultar desde Supabase Hive
     const supabase = getSupabaseHiveClient();
     if (supabase) {
-      try {
-        const fetchedApps: Record<string, unknown>[] = [];
-        const seenIds = new Set<string>();
 
-        // Tabla dedicada candidate_applications
         const { data: candData } = await supabase
           .from("candidate_applications")
           .select("*")
