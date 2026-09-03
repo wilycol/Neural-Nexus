@@ -215,7 +215,7 @@
     </style>
 </head>
 
-<body class="flex flex-col h-[100dvh] bg-slate-950 overflow-hidden text-slate-100">
+<body class="fixed inset-0 flex flex-col bg-slate-950 overflow-hidden text-slate-100">
 
     <!-- Modal de Imagen -->
     <div id="image-modal" class="hidden fixed inset-0 z-[110] bg-black/90 flex flex-col items-center justify-center p-0 backdrop-blur-sm overflow-hidden touch-none">
@@ -717,13 +717,13 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
 
-            // 3. Renderizar Markdown headers (###, ##, #)
-            escaped = escaped.replace(/^### (.*$)/gim, '<h3 class="text-sm font-bold text-fuchsia-300 mt-2 mb-1">$1</h3>');
-            escaped = escaped.replace(/^## (.*$)/gim, '<h2 class="text-base font-bold text-indigo-300 mt-2 mb-1">$1</h2>');
-            escaped = escaped.replace(/^# (.*$)/gim, '<h1 class="text-lg font-black text-fuchsia-400 mt-2 mb-1">$1</h1>');
+            // 3. Renderizar Markdown headers (###, ##, #) usando div para validez HTML
+            escaped = escaped.replace(/^### (.*$)/gim, '<div class="text-xs font-bold text-fuchsia-300 mt-2 mb-1 uppercase tracking-wider">$1</div>');
+            escaped = escaped.replace(/^## (.*$)/gim, '<div class="text-sm font-bold text-indigo-300 mt-2 mb-1">$1</div>');
+            escaped = escaped.replace(/^# (.*$)/gim, '<div class="text-base font-black text-fuchsia-400 mt-2 mb-1">$1</div>');
 
             // 4. Renderizar separadores horizontales (---)
-            escaped = escaped.replace(/^---$/gim, '<hr class="my-2 border-white/10">');
+            escaped = escaped.replace(/^---$/gim, '<div class="my-2 border-b border-white/10"></div>');
 
             // 5. Convertir **negrita**
             escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
@@ -737,8 +737,11 @@
                 return `<a href="${url}" target="_blank" class="text-sky-300 hover:text-sky-200 underline font-bold break-all transition-colors">${url}</a>`;
             });
 
-            // 8. Convertir saltos de línea a <br> (usando whitespace-normal en la etiqueta para evitar saltos dobles)
+            // 8. Convertir saltos de línea a <br>
             escaped = escaped.replace(/\n/g, '<br>');
+
+            // 9. Limpiar <br> justo después de </div> para evitar espacios gigantes
+            escaped = escaped.replace(/<\/div><br>/gi, '</div>');
 
             return escaped;
         }
@@ -791,7 +794,7 @@
                 } else if (m.type === 'image' || isImageUrl) {
                     parsed = `<img src="${raw}" onclick="openImage('${raw}')" class="rounded-lg max-w-full h-auto shadow-lg border border-white/5 cursor-pointer hover:opacity-80 transition-opacity" onload="this.parentElement.parentElement.parentElement.scrollTop = this.parentElement.parentElement.parentElement.scrollHeight">`;
                 } else {
-                    parsed = `<p class="text-sm leading-relaxed break-words [word-break:break-word] whitespace-normal overflow-hidden">${formatMessageContent(raw)}</p>`;
+                    parsed = `<div class="text-sm leading-relaxed break-words [word-break:break-word] whitespace-normal overflow-hidden">${formatMessageContent(raw)}</div>`;
                 }
             } else {
                 // Si ya fue parseado pero queda texto suelto, lo envolvemos
