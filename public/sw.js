@@ -1,7 +1,7 @@
-const CACHE_NAME = 'nexus-command-v5.5.0';
+const CACHE_NAME = 'nexus-command-v5.6.0';
 const ASSETS = [
   '/',
-  '/command.html?v=5.5.0',
+  '/command.html?v=5.6.0',
   '/manifest.json',
   '/brand.png',
   '/favicon.ico',
