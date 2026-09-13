@@ -290,7 +290,7 @@ DIRECTIVAS CRÍTICAS:
 
     // 3. Fallback a Gemini si Groq no responde
     if (!beatrizResponse) {
-      const geminiKey = process.env.GEMINI_API_KEY || "AIzaSyD94NAzHpyOXpGn-lP1Tryp5Ym0orZzYww";
+      const geminiKey = process.env.GEMINI_API_KEY || "";
       if (geminiKey) {
         try {
           const geminiRes = await fetch(
